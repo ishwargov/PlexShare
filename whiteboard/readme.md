@@ -13,7 +13,6 @@
 * now you will have a forked repo in your github https://github.com/your_github_id/plexshare
 * next part:
     * git clone your_repo
-    * `git remote add upstream `
     * `git remote add upstream https://github.com/jerryJohnThomas/plexshare`
     * to make sure that worked do `git remote -v` on which you should see 4 things, 2 with your name and 2 with jerry name.
     * to do future updates (not necessary for today)
