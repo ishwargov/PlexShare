@@ -29,7 +29,7 @@ Given the board state and local file path, the board state is serialized and sto
 ### Load Board State
 Given the local file path corresponding to a file which represents a board state, the data would be deserialized and the board session would be initialized with this state.
 
-![](pics/snap.png)
+![](assets/snap.png)
 
 ## Serializing and Deserializing
 
@@ -58,7 +58,7 @@ On receiving a request from the UX from the client to start or join a new board,
 * Pass the request to the main server, which returns the the port number where the board server for the requested board (existing or newly created) is running on server's machine.
 * The client will request the board state from the board server if the requested board is an older board; otherwise, it will initialise all of its data structures to be empty.
 
-![](pics/newclient.png)
+![](assets/newclient.png)
 
 Note: We do this seemingly redundant action in order to possible incorporate multiple boards on different ports in the upcoming versions.
 
@@ -68,7 +68,7 @@ Note: We do this seemingly redundant action in order to possible incorporate mul
 * These changes will be sent to the Whiteboard Processing submodules and the resulting Whiteboard object will be sent to the Board server.
 * The server side processing then takes care of passing the changes to all clients running the same Whiteboard session.
 
-![](pics/client.png)
+![](assets/client.png)
 
 &nbsp;
 
