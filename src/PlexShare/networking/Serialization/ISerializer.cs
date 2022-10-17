@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace PlexShareNetworking.Serialization
+namespace Networking.Serialization
 {
     interface ISerializer
     {

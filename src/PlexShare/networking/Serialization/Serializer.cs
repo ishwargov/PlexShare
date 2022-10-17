@@ -3,28 +3,39 @@ using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace PlexShareNetworking.Serialization
+namespace Networking.Serialization
 {
     public class Serializer : ISerializer
     {
-        public string Serialize<T>(T genericObject)
+        /// <summary>
+        /// Given an object of a generic type, the method converts it into a serialized string in XML format and returns it
+        /// </summary>
+        public string Serialize<T> (T genericObject)
         {
             XmlSerializer xmlSerializer = new XmlSerializer(typeof(T));
 
+            // StringWriter deals with string data
             StringWriter stringWriter = new StringWriter();
+
+            // The string data which is written by StringWriter is stored here
             XmlWriter xmlWriter = XmlWriter.Create(stringWriter);
 
             xmlSerializer.Serialize(xmlWriter, genericObject);
 
             return stringWriter.ToString();
         }
-        public T Deserialize<T>(string serializedString)
+
+        /// <summary>
+        /// Given a serialized string in XML format, the method converts it into the original object and returns it
+        /// </summary>
+        public T Deserialize<T> (string serializedString)
         {
             XmlSerializer xmlSerializer = new XmlSerializer(typeof(T));
 
-            TextReader reader = new StringReader(serializedString);
+            // To read the string
+            StringReader stringReader = new StringReader(serializedString);
 
-            return (T)xmlSerializer.Deserialize(reader);
+            return (T)xmlSerializer.Deserialize(stringReader);
         }
     }
 }
