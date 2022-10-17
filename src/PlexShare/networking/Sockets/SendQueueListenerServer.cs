@@ -27,7 +27,7 @@ namespace Networking
 		/// <summary>
 		/// This method starts the thread.
 		/// </summary>
-        /// <returns> void </returns>
+		/// <returns> void </returns>
 		public void Start()
 		{
 
@@ -36,7 +36,7 @@ namespace Networking
 		/// <summary>
 		/// This method stops the thread.
 		/// </summary>
-        /// <returns> void </returns>
+		/// <returns> void </returns>
 		public void Stop()
 		{
 
@@ -46,7 +46,7 @@ namespace Networking
 		/// This method listens to send queue, and when some packet comes in the send queue then
 		/// it sends the packet to the client which is in the destination field of the packet.
 		/// </summary>
-        /// <returns> void </returns>
+		/// <returns> void </returns>
 		private void Listen()
 		{
 

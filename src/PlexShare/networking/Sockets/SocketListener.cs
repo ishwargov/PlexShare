@@ -14,39 +14,39 @@ namespace Networking
 {
 	public class SocketListener
 	{
-        /// <summary>
-        /// 
-        /// </summary>
+		/// <summary>
+		/// 
+		/// </summary>
 		public SocketListener()
 		{
 
 		}
 
 		/// <summary>
-        /// This method starts the thread.
-        /// </summary>
-        /// <returns> void </returns>
-        public void Start()
-        {
+		/// This method starts the thread.
+		/// </summary>
+		/// <returns> void </returns>
+		public void Start()
+		{
 
-        }
+		}
 
-        /// <summary?
-        /// This menthod stops the thread.
-        /// </summary>
-        /// <returns> void </returns>
-        public void Stop()
-        {
+		/// <summary?
+		/// This menthod stops the thread.
+		/// </summary>
+		/// <returns> void </returns>
+		public void Stop()
+		{
 
-        }
+		}
 
-        /// <summary>
-        /// This method enqueues the packet to the receive queue.
-        /// </summary>
-        /// <returns> void </returns>
-        private void EnqueuePacket()
-        {
+		/// <summary>
+		/// This method enqueues the packet to the receive queue.
+		/// </summary>
+		/// <returns> void </returns>
+		private void EnqueuePacket()
+		{
 
-        }
+		}
 	}
 }
