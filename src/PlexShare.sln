@@ -10,6 +10,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		RuleSet1.ruleset = RuleSet1.ruleset
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Network", "Network\Network.csproj", "{C5923B88-43D7-485E-A3A1-ACC76B508D04}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,6 +22,10 @@ Global
 		{32A994BC-904B-4569-8E5A-7236350CFCA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{32A994BC-904B-4569-8E5A-7236350CFCA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{32A994BC-904B-4569-8E5A-7236350CFCA8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5923B88-43D7-485E-A3A1-ACC76B508D04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5923B88-43D7-485E-A3A1-ACC76B508D04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5923B88-43D7-485E-A3A1-ACC76B508D04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5923B88-43D7-485E-A3A1-ACC76B508D04}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
