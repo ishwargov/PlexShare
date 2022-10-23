@@ -1,4 +1,8 @@
-﻿
+﻿/// <author> Anish Bhagavatula </author>
+/// <summary>
+/// This file contains the definition of the ISerializer interface. It contains method blueprints to serialize and deserialize data.
+/// </summary>
+
 namespace Networking.Serialization
 {
     public interface ISerializer

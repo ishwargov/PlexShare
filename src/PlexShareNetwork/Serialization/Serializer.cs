@@ -1,4 +1,9 @@
-﻿using System;
+﻿/// <author> Anish Bhagavatula </author>
+/// <summary>
+/// This file contains an implementation of the ISerializer interface.
+/// </summary>
+
+using System;
 using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
