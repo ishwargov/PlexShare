@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace PlexShare
+namespace PlexShareApp
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
