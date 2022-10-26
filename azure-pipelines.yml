@@ -1,7 +1,7 @@
 # Pipeline to sync Azure repo with Github main branch
 name: Keep clone up to date
 variables:
-  REMOTE_ADDR: 'https://github.com/some-user/PlexShare.git'
+  REMOTE_ADDR: 'https://github.com/ishwargov/PlexShare.git'
 stages:
   - stage: running_git_commands
     displayName: running_git_commands
