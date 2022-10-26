@@ -1,5 +1,6 @@
 # Pipeline to sync Azure repo with Github main branch
 name: Keep clone up to date
+pool: selfBot
 variables:
   REMOTE_ADDR: 'https://github.com/ishwargov/PlexShare.git'
 stages:
