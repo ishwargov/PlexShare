@@ -1,0 +1,23 @@
+# Pipeline to sync Azure repo with Github main branch
+name: Keep clone up to date
+variables:
+  REMOTE_ADDR: 'https://github.com/some-user/PlexShare.git'
+stages:
+  - stage: running_git_commands
+    displayName: running_git_commands
+    jobs:
+      - job: initiate
+        displayName: initiate
+        continueOnError: false
+        steps:
+        - checkout: self
+          clean: true
+          persistCredentials: true
+          displayName: run_commands
+        - bash: | 
+            git checkout main
+            git remote add PlexShare $(REMOTE_ADDR)
+            git fetch PlexShare main
+            git reset --hard PlexShare/main
+            git pull --rebase PlexShare main
+            git push -f origin
