@@ -10,34 +10,19 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace PlexShareApp
 {
     /// <summary>
-    /// Interaction logic for AuthenticationView.xaml
+    /// Interaction logic for HomeView.xaml
     /// </summary>
-    public partial class AuthenticationView : Window
+    public partial class HomeView : Page
     {
-        public AuthenticationView()
+        public HomeView()
         {
             InitializeComponent();
         }
-
-        private void Home_Click(object sender, RoutedEventArgs e)
-        {
-            var homePage = new HomePageView();
-            
-            /*
-             * 
-             *  VALIDATION
-             */
-
-            homePage.Show();
-            Close();
-        }
-
-
-
     }
 }

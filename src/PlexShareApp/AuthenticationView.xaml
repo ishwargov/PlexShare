@@ -5,10 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PlexShareApp"
         mc:Ignorable="d"
-        Title="AuthenticationView" Height="450" Width="800">
-    <Grid>
+        WindowStartupLocation = "CenterScreen"
+        Title="AuthenticationView" Height="700" Width="1100">
+
+    <Grid Background="Blue">
+        <Frame x:Name="AuthView" NavigationUIVisibility="Hidden" />
         <StackPanel>
-            <Frame x:Name="_NavigationFrame" NavigationUIVisibility="Hidden" />
             <Button Width="100" Click="Home_Click">Go To Home Page</Button>
         </StackPanel>
         

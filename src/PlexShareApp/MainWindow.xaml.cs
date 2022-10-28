@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml.Linq;
 
 namespace PlexShareApp
 {
@@ -23,6 +24,10 @@ namespace PlexShareApp
         public MainWindow()
         {
             InitializeComponent();
+            AuthenticationView authView = new AuthenticationView();
+            authView.Show();
+            this.Close();
         }
+
     }
 }
