@@ -33,7 +33,7 @@ namespace Networking
 		private readonly Dictionary<string, TcpClient> _clientIdToSocket = new();
 
 		// this map will store the socket listeners, one socket listener listening to one client
-		private readonly Dictionary<string, SocketListener> _clientIdToSocketListeners = new();
+		private readonly Dictionary<string, SocketListener> _clientListeners = new();
 
 		// map to store the handlers of subscribed modules
 		private readonly Dictionary<string, INotificationHandler> _subscribedModulesToHandler = new();
@@ -55,7 +55,32 @@ namespace Networking
 		/// </returns>
 		string ICommunicator.Start(string serverIP = null, string serverPort = null)
 		{
+			if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E")
+			{
+				return "127.0.0.1:8080";
+			}
+			var IP = IPAddress.Parse(FindIpAddress());
+			string stringPort = Environment.GetEnvironmentVariable("MEETME_PORT");
+			int port = stringPort is null ? -1 : Int32.Parse(stringPort); 
+			if (port == -1)
+			{
+				port = FindFreePort(ip);
+			}
+			_socket = new TcpListener(IPAddress.Any, port);
+			_socket.Start();
 
+			_sendQueueListener = new SendQueueListenerServer(_sendQueue, _clientIdToSocket, _subscribedModulesToHandler);
+			_sendQueueListener.Start();
+
+			_receiveQueueListener = new ReceiveQueueListener(_receiveQueue, _subscribedModulesToHandler);
+			_receiveQueueListener.Start();
+
+			_thread = new Thread(AcceptRequest);
+			_threadRun = true;
+			_thread.Start();
+
+			Trace.WriteLine("Server started on IP: " + IP + " Port: " + port);
+			return IP + ":" + port;
 		}
 
 		/// <summary>
@@ -64,7 +89,88 @@ namespace Networking
 		/// <returns> void </returns>
 		void ICommunicator.Stop()
 		{
+			if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E")
+			{
+				return;
+			}
+			_threadRun = false;
 
+			_socket.Stop();
+
+			foreach (var clientIdToSocketListener in _clientListeners)
+			{
+				var socketListener = listener.Value;
+				socketListener.Stop();
+			}
+			_sendQueueListener.Stop();
+			_receiveQueueListener.Stop();
+			_sendQueue.Close();
+			_receiveQueue.Close();
+		}
+
+		/// <summary>
+		/// This function finds IP4 address of machine which does not end with 1
+		/// </summary>
+		/// <returns> String IP address </returns>
+		private static string FindIpAddress()
+		{
+			var host = Dns.GetHostEntry(Dns.GetHostName());
+			foreach (var IP in host.AddressList)
+			{
+				if (IP.AddressFamily == AddressFamily.InterNetwork)
+				{
+					var address = IP.ToString();
+					// return the IP address if it does not end with 1
+					if (address.Split(".")[3] != "1")
+					{
+						return IP.ToString();
+					}
+				}
+			}
+			throw new Exception("[Networking] Error in CommunicatorServer: IPv4 address not found on this machine!");
+		}
+
+		/// <summary>
+		/// This function finds a free TCP port.
+		/// </summary>
+		/// <param name="IP"> IP address </param>
+		/// <returns> The port number </returns>
+		private static int FindFreePort(IPAddress IP)
+		{
+			var tcpListener = new TcpListener(IP, 0);
+			tcpListener.Start();
+			var port = ((IPEndPoint) tcpListener.LocalEndpoint).Port;
+			tcpListener.Stop();
+			return port;
+		}
+
+		/// <summary>
+		/// This functions accepts the requests from clients.
+		/// </summary>
+		/// <returns> void </returns>
+		private void AcceptRequest()
+		{
+			while (_threadRun)
+			{
+				try
+				{
+					var clientSocket = _socket.AcceptTcpClient();
+
+					foreach (var module in _subscribedModulesToHandler)
+					{
+						module.Value.OnClientJoined(clientSocket);
+					}
+					Trace.WriteLine("[Networking] New client joined! Notified all modules.");
+				}
+				catch (SocketException e)
+				{
+					Trace.WriteLine($"[Networking] Error in CommunicatorServer: {e.Message}");
+				}
+				catch (Exception e)
+				{
+					Trace.WriteLine($"[Networking] Error in CommunicatorServer: {e.Message}");
+				}
+			}
 		}
 
 		/// <summary>
@@ -77,7 +183,16 @@ namespace Networking
 		/// <returns> void </returns>
 		void ICommunicator.AddClient<T>(string clientId, T socket)
 		{
+			if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E")
+			{
+				return;
+			}
 
+			_clientIdToSocket[clientId] = (TcpClient) (object) socket;
+
+			var socketListener = new SocketListener(_receiveQueue, (TcpClient) (object) socket);
+			_clientListeners[clientId] = socketListener;
+			socketListener.Start();
 		}
 
 		/// <summary>
@@ -88,7 +203,19 @@ namespace Networking
 		/// <returns> void </returns>
 		void ICommunicator.RemoveClient(string clientId)
 		{
+			if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E")
+			{
+				return;
+			}
+			var socketListener = _clientListeners[clientId];
+			socketListener.Stop();
 
+			var socket = _clientIdToSocket[clientId];
+			socket.GetStream().Close();
+			socket.Close();
+
+			_clientListeners.Remove(clientId);
+			_clientIdToSocket.Remove(clientId);
 		}
 
 		/// <summary>
@@ -99,7 +226,22 @@ namespace Networking
 		/// <returns> void </returns>
 		void ICommunicator.Send(string serializedData, string moduleIdentifier)
 		{
+			if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E")
+			{
+				File.WriteAllText("networking_test.json", data);
+				return;
+			}
 
+			var packet = new Packet {ModuleIdentifier = moduleIdentifier, SerializedData = serializedData};
+			try
+			{
+				_sendQueue.Enqueue(packet);
+			}
+			catch (Exception e)
+			{
+				Trace.WriteLine($"[Networking] Error in CommunicatorServer: {e.Message}");
+				throw;
+			}
 		}
 
 		/// <summary>
@@ -112,7 +254,27 @@ namespace Networking
 		/// <returns> void </returns>
 		void Send(string serializedData, string moduleIdentifier, string destination)
 		{
+			if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E")
+			{
+				File.WriteAllText("networking_test.json", data);
+				return;
+			}
 
+			if (!_clientIdToSocket.ContainsKey(destination))
+			{
+				throw new Exception("Client given in the destination of packet does not exist in the room!");
+			}
+
+			var packet = new Packet {ModuleIdentifier = moduleIdentifier, SerializedData = serializedData, Destination = destination};
+			try
+			{
+				_sendQueue.Enqueue(packet);
+			}
+			catch (Exception e)
+			{
+				Trace.WriteLine($"[Networking] Error in CommunicatorServer: {e.Message}");
+				throw;
+			}
 		}
 
 		/// <summary>
@@ -124,7 +286,14 @@ namespace Networking
 		/// <returns> void </returns>
 		void ICommunicator.Subscribe(string moduleIdentifier, INotificationHandler notificationHandler, bool isHighPriority)
 		{
-
+			if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E")
+			{
+				return;
+			}
+			_subscribedModulesToHandler.Add(moduleIdentifier, notificationHandler);
+			_sendQueue.RegisterModule(moduleIdentifier, isHighPriority);
+			_receiveQueue.RegisterModule(moduleIdentifier, isHighPriority);
+			Trace.WriteLine($"[Networking] Module: {moduleIdentifier} registered with priority is high?: {isHighPriority}");
 		}
 	}
 }
