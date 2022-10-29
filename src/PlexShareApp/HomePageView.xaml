@@ -5,9 +5,98 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PlexShareApp"
         mc:Ignorable="d"
-        WindowStartupLocation = "CenterScreen"
-        Title="HomePageView" Height="700" Width="1100">
-    <Grid Background="Red">
-        <Frame x:Name="HomePage" NavigationUIVisibility="Hidden" />
+        WindowStartupLocation = "Manual"
+        Left="0" Top="0"
+        Title="HomePageView" Height="1080" Width="1920">
+    <Grid Background="#E2DCC8" Margin="0,0,0,-6">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="53*"/>
+            <RowDefinition Height="93*"/>
+            <RowDefinition Height="25*"/>
+            <RowDefinition Height="240*"/>
+            <RowDefinition Height="196*"/>
+            <RowDefinition Height="63*"/>
+            <RowDefinition Height="253*"/>
+            <RowDefinition Height="148*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="167*"/>
+            <ColumnDefinition Width="308*"/>
+            <ColumnDefinition Width="138*"/>
+            <ColumnDefinition Width="308*"/>
+            <ColumnDefinition Width="120*"/>
+            <ColumnDefinition Width="733*"/>
+            <ColumnDefinition Width="167*"/>
+        </Grid.ColumnDefinitions>
+
+        <Rectangle RadiusX="10" Grid.Column="1" Grid.Row="4" RadiusY="10" Fill="#FF0F3D3E" />
+        <Grid Grid.Column="5" Grid.Row="3" Grid.RowSpan="4">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="39*"/>
+                <RowDefinition Height="194*"/>
+                <RowDefinition Height="25*"/>
+                <RowDefinition Height="80*"/>
+                <RowDefinition Height="80*"/>
+                <RowDefinition Height="80*"/>
+                <RowDefinition Height="80*"/>
+                <RowDefinition Height="80*"/>
+                <RowDefinition Height="27*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="83*"/>
+                <ColumnDefinition Width="95*"/>
+                <ColumnDefinition Width="158*"/>
+                <ColumnDefinition Width="93*"/>
+                <ColumnDefinition Width="84*"/>
+            </Grid.ColumnDefinitions>
+            <Rectangle Fill="#FF0F3D3E" RadiusX="16" RadiusY="16" Grid.ColumnSpan="5" Grid.RowSpan="9"/>
+            <Border CornerRadius="100,100,100,100" Grid.Row="1" Grid.Column="2" BorderBrush="White" BorderThickness="7" Margin="0,0,0,25" Grid.RowSpan="2">
+                <Border.Background>
+                    <ImageBrush ImageSource="C:\Users\LENOVO\source\repos\Homescreen_wpf\Homescreen_wpf\Image1.png" Stretch="UniformToFill"/>
+                </Border.Background>
+                <TextBlock HorizontalAlignment="Left" Height="9" Margin="51,131,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Width="16"/>
+            </Border>
+            <Border Grid.Column="1"  Grid.ColumnSpan="3" Grid.Row="3" CornerRadius="16">
+                <TextBox    Height="50" VerticalAlignment="Center"  Text="TextBlock" Width="NaN" FontSize="32" Background="#FFE2DCC8" FontFamily="Yu Gothic UI Semibold"/>
+            </Border>
+        </Grid>
+        <Grid Grid.Column="1" HorizontalAlignment="Center" Margin="0,12,0,12" Grid.Row="4" Width="70">
+            <Image Source="/Resources/[removal.ai]_tmp-635051040cac5.png" Stretch="Fill" HorizontalAlignment="Center" Width="70" Margin="0,24,0,24"/>
+        </Grid>
+        <Rectangle RadiusX="10" RadiusY="10" Grid.Row="4"   Grid.Column="3" Fill="#071E1E" d:IsLocked="True"/>
+        <Grid Grid.Column="3" HorizontalAlignment="Center" Margin="0,12,0,12" Grid.Row="4" Width="70">
+            <Image x:Name="New_Meeting" Source="/Resources/[removal.ai]_tmp-6350549d077ef.png" Stretch="Fill" Width="70" Margin="0,24,0,24"/>
+        </Grid>
+        <!--<Rectangle RadiusX="10" RadiusY="10" Grid.Row="4"   Grid.Column="3">
+            <Rectangle.Fill>
+                <ImageBrush ImageSource="/[removal.ai]_tmp-6350549d077ef.png" Stretch="Uniform" />
+            </Rectangle.Fill>
+        </Rectangle>-->
+        <Grid Grid.Column="1" Grid.ColumnSpan="3" Margin="0,63,0,1" Grid.Row="5" Grid.RowSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="51*"/>
+                <ColumnDefinition Width="159*"/>
+                <ColumnDefinition Width="129*"/>
+                <ColumnDefinition Width="211*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50*"/>
+                <RowDefinition Height="56*"/>
+                <RowDefinition Height="33*"/>
+                <RowDefinition Height="74*"/>
+                <RowDefinition Height="39*"/>
+            </Grid.RowDefinitions>
+            <Border CornerRadius="16,16,16,16" Grid.RowSpan="5" Grid.ColumnSpan="4">
+                <Border.Background>
+                    <ImageBrush ImageSource="/Resources/time_background.jpg"  Stretch="UniformToFill"/>
+                </Border.Background>
+                <TextBlock HorizontalAlignment="Left" Height="9" Margin="51,131,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Width="16"/>
+            </Border>
+            <TextBlock x:Name="Time" Text="10:32 AM" Foreground="White" Grid.Row="1" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="40" FontFamily="Yu Gothic UI Semibold" FontWeight="Bold" Height="53" Margin="69,0,0,0" Width="167"/>
+            <TextBlock x:Name="Date" Text="Monday, August 24, 2022" Foreground="White" Grid.Row="3" Grid.ColumnSpan="4" FontSize="20" FontFamily="Yu Gothic UI Semibold" FontWeight="Bold" TextWrapping="Wrap" Margin="69,0,286,14"/>
+        </Grid>
+        <TextBlock Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Left" FontSize="48" FontStyle="Normal" FontFamily="Cascadia Code SemiBold" Grid.Row="1" TextWrapping="Wrap" Text="PlexShare" VerticalAlignment="Center" Width="300" Height="56"/>
+        <TextBlock x:Name="New_Meeting1" Grid.Column="1" Height="45" Margin="0,12,0,0" Grid.Row="5" FontFamily="Cascadia Code SemiBold" TextWrapping="Wrap" Text="New Meeting" VerticalAlignment="Top" Width="250" HorizontalAlignment="Center" FontSize="28"/>
+        <TextBlock x:Name="New_Meeting1_Copy" Grid.Column="3" Height="45" Grid.Row="5" FontFamily="Cascadia Code SemiBold" TextWrapping="Wrap" Text="Join Meeting" VerticalAlignment="Center" Width="250" HorizontalAlignment="Center" FontSize="28"/>
     </Grid>
 </Window>

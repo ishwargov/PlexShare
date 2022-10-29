@@ -14,4 +14,21 @@
 	<PropertyGroup>
 		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="Resources\497-4973038_profile-picture-circle-png-transparent-png.png" />
+	  <None Remove="Resources\time_background.jpg" />
+	  <None Remove="Resources\[removal.ai]_tmp-635051040cac5.png" />
+	  <None Remove="Resources\[removal.ai]_tmp-6350549d077ef.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Resource Include="Resources\497-4973038_profile-picture-circle-png-transparent-png.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Resource Include="Resources\time_background.jpg" />
+	  <Resource Include="Resources\[removal.ai]_tmp-635051040cac5.png" />
+	  <Resource Include="Resources\[removal.ai]_tmp-6350549d077ef.png" />
+	</ItemGroup>
 </Project>
