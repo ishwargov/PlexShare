@@ -25,7 +25,7 @@ namespace Networking
 		private readonly IQueue _queue;
 
 		// variable to store the dictionary which maps clientIds to their respective sockets
-		private readonly Dictionary<string, TcpClient> _clientIdToSocketMap;
+		private readonly Dictionary<string, TcpClient> _clientIdToSocket;
 
 		// variable to store the dictionary which maps module identifiers to their respective notification handlers
 		private readonly Dictionary<string, INotificationHandler> _subscribedModules;
@@ -42,7 +42,7 @@ namespace Networking
 			Dictionary<string, INotificationHandler> subscribedModules)
 		{
 			_queue = queue;
-			_clientIdToSocketMap = clientIdToSocket;
+			_clientIdToSocket = clientIdToSocket;
 			_subscribedModules = subscribedModules;
 		}
 
@@ -183,11 +183,11 @@ namespace Networking
 			var sockets = new HashSet<TcpClient>();
 			if (packet.Destination == null)
 			{
-				foreach (var keyValue in _clientIdToSocketMap) sockets.add(keyValue.Value);
+				foreach (var keyValue in _clientIdToSocket) sockets.add(keyValue.Value);
 			}
 			else
 			{
-				sockets.Add(_clientIdToSocketMap[packet.Destination]);
+				sockets.Add(_clientIdToSocket[packet.Destination]);
 			}
 			return sockets;
 		}
@@ -199,9 +199,9 @@ namespace Networking
 		/// <returns> ClientId string. </returns>
 		private string SocketToClientId(TcpClient socket)
 		{
-			foreach (var clientId in _clientIdToSocketMap.Keys)
+			foreach (var clientId in _clientIdToSocket.Keys)
 			{
-				if (_clientIdToSocketMap[clientId] == socket)
+				if (_clientIdToSocket[clientId] == socket)
 				{
 					return clientId;
 				}

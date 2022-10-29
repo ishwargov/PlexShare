@@ -34,7 +34,7 @@ namespace Networking
 		private SocketListener _socketListener;
 
 		// map to store the handlers of subscribed modules
-		private readonly Dictionary<string, INotificationHandler> _subscribedModulesToHandler = new();
+		private readonly Dictionary<string, INotificationHandler> _subscribedModulesHandlers = new();
 
 		/// <summary>
 		/// This function connects the client to the server.
@@ -47,7 +47,32 @@ namespace Networking
 		/// </returns>
 		string ICommunicator.Start(string serverIP, string serverPort)
 		{
+			if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E")
+			{
+				return "1";
+			}
+			try
+			{
+				_socket = new TcpClient();
+				_socket.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, true);
+				_socket.Connect(ParseIP(serverIP), int.Parse(serverPort));
 
+				_socketListener = new SocketListener(_receiveQueue, _socket);
+				_socketListener.Start();
+
+				_sendQueueListener = new SendQueueListenerClient(_sendQueue, _socket);
+				_sendQueueListener.Start();
+
+				_receiveQueueListener = new ReceiveQueueListener(_receiveQueue, _subscribedModulesHandlers);
+				_receiveQueueListener.Start();
+
+				return "1";
+			}
+			catch(Exception e)
+			{
+				Trace.WriteLine($"[Networking] Error in CommunicatorClient: {e.message}");
+				return "0";
+			}
 		}
 
 		/// <summary>
@@ -56,7 +81,47 @@ namespace Networking
 		/// <returns> void </returns>
 		void ICommunicator.Stop()
 		{
+			if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E")
+			{
+				return;
+			}
+			if (!_socket.Connected)
+			{
+				return;
+			}
+			// stop all the running threads
+			_socketListener.Stop();
+			_sendQueueListener.Stop();
+			_receiveQueueListener.Stop();
 
+			// close both the queues
+			_receiveQueue.Close();
+			_sendQueue.Close();
+
+			// close the socket stream and socket connection
+			_socket.GetStream().Close();
+			_socket.Close();
+		}
+
+		/// <summary>
+		/// This function parses the IP address given as string and returns the IPAddress.
+		/// </summary>
+		/// <param name="IPstring"> IP address string. </param>
+		/// <returns>
+		///  The IP Address
+		/// </returns>
+		public IPAddress ParseIP(string IPstring)
+		{
+			try
+			{
+				Trace.WriteLine("[Networking] Parsing IPv4 address.");
+				return IPAddress.Parse(IPstring);
+			}
+			catch(Exception)
+			{
+				Trace.WriteLine("[Networking] Parsing DNS name.");
+				return Dns.GetHostAddresses(IPstring).Last();
+			}
 		}
 
 		/// <summary>
@@ -85,7 +150,20 @@ namespace Networking
 		/// <returns> void </returns>
 		void ICommunicator.Send(string serializedData, string moduleIdentifier)
 		{
-
+			if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E")
+			{
+				File.WriteAllText("networking_test.json", serializedData);
+				return;
+			}
+			var packet = new Packet { ModuleIdentifier = moduleIdentifier, SerializedData = serializedData};
+			try
+			{
+				_sendQueue.Enqueue(packet);
+			}
+			catch(Exception e)
+			{
+				Trace.WriteLine($"[Networking] Error in CommunicatorClient: {e.message}");
+			}
 		}
 
 		/// <summary>
@@ -107,7 +185,14 @@ namespace Networking
 		/// <returns> void </returns>
 		void ICommunicator.Subscribe(string moduleIdentifier, INotificationHandler notificationHandler, bool isHighPriority)
 		{
-
+			if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E")
+			{
+				return;
+			}
+			_subscribedModulesHandlers.Add(moduleIdentifier, notificationHandler);
+			_sendQueue.RegisterModule(moduleIdentifier, isHighPriority);
+			_receiveQueue.RegisterModule(moduleIdentifier, isHighPriority);
+			Trace.WriteLine($"[Networking] Module: {moduleIdentifier} registered with priority is high?: {isHighPriority}");
 		}
 	}
 }
