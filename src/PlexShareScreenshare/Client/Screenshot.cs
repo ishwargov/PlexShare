@@ -1,4 +1,10 @@
-﻿using System;
+﻿///<author>Amish Ashish Saxena</author>
+///<summary> This file contains the Screenshot Class that implements the screenshot functionality.
+///</summary>
+///<reference> https://github.com/0x2E757/ScreenCapturer ///</reference>
+///<reference> https://github.com/sharpdx/SharpDX-Samples/blob/master/Desktop/Direct3D11.1/ScreenCapture/Program.cs ///</reference>
+
+using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -10,8 +16,12 @@ using Device = SharpDX.Direct3D11.Device;
 using MapFlags = SharpDX.Direct3D11.MapFlags;
 using Resource = SharpDX.DXGI.Resource;
 
+
 namespace PlexShareScreenshare.Client
 {
+    /// <summary>
+    /// Class contains the necessary functions for taking the screenshot of the current screen.
+    /// </summary>
     internal class Screenshot
     {
         public Boolean CaptureActive { get; private set; }
@@ -34,17 +44,19 @@ namespace PlexShareScreenshare.Client
         public Screenshot()
         {
             CaptureActive = false;
-            InitializeStaticVariables(0, 0, true);
+            InitializeVariables(0, 0, true);
         }
 
-        public Bitmap MakeScreenshot(Int32 displayIndex = 0, Int32 adapterIndex = 0, Int32 maxTimeout = 5000)
+        /// <summary>
+        /// Core function of class for taking the screenshot. Uses SharpDX for faster image capture.
+        /// </summary>
+        /// <param name="displayIndex">Index for the display which is to be captured. Defaults to 0 (Primary Display)</param>
+        /// <param name="adapterIndex">Index for the display card to be used. Defaults to 0 (Primary graphics card)</param>
+        /// <param name="maxTimeout">Timeout to get duplicated frame</param>
+        /// <returns>The bitmap image for the screenshot</returns>
+        private Bitmap MakeScreenshot(Int32 displayIndex = 0, Int32 adapterIndex = 0, Int32 maxTimeout = 5000)
         {
-            return InnerMakeScreenshot(displayIndex, adapterIndex, maxTimeout);
-        }
-
-        private Bitmap InnerMakeScreenshot(Int32 displayIndex, Int32 adapterIndex, Int32 maxTimeout)
-        {
-            InitializeStaticVariables(displayIndex, adapterIndex);
+            InitializeVariables(displayIndex, adapterIndex);
             Resource screenResource;
             OutputDuplication.TryAcquireNextFrame(maxTimeout, out _, out screenResource);
             Texture2D screenTexture2D = screenResource.QueryInterface<Texture2D>();
@@ -67,13 +79,19 @@ namespace PlexShareScreenshare.Client
             return Bitmap;
         }
 
-        private void InitializeStaticVariables(Int32 displayIndex, Int32 adapterIndex, Boolean forcedInitialization = false)
+        /// <summary>
+        /// Initializes the members of the class.
+        /// </summary>
+        /// <param name="displayIndex">Index for the display which is to be captured. Defaults to 0 (Primary Display)</param>
+        /// <param name="adapterIndex">Index for the display card to be used. Defaults to 0 (Primary graphics card)</param>
+        /// <param name="forcedInitialization"></param>
+        private void InitializeVariables(Int32 displayIndex, Int32 adapterIndex, Boolean forcedInitialization = false)
         {
             Boolean displayIndexChanged = MakeScreenshot_LastDisplayIndexValue != displayIndex;
             Boolean adapterIndexChanged = MakeScreenshot_LastAdapterIndexValue != adapterIndex;
             if (displayIndexChanged || adapterIndexChanged || forcedInitialization)
             {
-                DisposeVariables(true);
+                DisposeVariables();
                 Factory1 = new Factory1();
                 Adapter1 = Factory1.GetAdapter1(adapterIndex);
                 Device = new Device(Adapter1);
@@ -105,14 +123,11 @@ namespace PlexShareScreenshare.Client
             }
         }
 
+        /// <summary>
+        /// Disposes the class memebers to avoid memory hogging.
+        /// </summary>
         public void DisposeVariables()
         {
-            DisposeVariables(false);
-        }
-
-        private void DisposeVariables(Boolean isSafe)
-        {
-            if (isSafe != true) throw new Exception("Do not call DisposeVariables while capturing is active!");
             Bitmap?.Dispose();
             OutputDuplication?.Dispose();
             Texture2D?.Dispose();
