@@ -1,7 +1,13 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿/// <author> Anish Bhagavatula </author>
+/// <summary>
+/// This file contains all the tests written for the Serializer module
+/// </summary>
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 
-namespace Networking.Serialization.Test {
+namespace Networking.Serialization.Test
+{
 
     [TestClass()]
     public class SerializerTests
