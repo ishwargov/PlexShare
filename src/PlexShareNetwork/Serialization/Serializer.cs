@@ -1,6 +1,6 @@
 ﻿/// <author> Anish Bhagavatula </author>
 /// <summary>
-/// This file contains an implementation of the ISerializer interface.
+/// This file contains an implementation of the ISerializer interface
 /// </summary>
 
 using System;

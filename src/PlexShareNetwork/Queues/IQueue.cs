@@ -1,13 +1,46 @@
-﻿
+﻿/// <author> Anish Bhagavatula </author>
+/// <summary>
+/// This file contains the definition of the IQueue interface. It contains method blueprints of all methods of a queue which the
+/// 'Communicator' and the 'ReceivingQueueListener' need
+/// </summary>
+
 namespace Networking.Queues
 {
     public interface IQueue
     {
-        public int Size(bool isHighPriority);
-        public bool IsEmpty(bool isHighPriority);
+        /// <summary>
+        /// Inserts an element into the queue
+        /// </summary>
+        public void Enqueue(Packet packet);
+
+        /// <summary>
+        /// Removes and returns the front-most element in the queue
+        /// </summary>
+        public Packet Dequeue();
+
+        /// <summary>
+        /// Returns the front-most element in the queue without popping it
+        /// </summary>
+        public Packet Peek();
+
+        /// <summary>
+        /// Removes all elements in the queue
+        /// </summary>
         public void Clear();
-        public void Enqueue(Packet packet, bool isHighPriority);
-        public Packet Dequeue(bool isHighPriority);
-        public Packet Peek(bool isHighPriority);
+
+        /// <summary>
+        /// Returns the size of the queue
+        /// </summary>
+        public int Size();
+
+        /// <summary>
+        /// Returns the size of the queue
+        /// </summary>
+        public bool IsEmpty();
+
+        /// <summary>
+        /// The 'ReceivingQueueListener' needs this function to keep listening for packets on the receiving queue
+        /// </summary>
+        public bool WaitForPacket();
     }
 }
