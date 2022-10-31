@@ -33,6 +33,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexShareTests", "PlexShareTests\PlexShareTests.csproj", "{198328E5-02FF-49A9-B718-77AAE74D9026}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContentTests", "ContentTests\ContentTests.csproj", "{E3388F05-2BEA-404C-87A7-8D389E30F8A4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +73,10 @@ Global
 		{198328E5-02FF-49A9-B718-77AAE74D9026}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{198328E5-02FF-49A9-B718-77AAE74D9026}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{198328E5-02FF-49A9-B718-77AAE74D9026}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3388F05-2BEA-404C-87A7-8D389E30F8A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3388F05-2BEA-404C-87A7-8D389E30F8A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3388F05-2BEA-404C-87A7-8D389E30F8A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3388F05-2BEA-404C-87A7-8D389E30F8A4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
