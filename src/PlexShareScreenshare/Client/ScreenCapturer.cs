@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using System.Threading;
+using System.Diagnostics;
 
 namespace PlexShareScreenshare.Client
 {
@@ -20,13 +21,13 @@ namespace PlexShareScreenshare.Client
     /// </summary>
     internal class ScreenCapturer
     {
-        private Queue<Bitmap> CapturedFrame;
+        private Queue<Bitmap> _capturedFrame;
 
         // Limits the number of frames in the queue
         const int MaxQueueLength = 50;
 
         // Task to capture the screen asynchronously
-        private Task CaptureTask;
+        private Task _captureTask;
 
         // Token and its source for killing the task
         private CancellationTokenSource Source;
@@ -34,18 +35,25 @@ namespace PlexShareScreenshare.Client
 
         ScreenCapturer() 
         {
-            CapturedFrame = new Queue<Bitmap>();
-            CaptureTask = null;
+            _capturedFrame = new Queue<Bitmap>();
+            _captureTask = null;
         }
 
-        // Pops and return the image from the queue
         /// <summary>
-        /// Returns the bitmap image at the front of CapturedFrame queue. 
+        /// Returns the bitmap image at the front of _capturedFrame queue. 
         /// </summary>
         /// <returns>Bitmap image of 720p dimension</returns>
         public Bitmap GetImage() 
         {
-            return CapturedFrame.Dequeue(); ;
+            try
+            {
+                return _capturedFrame.Dequeue();
+            }
+            catch(Exception e)
+            {
+                Trace.WriteLine($"[ScreenSharing] Dequeue failed: {e.Message}");
+                return null;
+            }
         }
 
         /// <summary>
@@ -56,16 +64,24 @@ namespace PlexShareScreenshare.Client
             Source = new CancellationTokenSource();
             Token = Source.Token;
             
-            CaptureTask = new Task(() =>
+            _captureTask = new Task(() =>
             {
                 Screenshot screenshot = new Screenshot();
-                while(true)
+
+                while (true)
                 {
-                    if(CapturedFrame.Count < MaxQueueLength)
+                    if(_capturedFrame.Count < MaxQueueLength)
                     {
-                        lock (CapturedFrame)
+                        lock (_capturedFrame)
                         {
-                            CapturedFrame.Enqueue(screenshot.MakeScreenshot());
+                            try
+                            {
+                                _capturedFrame.Enqueue(screenshot.MakeScreenshot());
+                            }
+                            catch (Exception e)
+                            {
+                                Trace.WriteLine($"[ScreenSharing] Could not capture screenshot: {e.Message}");
+                            }
                         }
                     }
                     else
@@ -76,7 +92,7 @@ namespace PlexShareScreenshare.Client
                 }
             }, Token);
 
-            CaptureTask.Start();
+            _captureTask.Start();
         }
 
         public void ResumeCapture()
@@ -90,13 +106,13 @@ namespace PlexShareScreenshare.Client
         }
 
         /// <summary>
-        /// Stops the capturing by Cancelling the task and clears the CapturedFrame queue.
+        /// Stops the capturing by Cancelling the task and clears the _capturedFrame queue.
         /// </summary>
         public void StopCapture()
         {
             Source.Cancel();
-            CapturedFrame.Clear();
-            CaptureTask = null;
+            _capturedFrame.Clear();
+            _captureTask = null;
         }
     }
 }
