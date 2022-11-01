@@ -53,7 +53,7 @@ namespace PlexShareScreenshare.Client
         /// <param name="adapterIndex">Index for the display card to be used. Defaults to 0 (Primary graphics card)</param>
         /// <param name="maxTimeout">Timeout to get duplicated frame</param>
         /// <returns>The bitmap image for the screenshot</returns>
-        private Bitmap MakeScreenshot(Int32 displayIndex = 0, Int32 adapterIndex = 0, Int32 maxTimeout = 5000)
+        public Bitmap MakeScreenshot(Int32 displayIndex = 0, Int32 adapterIndex = 0, Int32 maxTimeout = 5000)
         {
             InitializeVariables(displayIndex, adapterIndex);
             Resource screenResource;
