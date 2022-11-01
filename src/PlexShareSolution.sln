@@ -27,7 +27,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlexShareScreenshare", "Ple
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{27DAB114-8720-4B10-90A3-DC7B6E9C7252}"
 	ProjectSection(SolutionItems) = preProject
-		RuleSet1.ruleset = RuleSet1.ruleset
+		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexShareTests", "PlexShareTests\PlexShareTests.csproj", "{198328E5-02FF-49A9-B718-77AAE74D9026}"
