@@ -18,8 +18,8 @@ namespace Networking
 	internal class CommunicatorClient : ICommunicator
 	{
 		// initialize the send queue and receive queue
-		private readonly Queue _sendQueue = new();
-		private readonly Queue _receiveQueue = new();
+		private readonly SendingQueues _sendQueue = new();
+		private readonly ReceivingQueue _receiveQueue = new();
 
 		// declate the variable of SendQueueListenerClient class
 		private SendQueueListenerClient _sendQueueListener;
