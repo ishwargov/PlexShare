@@ -12,22 +12,17 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Xml.Linq;
 
 namespace PlexShareApp
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for ScreenSharePage.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class ScreenSharePage : Page
     {
-        public MainWindow()
+        public ScreenSharePage()
         {
             InitializeComponent();
-            AuthenticationView authView = new AuthenticationView();
-            authView.Show();
-            this.Close();
         }
-
     }
 }
