@@ -19,7 +19,7 @@ namespace Networking
 		///  Client side: string "1" if success, "0" if failure
 		/// Server side: Address of the server as a string of "IP:Port"
 		/// </returns>
-		string Start(string serverIP = null, string serverPort = null);
+		public string Start(string serverIP = null, string serverPort = null);
 
 
 		/// <summary>
@@ -27,7 +27,7 @@ namespace Networking
 		/// Server side: Stops listening and stops all running threads.
 		/// </summary>
 		/// <returns> void </returns>
-		void Stop();
+		public void Stop();
 
 
 		/// <summary>
@@ -38,7 +38,7 @@ namespace Networking
 		/// <param name="clientId"> The client Id. </param>
 		/// <param name="socketObject"> The socket object of the client. </param>
 		/// <returns> void </returns>
-		void AddClient<T>(string clientId, T socket);
+		public void AddClient<T>(string clientId, T socket);
 
 		/// <summary>
 		/// This function is to be called only on the server when a client is leaves.
@@ -46,7 +46,7 @@ namespace Networking
 		/// </summary>
 		/// <param name="clientId"> The client Id. </param>
 		/// <returns> void </returns>
-		void RemoveClient(string clientId);
+		public void RemoveClient(string clientId);
 
 		/// <summary>
 		/// Client side: Sends data to the server.
@@ -55,7 +55,7 @@ namespace Networking
 		/// <param name="serializedData"> The serialzed data to be sent over the network. </param>
 		/// <param name="moduleIdentifier"> Module Identifier of the module. </param>
 		/// <returns> void </returns>
-		void Send(string serializedData, string moduleIdentifier);
+		public void Send(string serializedData, string moduleIdentifier);
 
 		/// <summary>
 		/// Function to send data to a specific client given by the destination argument.
@@ -65,7 +65,7 @@ namespace Networking
 		/// <param name="moduleIdentifier"> Module Identifier of the module. </param>
 		/// <param name="destination"> The destination or client Id to which to send the data. </param>
 		/// <returns> void </returns>
-		void Send(string serializedData, string moduleIdentifier, string destination);
+		public void Send(string serializedData, string moduleIdentifier, string destination);
 
 		/// <summary>
 		/// Other modules can subscribe using this function to be notified on receiving data over the network.
@@ -74,6 +74,6 @@ namespace Networking
 		/// <param name="handler"> Module implementation of the INotificationHandler. </param>
 		/// <param name="isHighPriority"> Boolean which tells whether data is high priority or low priority. </param>
 		/// <returns> void </returns>
-		void Subscribe(string moduleIdentifier, INotificationHandler notificationHandler, bool isHighPriority = false);
+		public void Subscribe(string moduleIdentifier, INotificationHandler notificationHandler, bool isHighPriority = false);
 	}
 }

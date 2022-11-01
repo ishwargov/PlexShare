@@ -4,16 +4,14 @@
 /// This file contains unit tests for the class SocketListener.
 /// </summary>
 
-using Networking;
-using NUnit.Framework;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Networking.Sockets.Test
 {
-	[TestFixture]
+	[TestClass()]
 	public class CommunicatorTest
 	{
-		[Test]
-		[Category("pass")]
+		[TestMethod()]
 		public void ClientAndServerStartAndStopTest()
 		{
 			var server = CommunicationFactory.GetCommunicator(false, true);

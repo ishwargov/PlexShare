@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Networking;
+using Networking.Queues;
 using NUnit.Framework;
 
 namespace Networking.Sockets.Test
@@ -17,7 +18,7 @@ namespace Networking.Sockets.Test
 	[TestFixture]
 	public class SocketListenerTest
 	{
-		private IQueue _queue;
+		private ReceivingQueue _queue;
 		private Machine _server;
 		private TcpClient _serverSocket;
 		private TcpClient _clientSocket;
@@ -38,8 +39,8 @@ namespace Networking.Sockets.Test
 			var t1 = Task.Run(() => { _clientSocket.Connect(IP, port); });
 			var t2 = Task.Run(() => { _serverSocket = serverSocket.AcceptTcpClient(); });
 			Task.WaitAll(t1, t2);
-			_queue = new Queue();
-			_queue.RegisterModule(Modules.WhiteBoard, Priorities.WhiteBoard);
+			_queue = new ReceivingQueue();
+			//_queue.RegisterModule(NetworkingGlobals.whiteboardName, NetworkingGlobals.whiteboardPriority);
 			_socketListener = new SocketListener(_queue, _serverSocket);
 			_socketListener.Start();
 		}
@@ -47,18 +48,17 @@ namespace Networking.Sockets.Test
 		[TearDown]
 		public void TearDown()
 		{
-			_queue.Close();
 			_clientSocket.Close();
 			_serverSocket.Close();
-			_socketListener.Close();
+			_socketListener.Stop();
 		}
 
 		[Test]
 		public void SinglePacketReceiveTest()
 		{
 			const string data = "Test string";
-			var sendPacket = new Packet { ModuleIdentifier = Modules.WhiteBoard, SerializedData = data };
-			var pkt = sendPacket.ModuleIdentifier + ":" + sendPacket.SerializedData;
+			var sendPacket = new Packet (data, null, NetworkingGlobals.whiteboardName);
+			var pkt = sendPacket.getModuleOfPacket() + ":" + sendPacket.getSerializedData();
 			pkt = pkt.Replace("[ESC]", "[ESC][ESC]");
 			pkt = pkt.Replace("[FLAG]", "[ESC][FLAG]");
 			pkt = "[FLAG]" + pkt + "[FLAG]";
@@ -66,23 +66,23 @@ namespace Networking.Sockets.Test
 			var stream = _clientSocket.GetStream();
 			stream.Write(Encoding.ASCII.GetBytes(pkt), 0, pkt.Length);
 			stream.Flush();
-			while (_queue.IsEnpty())
+			while (_queue.IsEmpty())
 			{
 			}
 			var receivedPacket = _queue.Dequeue();
 			Assert.Multiple(() =>
 			{
-				Assert.AreEqual(sendPacket.SerializedData, receivedPacket.SerializedData);
-				Assert.AreEqual(sendPacket.ModuleIdentifier, receivedPacket.ModuleIdentifier);
+				Assert.AreEqual(sendPacket.getSerializedData(), receivedPacket.getSerializedData());
+				Assert.AreEqual(sendPacket.getModuleOfPacket(), receivedPacket.getModuleOfPacket());
 			});
 		}
 
 		[Test]
 		public void LargeSizePacketReceiveTest()
 		{
-			var data = NetworkingGlobals.GetRandomString(4000);
-			var sendPacket = new Packet { ModuleIdentifier = Modules.WhiteBoard, SerializedData = data };
-			var pkt = sendPacket.ModuleIdentifier + ":" + sendPacket.SerializedData;
+			var data = NetworkingGlobals.RandomString(4000);
+			var sendPacket = new Packet (data, null, NetworkingGlobals.whiteboardName);
+			var pkt = sendPacket.getModuleOfPacket() + ":" + sendPacket.getSerializedData();
 			pkt = pkt.Replace("[ESC]", "[ESC][ESC]");
 			pkt = pkt.Replace("[FLAG]", "[ESC][FLAG]");
 			pkt = "[FLAG]" + pkt + "[FLAG]";
@@ -90,14 +90,14 @@ namespace Networking.Sockets.Test
 			var stream = _clientSocket.GetStream();
 			stream.Write(Encoding.ASCII.GetBytes(pkt), 0, pkt.Length);
 			stream.Flush();
-			while (_queue.IsEnpty())
+			while (_queue.IsEmpty())
 			{
 			}
 			var receivedPacket = _queue.Dequeue();
 			Assert.Multiple(() =>
 			{
-				Assert.AreEqual(sendPacket.SerializedData, receivedPacket.SerializedData);
-				Assert.AreEqual(sendPacket.ModuleIdentifier, receivedPacket.ModuleIdentifier);
+				Assert.AreEqual(sendPacket.getSerializedData(), receivedPacket.getSerializedData());
+				Assert.AreEqual(sendPacket.getModuleOfPacket(), receivedPacket.getModuleOfPacket());
 			});
 		}
 
@@ -107,8 +107,8 @@ namespace Networking.Sockets.Test
 			for (var i = 1; i <= 10; i++)
 			{
 				var data = "Test string" + i;
-				var sendPacket = new Packet { ModuleIdentifier = Modules.WhiteBoard, SerializedData = data };
-				var pkt = sendPacket.ModuleIdentifier + ":" + sendPacket.SerializedData;
+				var sendPacket = new Packet(data, null, NetworkingGlobals.whiteboardName);
+				var pkt = sendPacket.getModuleOfPacket() + ":" + sendPacket.getSerializedData();
 				pkt = pkt.Replace("[ESC]", "[ESC][ESC]");
 				pkt = pkt.Replace("[FLAG]", "[ESC][FLAG]");
 				pkt = "[FLAG]" + pkt + "[FLAG]";
@@ -122,7 +122,7 @@ namespace Networking.Sockets.Test
 			{
 				var packet = _queue.Dequeue();
 				var data = "Test string" + i;
-				Assert.AreEqual(data, packet.SerializedData);
+				Assert.AreEqual(data, packet.getSerializedData());
 			}
 		}
 	}

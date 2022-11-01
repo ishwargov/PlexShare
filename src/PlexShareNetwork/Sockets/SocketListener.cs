@@ -4,6 +4,7 @@
 /// This file contains the class definition of SocketListener.
 /// </summary>
 
+using Networking.Queues;
 using System;
 using System.Diagnostics;
 using System.Net.Sockets;
@@ -28,7 +29,7 @@ namespace Networking
 		private volatile bool _threadRun;
 
 		// variable to store the receive queue
-		private readonly IQueue _queue;
+		private readonly ReceivingQueue _queue;
 
 		// variable to store the socket
 		private readonly Socket _socket;
@@ -38,7 +39,7 @@ namespace Networking
 		/// </summary>
 		/// <param name="queue"> The receive queue. </param>
 		/// <param name="socket"> The socket on which to listen. </param>
-		public SocketListener(IQueue queue, TcpClient socket)
+		public SocketListener(ReceivingQueue queue, TcpClient socket)
 		{
 			_queue = queue;
 			socket.GetStream();
@@ -130,7 +131,7 @@ namespace Networking
 					packetString = packetString.Replace("[ESC][ESC]", "[ESC]");
 					packetString = packetString.Replace("[ESC][FLAG]", "[FLAG]");
 					var packet = PacketStringToPacket(packetString.Split(":"));
-					EnqueuePacket(packet.SerializedData, packet.ModuleIdentifier);
+					EnqueuePacket(packet.getSerializedData(), packet.getModuleOfPacket());
 				}
 			} while(isPacket);
 			return packets; // return the remaining packets string
@@ -143,9 +144,9 @@ namespace Networking
 		/// <returns> Packet </returns>
 		private static Packet PacketStringToPacket(string[] packetString)
 		{
-			var packet = new Packet { ModuleIdentifier = packetString[0] };
+			//var packet = new Packet { ModuleIdentifier = packetString[0] };
 			var data = string.Join(":", packetString[1..]);
-			packet.SerializedData = data;
+			var packet = new Packet(data, null, packetString[0]);
 			return packet;
 		}
 
@@ -157,7 +158,7 @@ namespace Networking
 		/// <returns> void </returns>
 		private void EnqueuePacket(string serializedData, string moduleIdentifier)
 		{
-			var packet = new Packet {ModuleIdentifier = moduleIdentifier, SerializedData = serializedData};
+			var packet = new Packet(serializedData, null, serializedData);
 			Trace.WriteLine($"[Networking] Received data from module {moduleIdentifier}.");
 			_queue.Enqueue(packet);
 		}
