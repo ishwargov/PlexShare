@@ -40,12 +40,12 @@ namespace Networking.Sockets.Test
 			var t2 = Task.Run(() => { _serverSocket = serverSocket.AcceptTcpClient(); });
 			Task.WaitAll(t1, t2);
 			_sendQueue = new Queue();
-			_sendQueue.RegisterModule(Modules.WhiteBoard, Priorities.WhiteBoard);
+			_sendQueue.RegisterModule(NetworkingGlobals.whiteboardName, NetworkingGlobals.whiteboardPriority);
 			_sendQueueListenerClient = new SendQueueListenerClient(_sendQueue, _clientSocket);
 			_sendQueueListenerClient.Start();
 
 			_receiveQueue = new Queue();
-			_receiveQueue.RegisterModule(Modules.WhiteBoard, Priorities.WhiteBoard);
+			_receiveQueue.RegisterModule(NetworkingGlobals.whiteboardName, NetworkingGlobals.whiteboardPriority);
 
 			_socketListener = new SocketListener(_receiveQueue, _serverSocket);
 			_socketListener.Start();
@@ -66,7 +66,7 @@ namespace Networking.Sockets.Test
 		public void SinglePacketSendTest()
 		{
 			const string data = "Test string";
-			var sendPacket = new Packet {ModuleIdentifier = Modules.WhiteBoard, SerializedData = data};
+			var sendPacket = new Packet {ModuleIdentifier = NetworkingGlobals.whiteboardName, SerializedData = data};
 			_sendQueue.Enqueue(sendPacket);
 
 			while (_receiveQueue.IsEmpty())
@@ -84,7 +84,7 @@ namespace Networking.Sockets.Test
 		public void LargeSizePacketSendTest()
 		{
 			var data = NetworkingGlobals.GetRandomString(4000);
-			var sendPacket = new Packet {ModuleIdentifier = Modules.WhiteBoard, SerializedData = data};
+			var sendPacket = new Packet {ModuleIdentifier = NetworkingGlobals.whiteboardName, SerializedData = data};
 			_sendQueue.Enqueue(sendPacket);
 
 			while (_receiveQueue.IsEmpty())
@@ -104,7 +104,7 @@ namespace Networking.Sockets.Test
 			for (var i = 1; i <= 10; i++)
 			{
 				var data = "Test string" + i;
-				var sendPacket = new Packet {ModuleIdentifier = Modules.WhiteBoard, SerializedData = data};
+				var sendPacket = new Packet {ModuleIdentifier = NetworkingGlobals.whiteboardName, SerializedData = data};
 				_sendQueue.Enqueue(sendPacket);
 			}
 			while (_receiveQueue.Size() != 10)

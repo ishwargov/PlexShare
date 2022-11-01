@@ -39,7 +39,7 @@ namespace Networking.Sockets.Test
 			var t2 = Task.Run(() => { _serverSocket = serverSocket.AcceptTcpClient(); });
 			Task.WaitAll(t1, t2);
 			_queue = new Queue();
-			_queue.RegisterModule(Modules.WhiteBoard, Priorities.WhiteBoard);
+			_queue.RegisterModule(NetworkingGlobals.whiteboardName, NetworkingGlobals.whiteboardPriority);
 			_socketListener = new SocketListener(_queue, _serverSocket);
 			_socketListener.Start();
 		}
@@ -57,7 +57,7 @@ namespace Networking.Sockets.Test
 		public void SinglePacketReceiveTest()
 		{
 			const string data = "Test string";
-			var sendPacket = new Packet { ModuleIdentifier = Modules.WhiteBoard, SerializedData = data };
+			var sendPacket = new Packet { ModuleIdentifier = NetworkingGlobals.whiteboardName, SerializedData = data };
 			var pkt = sendPacket.ModuleIdentifier + ":" + sendPacket.SerializedData;
 			pkt = pkt.Replace("[ESC]", "[ESC][ESC]");
 			pkt = pkt.Replace("[FLAG]", "[ESC][FLAG]");
@@ -81,7 +81,7 @@ namespace Networking.Sockets.Test
 		public void LargeSizePacketReceiveTest()
 		{
 			var data = NetworkingGlobals.GetRandomString(4000);
-			var sendPacket = new Packet { ModuleIdentifier = Modules.WhiteBoard, SerializedData = data };
+			var sendPacket = new Packet { ModuleIdentifier = NetworkingGlobals.whiteboardName, SerializedData = data };
 			var pkt = sendPacket.ModuleIdentifier + ":" + sendPacket.SerializedData;
 			pkt = pkt.Replace("[ESC]", "[ESC][ESC]");
 			pkt = pkt.Replace("[FLAG]", "[ESC][FLAG]");
@@ -107,7 +107,7 @@ namespace Networking.Sockets.Test
 			for (var i = 1; i <= 10; i++)
 			{
 				var data = "Test string" + i;
-				var sendPacket = new Packet { ModuleIdentifier = Modules.WhiteBoard, SerializedData = data };
+				var sendPacket = new Packet { ModuleIdentifier = NetworkingGlobals.whiteboardName, SerializedData = data };
 				var pkt = sendPacket.ModuleIdentifier + ":" + sendPacket.SerializedData;
 				pkt = pkt.Replace("[ESC]", "[ESC][ESC]");
 				pkt = pkt.Replace("[FLAG]", "[ESC][FLAG]");
