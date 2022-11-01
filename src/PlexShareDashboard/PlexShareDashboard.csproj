@@ -37,4 +37,10 @@
 	    <ReferenceSourceTarget></ReferenceSourceTarget>
 	  </ProjectReference>
 	</ItemGroup>
+	<ItemGroup>
+	  <None Remove="Dashboard\Server\Persistence\" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Dashboard\Server\Persistence\" />
+	</ItemGroup>
 </Project>
