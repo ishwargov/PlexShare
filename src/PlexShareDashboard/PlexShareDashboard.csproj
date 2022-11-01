@@ -17,4 +17,24 @@
 	<ItemGroup>
 	  <PackageReference Include="Syncfusion.SfChart.WPF" Version="20.3.0.50" />
 	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\PlexShareCloud\PlexShareCloud.csproj">
+	    <ReferenceSourceTarget></ReferenceSourceTarget>
+	  </ProjectReference>
+	  <ProjectReference Include="..\PlexShareContent\PlexShareContent.csproj">
+	    <ReferenceSourceTarget></ReferenceSourceTarget>
+	  </ProjectReference>
+	  <ProjectReference Include="..\PlexShareNetwork\PlexShareNetwork.csproj">
+	    <ReferenceSourceTarget></ReferenceSourceTarget>
+	  </ProjectReference>
+	  <ProjectReference Include="..\PlexShareScreenshare\PlexShareScreenshare.csproj">
+	    <ReferenceSourceTarget></ReferenceSourceTarget>
+	  </ProjectReference>
+	  <ProjectReference Include="..\PlexShareTests\PlexShareTests.csproj">
+	    <ReferenceSourceTarget></ReferenceSourceTarget>
+	  </ProjectReference>
+	  <ProjectReference Include="..\PlexShareWhiteboard\PlexShareWhiteboard.csproj">
+	    <ReferenceSourceTarget></ReferenceSourceTarget>
+	  </ProjectReference>
+	</ItemGroup>
 </Project>
