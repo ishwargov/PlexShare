@@ -59,14 +59,14 @@ namespace Networking.Sockets.Test
 			Task.WaitAll(t1, t2);
 			_subscribedModules = new Dictionary<string, INotificationHandler>();
 			_sendQueue = new Queue();
-			_sendQueue.RegisterModule(Modules.WhiteBoard, Priorities.WhiteBoard);
+			_sendQueue.RegisterModule(NetworkingGlobals.whiteboardName, NetworkingGlobals.whiteboardPriority);
 			var handler = new FakeNotificationHandler();
-			_subscribedModules[Modules.WhiteBoard] = handler;
+			_subscribedModules[NetworkingGlobals.whiteboardName] = handler;
 			_sendQueueListenerServer = new SendQueueListenerServer(_sendQueue, _clientIdToSocket, _subscribedModules);
 			_sendQueueListenerServer.Start();
 
 			_receiveQueue1 = new Queue();
-			_receiveQueue1.RegisterModule(Modules.WhiteBoard, Priorities.WhiteBoard);
+			_receiveQueue1.RegisterModule(NetworkingGlobals.whiteboardName, NetworkingGlobals.whiteboardPriority);
 
 			_socketListener1 = new SocketListener(_receiveQueue1, _clientSocket1);
 			_socketListener1.Start();
@@ -87,7 +87,7 @@ namespace Networking.Sockets.Test
 		public void BroadcastSendTest()
 		{
 			_receiveQueue2 = new Queue();
-			_receiveQueue2.RegisterModule(Modules.WhiteBoard, Priorities.WhiteBoard);
+			_receiveQueue2.RegisterModule(NetworkingGlobals.whiteboardName, NetworkingGlobals.whiteboardPriority);
 
 			var t1 = Task.Run(() => 
 			{
@@ -104,7 +104,7 @@ namespace Networking.Sockets.Test
 			_socketListener2 = new SocketListener(_receiveQueue1, _clientSocket2);
 			_socketListener2.Start();
 			var data = "Test string";
-			var sendPacket = new Packet {ModuleIdentifier = Modules.WhiteBoard, SerializedData = data};
+			var sendPacket = new Packet {ModuleIdentifier = NetworkingGlobals.whiteboardName, SerializedData = data};
 			_sendQueue.Enqueue(sendPacket);
 			while (_receiveQueue1.IsEmpty())
 			{
@@ -134,7 +134,7 @@ namespace Networking.Sockets.Test
 		public void SinglePacketUnicastTest()
 		{
 			var data = "Test string";
-			var sendPacket = new Packet {ModuleIdentifier = Modules.WhiteBoard, SerializedData = data, Destination = "1"};
+			var sendPacket = new Packet {ModuleIdentifier = NetworkingGlobals.whiteboardName, SerializedData = data, Destination = "1"};
 			_sendQueue.Enqueue(sendPacket);
 			while (_receiveQueue1.IsEmpty())
 			{
@@ -151,7 +151,7 @@ namespace Networking.Sockets.Test
 		public void LargeSizePacketSendTest()
 		{
 			var data = NetworkingGlobals.GetRandomString(1500);
-			var sendPacket = new Packet {ModuleIdentifier = Modules.WhiteBoard, SerializedData = data};
+			var sendPacket = new Packet {ModuleIdentifier = NetworkingGlobals.whiteboardName, SerializedData = data};
 			_sendQueue.Enqueue(sendPacket);
 
 			while (_receiveQueue1.IsEmpty())
@@ -171,9 +171,9 @@ namespace Networking.Sockets.Test
 			_clientSocket1.Close();
 			_clientSocket1.Dispose();
 			var data = "Test string";
-			var sendPacket = new Packet {ModuleIdentifier = Modules.WhiteBoard, SerializedData = data};
+			var sendPacket = new Packet {ModuleIdentifier = NetworkingGlobals.whiteboardName, SerializedData = data};
 			_queueS.Enqueue(sendPacket);
-			var whiteBoardHandler = (FakeNotificationHandler) _notificationHandlers[Modules.WhiteBoard];
+			var whiteBoardHandler = (FakeNotificationHandler) _notificationHandlers[NetworkingGlobals.whiteboardName];
 			whiteBoardHandler.Wait();
 			Assert.AreEqual(NotificationEvents.OnClientLeft, whiteBoardHandler.Event);
 		}
