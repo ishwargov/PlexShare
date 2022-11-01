@@ -10,21 +10,21 @@ namespace Networking
 {
 	public static class CommunicationFactory
 	{
-		private static readonly Lazy<IConnunicator> _clientCommunicator = new(() => new ClientCommunicator());
-		private static readonly Lazy<IConnunicator> _serverCommunicator = new(() => new ServerCommunicator());
+		private static readonly Lazy<ICommunicator> _clientCommunicator = new(() => new CommunicatorClient());
+		private static readonly Lazy<ICommunicator> _serverCommunicator = new(() => new CommunicatorServer());
 
 		/// <summary>
 		/// 
 		/// </summary>
-		public static IConnunicator GetCommunicator(bool isClient = true, bool isTesting = false)
+		public static ICommunicator GetCommunicator(bool isClient = true, bool isTesting = false)
 		{
 			if (isTesting)
 			{
 				if (isClient)
 				{
-					return new ClientCommunicator();
+					return new CommunicatorClient();
 				}
-				return new ServerCommunicator();
+				return new CommunicatorServer();
 			}
 			if (isClient)
 			{

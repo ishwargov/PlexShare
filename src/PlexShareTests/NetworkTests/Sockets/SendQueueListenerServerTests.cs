@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
-using Networking;
+using Networking.Queues;
 using NUnit.Framework;
 
 namespace Networking.Sockets.Test
@@ -17,8 +17,8 @@ namespace Networking.Sockets.Test
 	[TestFixture]
 	public class SendQueueListenerServerTest
 	{
-		private IQueue _sendQueue;
-		private IQueue _receiveQueue1, _receiveQueue2;
+		private SendingQueues _sendQueue;
+		private ReceivingQueue _receiveQueue1, _receiveQueue2;
 		private Machine _server;
 		private SendQueueListenerServer _sendQueueListenerServer;
 		private SocketListener _socketListener1, _socketListener2;
@@ -31,7 +31,7 @@ namespace Networking.Sockets.Test
 
 		public void OneTimeSetup()
 		{
-			Environment.SetEnvironmetVariable("TEST_MODE", "UNIT");
+			Environment.SetEnvironmentVariable("TEST_MODE", "UNIT");
 		}
 
 		[SetUp]
@@ -53,20 +53,20 @@ namespace Networking.Sockets.Test
 			});
 			var t2 = Task.Run(() =>
 			{
-				_serverSocket = serverSocket.AcceptTcpClient();
+				_serverSocket2 = _serverListener.AcceptTcpClient();
 				_clientIdToSocket["1"] = _serverSocket1;
 			});
 			Task.WaitAll(t1, t2);
 			_subscribedModules = new Dictionary<string, INotificationHandler>();
-			_sendQueue = new Queue();
+			_sendQueue = new SendingQueues();
 			_sendQueue.RegisterModule(NetworkingGlobals.whiteboardName, NetworkingGlobals.whiteboardPriority);
 			var handler = new FakeNotificationHandler();
 			_subscribedModules[NetworkingGlobals.whiteboardName] = handler;
 			_sendQueueListenerServer = new SendQueueListenerServer(_sendQueue, _clientIdToSocket, _subscribedModules);
 			_sendQueueListenerServer.Start();
 
-			_receiveQueue1 = new Queue();
-			_receiveQueue1.RegisterModule(NetworkingGlobals.whiteboardName, NetworkingGlobals.whiteboardPriority);
+			_receiveQueue1 = new ReceivingQueue();
+			//_receiveQueue1.RegisterModule(NetworkingGlobals.whiteboardName, NetworkingGlobals.whiteboardPriority);
 
 			_socketListener1 = new SocketListener(_receiveQueue1, _clientSocket1);
 			_socketListener1.Start();
@@ -75,19 +75,17 @@ namespace Networking.Sockets.Test
 		[TearDown]
 		public void TearDown()
 		{
-			_sendQueue.Close();
-			_receiveQueue1.Close();
 			_clientSocket1.Close();
 			_serverSocket1.Close();
-			_socketListener1.Close();
-			_sendQueueListenerServer.Close();
+			_socketListener1.Stop();
+			_sendQueueListenerServer.Stop();
 		}
 
 		[Test]
 		public void BroadcastSendTest()
 		{
-			_receiveQueue2 = new Queue();
-			_receiveQueue2.RegisterModule(NetworkingGlobals.whiteboardName, NetworkingGlobals.whiteboardPriority);
+			_receiveQueue2 = new ReceivingQueue();
+			//_receiveQueue2.RegisterModule(NetworkingGlobals.whiteboardName, NetworkingGlobals.whiteboardPriority);
 
 			var t1 = Task.Run(() => 
 			{
@@ -95,7 +93,7 @@ namespace Networking.Sockets.Test
 				_clientSocket2.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, true);
 				_clientSocket2.Connect(_IP, _port);
 			});
-			var t1 = Task.Run(() => 
+			var t2 = Task.Run(() => 
 			{
 				_serverSocket2 = _serverListener.AcceptTcpClient();
 				_clientIdToSocket["2"] = _serverSocket2;
@@ -104,7 +102,7 @@ namespace Networking.Sockets.Test
 			_socketListener2 = new SocketListener(_receiveQueue1, _clientSocket2);
 			_socketListener2.Start();
 			var data = "Test string";
-			var sendPacket = new Packet {ModuleIdentifier = NetworkingGlobals.whiteboardName, SerializedData = data};
+			var sendPacket = new Packet(data, null, NetworkingGlobals.whiteboardName);
 			_sendQueue.Enqueue(sendPacket);
 			while (_receiveQueue1.IsEmpty())
 			{
@@ -112,8 +110,8 @@ namespace Networking.Sockets.Test
 			var receivedPacket = _receiveQueue1.Dequeue();
 			Assert.Multiple(() =>
 			{
-				Assert.AreEqual(sendPacket.SerializedData, receivedPacket.SerializedData);
-				Assert.AreEqual(sendPacket.ModuleIdentifier, receivedPacket.ModuleIdentifier);
+				Assert.AreEqual(sendPacket.getSerializedData(), receivedPacket.getSerializedData());
+				Assert.AreEqual(sendPacket.getModuleOfPacket(), receivedPacket.getModuleOfPacket());
 			});
 			while (_receiveQueue2.IsEmpty())
 			{
@@ -121,12 +119,11 @@ namespace Networking.Sockets.Test
 			var receivedPacket2 = _receiveQueue1.Dequeue();
 			Assert.Multiple(() =>
 			{
-				Assert.AreEqual(sendPacket.SerializedData, receivedPacket2.SerializedData);
-				Assert.AreEqual(sendPacket.ModuleIdentifier, receivedPacket2.ModuleIdentifier);
+				Assert.AreEqual(sendPacket.getSerializedData(), receivedPacket2.getSerializedData());
+				Assert.AreEqual(sendPacket.getModuleOfPacket(), receivedPacket2.getModuleOfPacket());
 			});
 			_serverSocket2.Close();
-			_receiveQueue2.Close();
-			_socketListener2.Close();
+			_socketListener2.Stop();
 			_clientSocket2.Close();
 		}
 
@@ -134,7 +131,7 @@ namespace Networking.Sockets.Test
 		public void SinglePacketUnicastTest()
 		{
 			var data = "Test string";
-			var sendPacket = new Packet {ModuleIdentifier = NetworkingGlobals.whiteboardName, SerializedData = data, Destination = "1"};
+			var sendPacket = new Packet (data, "1", NetworkingGlobals.whiteboardName);
 			_sendQueue.Enqueue(sendPacket);
 			while (_receiveQueue1.IsEmpty())
 			{
@@ -142,16 +139,16 @@ namespace Networking.Sockets.Test
 			var receivedPacket = _receiveQueue1.Dequeue();
 			Assert.Multiple(() =>
 			{
-				Assert.AreEqual(sendPacket.SerializedData, receivedPacket.SerializedData);
-				Assert.AreEqual(sendPacket.ModuleIdentifier, receivedPacket.ModuleIdentifier);
+				Assert.AreEqual(sendPacket.getSerializedData(), receivedPacket.getSerializedData());
+				Assert.AreEqual(sendPacket.getModuleOfPacket(), receivedPacket.getModuleOfPacket());
 			});
 		}
 
 		[Test]
 		public void LargeSizePacketSendTest()
 		{
-			var data = NetworkingGlobals.GetRandomString(1500);
-			var sendPacket = new Packet {ModuleIdentifier = NetworkingGlobals.whiteboardName, SerializedData = data};
+			var data = NetworkingGlobals.RandomString(1500);
+			var sendPacket = new Packet (data, null, NetworkingGlobals.whiteboardName);
 			_sendQueue.Enqueue(sendPacket);
 
 			while (_receiveQueue1.IsEmpty())
@@ -160,8 +157,8 @@ namespace Networking.Sockets.Test
 			var receivedPacket = _receiveQueue1.Dequeue();
 			Assert.Multiple(() =>
 			{
-				Assert.AreEqual(sendPacket.SerializedData, receivedPacket.SerializedData);
-				Assert.AreEqual(sendPacket.ModuleIdentifier, receivedPacket.ModuleIdentifier);
+				Assert.AreEqual(sendPacket.getSerializedData(), receivedPacket.getSerializedData());
+				Assert.AreEqual(sendPacket.getModuleOfPacket(), receivedPacket.getModuleOfPacket());
 			});
 		}
 
@@ -171,9 +168,9 @@ namespace Networking.Sockets.Test
 			_clientSocket1.Close();
 			_clientSocket1.Dispose();
 			var data = "Test string";
-			var sendPacket = new Packet {ModuleIdentifier = NetworkingGlobals.whiteboardName, SerializedData = data};
-			_queueS.Enqueue(sendPacket);
-			var whiteBoardHandler = (FakeNotificationHandler) _notificationHandlers[NetworkingGlobals.whiteboardName];
+			var sendPacket = new Packet(data, null, NetworkingGlobals.whiteboardName);
+			_sendQueue.Enqueue(sendPacket);
+			var whiteBoardHandler = (FakeNotificationHandler) _subscribedModules[NetworkingGlobals.whiteboardName];
 			whiteBoardHandler.Wait();
 			Assert.AreEqual(NotificationEvents.OnClientLeft, whiteBoardHandler.Event);
 		}

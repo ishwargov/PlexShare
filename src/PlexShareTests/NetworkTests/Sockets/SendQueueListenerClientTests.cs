@@ -8,7 +8,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
-using Networking;
+using Networking.Queues;
 using NUnit.Framework;
 
 namespace Networking.Sockets.Test
@@ -16,10 +16,10 @@ namespace Networking.Sockets.Test
 	[TestFixture]
 	public class SendQueueListenerClientTest
 	{
-		private IQueue _sendQueue;
-		private IQueue _receiveQueue;
+		private SendingQueues _sendQueue;
+		private ReceivingQueue _receiveQueue;
 		private Machine _server;
-		private SendQueueListener _sendQueueListenerClient;
+		private SendQueueListenerClient _sendQueueListenerClient;
 		private SocketListener _socketListener;
 		private TcpClient _serverSocket;
 		private TcpClient _clientSocket;
@@ -39,13 +39,13 @@ namespace Networking.Sockets.Test
 			var t1 = Task.Run(() => { _clientSocket.Connect(IP, port); });
 			var t2 = Task.Run(() => { _serverSocket = serverSocket.AcceptTcpClient(); });
 			Task.WaitAll(t1, t2);
-			_sendQueue = new Queue();
+			_sendQueue = new SendingQueues();
 			_sendQueue.RegisterModule(NetworkingGlobals.whiteboardName, NetworkingGlobals.whiteboardPriority);
 			_sendQueueListenerClient = new SendQueueListenerClient(_sendQueue, _clientSocket);
 			_sendQueueListenerClient.Start();
 
-			_receiveQueue = new Queue();
-			_receiveQueue.RegisterModule(NetworkingGlobals.whiteboardName, NetworkingGlobals.whiteboardPriority);
+			_receiveQueue = new ReceivingQueue();
+			//_receiveQueue.RegisterModule(NetworkingGlobals.whiteboardName, NetworkingGlobals.whiteboardPriority);
 
 			_socketListener = new SocketListener(_receiveQueue, _serverSocket);
 			_socketListener.Start();
@@ -54,47 +54,45 @@ namespace Networking.Sockets.Test
 		[TearDown]
 		public void TearDown()
 		{
-			_sendQueue.Close();
-			_receiveQueue.Close();
 			_clientSocket.Close();
 			_serverSocket.Close();
-			_socketListener.Close();
-			_sendQueueListenerClient.Close();
+			_socketListener.Stop();
+			_sendQueueListenerClient.Stop();
 		}
 
 		[Test]
 		public void SinglePacketSendTest()
 		{
 			const string data = "Test string";
-			var sendPacket = new Packet {ModuleIdentifier = NetworkingGlobals.whiteboardName, SerializedData = data};
+			var sendPacket = new Packet (data, null, NetworkingGlobals.whiteboardName);
 			_sendQueue.Enqueue(sendPacket);
 
 			while (_receiveQueue.IsEmpty())
 			{
 			}
-			var receivedPacket = _queue.Dequeue();
+			var receivedPacket = _receiveQueue.Dequeue();
 			Assert.Multiple(() =>
 			{
-				Assert.AreEqual(sendPacket.SerializedData, receivedPacket.SerializedData);
-				Assert.AreEqual(sendPacket.ModuleIdentifier, receivedPacket.ModuleIdentifier);
+				Assert.AreEqual(sendPacket.getSerializedData(), receivedPacket.getSerializedData());
+				Assert.AreEqual(sendPacket.getModuleOfPacket(), receivedPacket.getModuleOfPacket());
 			});
 		}
 
 		[Test]
 		public void LargeSizePacketSendTest()
 		{
-			var data = NetworkingGlobals.GetRandomString(4000);
-			var sendPacket = new Packet {ModuleIdentifier = NetworkingGlobals.whiteboardName, SerializedData = data};
+			var data = NetworkingGlobals.RandomString(4000);
+			var sendPacket = new Packet(data, null, NetworkingGlobals.whiteboardName);
 			_sendQueue.Enqueue(sendPacket);
 
 			while (_receiveQueue.IsEmpty())
 			{
 			}
-			var receivedPacket = _queue.Dequeue();
+			var receivedPacket = _receiveQueue.Dequeue();
 			Assert.Multiple(() =>
 			{
-				Assert.AreEqual(sendPacket.SerializedData, receivedPacket.SerializedData);
-				Assert.AreEqual(sendPacket.ModuleIdentifier, receivedPacket.ModuleIdentifier);
+				Assert.AreEqual(sendPacket.getSerializedData(), receivedPacket.getSerializedData());
+				Assert.AreEqual(sendPacket.getModuleOfPacket(), receivedPacket.getModuleOfPacket());
 			});
 		}
 
@@ -104,7 +102,7 @@ namespace Networking.Sockets.Test
 			for (var i = 1; i <= 10; i++)
 			{
 				var data = "Test string" + i;
-				var sendPacket = new Packet {ModuleIdentifier = NetworkingGlobals.whiteboardName, SerializedData = data};
+				var sendPacket = new Packet(data, null, NetworkingGlobals.whiteboardName);
 				_sendQueue.Enqueue(sendPacket);
 			}
 			while (_receiveQueue.Size() != 10)
@@ -115,7 +113,7 @@ namespace Networking.Sockets.Test
 			{
 				var packet = _receiveQueue.Dequeue();
 				var data = "Test string" + i;
-				Assert.AreEqual(data, packet.SerializedData);
+				Assert.AreEqual(data, packet.getSerializedData());
 			}
 		}
 	}

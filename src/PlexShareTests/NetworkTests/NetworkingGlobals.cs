@@ -4,7 +4,9 @@
 /// </summary>
 
 using System;
+using System.Dynamic;
 using System.Linq;
+using System.Threading;
 
 namespace Networking
 {
@@ -53,9 +55,9 @@ namespace Networking
 		public dynamic Data = new ExpandoObject();
 		public dynamic Event = new ExpandoObject();
 
-		public void OnDataReceive(string data)
+		public void OnDataReceived(string data)
 		{
-			Event = NotificationEvents.OnDataReceive;
+			Event = NotificationEvents.OnDataReceived;
 			Data = data;
 
 			if (_timeOutCount-- > 0)
@@ -129,8 +131,8 @@ namespace Networking
 
 		public void Subscribe()
 		{
-			Communicator.Subscribe(Modules.WhiteBoard, WbHandler, Priorities.WhiteBoard);
-			Communicator.Subscribe(Modules.ScreenShare, SsHandler, Priorities.ScreenShare);
+			Communicator.Subscribe(NetworkingGlobals.whiteboardName, WbHandler, NetworkingGlobals.whiteboardPriority);
+			Communicator.Subscribe(NetworkingGlobals.screenshareName, SsHandler, NetworkingGlobals.screensharePriority);
 		}
 
 		public void Reset()

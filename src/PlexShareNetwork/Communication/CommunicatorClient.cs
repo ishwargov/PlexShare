@@ -4,6 +4,7 @@
 /// This file contains the class definition of CommunicatorClient.
 /// </summary>
 
+using Networking.Queues;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,7 +16,7 @@ using System.Net.Sockets;
 
 namespace Networking
 {
-	internal class CommunicatorClient : ICommunicator
+	public class CommunicatorClient : ICommunicator
 	{
 		// initialize the send queue and receive queue
 		private readonly SendingQueues _sendQueue = new();
@@ -25,10 +26,10 @@ namespace Networking
 		private SendQueueListenerClient _sendQueueListener;
 
 		// declate the variable of ReceiveQueueListener class
-		private ReceiveQueueListener = _receiveQueueListener;
+		private ReceiveQueueListener _receiveQueueListener;
 
 		// declare the socket variable for the client
-		private TcpClient = _socket;
+		private TcpClient _socket;
 
 		// declate the variable of SocketListener class
 		private SocketListener _socketListener;
@@ -45,7 +46,7 @@ namespace Networking
 		/// <returns>
 		///  string "1" if success, "0" if failure
 		/// </returns>
-		string ICommunicator.Start(string serverIP, string serverPort)
+		public string Start(string serverIP, string serverPort)
 		{
 			if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E")
 			{
@@ -63,14 +64,14 @@ namespace Networking
 				_sendQueueListener = new SendQueueListenerClient(_sendQueue, _socket);
 				_sendQueueListener.Start();
 
-				_receiveQueueListener = new ReceiveQueueListener(_receiveQueue, _subscribedModulesHandlers);
+				_receiveQueueListener = new ReceiveQueueListener(_subscribedModulesHandlers, _receiveQueue);
 				_receiveQueueListener.Start();
 
 				return "1";
 			}
 			catch(Exception e)
 			{
-				Trace.WriteLine($"[Networking] Error in CommunicatorClient: {e.message}");
+				Trace.WriteLine($"[Networking] Error in CommunicatorClient: {e.Message}");
 				return "0";
 			}
 		}
@@ -79,7 +80,7 @@ namespace Networking
 		/// Disconnects from the server and stops all running threads.
 		/// </summary>
 		/// <returns> void </returns>
-		void ICommunicator.Stop()
+		public void Stop()
 		{
 			if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E")
 			{
@@ -93,10 +94,6 @@ namespace Networking
 			_socketListener.Stop();
 			_sendQueueListener.Stop();
 			_receiveQueueListener.Stop();
-
-			// close both the queues
-			_receiveQueue.Close();
-			_sendQueue.Close();
 
 			// close the socket stream and socket connection
 			_socket.GetStream().Close();
@@ -128,7 +125,7 @@ namespace Networking
 		/// This function is to be called only on the server.
 		/// </summary>
 		[ExcludeFromCodeCoverage]
-		void ICommunicator.AddClient<T>(string clientId, T socket)
+		public void AddClient<T>(string clientId, T socket)
 		{
 			throw new NotSupportedException();
 		}
@@ -137,7 +134,7 @@ namespace Networking
 		/// This function is to be called only on the server.
 		/// </summary>
 		[ExcludeFromCodeCoverage]
-		void ICommunicator.RemoveClient(string clientId)
+		public void RemoveClient(string clientId)
 		{
 			throw new NotSupportedException();
 		}
@@ -148,21 +145,21 @@ namespace Networking
 		/// <param name="serializedData"> The serialzed data to be sent over the network. </param>
 		/// <param name="moduleIdentifier"> Module Identifier of the module. </param>
 		/// <returns> void </returns>
-		void ICommunicator.Send(string serializedData, string moduleIdentifier)
+		public void Send(string serializedData, string moduleIdentifier)
 		{
 			if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E")
 			{
 				File.WriteAllText("networking_test.json", serializedData);
 				return;
 			}
-			var packet = new Packet { ModuleIdentifier = moduleIdentifier, SerializedData = serializedData};
+			var packet = new Packet(serializedData, null, moduleIdentifier);
 			try
 			{
 				_sendQueue.Enqueue(packet);
 			}
 			catch(Exception e)
 			{
-				Trace.WriteLine($"[Networking] Error in CommunicatorClient: {e.message}");
+				Trace.WriteLine($"[Networking] Error in CommunicatorClient: {e.Message}");
 			}
 		}
 
@@ -171,7 +168,7 @@ namespace Networking
 		/// This function is to be called only on the server side.
 		/// </summary>
 		[ExcludeFromCodeCoverage]
-		void Send(string serializedData, string moduleIdentifier, string destination)
+		public void Send(string serializedData, string moduleIdentifier, string destination)
 		{
 			throw new NotSupportedException();
 		}
@@ -183,7 +180,7 @@ namespace Networking
 		/// <param name="handler"> Module implementation of the INotificationHandler. </param>
 		/// <param name="isHighPriority"> Boolean which tells whether data is high priority or low priority. </param>
 		/// <returns> void </returns>
-		void ICommunicator.Subscribe(string moduleIdentifier, INotificationHandler notificationHandler, bool isHighPriority)
+		public void Subscribe(string moduleIdentifier, INotificationHandler notificationHandler, bool isHighPriority)
 		{
 			if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E")
 			{
@@ -191,7 +188,7 @@ namespace Networking
 			}
 			_subscribedModulesHandlers.Add(moduleIdentifier, notificationHandler);
 			_sendQueue.RegisterModule(moduleIdentifier, isHighPriority);
-			_receiveQueue.RegisterModule(moduleIdentifier, isHighPriority);
+			//_receiveQueue.RegisterModule(moduleIdentifier, isHighPriority);
 			Trace.WriteLine($"[Networking] Module: {moduleIdentifier} registered with priority is high?: {isHighPriority}");
 		}
 	}

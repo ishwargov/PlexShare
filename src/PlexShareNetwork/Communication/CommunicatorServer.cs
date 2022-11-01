@@ -4,6 +4,7 @@
 /// This file contains the class definition of CommunicatorServer.
 /// </summary>
 
+using Networking.Queues;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -14,7 +15,7 @@ using System.Threading;
 
 namespace Networking
 {
-	internal class CommunicatorServer : ICommunicator
+	public class CommunicatorServer : ICommunicator
 	{
 		// initialize the send queue and receive queue
 		private readonly SendingQueues _sendQueue = new();
@@ -24,7 +25,7 @@ namespace Networking
 		private SendQueueListenerServer _sendQueueListener;
 
 		// declate the variable of ReceiveQueueListener class
-		private ReceiveQueueListener = _receiveQueueListener;
+		private ReceiveQueueListener _receiveQueueListener;
 
 		// declare the server socket variable
 		private TcpListener _socket;
@@ -53,13 +54,13 @@ namespace Networking
 		/// <returns>
 		///  Address of the server as a string of "IP:Port"
 		/// </returns>
-		string ICommunicator.Start(string serverIP = null, string serverPort = null)
+		public string Start(string serverIP = null, string serverPort = null)
 		{
 			if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E")
 			{
 				return "127.0.0.1:8080";
 			}
-			var IP = IPAddress.Parse(FindIpAddress());
+			var ip = IPAddress.Parse(FindIpAddress());
 			string stringPort = Environment.GetEnvironmentVariable("MEETME_PORT");
 			int port = stringPort is null ? -1 : Int32.Parse(stringPort); 
 			if (port == -1)
@@ -72,22 +73,22 @@ namespace Networking
 			_sendQueueListener = new SendQueueListenerServer(_sendQueue, _clientIdToSocket, _subscribedModulesToHandler);
 			_sendQueueListener.Start();
 
-			_receiveQueueListener = new ReceiveQueueListener(_receiveQueue, _subscribedModulesToHandler);
+			_receiveQueueListener = new ReceiveQueueListener(_subscribedModulesToHandler, _receiveQueue);
 			_receiveQueueListener.Start();
 
 			_thread = new Thread(AcceptRequest);
 			_threadRun = true;
 			_thread.Start();
 
-			Trace.WriteLine("Server started on IP: " + IP + " Port: " + port);
-			return IP + ":" + port;
+			Trace.WriteLine("Server started on IP: " + ip + " Port: " + port);
+			return ip + ":" + port;
 		}
 
 		/// <summary>
 		/// Stops listening and stops all running threads.
 		/// </summary>
 		/// <returns> void </returns>
-		void ICommunicator.Stop()
+		public void Stop()
 		{
 			if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E")
 			{
@@ -99,13 +100,11 @@ namespace Networking
 
 			foreach (var clientIdToSocketListener in _clientListeners)
 			{
-				var socketListener = listener.Value;
+				var socketListener = clientIdToSocketListener.Value;
 				socketListener.Stop();
 			}
 			_sendQueueListener.Stop();
 			_receiveQueueListener.Stop();
-			_sendQueue.Close();
-			_receiveQueue.Close();
 		}
 
 		/// <summary>
@@ -181,7 +180,7 @@ namespace Networking
 		/// <param name="clientId"> The client Id. </param>
 		/// <param name="socketObject"> The socket object of the client. </param>
 		/// <returns> void </returns>
-		void ICommunicator.AddClient<T>(string clientId, T socket)
+		public void AddClient<T>(string clientId, T socket)
 		{
 			if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E")
 			{
@@ -201,7 +200,7 @@ namespace Networking
 		/// </summary>
 		/// <param name="clientId"> The client Id. </param>
 		/// <returns> void </returns>
-		void ICommunicator.RemoveClient(string clientId)
+		public void RemoveClient(string clientId)
 		{
 			if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E")
 			{
@@ -224,15 +223,15 @@ namespace Networking
 		/// <param name="serializedData"> The serialzed data to be sent over the network. </param>
 		/// <param name="moduleIdentifier"> Module Identifier of the module. </param>
 		/// <returns> void </returns>
-		void ICommunicator.Send(string serializedData, string moduleIdentifier)
+		public void Send(string serializedData, string moduleIdentifier)
 		{
 			if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E")
 			{
-				File.WriteAllText("networking_test.json", data);
+				File.WriteAllText("networking_test.json", serializedData);
 				return;
 			}
 
-			var packet = new Packet {ModuleIdentifier = moduleIdentifier, SerializedData = serializedData};
+			var packet = new Packet (serializedData, null, moduleIdentifier);
 			try
 			{
 				_sendQueue.Enqueue(packet);
@@ -252,11 +251,11 @@ namespace Networking
 		/// <param name="moduleIdentifier"> Module Identifier of the module. </param>
 		/// <param name="destination"> The destination or client Id to which to send the data. </param>
 		/// <returns> void </returns>
-		void Send(string serializedData, string moduleIdentifier, string destination)
+		public void Send(string serializedData, string moduleIdentifier, string destination)
 		{
 			if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E")
 			{
-				File.WriteAllText("networking_test.json", data);
+				File.WriteAllText("networking_test.json", serializedData);
 				return;
 			}
 
@@ -265,7 +264,7 @@ namespace Networking
 				throw new Exception("Client given in the destination of packet does not exist in the room!");
 			}
 
-			var packet = new Packet {ModuleIdentifier = moduleIdentifier, SerializedData = serializedData, Destination = destination};
+			var packet = new Packet(serializedData, destination, moduleIdentifier);
 			try
 			{
 				_sendQueue.Enqueue(packet);
@@ -284,7 +283,7 @@ namespace Networking
 		/// <param name="handler"> Module implementation of the INotificationHandler. </param>
 		/// <param name="isHighPriority"> Boolean which tells whether data is high priority or low priority. </param>
 		/// <returns> void </returns>
-		void ICommunicator.Subscribe(string moduleIdentifier, INotificationHandler notificationHandler, bool isHighPriority)
+		public void Subscribe(string moduleIdentifier, INotificationHandler notificationHandler, bool isHighPriority)
 		{
 			if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E")
 			{
@@ -292,7 +291,7 @@ namespace Networking
 			}
 			_subscribedModulesToHandler.Add(moduleIdentifier, notificationHandler);
 			_sendQueue.RegisterModule(moduleIdentifier, isHighPriority);
-			_receiveQueue.RegisterModule(moduleIdentifier, isHighPriority);
+			//_receiveQueue.RegisterModule(moduleIdentifier, isHighPriority);
 			Trace.WriteLine($"[Networking] Module: {moduleIdentifier} registered with priority is high?: {isHighPriority}");
 		}
 	}

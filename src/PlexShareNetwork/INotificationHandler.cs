@@ -26,7 +26,7 @@ namespace Networking
         /// Called by the Communicator when a module declares that it no more needs the networking module
         /// The mapping of a socket object to the module is erased
         /// </summary>
-        public void OnClientLeft()
+        public void OnClientLeft(string clientId)
         {
 
         }
