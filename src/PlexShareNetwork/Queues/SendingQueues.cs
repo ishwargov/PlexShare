@@ -32,7 +32,7 @@ namespace Networking.Queues
         private readonly static int _totalRatio = _highPriorityValue + _lowPriorityValue;
 
         /// <summary>
-        /// Called by the dashboard module of each client in order to use queues
+        /// Called by the Communicator submodule of each client in order to use queues
         /// </summary>
         public bool RegisterModule(string moduleName, bool isHighPriority)
         {
@@ -148,6 +148,14 @@ namespace Networking.Queues
         public bool IsEmpty()
         {
             return _highPriorityQueue.IsEmpty() && _lowPriorityQueue.IsEmpty();
+        }
+
+        /// <summary>
+        /// Clears all entries in the dictionary
+        /// </summary>
+        public void RemoveAllModulePriorities()
+        {
+            _modulesToPriorityMap.Clear();
         }
 
         /// <summary>
