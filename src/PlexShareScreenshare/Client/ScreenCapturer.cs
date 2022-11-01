@@ -22,7 +22,7 @@ namespace PlexShareScreenshare.Client
     {
         private Queue<Bitmap> CapturedFrame;
 
-        // limits the number of frames in the queue
+        // Limits the number of frames in the queue
         const int MaxQueueLength = 50;
 
         // Task to capture the screen asynchronously
