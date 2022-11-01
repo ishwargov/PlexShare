@@ -6,8 +6,11 @@
         xmlns:local="clr-namespace:PlexShareApp"
         mc:Ignorable="d"
         WindowStartupLocation = "CenterScreen"
-        Title="HomePageView" Height="700" Width="1100">
+        Title="HomePageView" Height="850" Width="1500">
     <Grid Background="Red">
         <Frame x:Name="HomePage" NavigationUIVisibility="Hidden" />
+        <StackPanel>
+            <Button Click="toMainScreen">Click to Main Screen</Button>
+        </StackPanel>
     </Grid>
 </Window>

@@ -29,8 +29,11 @@ namespace PlexShareApp
             var homePage = new HomePageView();
             
             /*
-             * 
-             *  VALIDATION
+              
+            
+            VALIDATION
+            
+             
              */
 
             homePage.Show();
