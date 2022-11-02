@@ -8,11 +8,31 @@
         WindowStartupLocation = "CenterScreen"
         Title="AuthenticationView" Height="700" Width="1100">
 
-    <Grid Background="Blue">
-        <Frame x:Name="AuthView" NavigationUIVisibility="Hidden" />
-        <StackPanel>
-            <Button Width="100" Click="Home_Click">Go To Home Page</Button>
-        </StackPanel>
+    <Grid Background="Wheat">
         
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="0.5*"/>
+            <RowDefinition Height="1.5*"/>
+            <RowDefinition Height="0.5*"/>
+            <RowDefinition />
+            <RowDefinition Height="0.5*"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition Width="0.05*"/>
+            <ColumnDefinition Width="0.1*"/>
+            <ColumnDefinition Width="0.05*"/>
+            <ColumnDefinition Width="0.65*"/>
+            <ColumnDefinition Width="0.05*"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Row="1" Grid.Column="1" Grid.RowSpan="5" Grid.ColumnSpan="5" Background="White"/>
+        <TextBlock Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="3" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="70">PlexShare</TextBlock>
+        <Image Source="/icons/GoogleSignIn"  Width="45" Grid.Column="2" Grid.Row="4"/>
+        <Button Name="SignInButton" Grid.Column="4" Grid.Row="4" Height="40" FontSize="20" Background="Coral" Foreground="White" Click="Home_Click">Sign In With Google</Button>
     </Grid>
+    
 </Window>

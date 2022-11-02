@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +12,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using AuthViewModel;
+using PlexShareApp;
 
 namespace PlexShareApp
 {
@@ -22,22 +25,28 @@ namespace PlexShareApp
         public AuthenticationView()
         {
             InitializeComponent();
+
+            AuthenticationViewModel viewModel = new AuthenticationViewModel();
+            this.DataContext = viewModel;
         }
 
-        private void Home_Click(object sender, RoutedEventArgs e)
+        private async void Home_Click(object sender, RoutedEventArgs e)
         {
-            var homePage = new HomePageView();
-            
-            /*
-              
-            
-            VALIDATION
-            
-             
-             */
 
-            homePage.Show();
-            Close();
+            AuthenticationViewModel viewModel = this.DataContext as AuthenticationViewModel;
+            var returnVal = await viewModel.AuthenticateUser();
+            
+            if (returnVal == true)
+            {
+                var homePage = new HomePageView();
+
+                homePage.Show();
+                Close(); 
+            } else
+            {
+                this.SignInButton.Content = "Try Again!";
+            }
+            
         }
 
 
