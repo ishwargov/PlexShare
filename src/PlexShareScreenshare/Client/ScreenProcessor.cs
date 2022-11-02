@@ -35,7 +35,7 @@ namespace PlexShareScreenshare.Client
         private Queue<Frame> _processedFrame;
 
         // Processing task
-        private Task ProcessorTask;
+        private Task _processorTask;
 
         // The screen capturer object
         private ScreenCapturer _capturer;
@@ -171,8 +171,8 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         public void StartProcessing()
         {
-            ProcessorTask = new Task(Processing, token);
-            ProcessorTask.Start();
+            _processorTask = new Task(Processing, token);
+            _processorTask.Start();
 
         }
 
