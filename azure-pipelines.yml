@@ -20,7 +20,7 @@ steps:
 - task: DotNetCoreCLI@2
   inputs:
     command: 'build'
-    projects: '**/src/*/*.csproj'
+    projects: '**/*/*.csproj'
     
 - task: NuGetCommand@2
   inputs:
