@@ -6,7 +6,7 @@
 trigger:
 - main
 
-pool:
+pool: selfBot
   vmImage: 'windows-latest'
 
 variables:
