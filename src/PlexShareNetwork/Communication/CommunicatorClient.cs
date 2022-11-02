@@ -48,7 +48,7 @@ namespace Networking
 		/// </returns>
 		public string Start(string serverIP, string serverPort)
 		{
-			if (Environment.GetEnvironmentVariable("TEST_MODE") == "UNIT")
+			if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E")
 			{
 				return "1";
 			}

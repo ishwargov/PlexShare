@@ -136,10 +136,13 @@ namespace Networking.Queues
                 // Sleeping for some time
                 Thread.Sleep(100);
 
-                isEmpty = IsEmpty();
+                lock (_lock)
+                {
+                    isEmpty = IsEmpty();
 
-                if (!isEmpty)
-                    break;
+                    if (!isEmpty)
+                        break;
+                }
             }
 
             return isEmpty;
