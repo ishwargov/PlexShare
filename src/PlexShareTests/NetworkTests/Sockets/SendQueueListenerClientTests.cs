@@ -8,12 +8,12 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Networking.Queues;
-using NUnit.Framework;
 
 namespace Networking.Sockets.Test
 {
-	[TestFixture]
+	[TestClass()]
 	public class SendQueueListenerClientTest
 	{
 		private SendingQueues _sendQueue;
@@ -24,8 +24,7 @@ namespace Networking.Sockets.Test
 		private TcpClient _serverSocket;
 		private TcpClient _clientSocket;
 
-		[SetUp]
-		public void StartSendQueueListenerClient()
+		public SendQueueListenerClientTest()
 		{
 			_server = new FakeServer();
 			var IPAndPort = _server.Communicator.Start().Split(":");
@@ -45,22 +44,12 @@ namespace Networking.Sockets.Test
 			_sendQueueListenerClient.Start();
 
 			_receiveQueue = new ReceivingQueue();
-			//_receiveQueue.RegisterModule(NetworkingGlobals.whiteboardName, NetworkingGlobals.whiteboardPriority);
 
 			_socketListener = new SocketListener(_receiveQueue, _serverSocket);
 			_socketListener.Start();
 		}
 
-		[TearDown]
-		public void TearDown()
-		{
-			_clientSocket.Close();
-			_serverSocket.Close();
-			_socketListener.Stop();
-			_sendQueueListenerClient.Stop();
-		}
-
-		[Test]
+		[TestMethod()]
 		public void SinglePacketSendTest()
 		{
 			const string data = "Test string";
@@ -71,14 +60,12 @@ namespace Networking.Sockets.Test
 			{
 			}
 			var receivedPacket = _receiveQueue.Dequeue();
-			Assert.Multiple(() =>
-			{
-				Assert.AreEqual(sendPacket.getSerializedData(), receivedPacket.getSerializedData());
-				Assert.AreEqual(sendPacket.getModuleOfPacket(), receivedPacket.getModuleOfPacket());
-			});
+			Assert.AreEqual(sendPacket.getSerializedData(), receivedPacket.getSerializedData());
+			Assert.AreEqual(sendPacket.getModuleOfPacket(), receivedPacket.getModuleOfPacket());
+			Assert.AreEqual(sendPacket.getDestination(), receivedPacket.getDestination());
 		}
 
-		[Test]
+		[TestMethod()]
 		public void LargeSizePacketSendTest()
 		{
 			var data = NetworkingGlobals.RandomString(4000);
@@ -89,14 +76,11 @@ namespace Networking.Sockets.Test
 			{
 			}
 			var receivedPacket = _receiveQueue.Dequeue();
-			Assert.Multiple(() =>
-			{
-				Assert.AreEqual(sendPacket.getSerializedData(), receivedPacket.getSerializedData());
-				Assert.AreEqual(sendPacket.getModuleOfPacket(), receivedPacket.getModuleOfPacket());
-			});
+			Assert.AreEqual(sendPacket.getSerializedData(), receivedPacket.getSerializedData());
+			Assert.AreEqual(sendPacket.getModuleOfPacket(), receivedPacket.getModuleOfPacket());
 		}
 
-		[Test]
+		[TestMethod()]
 		public void MultiplePacketSendTest()
 		{
 			for (var i = 1; i <= 10; i++)
@@ -107,7 +91,8 @@ namespace Networking.Sockets.Test
 			}
 			while (_receiveQueue.Size() != 10)
 			{
-				Thread.Sleep(10);
+				//break;
+				Thread.Sleep(1000);
 			}
 			for (var i = 1; i <= 10; i++)
 			{

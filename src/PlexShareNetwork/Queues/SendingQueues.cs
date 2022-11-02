@@ -151,14 +151,6 @@ namespace Networking.Queues
         }
 
         /// <summary>
-        /// Clears all entries in the dictionary
-        /// </summary>
-        public void RemoveAllModulePriorities()
-        {
-            _modulesToPriorityMap.Clear();
-        }
-
-        /// <summary>
         /// Returns if at least one queue is non-empty
         /// </summary>
         public bool WaitForPacket()

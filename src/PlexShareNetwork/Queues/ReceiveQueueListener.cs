@@ -1,6 +1,6 @@
 ﻿/// <author> Anish Bhagavatula </author>
 /// <summary>
-/// This file contains the definition of the class 'Receive QueueHandler' which contains functions to spawn a thread to call module handlers
+/// This file contains the definition of the class 'ReceiveQueueListener' which contains functions to spawn a thread to call module handlers
 /// once packets appear in the receiving queue
 /// </summary>
 
@@ -90,14 +90,6 @@ namespace Networking.Queues
                 // Calling the method 'OnDataReceived' on the handler of the appropriate module
                 notificationHandler.OnDataReceived(packet.getSerializedData());
             }
-        }
-
-        /// <summary>
-        /// Clears all entries in the dictionary
-        /// </summary>
-        public void RemoveAllModuleNotificaionHandlers()
-        {
-            _modulesToNotificationHandlerMap.Clear();
         }
 
         /// <summary>

@@ -8,7 +8,6 @@ using System.Collections.Generic;
 
 namespace Networking.Serialization.Test
 {
-
     [TestClass()]
     public class SerializerTests
     {
