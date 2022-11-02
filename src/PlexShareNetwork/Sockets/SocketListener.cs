@@ -24,9 +24,9 @@ namespace Networking
 		private readonly StringBuilder _message = new();
 
 		// the thread which will be running
-		private Thread _thread;
+		public Thread _thread;
 		// boolean to tell whether the thread is running or stopped
-		private volatile bool _threadRun;
+		public volatile bool _threadRun;
 
 		// variable to store the receive queue
 		private readonly ReceivingQueue _queue;
@@ -105,7 +105,7 @@ namespace Networking
 		/// <returns> The remaining packets string after processing the packets from the string. </returns>
 		private string ProcessPackets(string packets)
 		{
-			if (packets == "")
+			if (packets.Length < 12)
 			{
 				return packets;
 			}
@@ -133,7 +133,7 @@ namespace Networking
 					var packet = PacketStringToPacket(packetString.Split(":"));
 					EnqueuePacket(packet.getSerializedData(), packet.getModuleOfPacket());
 				}
-			} while(isPacket);
+			} while(isPacket && packets.Length > 12);
 			return packets; // return the remaining packets string
 		}
 
@@ -158,7 +158,7 @@ namespace Networking
 		/// <returns> void </returns>
 		private void EnqueuePacket(string serializedData, string moduleIdentifier)
 		{
-			var packet = new Packet(serializedData, null, serializedData);
+			var packet = new Packet(serializedData, null, moduleIdentifier);
 			Trace.WriteLine($"[Networking] Received data from module {moduleIdentifier}.");
 			_queue.Enqueue(packet);
 		}
