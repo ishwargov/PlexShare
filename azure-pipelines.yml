@@ -9,7 +9,7 @@ trigger:
 pool: selfBot
 
 variables:
-  solution: '/src/*.sln'
+  solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
