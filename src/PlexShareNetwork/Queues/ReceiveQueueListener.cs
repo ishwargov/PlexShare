@@ -13,11 +13,11 @@ namespace Networking.Queues
     public class ReceiveQueueListener
     {
         private Dictionary<string, INotificationHandler> _modulesToNotificationHandlerMap;
-        private IQueue _receivingQueue;
+        private ReceivingQueue _receivingQueue;
         private bool _isRunning;
 
         // Constructor which is called by the Communicator
-        public ReceiveQueueListener(Dictionary<string, INotificationHandler> modulesToNotificationHandlerMap, IQueue receivingQueue)
+        public ReceiveQueueListener(Dictionary<string, INotificationHandler> modulesToNotificationHandlerMap, ReceivingQueue receivingQueue)
         {
             this._modulesToNotificationHandlerMap = modulesToNotificationHandlerMap;
             this._receivingQueue = receivingQueue;

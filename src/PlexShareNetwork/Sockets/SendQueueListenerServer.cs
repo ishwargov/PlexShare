@@ -4,6 +4,7 @@
 /// This file contains the class definition of SendQueueListenerServer.
 /// </summary>
 
+using Networking.Queues;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -14,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace Networking
 {
-	class SendQueueListenerServer
+	public class SendQueueListenerServer
 	{
 		// the thread which will be running
 		private Thread _thread;
@@ -22,7 +23,7 @@ namespace Networking
 		private volatile bool _threadRun;
 
 		// variable to store the send queue
-		private readonly IQueue _queue;
+		private readonly SendingQueues _queue;
 
 		// variable to store the dictionary which maps clientIds to their respective sockets
 		private readonly Dictionary<string, TcpClient> _clientIdToSocket;
@@ -38,7 +39,7 @@ namespace Networking
 		/// <param name="subscribedModules">
 		/// The dictionary which maps module identifiers to their respective notification handlers.
 		/// </param>
-		public SendQueueListenerServer(IQueue queue, Dictionary<string, TcpClient> clientIdToSocket,
+		public SendQueueListenerServer(SendingQueues queue, Dictionary<string, TcpClient> clientIdToSocket,
 			Dictionary<string, INotificationHandler> subscribedModules)
 		{
 			_queue = queue;
@@ -85,7 +86,7 @@ namespace Networking
 
 					/// we put flag string at the start and end of the packet, and we need to put
 					/// escape string before the flag and escape strings which are in the packet
-					var pkt = packet.ModuleIdentifier + ":" + packet.SerializedData;
+					var pkt = packet.getModuleOfPacket() + ":" + packet.getSerializedData();
 					pkt = pkt.Replace("[ESC]", "[ESC][ESC]");
 					pkt = pkt.Replace("[FLAG]", "[ESC][FLAG]");
 					pkt = "[FLAG]" + pkt + "[FLAG]";
@@ -100,10 +101,10 @@ namespace Networking
 							var client = socket.Client;
 
 							// if client is connected then we can send the data
-							if (!(client.Poll(1, SelectMode.SelectRoad) && client.Available == 0))
+							if (!(client.Poll(1, SelectMode.SelectRead) && client.Available == 0))
 							{
 								client.Send(bytes);
-								Trace.WriteLine($"[Networking] Data sent from server to client by {packet.ModuleIdentifier}.");
+								Trace.WriteLine($"[Networking] Data sent from server to client by {packet.getModuleOfPacket()}.");
 							}
 							else // else the client is disconnected so we try to reconnect 3 times
 							{
@@ -125,11 +126,11 @@ namespace Networking
 											Thread.Sleep(100); // the time is in milliseconds
 
 											// check if the client is now connected and send the data
-											if (!(clientTry.Poll(1, SelectMode.SelectRoad) && clientTry.Available == 0))
+											if (!(clientTry.Poll(1, SelectMode.SelectRead) && clientTry.Available == 0))
 											{
 												Trace.WriteLine("[Networking] Client connected.");
 												clientTry.Send(bytesTry);
-												Trace.WriteLine($"[Networking] Data sent from server to client by {packet.ModuleIdentifier}.");
+												Trace.WriteLine($"[Networking] Data sent from server to client by {packet.getModuleOfPacket()}.");
 												isSent = true; // after sending the data we can set isSent to true
 												break;
 											}
@@ -181,13 +182,13 @@ namespace Networking
 		private HashSet<TcpClient> DestinationToSocket(Packet packet)
 		{
 			var sockets = new HashSet<TcpClient>();
-			if (packet.Destination == null)
+			if (packet.getDestination() == null)
 			{
-				foreach (var keyValue in _clientIdToSocket) sockets.add(keyValue.Value);
+				foreach (var keyValue in _clientIdToSocket) sockets.Add(keyValue.Value);
 			}
 			else
 			{
-				sockets.Add(_clientIdToSocket[packet.Destination]);
+				sockets.Add(_clientIdToSocket[packet.getDestination()]);
 			}
 			return sockets;
 		}
