@@ -7,7 +7,8 @@
  * 
  * Project     = PlexShareContent
  *
- * Description =   
+ * Description = Client-side content manager class which provides interfaces 
+ *               to other modules and deals with various user functions.   
  *****************************************************************************/
 
 using PlexShareContent.DataModels;
