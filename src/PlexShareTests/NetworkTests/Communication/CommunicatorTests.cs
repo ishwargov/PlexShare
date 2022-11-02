@@ -4,14 +4,13 @@
 /// This file contains unit tests for the class SocketListener
 /// </summary>
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
-namespace Networking.Sockets.Test
+namespace Networking.Communication.Test
 {
-	[TestClass()]
 	public class CommunicatorTest
 	{
-		[TestMethod()]
+		[Fact]
 		public void ClientAndServerStartAndStopTest()
 		{
 			// Creating and starting a server
@@ -28,8 +27,8 @@ namespace Networking.Sockets.Test
 			string client2Return = client2.Start(IPAndPort[0], IPAndPort[1]);
 
 			// Checking whether both clients have successfully started
-			Assert.AreEqual("1", client1Return);
-			Assert.AreEqual("1", client2Return);
+			Assert.Equal("1", client1Return);
+			Assert.Equal("1", client2Return);
 
 			server.Stop();
 			client1.Stop();

@@ -3,13 +3,12 @@
 /// This file contains all the tests written for the receiving queue listener
 /// </summary>
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Threading;
+using Xunit;
 
 namespace Networking.Queues.Tests
 {
-    [TestClass()]
     public class ReceiveQueueListenerTests
     {
         // The receiving queue which the listener is listening on
@@ -21,7 +20,7 @@ namespace Networking.Queues.Tests
         // The pivot of this test
         ReceiveQueueListener _receiveQueueListener;
 
-        [TestMethod()]
+        [Fact]
         public void CallAccurateHandlerCheck()
         {
             // Clearing the handlers list for fresh testing
@@ -44,13 +43,17 @@ namespace Networking.Queues.Tests
             _receivingQueue.Enqueue(new Packet(serializedData, destination, moduleName));
 
             // Sleep for some time, for the listener to call the 'OnDataReceived' method
-            Thread.Sleep(2000);
+            while (DemoNotificationHandlerIdentifier.notificationHandlerList.Count < 1)
+                Thread.Sleep(1000);
+
+            // Only one handler must have been added to the list
+            Assert.Equal(DemoNotificationHandlerIdentifier.notificationHandlerList.Count, 1);
 
             // Checking that the appropriate handler is called
-            Assert.AreEqual(notificationHandler, DemoNotificationHandlerIdentifier.notificationHandlerList[0]);
+            Assert.Equal(notificationHandler, DemoNotificationHandlerIdentifier.notificationHandlerList[0]);
         }
 
-        [TestMethod()]
+        [Fact]
         public void CallMultipleAccurateHandlersCheck()
         {
             // Clearing the handlers list for fresh testing
@@ -81,16 +84,17 @@ namespace Networking.Queues.Tests
             }
 
             // Sleep for some time, for the listener to call the 'OnDataReceived' method
-            Thread.Sleep(2000);
+            while (DemoNotificationHandlerIdentifier.notificationHandlerList.Count < listOfHandlersCalled.Count)
+                Thread.Sleep(1000);
 
             // The number of handlers called and stored in the demo static class must be equal
-            Assert.AreEqual(listOfHandlersCalled.Count, DemoNotificationHandlerIdentifier.notificationHandlerList.Count);
+            Assert.Equal(listOfHandlersCalled.Count, DemoNotificationHandlerIdentifier.notificationHandlerList.Count);
 
             int len = listOfHandlersCalled.Count;
 
             // Checking whether appropriate handlers were called
             for (int i = 0; i < len; ++i)
-                Assert.AreEqual(listOfHandlersCalled[i], DemoNotificationHandlerIdentifier.notificationHandlerList[i]);
+                Assert.Equal(listOfHandlersCalled[i], DemoNotificationHandlerIdentifier.notificationHandlerList[i]);
         }
     }
 

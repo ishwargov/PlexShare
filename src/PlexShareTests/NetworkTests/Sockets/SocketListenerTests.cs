@@ -1,7 +1,7 @@
 /// <author>Mohammad Umar Sultan</author>
 /// <created>16/10/2022</created>
 /// <summary>
-/// This file contains unit tests for the class SocketListener.
+/// This file contains unit tests for the class SocketListener
 /// </summary>
 
 using System.Net;
@@ -9,12 +9,11 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Networking.Queues;
+using Xunit;
 
-namespace Networking.Sockets.Test
+namespace Networking.Sockets.Tests
 {
-	[TestClass()]
 	public class SocketListenerTest
 	{
 		private ReceivingQueue _queue;
@@ -42,7 +41,7 @@ namespace Networking.Sockets.Test
 			_socketListener.Start();
 		}
 
-		[TestMethod()]
+		[Fact]
 		public void SinglePacketReceiveTest()
 		{
 			const string data = "Test string";
@@ -59,11 +58,11 @@ namespace Networking.Sockets.Test
 			{
 			}
 			var receivedPacket = _queue.Dequeue();
-			Assert.AreEqual(sendPacket.getSerializedData(), receivedPacket.getSerializedData());
-			Assert.AreEqual(sendPacket.getModuleOfPacket(), receivedPacket.getModuleOfPacket());
+			Assert.Equal(sendPacket.getSerializedData(), receivedPacket.getSerializedData());
+			Assert.Equal(sendPacket.getModuleOfPacket(), receivedPacket.getModuleOfPacket());
 		}
 
-		[TestMethod()]
+		[Fact]
 		public void LargeSizePacketReceiveTest()
 		{
 			var data = NetworkingGlobals.RandomString(4000);
@@ -80,11 +79,11 @@ namespace Networking.Sockets.Test
 			{
 			}
 			var receivedPacket = _queue.Dequeue();
-			Assert.AreEqual(sendPacket.getSerializedData(), receivedPacket.getSerializedData());
-			Assert.AreEqual(sendPacket.getModuleOfPacket(), receivedPacket.getModuleOfPacket());
+			Assert.Equal(sendPacket.getSerializedData(), receivedPacket.getSerializedData());
+			Assert.Equal(sendPacket.getModuleOfPacket(), receivedPacket.getModuleOfPacket());
 		}
-		
-		[TestMethod()]
+
+		[Fact]
 		public void MultiplePacketReceiveTest()
 		{
 			for (var i = 1; i <= 10; i++)
@@ -107,7 +106,7 @@ namespace Networking.Sockets.Test
 			{
 				var packet = _queue.Dequeue();
 				var data = "Test string" + i;
-				Assert.AreEqual(data, packet.getSerializedData());
+				Assert.Equal(data, packet.getSerializedData());
 			}
 
 		}
