@@ -1,5 +1,5 @@
 ﻿/******************************************************************************
- * Filename    = MessageType.cs
+ * Filename    = MessageEvent.cs
  *
  * Author      = Narvik Nandan
  *
@@ -7,17 +7,19 @@
  * 
  * Project     = PlexShareContent
  *
- * Description = Enum for type of message sent or received.
+ * Description = Enum for type of message event called. 
  *****************************************************************************/
 
-namespace PlexShareContent
+namespace PlexShareContent.Enums
 {
     /// <summary>
-    ///     Type of message - Chat or File.
+    /// Type of message event - New, Edit, Star, Download.
     /// </summary>
-    public enum MessageType
+    public enum MessageEvent
     {
-        File,
-        Chat
+        New,
+        Edit,
+        Star,
+        Download
     }
 }
