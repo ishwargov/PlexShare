@@ -22,7 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-<<<<<<< HEAD
     <ProjectReference Include="..\PlexShareApp\PlexShareApp.csproj" />
     <ProjectReference Include="..\PlexShareCloud\PlexShareCloud.csproj" />
     <ProjectReference Include="..\PlexShareContent\PlexShareContent.csproj" />
@@ -30,9 +29,6 @@
     <ProjectReference Include="..\PlexShareNetwork\PlexShareNetwork.csproj" />
     <ProjectReference Include="..\PlexShareScreenshare\PlexShareScreenshare.csproj" />
     <ProjectReference Include="..\PlexShareWhiteboard\PlexShareWhiteboard.csproj" />
-=======
-    <ProjectReference Include="..\PlexShareNetwork\PlexShareNetwork.csproj" />
->>>>>>> 2f758c63a36dda71f661b13b0e1f0cd8fcdca2e6
   </ItemGroup>
 
 </Project>
