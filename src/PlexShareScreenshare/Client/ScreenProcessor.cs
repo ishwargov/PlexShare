@@ -32,17 +32,17 @@ namespace PlexShareScreenshare.Client
     {
         // The queue in which the image will be enqueued after
         // processing it
-        private Queue<Frame> ProcessedFrame;
+        private Queue<Frame> _processedFrame;
 
         // Processing task
         private Task ProcessorTask;
 
         // The screen capturer object
-        private ScreenCapturer Capturer;
+        private ScreenCapturer _capturer;
 
         // Old and the new resolutions 
-        private Tuple<int, int> OldRes { get; set; }
-        public Tuple<int, int> NewRes { private get; set; }
+        private Tuple<int, int> OldRes;
+        private Tuple<int, int> NewRes { private get; set; }
 
         // Tokens added to be able to stop the thread execution
         CancellationTokenSource tokenSource;
@@ -58,8 +58,8 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         ScreenProcessor(ScreenCapturer Capturer)
         {
-            this.Capturer = Capturer;
-            ProcessedFrame = new Queue<Frame>();
+            this._capturer = Capturer;
+            _processedFrame = new Queue<Frame>();
             OldRes = new Tuple<int, int>(720, 1280);
             NewRes = new Tuple<int, int>(720, 1280);
             tokenSource = new CancellationTokenSource();
@@ -72,10 +72,10 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         public Frame GetImage()
         {
-            while (ProcessedFrame.Count != 0) Thread.Sleep(100);
-            lock (ProcessedFrame)
+            while (_processedFrame.Count != 0) Thread.Sleep(100);
+            lock (_processedFrame)
             {
-                return ProcessedFrame.Dequeue();
+                return _processedFrame.Dequeue();
             }
         }
         /// <summary>
@@ -146,19 +146,19 @@ namespace PlexShareScreenshare.Client
             return tmp;
         }
         /// <summary>
-        /// main function which will run in loop and capture the image
-        /// calculate the image bits differences and 
+        /// Main function which will run in loop and capture the image
+        /// calculate the image bits differences and append it in the array
         /// </summary>
         private void Processing()
         {
             while (true)
             {
-                Bitmap img = Capturer.GetImage();
+                Bitmap img = _capturer.GetImage();
                 img = Compress(img);
                 ImageDiffList DiffList = ProcessUsingLockbits(prevImage, img);
-                lock (ProcessedFrame)
+                lock (_processedFrame)
                 {
-                    ProcessedFrame.Append(new Frame(NewRes, DiffList));
+                    _processedFrame.Append(new Frame(NewRes, DiffList));
                 }
                 prevImage = img;
             }
@@ -203,7 +203,7 @@ namespace PlexShareScreenshare.Client
         public void StopProcessing()
         {
             tokenSource.Cancel();
-            ProcessedFrame.Clear();
+            _processedFrame.Clear();
         }
 
         /// <summary>
