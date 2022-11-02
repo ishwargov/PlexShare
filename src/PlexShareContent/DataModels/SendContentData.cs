@@ -8,7 +8,7 @@
  * Project     = PlexShareContent
  *
  * Description = Class containing metadata related to a message. Used for 
- *               send data. 
+ *               sending messages. 
  *****************************************************************************/
 
 namespace PlexShareContent.DataModels
@@ -28,16 +28,30 @@ namespace PlexShareContent.DataModels
 
         /// <summary>
         /// List containing the receiver IDs.
+        /// Empty in case of broadcast message.
         /// </summary>
         public int[]? ReceiverIDs;
 
         /// <summary>
-        /// Constrcutor to initialize the fields
+        /// ID of message being replied to.
+        /// </summary>
+        public int ReplyMessageID;
+
+        /// <summary>
+        /// ID of thread to which the message belongs to.
+        /// If the thread does not exist, -1.
+        /// </summary>
+        public int ReplyThreadID;
+
+        /// <summary>
+        /// Constrcutor to initialize the fields.
         /// </summary>
         public SendContentData()
         {
             Data = "";
             ReceiverIDs = null;
+            ReplyMessageID = -1;
+            ReplyThreadID = -1;
         }
     }
 }
