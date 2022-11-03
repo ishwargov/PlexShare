@@ -1,20 +1,19 @@
 /// <author>Mohammad Umar Sultan</author>
 /// <created>16/10/2022</created>
 /// <summary>
-/// This file contains unit tests for the class SocketListener.
+/// This file contains unit tests for the class SocketListener
 /// </summary>
 
-using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 using Networking.Queues;
-using NUnit.Framework;
+using Xunit;
 
-namespace Networking.Sockets.Test
+namespace Networking.Sockets.Tests
 {
-	[TestFixture]
 	public class SendQueueListenerServerTest
 	{
 		private SendingQueues _sendQueue;
@@ -29,13 +28,7 @@ namespace Networking.Sockets.Test
 		private int _port;
 		private IPAddress _IP;
 
-		public void OneTimeSetup()
-		{
-			Environment.SetEnvironmentVariable("TEST_MODE", "UNIT");
-		}
-
-		[SetUp]
-		public void StartSendQueueListenerServer()
+		public SendQueueListenerServerTest()
 		{
 			_server = new FakeServer();
 			var IPAndPort = _server.Communicator.Start().Split(":");
@@ -53,7 +46,7 @@ namespace Networking.Sockets.Test
 			});
 			var t2 = Task.Run(() =>
 			{
-				_serverSocket2 = _serverListener.AcceptTcpClient();
+				_serverSocket1 = _serverListener.AcceptTcpClient();
 				_clientIdToSocket["1"] = _serverSocket1;
 			});
 			Task.WaitAll(t1, t2);
@@ -66,26 +59,15 @@ namespace Networking.Sockets.Test
 			_sendQueueListenerServer.Start();
 
 			_receiveQueue1 = new ReceivingQueue();
-			//_receiveQueue1.RegisterModule(NetworkingGlobals.whiteboardName, NetworkingGlobals.whiteboardPriority);
 
 			_socketListener1 = new SocketListener(_receiveQueue1, _clientSocket1);
 			_socketListener1.Start();
 		}
 
-		[TearDown]
-		public void TearDown()
-		{
-			_clientSocket1.Close();
-			_serverSocket1.Close();
-			_socketListener1.Stop();
-			_sendQueueListenerServer.Stop();
-		}
-
-		[Test]
+		[Fact]
 		public void BroadcastSendTest()
 		{
 			_receiveQueue2 = new ReceivingQueue();
-			//_receiveQueue2.RegisterModule(NetworkingGlobals.whiteboardName, NetworkingGlobals.whiteboardPriority);
 
 			var t1 = Task.Run(() => 
 			{
@@ -99,7 +81,7 @@ namespace Networking.Sockets.Test
 				_clientIdToSocket["2"] = _serverSocket2;
 			});
 			Task.WaitAll(t1, t2);
-			_socketListener2 = new SocketListener(_receiveQueue1, _clientSocket2);
+			_socketListener2 = new SocketListener(_receiveQueue2, _clientSocket2);
 			_socketListener2.Start();
 			var data = "Test string";
 			var sendPacket = new Packet(data, null, NetworkingGlobals.whiteboardName);
@@ -108,26 +90,20 @@ namespace Networking.Sockets.Test
 			{
 			}
 			var receivedPacket = _receiveQueue1.Dequeue();
-			Assert.Multiple(() =>
-			{
-				Assert.AreEqual(sendPacket.getSerializedData(), receivedPacket.getSerializedData());
-				Assert.AreEqual(sendPacket.getModuleOfPacket(), receivedPacket.getModuleOfPacket());
-			});
+			Assert.Equal(sendPacket.getSerializedData(), receivedPacket.getSerializedData());
+			Assert.Equal(sendPacket.getModuleOfPacket(), receivedPacket.getModuleOfPacket());
 			while (_receiveQueue2.IsEmpty())
 			{
 			}
-			var receivedPacket2 = _receiveQueue1.Dequeue();
-			Assert.Multiple(() =>
-			{
-				Assert.AreEqual(sendPacket.getSerializedData(), receivedPacket2.getSerializedData());
-				Assert.AreEqual(sendPacket.getModuleOfPacket(), receivedPacket2.getModuleOfPacket());
-			});
+			var receivedPacket2 = _receiveQueue2.Dequeue();
+			Assert.Equal(sendPacket.getSerializedData(), receivedPacket2.getSerializedData());
+			Assert.Equal(sendPacket.getModuleOfPacket(), receivedPacket2.getModuleOfPacket());
 			_serverSocket2.Close();
 			_socketListener2.Stop();
 			_clientSocket2.Close();
 		}
 
-		[Test]
+		[Fact]
 		public void SinglePacketUnicastTest()
 		{
 			var data = "Test string";
@@ -137,14 +113,11 @@ namespace Networking.Sockets.Test
 			{
 			}
 			var receivedPacket = _receiveQueue1.Dequeue();
-			Assert.Multiple(() =>
-			{
-				Assert.AreEqual(sendPacket.getSerializedData(), receivedPacket.getSerializedData());
-				Assert.AreEqual(sendPacket.getModuleOfPacket(), receivedPacket.getModuleOfPacket());
-			});
+			Assert.Equal(sendPacket.getSerializedData(), receivedPacket.getSerializedData());
+			Assert.Equal(sendPacket.getModuleOfPacket(), receivedPacket.getModuleOfPacket());
 		}
 
-		[Test]
+		[Fact]
 		public void LargeSizePacketSendTest()
 		{
 			var data = NetworkingGlobals.RandomString(1500);
@@ -155,16 +128,18 @@ namespace Networking.Sockets.Test
 			{
 			}
 			var receivedPacket = _receiveQueue1.Dequeue();
-			Assert.Multiple(() =>
-			{
-				Assert.AreEqual(sendPacket.getSerializedData(), receivedPacket.getSerializedData());
-				Assert.AreEqual(sendPacket.getModuleOfPacket(), receivedPacket.getModuleOfPacket());
-			});
+			Assert.Equal(sendPacket.getSerializedData(), receivedPacket.getSerializedData());
+			Assert.Equal(sendPacket.getModuleOfPacket(), receivedPacket.getModuleOfPacket());
 		}
 
-		[Test]
+		[Fact]
 		public void ClientGotDisconnectedTest()
 		{
+			_socketListener1.Stop();
+			while (_socketListener1._thread.IsAlive)
+            {
+				Thread.Sleep(100);
+            }
 			_clientSocket1.Close();
 			_clientSocket1.Dispose();
 			var data = "Test string";
@@ -172,7 +147,7 @@ namespace Networking.Sockets.Test
 			_sendQueue.Enqueue(sendPacket);
 			var whiteBoardHandler = (FakeNotificationHandler) _subscribedModules[NetworkingGlobals.whiteboardName];
 			whiteBoardHandler.Wait();
-			Assert.AreEqual(NotificationEvents.OnClientLeft, whiteBoardHandler.Event);
+			Assert.Equal(NotificationEvents.OnClientLeft, whiteBoardHandler.Event);
 		}
 	}
 }
