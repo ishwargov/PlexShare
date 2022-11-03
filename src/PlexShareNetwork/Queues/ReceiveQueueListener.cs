@@ -1,6 +1,6 @@
 ﻿/// <author> Anish Bhagavatula </author>
 /// <summary>
-/// This file contains the definition of the class 'Receive QueueHandler' which contains functions to spawn a thread to call module handlers
+/// This file contains the definition of the class 'ReceiveQueueListener' which contains functions to spawn a thread to call module handlers
 /// once packets appear in the receiving queue
 /// </summary>
 
@@ -12,6 +12,9 @@ namespace Networking.Queues
 {
     public class ReceiveQueueListener
     {
+        // Lock to ensure mutual exclusion while registering a module
+        private readonly object _lock = new object();
+
         private Dictionary<string, INotificationHandler> _modulesToNotificationHandlerMap;
         private ReceivingQueue _receivingQueue;
         private bool _isRunning;
@@ -21,6 +24,26 @@ namespace Networking.Queues
         {
             this._modulesToNotificationHandlerMap = modulesToNotificationHandlerMap;
             this._receivingQueue = receivingQueue;
+        }
+
+        /// <summary>
+        /// Called by the Communicator submodule of each client in order to use queues
+        /// </summary>
+        public bool RegisterModule(string moduleName, INotificationHandler notificationHandler)
+        {
+            bool isSuccessful = true;
+
+            // Adding the priority of the module into the dictionary
+            lock (_lock)
+            {
+                // If the module name is already taken
+                if (_modulesToNotificationHandlerMap.ContainsKey(moduleName))
+                    isSuccessful = false;
+                else
+                    _modulesToNotificationHandlerMap.Add(moduleName, notificationHandler);
+            }
+
+            return isSuccessful;
         }
 
         /// <summary>
