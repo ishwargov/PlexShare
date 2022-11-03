@@ -9,11 +9,11 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using PlexShareNetworking.Queues;
-using PlexShareNetworking.Serialization;
+using PlexShareNetwork.Queues;
+using PlexShareNetwork.Serialization;
 using Xunit;
 
-namespace PlexShareNetworking.Sockets.Tests
+namespace PlexShareNetwork.Sockets.Tests
 {
 	public class SocketListenerTest
 	{

@@ -4,15 +4,15 @@
 /// This file contains the class definition of SocketListener.
 /// </summary>
 
-using PlexShareNetworking.Queues;
-using PlexShareNetworking.Serialization;
+using PlexShareNetwork.Queues;
+using PlexShareNetwork.Serialization;
 using System;
 using System.Diagnostics;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 
-namespace PlexShareNetworking.Sockets
+namespace PlexShareNetwork.Sockets
 {
 	public class SocketListener
 	{

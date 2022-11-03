@@ -3,11 +3,11 @@
 /// This file contains all the tests written for the Serializer module
 /// </summary>
 
-using PlexShareNetworking.Queues;
+using PlexShareNetwork.Queues;
 using System.Collections.Generic;
 using Xunit;
 
-namespace PlexShareNetworking.Serialization.Tests
+namespace PlexShareNetwork.Serialization.Tests
 {
     public class SerializerTests
     {

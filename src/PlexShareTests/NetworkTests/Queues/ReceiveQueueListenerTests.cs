@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Xunit;
 
-namespace PlexShareNetworking.Queues.Tests
+namespace PlexShareNetwork.Queues.Tests
 {
     public class ReceiveQueueListenerTests
     {

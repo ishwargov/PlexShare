@@ -4,7 +4,7 @@
 /// 'Communicator' and the 'ReceivingQueueListener' need
 /// </summary>
 
-namespace PlexShareNetworking.Queues
+namespace PlexShareNetwork.Queues
 {
     public interface IQueue
     {

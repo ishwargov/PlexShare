@@ -4,7 +4,7 @@
 /// This file contains the ICommunicator interface.
 /// </summary>
 
-namespace PlexShareNetworking
+namespace PlexShareNetwork.Communication
 {
 	public interface ICommunicator
 	{

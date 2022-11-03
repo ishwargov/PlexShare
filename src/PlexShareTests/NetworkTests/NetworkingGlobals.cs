@@ -3,12 +3,13 @@
 /// This file contains all the global constants used by testing files
 /// </summary>
 
+using PlexShareNetwork.Communication;
 using System;
 using System.Dynamic;
 using System.Linq;
 using System.Threading;
 
-namespace PlexShareNetworking
+namespace PlexShareNetwork
 {
 	public static class NetworkingGlobals
 	{

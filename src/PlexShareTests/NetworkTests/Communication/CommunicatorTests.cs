@@ -6,7 +6,7 @@
 
 using Xunit;
 
-namespace PlexShareNetworking.Communication.Test
+namespace PlexShareNetwork.Communication.Test
 {
 	public class CommunicatorTest
 	{

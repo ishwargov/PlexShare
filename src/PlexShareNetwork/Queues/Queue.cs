@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 
-namespace PlexShareNetworking.Queues
+namespace PlexShareNetwork.Queues
 {
     public class Queue : IQueue
     {

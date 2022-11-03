@@ -4,7 +4,7 @@
 /// packets need to be transmitted from the receiving queue and when a specific module subscribes and unsubscribes
 /// </summary>
 
-namespace PlexShareNetworking
+namespace PlexShareNetwork
 {
     public interface INotificationHandler
     {
