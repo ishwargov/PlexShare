@@ -1,4 +1,6 @@
-﻿using System;
+﻿using PlexShareContent.DataModels;
+using PlexShareContent.Enums;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -16,10 +18,10 @@ namespace PlexShareContent.Server
             _db = contentDB;
         }
 
-        public MessageData Receive(MessageData msg)
+        public ContentData Receive(ContentData msg)
         {
             Trace.WriteLine("[FileServer] Received message from ContentServer");
-            if (msg.Event == MessageEvent.NewMessage)
+            if (msg.Event == MessageEvent.New)
             {
                 Trace.WriteLine("[FileServer] Event is NewMessage, Saving File");
                 return StoreFile(msg);
@@ -36,9 +38,9 @@ namespace PlexShareContent.Server
             }
         }
 
-        public MessageData StoreFile(MessageData msg)
+        public ContentData StoreFile(ContentData msg)
         {
-            msg = _db.FileStore(msg).Clone();
+            msg = _db.FileStore(msg).Copy();
             // the object is going to be typecasted to ReceiveMessageData
             // to be sent to clients, so make filedata null because the filedata
             // will continue to be in memory despite the typecasting
@@ -46,24 +48,24 @@ namespace PlexShareContent.Server
             return msg;
         }
 
-        public MessageData FileDownload(MessageData msg)
+        public ContentData FileDownload(ContentData msg)
         {
-            var receivedMsg = _db.FilesFetch(msg.MessageId);
+            var receivedMsg = _db.FilesFetch(msg.MessageID);
 
             // If null is returned by contentDatabase that means it doesn't exist, return null
             if (receivedMsg == null)
             {
-                Trace.WriteLine($"[FileServer] File not found messageId: {msg.MessageId}.");
+                Trace.WriteLine($"[FileServer] File not found messageId: {msg.MessageID}.");
                 return null;
             }
 
             // Clone the object and add the required fields
-            var downloadMsg = receivedMsg.Clone();
+            var downloadMsg = receivedMsg.Copy();
 
             // store file path on which the file will be downloaded on the client's system
-            downloadMsg.Message = msg.Message;
+            downloadMsg.Data = msg.Data;
             downloadMsg.Event = MessageEvent.Download;
-            downloadMsg.SenderId = msg.SenderId;
+            downloadMsg.SenderID = msg.SenderID;
             return downloadMsg;
         }
     }

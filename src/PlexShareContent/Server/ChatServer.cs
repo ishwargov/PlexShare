@@ -1,3 +1,5 @@
+using PlexShareContent.DataModels;
+using PlexShareContent.Enums;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,11 +15,11 @@ namespace PlexShareContent.Server
             _contentDB = db;
         }
 
-        public MessageData Receive(MessageData msg)
+        public ContentData Receive(ContentData msg)
         {
-            ReceiveMessageData receivedMsg;
+            ReceiveContentData receivedMsg;
             Trace.WriteLine("[ChatServer] Received message from ContentServer");
-            if(msg.Event == MessageEvent.NewMessage)
+            if(msg.Event == MessageEvent.New)
             {
                 Trace.WriteLine("[ChatServer] Event is NewMessage, Adding message to existing Thread");
                 return _contentDB.MessageStore(msg);
@@ -25,38 +27,41 @@ namespace PlexShareContent.Server
             else if(msg.Event == MessageEvent.Star)
             {
                 Trace.WriteLine("[ChatServer] Event is Star, Starring message in existing Thread");
-                receivedMsg = StarMessage(msg.ReplyThreadId, msg.MessageId);
+                receivedMsg = StarMessage(msg.ReplyThreadID, msg.MessageID);
             }
-            else if(msg.Event == MessageEvent.Update)
+            else if(msg.Event == MessageEvent.Edit)
             {
                 Trace.WriteLine("[ChatServer] Event is Update, Updating message in existing Thread");
-                receivedMsg = UpdateMessage(msg.ReplyThreadId, msg.MessageId,
-                    msg.Message);
+                receivedMsg = UpdateMessage(msg.ReplyThreadID, msg.MessageID,
+                    msg.Data);
             }
             else
             {
                 Trace.WriteLine($"[ChatServer] invalid event");
                 return null;
             }
-            if (!receivedMsg) return receivedMsg;
-
-            var notifyMsgData = new MessageData(receivedMsg)
+            if (receivedMsg == null)
             {
-                Event = messageData.Event
+                return null;
+            }
+
+            var notifyMsgData = new ContentData(receivedMsg)
+            {
+                Event = msg.Event
             };
             return notifyMsgData;
         }
-        public List<ChatContext> GetMessages()
+        public List<ChatThread> GetMessages()
         {
             return _contentDB.GetChatContexts();
         }
 
-        public ReceiveMessageData StarMessage(int replyId, int msgId)
+        public ReceiveContentData StarMessage(int replyId, int msgId)
         {
             var msg = _contentDB.GetMessage(replyId, msgId);
 
             // If ContentDatabase returns null that means the message doesn't exists, return null
-            if (!msg)
+            if (msg == null)
             {
                 Trace.WriteLine($"[ChatServer] Message not found replyThreadID: {replyId}, messageId: {msgId}.");
                 return null;
@@ -67,19 +72,19 @@ namespace PlexShareContent.Server
             return msg;
         }
 
-        private ReceiveMessageData UpdateMessage(int replyId, int msgId, string updatedMsg)
+        private ReceiveContentData UpdateMessage(int replyId, int msgId, string updatedMsg)
         {
             var message = _contentDB.GetMessage(replyId, msgId);
 
             // If ContentDatabase returns null that means the message doesn't exists, return null
-            if (!message)
+            if (message == null)
             {
                 Trace.WriteLine($"[ChatServer] Message not found replyThreadID: {replyId}, messageId: {msgId}.");
                 return null;
             }
 
             // Update the message and return the updated message
-            message.Message = updatedMsg;
+            message.Data = updatedMsg;
             return message;
         }
 

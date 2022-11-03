@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PlexShareContent.DataModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,27 +10,27 @@ namespace PlexShareContent.Server
 {
     public class ContentDB
     {
-        private readonly List<ChatContext> _chatContext;
+        private readonly List<ChatThread> _chatContext;
         private readonly Dictionary<int, int> _chatsMap;
-        private readonly Dictionary<int, MessageData> _files;
+        private readonly Dictionary<int, ContentData> _files;
 
         public ContentDB()
         {
-            _files = new Dictionary<int, MessageData>();
-            _chatContext = new List<ChatContext>();
+            _files = new Dictionary<int, ContentData>();
+            _chatContext = new List<ChatThread>();
             _chatsMap = new Dictionary<int, int>();
             IdGenerator.ResetChatId();
             IdGenerator.ResetMsgId();
         }
 
-        public MessageData FileStore(MessageData msg)
+        public ContentData FileStore(ContentData msg)
         {
-            var message = StoreMessage(msg);
-            _files[message.MessageId] = msg;
+            var message = MessageStore(msg);
+            _files[message.MessageID] = msg;
             return message;
         }
 
-        public MessageData FilesFetch(int msgId)
+        public ContentData FilesFetch(int msgId)
         {
             // If requested messageId is not in the map return null
             if (!_files.ContainsKey(msgId))
@@ -37,53 +38,57 @@ namespace PlexShareContent.Server
             return _files[msgId];
         }
 
-        public MessageData MessageStore(MessageData msg)
+        public ContentData MessageStore(ContentData msg)
         {
-            msg.MessageId = IdGenerator.GetMsgId();
+            msg.MessageID = IdGenerator.GetMsgId();
             // If message is a part of already existing chatContext
-            if (_chatsMap.ContainsKey(msg.ReplyThreadId))
+            if (_chatsMap.ContainsKey(msg.ReplyThreadID))
             {
-                var threadIndex = _chatsMap[msg.ReplyThreadId];
+                var threadIndex = _chatsMap[msg.ReplyThreadID];
                 var chatContext = _chatContext[threadIndex];
-                ReceiveMessageData message = msg.Clone();
+                ReceiveContentData message = msg.Copy();
                 chatContext.AddMessage(message);
             }
             // else create a new chatContext and add the message to it
             else
             {
-                var chatContext = new ChatContext();
-                var newThreadId = IdGenerator.GetChatContextId();
-                msg.ReplyThreadId = newThreadId;
-                ReceiveMessageData message = msg.Clone();
+                var chatContext = new ChatThread();
+                var newThreadId = IdGenerator.GetChatId();
+                msg.ReplyThreadID = newThreadId;
+                ReceiveContentData message = msg.Copy();
                 chatContext.AddMessage(message);
 
                 _chatContext.Add(chatContext);
-                _chatsMap[chatContext.ThreadId] = _chatContext.Count - 1;
+                _chatsMap[chatContext.ThreadID] = _chatContext.Count - 1;
             }
 
             return msg;
         }
 
-        public List<ChatContext> GetChatContexts()
+        public List<ChatThread> GetChatContexts()
         {
             return _chatContext;
         }
 
-        public ReceiveMessageData GetMessage(int threadId, int msgId)
+        public ReceiveContentData GetMessage(int threadId, int msgId)
         {
             // If given ChatContext or Message doesn't exists return null
-            if (!_chatsMap.ContainsKey(threadId)) 
+            if (!_chatsMap.ContainsKey(threadId))
+            {
                 return null;
+            } 
 
             var threadIndex = _chatsMap[threadId];
             var chat = _chatContext[threadIndex];
 
             // If given ChatContext doesn't contain the message return null
-            if (!chat.ContainsMessageId(msgId)) 
+            if (!chat.ContainsMessageID(msgId))
+            {
                 return null;
-
-            var messageIndex = chat.RetrieveMessageIndex(msgId);
-            return chat.MsgList[messageIndex];
+            }
+                
+            var messageIndex = chat.GetMessageIndex(msgId);
+            return chat.MessageList[messageIndex];
         }
     }
 }
