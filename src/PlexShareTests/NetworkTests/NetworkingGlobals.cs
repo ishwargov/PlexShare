@@ -8,7 +8,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Threading;
 
-namespace Networking
+namespace PlexShareNetworking
 {
 	public static class NetworkingGlobals
 	{

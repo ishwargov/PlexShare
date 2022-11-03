@@ -3,7 +3,7 @@
 /// This file contains the class definition of a packet
 /// </summary>
 
-namespace Networking.Queues
+namespace PlexShareNetworking.Queues
 {
     public class Packet
     {
@@ -16,6 +16,7 @@ namespace Networking.Queues
         // Module which the packet belongs to
         public string _moduleOfPacket;
 
+        // Empty constructor
         public Packet()
         { }
 

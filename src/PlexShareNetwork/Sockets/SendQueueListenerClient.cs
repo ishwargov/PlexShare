@@ -4,15 +4,15 @@
 /// This file contains the class definition of SendQueueListenerClient.
 /// </summary>
 
-using Networking.Queues;
-using Networking.Serialization;
+using PlexShareNetworking.Queues;
+using PlexShareNetworking.Serialization;
 using System;
 using System.Diagnostics;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 
-namespace Networking
+namespace PlexShareNetworking.Sockets
 {
 	public class SendQueueListenerClient
 	{

@@ -4,7 +4,8 @@
 /// This file contains the class definition of CommunicatorServer.
 /// </summary>
 
-using Networking.Queues;
+using PlexShareNetworking.Queues;
+using PlexShareNetworking.Sockets;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,7 +14,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
-namespace Networking
+namespace PlexShareNetworking.Communication
 {
 	public class CommunicatorServer : ICommunicator
 	{

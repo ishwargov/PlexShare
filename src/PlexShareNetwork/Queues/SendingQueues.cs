@@ -6,9 +6,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 
-namespace Networking.Queues
+namespace PlexShareNetworking.Queues
 {
     public class SendingQueues
     {
@@ -68,7 +69,7 @@ namespace Networking.Queues
             // If the module is not registered at all
             if (!containsKey)
             {
-                Console.WriteLine("Module %s is not registered.\n", moduleName);
+                Trace.WriteLine($"Module {moduleName} is not registered.\n");
 
                 // Returning that the enqueueing failed
                 return false;

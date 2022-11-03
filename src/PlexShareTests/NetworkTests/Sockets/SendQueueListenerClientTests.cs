@@ -6,9 +6,16 @@
 
 using System.Net;
 using System.Net.Sockets;
+<<<<<<< HEAD
 using Networking.Queues;
+=======
+using System.Threading;
+using System.Threading.Tasks;
+using PlexShareNetworking.Queues;
+using Xunit;
+>>>>>>> dc6acbab9eb262f5ce406601498debc39e50f639
 
-namespace Networking.Sockets.Tests
+namespace PlexShareNetworking.Sockets.Tests
 {
 	public class SendQueueListenerClientTest
 	{
