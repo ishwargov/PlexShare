@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PlexShareDashboard.Dashboard.Server.Telemetry;
+using PlexShareDashboard.Dashboard;
 
 namespace PlexShare.Dashboard
 {

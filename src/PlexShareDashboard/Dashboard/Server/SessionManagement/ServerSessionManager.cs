@@ -6,7 +6,7 @@ using System.Linq;
 using PlexShareContent;
 using PlexShareDashboard;
 using Dashboard;
-using PlexShareDashboard.Dashboard.Server.Summary;
+//using PlexShareDashboard.Dashboard.Server.Summary;
 using PlexShareDashboard.Dashboard.Server.Telemetry;
 using Networking;
 using PlexShare.Dashboard;
@@ -15,6 +15,7 @@ using PlexShareScreenshare;
 using PlexShareWhiteboard;
 using PlexShareDashboard.Dashboard.Server.SessionManagement;
 using Networking.Serialization;
+using PlexShareDashboard.Dashboard;
 
 namespace Dashboard.Server.SessionManagement
 {
@@ -130,12 +131,13 @@ namespace Dashboard.Server.SessionManagement
                 case "getSummary":
                     GetSummaryProcedure(deserializedObj);
                     return;
+                    
 
                 case "getAnalytics":
                     GetAnalyticsProcedure(deserializedObj);
                     return;
+                    
                     */
-
 
                 case "removeClient":
                     RemoveClientProcedure(deserializedObj);
@@ -241,10 +243,10 @@ namespace Dashboard.Server.SessionManagement
         }
 
 
-
+/*
         //     Used to create a summary by fetching all the chats from the
         //     content moudule and then calling the summary module to create a summary
-     /*   private SummaryData CreateSummary()
+        private SummaryData CreateSummary()
         {
             try
             {
@@ -263,8 +265,8 @@ namespace Dashboard.Server.SessionManagement
                 return null;
             }
         }
-     */
-
+     
+*/
 
 
 
@@ -304,7 +306,7 @@ namespace Dashboard.Server.SessionManagement
         }
 
 
-        /*
+/*        
         //     Fetches the chats from the content moudle and then asks telemetry to generate analytics on it.
         //     The analytics created are then sent to the client side again.
         private void GetAnalyticsProcedure(ClientToServerData receivedObject)
@@ -330,8 +332,8 @@ namespace Dashboard.Server.SessionManagement
             return _sessionSummary;
         }
 
-
         */
+        
 
         //this function is just for testing 
         public SessionData GetSessionData()
