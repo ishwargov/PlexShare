@@ -17,15 +17,15 @@ namespace PlexShareNetworking.Sockets
 	public class SocketListener
 	{
 		// max size of the send buffer
-		private const int bufferSize = 1000000;
+		private const int bufferSize = 1024 * 1024;
 		// create the buffer
-		private byte[] buffer = new byte[bufferSize];
+		private readonly byte[] buffer = new byte[bufferSize];
 
 		// object to store the the received message, StringBuilder type is mutable while string type is not
-		private readonly StringBuilder _message = new();
+		private readonly StringBuilder _receivedString = new();
 
         // serializer object to deserialize the received string
-        Serializer serializer = new();
+        readonly Serializer _serializer = new();
 
         // the thread which will be running
         public Thread _thread;
@@ -86,11 +86,10 @@ namespace PlexShareNetworking.Sockets
 				int bytesCount = _socket.EndReceive(ar);
 				if (bytesCount > 0)
 				{
-					_message.Append(Encoding.ASCII.GetString(buffer, 0, bytesCount));
-					string packets = _message.ToString();
-					packets = ProcessPackets(packets); // process the packets received so far
-					_message.Clear();
-					_message.Append(packets); // append the remaining packets tring to message
+					_receivedString.Append(Encoding.ASCII.GetString(buffer, 0, bytesCount));
+					string remainingString = ProcessReceivedString(_receivedString.ToString());
+					_receivedString.Clear();
+					_receivedString.Append(remainingString);
 				}
 				_socket.BeginReceive(buffer, 0, bufferSize, 0, ReceiveCallback, null);
 			}
@@ -100,45 +99,26 @@ namespace PlexShareNetworking.Sockets
 			}
 		}
 
-		/// <summary>
-		/// This menthod processes the packets from the given packets string, and
-		/// removes the escape characters from each packet and calls the EnqueuePacket() function to enqueue the packet.
-		/// </summary>
-		/// <param name="packets"> The string containing packets. </param>
-		/// <returns> The remaining packets string after processing the packets from the string. </returns>
-		private string ProcessPackets(string packets)
+        /// <summary>
+        /// This menthod processes the packets from the given packets string, and
+        /// removes the escape characters from each packet and calls the EnqueuePacket() function to enqueue the packet.
+        /// </summary>
+        /// <param name="receivedString"> The string containing packets. </param>
+        /// <returns> The remaining string string after processing the packets from the string. </returns>
+        private string ProcessReceivedString(string receivedString)
 		{
-			if (packets.Length < 12)
-			{
-				return packets;
-			}
-			var isPacket = false;
-			do
-			{
-				var firstFlagIndex = packets.IndexOf("[FLAG]", StringComparison.Ordinal);
-				var nextFlagIndex = packets.IndexOf("[FLAG]", firstFlagIndex + 5, StringComparison.Ordinal);
-				while (!isPacket && nextFlagIndex != -1)
-				{
-					// if last flag has an escape before it then it is not the last flag, so find the flag after it
-					if (packets[(nextFlagIndex - 5)..nextFlagIndex] == "[ESC]")
-					{
-						nextFlagIndex = packets.IndexOf("[FLAG]", nextFlagIndex + 6, StringComparison.Ordinal);
-						continue;
-					}
-					isPacket = true;
-				}
-				if (isPacket)
-				{
-					string packetString = packets[(firstFlagIndex + 6)..nextFlagIndex];
-					packets = packets[(nextFlagIndex + 6)..]; // remove the first packet from the packets string
-					packetString = packetString.Replace("[ESC][ESC]", "[ESC]");
-					packetString = packetString.Replace("[ESC][FLAG]", "[FLAG]");
-                    Packet packet = serializer.Deserialize<Packet>(packetString);
-                    Trace.WriteLine($"[Networking] Received data from module {packet._moduleOfPacket}.");
-                    _queue.Enqueue(packet);
-                }
-			} while(isPacket && packets.Length > 12);
-			return packets; // return the remaining packets string
+            int packetBeginIndex = receivedString.IndexOf("BEGIN", StringComparison.Ordinal) + 5;
+            int packetEndIndex = receivedString.IndexOf("END", StringComparison.Ordinal);
+            while (packetBeginIndex != -1 && packetEndIndex != -1)
+            {
+                Packet packet = _serializer.Deserialize<Packet>(receivedString[packetBeginIndex..packetEndIndex]);
+                receivedString = receivedString[(packetEndIndex + 3)..]; // remove the first packet from the packets string
+                Trace.WriteLine($"[Networking] Received data from module {packet._moduleOfPacket}.");
+                _queue.Enqueue(packet);
+                packetBeginIndex = receivedString.IndexOf("BEGIN", StringComparison.Ordinal) + 5;
+                packetEndIndex = receivedString.IndexOf("END", StringComparison.Ordinal);
+            }
+			return receivedString; // return the remaining packets string
 		}
 	}
 }

@@ -17,73 +17,65 @@ namespace PlexShareNetworking.Sockets.Tests
 {
 	public class SocketListenerTest
 	{
-		private ReceivingQueue _queue;
-		private Machine _server;
-		private TcpClient _serverSocket;
-		private TcpClient _clientSocket;
-		private SocketListener _socketListener;
-		
-		public SocketListenerTest()
+		private readonly ReceivingQueue _receivingQueue = new();
+		private readonly Machine _server = new FakeServer();
+        private readonly TcpClient _clientSocket = new();
+        private TcpClient _serverSocket;
+		private readonly SocketListener _socketListener;
+        private readonly Serializer _serializer = new();
+
+        public SocketListenerTest()
 		{
-			_server = new FakeServer();
 			var IPAndPort = _server.Communicator.Start().Split(":");
-			var IP = IPAddress.Parse(IPAndPort[0]);
-			var port = int.Parse(IPAndPort[1]);
+			IPAddress IP = IPAddress.Parse(IPAndPort[0]);
+			int port = int.Parse(IPAndPort[1]);
 			_server.Communicator.Stop();
-			var serverSocket = new TcpListener(IP, port);
+            _clientSocket.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, true);
+            TcpListener serverSocket = new TcpListener(IP, port);
 			serverSocket.Start();
-			_clientSocket = new TcpClient();
-			_clientSocket.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, true);
-			var t1 = Task.Run(() => { _clientSocket.Connect(IP, port); });
-			var t2 = Task.Run(() => { _serverSocket = serverSocket.AcceptTcpClient(); });
+			Task t1 = Task.Run(() => { _clientSocket.Connect(IP, port); });
+            Task t2 = Task.Run(() => { _serverSocket = serverSocket.AcceptTcpClient(); });
 			Task.WaitAll(t1, t2);
-			_queue = new ReceivingQueue();
-			_socketListener = new SocketListener(_queue, _serverSocket);
+			_socketListener = new SocketListener(_receivingQueue, _serverSocket);
 			_socketListener.Start();
-		}
+        }
 
 		[Fact]
 		public void SinglePacketReceiveTest()
 		{
-			const string data = "Test string";
-			var sendPacket = new Packet (data, null, NetworkingGlobals.whiteboardName);
-            Serializer serializer = new();
-            var pkt = serializer.Serialize(sendPacket);
-            pkt = pkt.Replace("[ESC]", "[ESC][ESC]");
-			pkt = pkt.Replace("[FLAG]", "[ESC][FLAG]");
-			pkt = "[FLAG]" + pkt + "[FLAG]";
+			Packet sendPacket = new Packet("Test string", "Test Destination", "Test Module");
+            string sendString = "BEGIN" + _serializer.Serialize(sendPacket) + "END";
+            _clientSocket.Client.Send(Encoding.ASCII.GetBytes(sendString));
 
-			var stream = _clientSocket.GetStream();
-			stream.Write(Encoding.ASCII.GetBytes(pkt), 0, pkt.Length);
-			stream.Flush();
-			while (_queue.IsEmpty())
+            while (_receivingQueue.IsEmpty())
 			{
-			}
-			var receivedPacket = _queue.Dequeue();
+                Thread.Sleep(100);
+            }
+            Assert.True(_receivingQueue.Size() == 1);
+
+            Packet receivedPacket = _receivingQueue.Dequeue();
 			Assert.Equal(sendPacket.getSerializedData(), receivedPacket.getSerializedData());
-			Assert.Equal(sendPacket.getModuleOfPacket(), receivedPacket.getModuleOfPacket());
+            Assert.Equal(sendPacket.getDestination(), receivedPacket.getDestination());
+            Assert.Equal(sendPacket.getModuleOfPacket(), receivedPacket.getModuleOfPacket());
 		}
 
 		[Fact]
 		public void LargeSizePacketReceiveTest()
 		{
-			var data = NetworkingGlobals.RandomString(4000);
-			var sendPacket = new Packet (data, null, NetworkingGlobals.whiteboardName);
-            Serializer serializer = new();
-            var pkt = serializer.Serialize(sendPacket);
-			pkt = pkt.Replace("[ESC]", "[ESC][ESC]");
-			pkt = pkt.Replace("[FLAG]", "[ESC][FLAG]");
-			pkt = "[FLAG]" + pkt + "[FLAG]";
+			Packet sendPacket = new Packet(NetworkingGlobals.RandomString(5000), "Test Destination", "Test Module");
+            string sendString = "BEGIN" + _serializer.Serialize(sendPacket) + "END";
+            _clientSocket.Client.Send(Encoding.ASCII.GetBytes(sendString));
 
-			var stream = _clientSocket.GetStream();
-			stream.Write(Encoding.ASCII.GetBytes(pkt), 0, pkt.Length);
-			stream.Flush();
-			while (_queue.IsEmpty())
+			while (_receivingQueue.IsEmpty())
 			{
-			}
-			var receivedPacket = _queue.Dequeue();
+                Thread.Sleep(100);
+            }
+            Assert.True(_receivingQueue.Size() == 1);
+
+            Packet receivedPacket = _receivingQueue.Dequeue();
 			Assert.Equal(sendPacket.getSerializedData(), receivedPacket.getSerializedData());
-			Assert.Equal(sendPacket.getModuleOfPacket(), receivedPacket.getModuleOfPacket());
+            Assert.Equal(sendPacket.getDestination(), receivedPacket.getDestination());
+            Assert.Equal(sendPacket.getModuleOfPacket(), receivedPacket.getModuleOfPacket());
 		}
 
 		[Fact]
@@ -91,28 +83,24 @@ namespace PlexShareNetworking.Sockets.Tests
 		{
 			for (var i = 1; i <= 10; i++)
 			{
-				var data = "Test string" + i;
-				var sendPacket = new Packet(data, null, NetworkingGlobals.whiteboardName);
-                Serializer serializer = new();
-                var pkt = serializer.Serialize(sendPacket);
-				pkt = pkt.Replace("[ESC]", "[ESC][ESC]");
-				pkt = pkt.Replace("[FLAG]", "[ESC][FLAG]");
-				pkt = "[FLAG]" + pkt + "[FLAG]";
-				_clientSocket.Client.Send(Encoding.ASCII.GetBytes(pkt));
+				Packet sendPacket = new Packet("Test string" + i, "Test Destination" + i, "Test Module" + i);
+                string sendString = "BEGIN" + _serializer.Serialize(sendPacket) + "END";
+                _clientSocket.Client.Send(Encoding.ASCII.GetBytes(sendString));
 			}
 
-			while (_queue.Size() < 10)
+			while (_receivingQueue.Size() < 10)
 			{
 				Thread.Sleep(1000);
 			}
+            Assert.True(_receivingQueue.Size() == 10);
 
-			for (var i = 1; i <= 10; i++)
+            for (var i = 1; i <= 10; i++)
 			{
-				var packet = _queue.Dequeue();
-				var data = "Test string" + i;
-				Assert.Equal(data, packet.getSerializedData());
-			}
-
+				Packet receivedPacket = _receivingQueue.Dequeue();
+				Assert.Equal("Test string" + i, receivedPacket.getSerializedData());
+                Assert.Equal("Test Destination" + i, receivedPacket.getDestination());
+                Assert.Equal("Test Module" + i, receivedPacket.getModuleOfPacket());
+            }
 		}
 	}
 }

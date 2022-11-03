@@ -32,15 +32,18 @@ namespace PlexShareNetworking.Sockets
 		// variable to store the dictionary which maps module identifiers to their respective notification handlers
 		private readonly Dictionary<string, INotificationHandler> _subscribedModules;
 
-		/// <summary>
-		/// It is the Constructor which initializes the queue, clientIdSocket and subscribedModules
-		/// </summary>
-		/// <param name="queue"> The the send queue. </param>
-		/// <param name="clientIdToSocket"> The dictionary which maps clientIds to their respective sockets. </param>
-		/// <param name="subscribedModules">
-		/// The dictionary which maps module identifiers to their respective notification handlers.
-		/// </param>
-		public SendQueueListenerServer(SendingQueues queue, Dictionary<string, TcpClient> clientIdToSocket,
+        // serializer object to serialize the packet to send
+        readonly Serializer _serializer = new();
+
+        /// <summary>
+        /// It is the Constructor which initializes the queue, clientIdSocket and subscribedModules
+        /// </summary>
+        /// <param name="queue"> The the send queue. </param>
+        /// <param name="clientIdToSocket"> The dictionary which maps clientIds to their respective sockets. </param>
+        /// <param name="subscribedModules">
+        /// The dictionary which maps module identifiers to their respective notification handlers.
+        /// </param>
+        public SendQueueListenerServer(SendingQueues queue, Dictionary<string, TcpClient> clientIdToSocket,
 			Dictionary<string, INotificationHandler> subscribedModules)
 		{
 			_queue = queue;
@@ -83,21 +86,14 @@ namespace PlexShareNetworking.Sockets
 				_queue.WaitForPacket();
 				while (!_queue.IsEmpty())
 				{
-					var packet = _queue.Dequeue();
+					Packet packet = _queue.Dequeue();
+                    string sendString = "BEGIN" + _serializer.Serialize(packet) + "END";
 
-                    /// we put flag string at the start and end of the packet, and we need to put
-                    /// escape string before the flag and escape strings which are in the packet
-                    Serializer serializer = new();
-                    var pkt = serializer.Serialize(packet); 
-                    pkt = pkt.Replace("[ESC]", "[ESC][ESC]");
-					pkt = pkt.Replace("[FLAG]", "[ESC][FLAG]");
-					pkt = "[FLAG]" + pkt + "[FLAG]";
-
-					// get the socket corresponding to the destination in the packet
-					var sockets = DestinationToSocket(packet);
+                    // get the socket corresponding to the destination in the packet
+                    var sockets = DestinationToSocket(packet);
 					foreach (var socket in sockets)
 					{
-						var bytes = Encoding.ASCII.GetBytes(pkt);
+						var bytes = Encoding.ASCII.GetBytes(sendString);
 						try
 						{
 							var client = socket.Client;
