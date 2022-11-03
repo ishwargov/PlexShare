@@ -201,6 +201,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             EngagementRateSetter = "94.2";
             TotalParticipantsCountSetter = 200;
             SessionModeSetter = "LabMode";
+            SessionScoreSetter = 40;
 
 
 
@@ -253,6 +254,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             EngagementRateSetter = "95%";
             NonAttentiveUsersSetter = 50;
             AttentiveUsersSetter = 50;
+            SessionScoreSetter = 100;
             //TotalParticipantsCount = 200;
 
             //update the engagement rate 
@@ -388,7 +390,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         //function to calculate the number of attentive and non attentive users in the meeting 
         public void CalculatePercentageOfAttentiveAndNonAttentiveUsers(int currNonAttentiveUsers, int currAttentiveUsers)
         {
-            int nonAttentivePercentage = (currNonAttentiveUsers) / TotalParticipantsCount * 100;
+            int nonAttentivePercentage = (currNonAttentiveUsers) / TotalParticipantsCountSetter * 100;
             int attentivePercentage = 100 - nonAttentivePercentage;
 
             //updating the percentages
@@ -413,8 +415,8 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             {
                 //we have to update the participants list and SessionMode
                 UpdateParticipantsList(newSessionData.users);
-                SessionMode = newSessionData.sessionMode;
-                TotalParticipantsCount = ParticipantsList.Count;
+                SessionModeSetter = newSessionData.sessionMode;
+                TotalParticipantsCountSetter = ParticipantsList.Count;
 
             }
 
@@ -436,7 +438,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             var currScore = sessionAnalytics.sessionSummary.score;
 
 
-            SessionScore = currScore;
+            SessionScoreSetter = currScore;
 
             //we have to update all the lists so that we can show to the dahsboard
             UpdateUserCountVsTimeStamp(sessionAnalytics.userCountVsTimeStamp);
@@ -445,7 +447,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
 
             int currNonAttentiveUsers = sessionAnalytics.listOfInSincereMembers.Count;
-            int currAttentiveUsers = TotalParticipantsCount - currNonAttentiveUsers;
+            int currAttentiveUsers = TotalParticipantsCountSetter - currNonAttentiveUsers;
 
             CalculatePercentageOfAttentiveAndNonAttentiveUsers(currNonAttentiveUsers, currAttentiveUsers);
 
@@ -460,7 +462,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         {
             int activeMembers = currChatCountForEachUser.Count;
 
-            float EngagementRate = (float)(activeMembers / TotalParticipantsCount) * 100;
+            float EngagementRate = (float)(activeMembers / TotalParticipantsCountSetter) * 100;
             EngagementRateSetter = EngagementRate.ToString("0") + "%";
 
 
