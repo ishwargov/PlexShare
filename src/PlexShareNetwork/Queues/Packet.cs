@@ -8,13 +8,16 @@ namespace Networking.Queues
     public class Packet
     {
         // Serialized data being transmitted
-        private string _serializedData;
+        public string _serializedData;
 
         // Destination client ID of the packet
-        private string _destination;
+        public string _destination;
 
         // Module which the packet belongs to
-        private string _moduleOfPacket;
+        public string _moduleOfPacket;
+
+        public Packet()
+        { }
 
         public Packet(string serializedData, string destination, string moduleOfPacket)
         {

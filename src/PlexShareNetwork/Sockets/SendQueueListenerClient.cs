@@ -5,6 +5,7 @@
 /// </summary>
 
 using Networking.Queues;
+using Networking.Serialization;
 using System;
 using System.Diagnostics;
 using System.Net.Sockets;
@@ -73,13 +74,14 @@ namespace Networking
 				{
 					var packet = _queue.Dequeue();
 
-					/// we put flag string at the start and end of the packet, and we need to put
-					/// escape string before the flag and escape strings which are in the packet
-					var pkt = packet.getModuleOfPacket() + ":" + packet.getSerializedData();
-					pkt = pkt.Replace("[ESC]", "[ESC][ESC]");
-					pkt = pkt.Replace("[FLAG]", "[ESC][FLAG]");
-					pkt = "[FLAG]" + pkt + "[FLAG]";
-					var bytes = Encoding.ASCII.GetBytes(pkt);
+                    /// we put flag string at the start and end of the packet, and we need to put
+                    /// escape string before the flag and escape strings which are in the packet
+                    Serializer serializer = new();
+                    var pkt = serializer.Serialize(packet);
+                    pkt = pkt.Replace("[ESC]", "[ESC][ESC]");
+                    pkt = pkt.Replace("[FLAG]", "[ESC][FLAG]");
+                    pkt = "[FLAG]" + pkt + "[FLAG]";
+                    var bytes = Encoding.ASCII.GetBytes(pkt);
 					try
 					{
 						_socket.Client.Send(bytes);
