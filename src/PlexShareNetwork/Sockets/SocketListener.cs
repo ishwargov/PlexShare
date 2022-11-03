@@ -5,6 +5,7 @@
 /// </summary>
 
 using Networking.Queues;
+using Networking.Serialization;
 using System;
 using System.Diagnostics;
 using System.Net.Sockets;
@@ -23,8 +24,11 @@ namespace Networking
 		// object to store the the received message, StringBuilder type is mutable while string type is not
 		private readonly StringBuilder _message = new();
 
-		// the thread which will be running
-		public Thread _thread;
+        // serializer object to deserialize the received string
+        Serializer serializer = new();
+
+        // the thread which will be running
+        public Thread _thread;
 		// boolean to tell whether the thread is running or stopped
 		public volatile bool _threadRun;
 
@@ -42,7 +46,6 @@ namespace Networking
 		public SocketListener(ReceivingQueue queue, TcpClient socket)
 		{
 			_queue = queue;
-			socket.GetStream();
 			_socket = socket.Client;
 		}
 
@@ -126,41 +129,16 @@ namespace Networking
 				}
 				if (isPacket)
 				{
-					var packetString = packets[(firstFlagIndex + 6)..nextFlagIndex];
+					string packetString = packets[(firstFlagIndex + 6)..nextFlagIndex];
 					packets = packets[(nextFlagIndex + 6)..]; // remove the first packet from the packets string
 					packetString = packetString.Replace("[ESC][ESC]", "[ESC]");
 					packetString = packetString.Replace("[ESC][FLAG]", "[FLAG]");
-					var packet = PacketStringToPacket(packetString.Split(":"));
-					EnqueuePacket(packet.getSerializedData(), packet.getModuleOfPacket());
-				}
+                    Packet packet = serializer.Deserialize<Packet>(packetString);
+                    Trace.WriteLine($"[Networking] Received data from module {packet._moduleOfPacket}.");
+                    _queue.Enqueue(packet);
+                }
 			} while(isPacket && packets.Length > 12);
 			return packets; // return the remaining packets string
-		}
-
-		/// <summary>
-		/// This function creates a packet from a given packet string.
-		/// </summary>
-		/// <param name="packetString"> The packet string. </param>
-		/// <returns> Packet </returns>
-		private static Packet PacketStringToPacket(string[] packetString)
-		{
-			//var packet = new Packet { ModuleIdentifier = packetString[0] };
-			var data = string.Join(":", packetString[1..]);
-			var packet = new Packet(data, null, packetString[0]);
-			return packet;
-		}
-
-		/// <summary>
-		/// This function enqueues the packet to the receive queue.
-		/// </summary>
-		/// <param name="serializedData"> The serialized data. </param>
-		/// <param name="moduleIdentifier"> The module identifier. </param>
-		/// <returns> void </returns>
-		private void EnqueuePacket(string serializedData, string moduleIdentifier)
-		{
-			var packet = new Packet(serializedData, null, moduleIdentifier);
-			Trace.WriteLine($"[Networking] Received data from module {moduleIdentifier}.");
-			_queue.Enqueue(packet);
 		}
 	}
 }

@@ -7,10 +7,8 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Networking.Queues;
-using Xunit;
+using Networking.Serialization;
 
 namespace Networking.Sockets.Tests
 {
@@ -46,8 +44,9 @@ namespace Networking.Sockets.Tests
 		{
 			const string data = "Test string";
 			var sendPacket = new Packet (data, null, NetworkingGlobals.whiteboardName);
-			var pkt = sendPacket.getModuleOfPacket() + ":" + sendPacket.getSerializedData();
-			pkt = pkt.Replace("[ESC]", "[ESC][ESC]");
+            Serializer serializer = new();
+            var pkt = serializer.Serialize(sendPacket);
+            pkt = pkt.Replace("[ESC]", "[ESC][ESC]");
 			pkt = pkt.Replace("[FLAG]", "[ESC][FLAG]");
 			pkt = "[FLAG]" + pkt + "[FLAG]";
 
@@ -67,7 +66,8 @@ namespace Networking.Sockets.Tests
 		{
 			var data = NetworkingGlobals.RandomString(4000);
 			var sendPacket = new Packet (data, null, NetworkingGlobals.whiteboardName);
-			var pkt = sendPacket.getModuleOfPacket() + ":" + sendPacket.getSerializedData();
+            Serializer serializer = new();
+            var pkt = serializer.Serialize(sendPacket);
 			pkt = pkt.Replace("[ESC]", "[ESC][ESC]");
 			pkt = pkt.Replace("[FLAG]", "[ESC][FLAG]");
 			pkt = "[FLAG]" + pkt + "[FLAG]";
@@ -90,7 +90,8 @@ namespace Networking.Sockets.Tests
 			{
 				var data = "Test string" + i;
 				var sendPacket = new Packet(data, null, NetworkingGlobals.whiteboardName);
-				var pkt = sendPacket.getModuleOfPacket() + ":" + sendPacket.getSerializedData();
+                Serializer serializer = new();
+                var pkt = serializer.Serialize(sendPacket);
 				pkt = pkt.Replace("[ESC]", "[ESC][ESC]");
 				pkt = pkt.Replace("[FLAG]", "[ESC][FLAG]");
 				pkt = "[FLAG]" + pkt + "[FLAG]";

@@ -3,6 +3,7 @@
 /// This file contains all the tests written for the Serializer module
 /// </summary>
 
+using Networking.Queues;
 using System.Collections.Generic;
 using Xunit;
 
@@ -164,6 +165,19 @@ namespace Networking.Serialization.Tests
             // Removing an element from the end and making checks
             testObjectList.Remove(testObjectList[testObjectList.Count / 2]);
             Assert.NotEqual(decodedList, testObjectList);
+        }
+
+        [Fact]
+        public void SerializePacketTest()
+        {
+            Packet packet = new Packet("data", "destination", "module");
+
+            string encodedString = serializer.Serialize(packet);
+
+            Packet decodedPacket = serializer.Deserialize<Packet>(encodedString);
+            Assert.Equal(packet._serializedData, decodedPacket._serializedData);
+            Assert.Equal(packet._destination, decodedPacket._destination);
+            Assert.Equal(packet._moduleOfPacket, decodedPacket._moduleOfPacket);
         }
     }
     
