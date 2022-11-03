@@ -41,13 +41,13 @@ namespace Dashboard.Server.Persistence
         {
             var sessionId = string.Format("Analytics_{0:yyyy - MM - dd_hh - mm - ss - tt}", DateTime.Now);
 
-            var t1 = UserCountVsTimeStamp_PlotUtil(sessionAnalyticsData.userCountVsTimeStamp, sessionId);
+            bool t1 = UserCountVsTimeStamp_PlotUtil(sessionAnalyticsData.userCountVsTimeStamp, sessionId);
 
-            var t2 = ChatCountVsUserID_PlotUtil(sessionAnalyticsData.chatCountForEachUser, sessionId);
+            bool t2 = ChatCountVsUserID_PlotUtil(sessionAnalyticsData.chatCountForEachUser, sessionId);
 
 
-            var t3 = InsincereMembers_SaveUtil(sessionAnalyticsData.listOfInSincereMembers, sessionId);
-            bool isSaved = t1.IsSaved & t2.IsSaved & t3.IsSaved;
+            bool t3 = InsincereMembers_SaveUtil(sessionAnalyticsData.listOfInSincereMembers, sessionId);
+            bool isSaved = t1 & t2 & t3;
             return isSaved;
         }
         private bool InsincereMembers_SaveUtil(List<int> InsincereMembers, string sessionId)
