@@ -1,10 +1,4 @@
-﻿/// <author> Sughandhan S</author>
-/// <created>03/11/2022</created>
-/// <summary>
-///     Interaction logic for ChatPage.xaml.
-/// </summary>
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
