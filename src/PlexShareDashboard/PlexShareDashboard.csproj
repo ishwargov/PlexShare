@@ -15,6 +15,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <PackageReference Include="OxyPlot.Wpf" Version="2.1.0" />
+	  <PackageReference Include="ScottPlot.WPF" Version="4.1.58" />
 	  <PackageReference Include="Syncfusion.SfChart.WPF" Version="20.3.0.50" />
 	</ItemGroup>
 	<ItemGroup>

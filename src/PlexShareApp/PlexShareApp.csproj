@@ -14,4 +14,12 @@
 	<PropertyGroup>
 		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Syncfusion.SfChart.WPF" Version="20.3.0.50" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\PlexShareDashboard\PlexShareDashboard.csproj" />
+	</ItemGroup>
 </Project>
