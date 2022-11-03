@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Networking.Queues.Tests
+namespace PlexShareNetworking.Queues.Tests
 {
     public class ReceivingQueueTests
     {

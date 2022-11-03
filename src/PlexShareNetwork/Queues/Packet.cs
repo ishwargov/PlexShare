@@ -3,7 +3,7 @@
 /// This file contains the class definition of a packet
 /// </summary>
 
-namespace Networking.Queues
+namespace PlexShareNetworking.Queues
 {
     public class Packet
     {

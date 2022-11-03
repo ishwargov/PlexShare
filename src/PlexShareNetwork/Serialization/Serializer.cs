@@ -8,7 +8,7 @@ using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace Networking.Serialization
+namespace PlexShareNetworking.Serialization
 {
     public class Serializer : ISerializer
     {

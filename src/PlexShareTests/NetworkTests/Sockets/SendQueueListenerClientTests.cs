@@ -8,10 +8,10 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
-using Networking.Queues;
+using PlexShareNetworking.Queues;
 using Xunit;
 
-namespace Networking.Sockets.Tests
+namespace PlexShareNetworking.Sockets.Tests
 {
 	public class SendQueueListenerClientTest
 	{
