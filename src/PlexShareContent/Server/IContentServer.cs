@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PlexShareContent.DataModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,10 +9,10 @@ namespace PlexShareContent.Server
 {
     public interface IContentServer
     {
-        public void ServerSubscribe(IContentListener subscriber);
+        public void ServerSubscribe(Client.IContentListener subscriber);
 
-        public List<ChatContent> ServerGetMessages();
+        public List<ChatThread> ServerGetMessages();
 
-        public void ServerSendMessages(int userID);
+        public void SSendAllMessagesToClient(int userID);
     }
 }

@@ -8,11 +8,11 @@ using Networking;
 
 namespace PlexShareContent.Server
 {
-    public class ContentServerNotifHandler : INotificationHandler
+    public class ContentServerNotificationHandler : INotificationHandler
     {
         private readonly ContentServer _contentServer;
 
-        internal ContentServerNotifHandler(ContentServer contentServer)
+        internal ContentServerNotificationHandler(ContentServer contentServer)
         {
             _contentServer = contentServer;
         }

@@ -18,6 +18,7 @@ namespace PlexShareContent
     public enum MessageType
     {
         File,
-        Chat
+        Chat,
+        HistoryRequest
     }
 }
