@@ -22,13 +22,41 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PlexShareApp\PlexShareApp.csproj" />
-    <ProjectReference Include="..\PlexShareCloud\PlexShareCloud.csproj" />
-    <ProjectReference Include="..\PlexShareContent\PlexShareContent.csproj" />
-    <ProjectReference Include="..\PlexShareDashboard\PlexShareDashboard.csproj" />
-    <ProjectReference Include="..\PlexShareNetwork\PlexShareNetwork.csproj" />
-    <ProjectReference Include="..\PlexShareScreenshare\PlexShareScreenshare.csproj" />
-    <ProjectReference Include="..\PlexShareWhiteboard\PlexShareWhiteboard.csproj" />
+    <ProjectReference Include="..\PlexShareApp\PlexShareApp.csproj">
+      <ReferenceSourceTarget></ReferenceSourceTarget>
+    </ProjectReference>
+    <ProjectReference Include="..\PlexShareCloud\PlexShareCloud.csproj">
+      <ReferenceSourceTarget></ReferenceSourceTarget>
+    </ProjectReference>
+    <ProjectReference Include="..\PlexShareContent\PlexShareContent.csproj">
+      <ReferenceSourceTarget></ReferenceSourceTarget>
+    </ProjectReference>
+    <ProjectReference Include="..\PlexShareDashboard\PlexShareDashboard.csproj">
+      <ReferenceSourceTarget></ReferenceSourceTarget>
+    </ProjectReference>
+    <ProjectReference Include="..\PlexShareNetwork\PlexShareNetwork.csproj">
+      <ReferenceSourceTarget></ReferenceSourceTarget>
+    </ProjectReference>
+    <ProjectReference Include="..\PlexShareScreenshare\PlexShareScreenshare.csproj">
+      <ReferenceSourceTarget></ReferenceSourceTarget>
+    </ProjectReference>
+    <ProjectReference Include="..\PlexShareWhiteboard\PlexShareWhiteboard.csproj">
+      <ReferenceSourceTarget></ReferenceSourceTarget>
+    </ProjectReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="DashboardTests\" />
+    <None Remove="DashboardTests\SessionManagement\" />
+    <None Remove="DashboardTests\Telemetry\" />
+    <None Remove="DashboardTests\Persistence\" />
+    <None Remove="DashboardTests\Summary\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DashboardTests\" />
+    <Folder Include="DashboardTests\SessionManagement\" />
+    <Folder Include="DashboardTests\Telemetry\" />
+    <Folder Include="DashboardTests\Persistence\" />
+    <Folder Include="DashboardTests\Summary\" />
+  </ItemGroup>
 </Project>
