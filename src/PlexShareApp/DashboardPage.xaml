@@ -27,7 +27,7 @@
         <!--<Border BorderBrush="Green" BorderThickness="2">-->
 
         <!--now adding the static list to show the list of users in the column 0 -->
-        <ListView Grid.Column="0" x:Name="ContactsLV" ItemsSource="{Binding participantsList}" d:ItemsSource="{d:SampleData ItemCount=5}" >
+        <ListView Grid.Column="0" x:Name="ContactsLV" ItemsSource="{Binding ParticipantsList}" d:ItemsSource="{d:SampleData ItemCount=5}" >
 
             <ListView.ItemTemplate>
 
@@ -50,9 +50,9 @@
                                 <RowDefinition Height="1*"/>
                             </Grid.RowDefinitions>
                             <!--<TextBlock Grid.Row="0" TextWrapping="WrapWithOverflow"         Background="LightBlue" Text="{Binding userName}" Margin="12,6,0,0" Padding="10, 0, 10, 0"  TextAlignment="center" FontSize="15"/>-->
-                            <TextBlock TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" Background="WhiteSmoke" Text="{Binding userName}"  TextAlignment="center" FontSize="15"/>
+                            <TextBlock TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" Background="WhiteSmoke" Text="{Binding UserName}"  TextAlignment="center" FontSize="15"/>
                             <!--<TextBlock TextWrapping="WrapWithOverflow" Grid.Row="1" Background="LightBlue" Text="{Binding status}" Margin="12,0,0,6" Padding="10, 0, 10, 0"  TextAlignment="center" />-->
-                            <TextBlock TextWrapping="WrapWithOverflow" Grid.Row="1" Background="WhiteSmoke" Text="{Binding status}" HorizontalAlignment="Center" VerticalAlignment="Center"  TextAlignment="center" />
+                            <!--<TextBlock TextWrapping="WrapWithOverflow" Grid.Row="1" Background="WhiteSmoke" Text="{Binding Status}" HorizontalAlignment="Center" VerticalAlignment="Center"  TextAlignment="center" />-->
                         </Grid>
                     </Grid>
                     <!--</Border>-->
@@ -130,7 +130,7 @@
                         <RowDefinition Height="1*"/>
                     </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Text="Attentive Users"></TextBlock>
-                    <ProgressBar Grid.Row="1"  Margin="10,10,0,13" Name="PBar1" HorizontalAlignment="Center"  VerticalAlignment="Center" Width="300" Height="30" Value="{Binding AttentiveUsersSetters}" ></ProgressBar>
+                    <ProgressBar Grid.Row="1"  Margin="10,10,0,13" Name="PBar1" HorizontalAlignment="Center"  VerticalAlignment="Center" Width="300" Height="30" Value="{Binding AttentiveUsersSetter}" ></ProgressBar>
                 </Grid>
                 <Grid Grid.Row="1">
 
@@ -139,7 +139,7 @@
                         <RowDefinition Height="1*"/>
                     </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Text=" Non Attentive Users"></TextBlock>
-                    <ProgressBar Grid.Row="1"  Margin="10,10,0,13" Name="PBar2" HorizontalAlignment="Center" VerticalAlignment="Center" Width="300" Height="30" Foreground="Red" Value="{Binding NonAttentiveUsersSetters}" ></ProgressBar>
+                    <ProgressBar Grid.Row="1"  Margin="10,10,0,13" Name="PBar2" HorizontalAlignment="Center" VerticalAlignment="Center" Width="300" Height="30" Foreground="Red" Value="{Binding NonAttentiveUsersSetter}" ></ProgressBar>
                 </Grid>
 
                 <!--<ProgressBar Grid.Row="1" Margin="10,10,0,13" Name="PBar2" HorizontalAlignment="Center" VerticalAlignment="Center" Width="300" Height="30" Value="60" ></ProgressBar>-->
