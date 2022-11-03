@@ -265,6 +265,47 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         }
 
 
+        //function to change the session mode 
+        public void SwitchSessionMode()
+        {
+            UserData currUser = clientSessionManager.GetUser();
+
+            if (currUser.userID == 1)
+            {
+                //this user is host hence it can switch the mode 
+                clientSessionManager.ToggleSessionMode();
+                //buttonValue = "Switch Mode"
+            }
+            else
+            {
+                //buttonValue = SessionMode;
+            }
+
+            //say everything went fine 
+            return;
+
+        }
+
+        //function to initiate leavemeeting procedure 
+        public void LeaveMeetingProcedure()
+        {
+            UserData currUser = clientSessionManager.GetUser();
+
+            if (currUser.userID == 1)
+            {
+                //this user is host hence it will end the meet  
+                clientSessionManager.EndMeet();
+                //buttonValue = "Switch Mode"
+            }
+            else
+            {
+                //buttonValue = SessionMode;
+                //the user will be just removed by session manager 
+                clientSessionManager.RemoveClient();
+            }
+
+        }
+
 
 
         //function to update the ParticipantsList of viewmodel 
