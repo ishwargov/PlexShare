@@ -11,6 +11,6 @@ namespace Dashboard.Server.Persistence
 {
     public interface ITelemetryPersistence
     {
-        public ResponseEntity Save(SessionAnalytics sessionAnalyticsData);
+        public bool Save(SessionAnalytics sessionAnalyticsData);
     }
 }
