@@ -30,8 +30,6 @@ namespace Dashboard.Server.Persistence
             var sessionId1 = string.Format("Summary_{0:yyyy - MM - dd_hh - mm - ss - tt}", DateTime.Now);
             var createText = "Summary : --------- " + Environment.NewLine + message + Environment.NewLine;
 
-            var response = new ResponseEntity();
-            response.FileName = sessionId1 + ".txt";
 
             try
             {
@@ -39,40 +37,14 @@ namespace Dashboard.Server.Persistence
 
                 File.WriteAllText(Path.Combine(summaryPath, sessionId1 + ".txt"), createText);
                 Trace.WriteLine("Summary saved Suceessfully!!");
-                response.IsSaved = true;
-                PersistenceFactory.lastSaveResponse = response;
-                return response.IsSaved;
+                bool isSaved = true;
+                return isSaved;
             }
             catch (Exception except)
             {
                 Trace.WriteLine(except.Message);
-                response.IsSaved = false;
-                return response.IsSaved;
-            }
-        }
-
-        public ResponseEntity SaveSummary(string message, bool testMode)
-        {
-            var sessionId1 = string.Format("Summary_{0:yyyy - MM - dd_hh - mm - ss - tt}", DateTime.Now);
-            var createText = "Summary : --------- " + Environment.NewLine + message + Environment.NewLine;
-
-            var response = new ResponseEntity();
-            response.FileName = sessionId1 + ".txt";
-            try
-            {
-                if (!Directory.Exists(summaryPath)) Directory.CreateDirectory(summaryPath);
-
-                File.WriteAllText(Path.Combine(summaryPath, sessionId1 + ".txt"), createText);
-                Trace.WriteLine("Summary saved Suceessfully!!");
-                response.IsSaved = true;
-                PersistenceFactory.lastSaveResponse = response;
-                return response;
-            }
-            catch (Exception except)
-            {
-                Trace.WriteLine(except.Message);
-                response.IsSaved = false;
-                return response;
+                bool isSaved = true;
+                return isSaved;
             }
         }
     }
