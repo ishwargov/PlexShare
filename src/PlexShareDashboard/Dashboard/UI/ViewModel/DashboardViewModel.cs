@@ -175,10 +175,10 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
             //initialising UserCountVsTimeStamps
             UserCountVsTimeStamps = new ObservableCollection<UserCountVsTimeStamp>();
-            UserCountVsTimeStamps.Add(new UserCountVsTimeStamp(10, new DateTime(2019, 05, 09, 9, 20, 0)));
-            UserCountVsTimeStamps.Add(new UserCountVsTimeStamp(20, new DateTime(2019, 05, 09, 9, 25, 0)));
-            UserCountVsTimeStamps.Add(new UserCountVsTimeStamp(30, new DateTime(2019, 05, 09, 9, 35, 0)));
-            UserCountVsTimeStamps.Add(new UserCountVsTimeStamp(40, new DateTime(2019, 05, 09, 9, 45, 0)));
+            UserCountVsTimeStamps.Add(new UserCountVsTimeStamp(10, 15));
+            UserCountVsTimeStamps.Add(new UserCountVsTimeStamp(20, 20));
+            UserCountVsTimeStamps.Add(new UserCountVsTimeStamp(30, 25));
+            UserCountVsTimeStamps.Add(new UserCountVsTimeStamp(40, 30));
 
 
 
@@ -193,14 +193,14 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
 
 
-            AttentiveUsers = 60;
-            NonAttentiveUsers = 100 - AttentiveUsers;
+            AttentiveUsersSetter = 60;
+            NonAttentiveUsersSetter = 100 - AttentiveUsersSetter;
 
-            TotalParticipantsCount = 140;
-            TotalMessageCount = 104;
-            EngagementRate = "94.2";
-            TotalParticipantsCount = 200;
-            SessionMode = "LabMode";
+            TotalParticipantsCountSetter = 140;
+            TotalMessageCountSetter = 104;
+            EngagementRateSetter = "94.2";
+            TotalParticipantsCountSetter = 200;
+            SessionModeSetter = "LabMode";
 
 
 
@@ -234,7 +234,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             //Convert the sessionAnalytics properly to show to the graph 
 
             //UserCountVsTimeStamps.Clear();
-            UserCountVsTimeStamps.Add(new UserCountVsTimeStamp(50, new DateTime(2019, 05, 09, 9, 15, 0)));
+            UserCountVsTimeStamps.Add(new UserCountVsTimeStamp(50, 35));
 
             //UserIdVsChatCounts.Clear();
 
@@ -300,7 +300,9 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
                 int currUserCount = currElement.Value;
                 DateTime currTimeStamp = currElement.Key;
 
-                UserCountVsTimeStamp newUserCountVsTimeStampElement = new UserCountVsTimeStamp(currUserCount, currTimeStamp);
+                //TODO to convert the date time into the minutes and then append
+                int currTimeStampInt = 20;
+                UserCountVsTimeStamp newUserCountVsTimeStampElement = new UserCountVsTimeStamp(currUserCount, currTimeStampInt);
 
                 UserCountVsTimeStamps.Add(newUserCountVsTimeStampElement);
 

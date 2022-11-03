@@ -111,7 +111,7 @@
                 <syncfusion:SfChart.Legend>
                     <syncfusion:ChartLegend/>
                 </syncfusion:SfChart.Legend>
-                <syncfusion:ColumnSeries  ItemsSource="{Binding UserIdVsChatCounts}" XBindingPath="userId" YBindingPath="chatCount" ShowTooltip="True" >
+                <syncfusion:ColumnSeries  ItemsSource="{Binding UserIdVsChatCounts}" XBindingPath="UserId" YBindingPath="ChatCount" ShowTooltip="True" >
                     <syncfusion:ColumnSeries.AdornmentsInfo>
                         <syncfusion:ChartAdornmentInfo ShowLabel="True" >
                         </syncfusion:ChartAdornmentInfo>
