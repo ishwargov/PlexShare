@@ -16,6 +16,7 @@ namespace PlexShareNetworking.Queues
         // Module which the packet belongs to
         public string _moduleOfPacket;
 
+        // Empty constructor
         public Packet()
         { }
 

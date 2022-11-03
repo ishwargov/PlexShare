@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 
 namespace PlexShareNetworking.Queues
@@ -51,7 +52,7 @@ namespace PlexShareNetworking.Queues
                 catch(InvalidOperationException e)
                 {
                     // Arises if the queue is empty
-                    Console.WriteLine(e.StackTrace);
+                    Trace.WriteLine($"{e.StackTrace}");
                     packet = null;
                 }
             }
@@ -75,7 +76,7 @@ namespace PlexShareNetworking.Queues
                 catch(InvalidOperationException e)
                 {
                     // Arises if the queue is empty
-                    Console.WriteLine(e.StackTrace);
+                    Trace.WriteLine($"{e.StackTrace}");
                     start = null;
                 }
             }

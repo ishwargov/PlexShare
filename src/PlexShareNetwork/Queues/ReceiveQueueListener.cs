@@ -6,6 +6,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 
 namespace PlexShareNetworking.Queues
@@ -81,7 +82,7 @@ namespace PlexShareNetworking.Queues
 
                 if (!_modulesToNotificationHandlerMap.ContainsKey(moduleName))
                 {
-                    Console.WriteLine("Module %s does not contain a handler.\n", moduleName);
+                    Trace.WriteLine($"Module {moduleName} does not have a handler.\n");
                     continue;
                 }
 
