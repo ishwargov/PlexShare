@@ -92,7 +92,7 @@
                 <syncfusion:SfChart.Legend>
                     <syncfusion:ChartLegend/>
                 </syncfusion:SfChart.Legend>
-                <syncfusion:ColumnSeries  ItemsSource="{Binding userCountVsTimeStamps}" XBindingPath="TimeStamp" YBindingPath="UserCount" ShowTooltip="True" >
+                <syncfusion:ColumnSeries  ItemsSource="{Binding UserCountVsTimeStamps}" XBindingPath="TimeStamp" YBindingPath="UserCount" ShowTooltip="True" >
                     <syncfusion:ColumnSeries.AdornmentsInfo>
                         <syncfusion:ChartAdornmentInfo ShowLabel="True" >
                         </syncfusion:ChartAdornmentInfo>
@@ -111,7 +111,7 @@
                 <syncfusion:SfChart.Legend>
                     <syncfusion:ChartLegend/>
                 </syncfusion:SfChart.Legend>
-                <syncfusion:ColumnSeries  ItemsSource="{Binding userIdVsChatCounts}" XBindingPath="userId" YBindingPath="chatCount" ShowTooltip="True" >
+                <syncfusion:ColumnSeries  ItemsSource="{Binding UserIdVsChatCounts}" XBindingPath="userId" YBindingPath="chatCount" ShowTooltip="True" >
                     <syncfusion:ColumnSeries.AdornmentsInfo>
                         <syncfusion:ChartAdornmentInfo ShowLabel="True" >
                         </syncfusion:ChartAdornmentInfo>
@@ -130,7 +130,7 @@
                         <RowDefinition Height="1*"/>
                     </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Text="Attentive Users"></TextBlock>
-                    <ProgressBar Grid.Row="1"  Margin="10,10,0,13" Name="PBar1" HorizontalAlignment="Center"  VerticalAlignment="Center" Width="300" Height="30" Value="{Binding AttentiveUsers}" ></ProgressBar>
+                    <ProgressBar Grid.Row="1"  Margin="10,10,0,13" Name="PBar1" HorizontalAlignment="Center"  VerticalAlignment="Center" Width="300" Height="30" Value="{Binding AttentiveUsersSetters}" ></ProgressBar>
                 </Grid>
                 <Grid Grid.Row="1">
 
@@ -139,7 +139,7 @@
                         <RowDefinition Height="1*"/>
                     </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Text=" Non Attentive Users"></TextBlock>
-                    <ProgressBar Grid.Row="1"  Margin="10,10,0,13" Name="PBar2" HorizontalAlignment="Center" VerticalAlignment="Center" Width="300" Height="30" Foreground="Red" Value="{Binding NonAttentiveUsers}" ></ProgressBar>
+                    <ProgressBar Grid.Row="1"  Margin="10,10,0,13" Name="PBar2" HorizontalAlignment="Center" VerticalAlignment="Center" Width="300" Height="30" Foreground="Red" Value="{Binding NonAttentiveUsersSetters}" ></ProgressBar>
                 </Grid>
 
                 <!--<ProgressBar Grid.Row="1" Margin="10,10,0,13" Name="PBar2" HorizontalAlignment="Center" VerticalAlignment="Center" Width="300" Height="30" Value="60" ></ProgressBar>-->
@@ -224,7 +224,7 @@
                         </Grid.Effect>
                     </Grid>
                     <StackPanel Orientation="Vertical"  HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock x:Name="ParticipantsCount" Text="{Binding TotalParticipantsCount, Mode=OneWay}" 
+                        <TextBlock x:Name="ParticipantsCount" Text="{Binding TotalParticipantsCountSetter, Mode=OneWay}" 
                                    FontFamily="Champagne &amp; Limousines" Foreground="Black" FontSize="30" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         <TextBlock Text="Participants Count" 
                                    FontFamily="Champagne &amp; Limousines" FontSize="13" Foreground="Black" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="WrapWithOverflow"/>
@@ -253,7 +253,7 @@
                         </Grid.Effect>
                     </Grid>
                     <StackPanel Orientation="Vertical"  HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock x:Name="ChatCount" Text="{Binding TotalMessageCount}" 
+                        <TextBlock x:Name="ChatCount" Text="{Binding TotalMessageCountSetter}" 
                                    FontFamily="Champagne &amp; Limousines" Foreground="Black" FontSize="30" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         <TextBlock Text="Messages Count" 
                                    FontFamily="Champagne &amp; Limousines" FontSize="13" Foreground="Black" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="WrapWithOverflow"/>
@@ -282,7 +282,7 @@
                         </Grid.Effect>
                     </Grid>
                     <StackPanel Orientation="Vertical"  HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock x:Name="EngagementCount" Text="{Binding EngagementRate}" 
+                        <TextBlock x:Name="EngagementCount" Text="{Binding EngagementRateSetter}" 
                                    FontFamily="Champagne &amp; Limousines" Foreground="Black" FontSize="30" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         <TextBlock Text="Engagement Rate" 
                                    FontFamily="Champagne &amp; Limousines" FontSize="13" Foreground="Black" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="WrapWithOverflow"/>
@@ -312,7 +312,7 @@
                         </Grid.Effect>
                     </Grid>
                     <StackPanel Orientation="Vertical"  HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock x:Name="SomeRandomCount" Text="{Binding SessionScore}"
+                        <TextBlock x:Name="SomeRandomCount" Text="{Binding SessionScoreSetter}"
                                    FontFamily="Champagne &amp; Limousines" Foreground="Black" FontSize="30" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         <TextBlock Text="Session Score" 
                                    FontFamily="Champagne &amp; Limousines" FontSize="13" Foreground="Black" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="WrapWithOverflow"/>
