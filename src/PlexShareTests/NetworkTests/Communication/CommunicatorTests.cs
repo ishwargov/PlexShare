@@ -27,8 +27,8 @@ namespace PlexShareNetwork.Communication.Test
 			string client2Return = client2.Start(IPAndPort[0], IPAndPort[1]);
 
 			// Checking whether both clients have successfully started
-			Assert.Equal("1", client1Return);
-			Assert.Equal("1", client2Return);
+			Assert.Equal("success", client1Return);
+			Assert.Equal("success", client2Return);
 
 			server.Stop();
 			client1.Stop();

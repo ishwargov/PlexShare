@@ -57,8 +57,8 @@ namespace PlexShareNetwork.Sockets
 		/// <returns> void </returns>
 		public void Start()
 		{
-			_thread = new Thread(Listen);
 			_threadRun = true;
+			_thread = new Thread(Listen);
 			_thread.Start();
 			Trace.WriteLine("[Networking] SendQueueListenerServer thread started.");
 		}

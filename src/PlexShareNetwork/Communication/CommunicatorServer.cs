@@ -46,28 +46,20 @@ namespace PlexShareNetwork.Communication
 		// boolean to tell whether thread is running or stopped
 		private volatile bool _threadRun;
 
-		/// <summary>
-		/// This function Find and IP and port and start listening on it.
-		/// And initializes queues and sockets.
-		/// </summary>
-		/// <param name="serverIP"> IP Address of the server. Required only on client side. </param>
-		/// <param name="serverPort"> Port no. of the server. Required only on client side. </param>
-		/// <returns>
-		///  Address of the server as a string of "IP:Port"
-		/// </returns>
-		public string Start(string serverIP = null, string serverPort = null)
+        /// <summary>
+        /// This function Find and IP and port and start listening on it.
+        /// And initializes queues and sockets.
+        /// The function arguments are to be only used on the client to connect to the server.
+        /// </summary>
+        /// <param name="serverIP"> IP Address of the server. Required only on client side. </param>
+        /// <param name="serverPort"> Port no. of the server. Required only on client side. </param>
+        /// <returns>
+        ///  Address of the server as a string of "IP:Port"
+        /// </returns>
+        public string Start(string serverIP = null, string serverPort = null)
 		{
-			if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E")
-			{
-				return "127.0.0.1:8080";
-			}
-			var ip = IPAddress.Parse(FindIpAddress());
-			string stringPort = Environment.GetEnvironmentVariable("MEETME_PORT");
-			int port = stringPort is null ? -1 : Int32.Parse(stringPort); 
-			if (port == -1)
-			{
-				port = FindFreePort(ip);
-			}
+			IPAddress ip = IPAddress.Parse(FindIpAddress());
+			int port = FindFreePort(ip);
 			_socket = new TcpListener(IPAddress.Any, port);
 			_socket.Start();
 
@@ -77,11 +69,11 @@ namespace PlexShareNetwork.Communication
 			_receiveQueueListener = new ReceiveQueueListener(_subscribedModulesToHandler, _receiveQueue);
 			_receiveQueueListener.Start();
 
-			_thread = new Thread(AcceptRequest);
 			_threadRun = true;
+			_thread = new Thread(AcceptRequest);
 			_thread.Start();
 
-			Trace.WriteLine("Server started on IP: " + ip + " Port: " + port);
+			Trace.WriteLine("[Networking] CommunicatorServer started on IP: " + ip + " Port: " + port);
 			return ip + ":" + port;
 		}
 
@@ -91,22 +83,24 @@ namespace PlexShareNetwork.Communication
 		/// <returns> void </returns>
 		public void Stop()
 		{
-			if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E")
-			{
-				return;
-			}
 			_threadRun = false;
 
 			_socket.Stop();
 
 			foreach (var clientIdToSocketListener in _clientListeners)
 			{
-				var socketListener = clientIdToSocketListener.Value;
+				SocketListener socketListener = clientIdToSocketListener.Value;
 				socketListener.Stop();
 			}
 			_sendQueueListener.Stop();
 			_receiveQueueListener.Stop();
-		}
+
+            // clear the queues
+            _sendQueue.Clear();
+            _receiveQueue.Clear();
+
+            Trace.WriteLine("[Networking] CommunicatorServer stopped.");
+        }
 
 		/// <summary>
 		/// This function finds IP4 address of machine which does not end with 1
@@ -137,7 +131,7 @@ namespace PlexShareNetwork.Communication
 		/// <returns> The port number </returns>
 		private static int FindFreePort(IPAddress IP)
 		{
-			var tcpListener = new TcpListener(IP, 0);
+            TcpListener tcpListener = new(IP, 0);
 			tcpListener.Start();
 			var port = ((IPEndPoint) tcpListener.LocalEndpoint).Port;
 			tcpListener.Stop();
@@ -183,17 +177,14 @@ namespace PlexShareNetwork.Communication
 		/// <returns> void </returns>
 		public void AddClient<T>(string clientId, T socket)
 		{
-			if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E")
-			{
-				return;
-			}
 
-			_clientIdToSocket[clientId] = (TcpClient) (object) socket;
+            _clientIdToSocket[clientId] = (TcpClient)(object)socket;
 
-			var socketListener = new SocketListener(_receiveQueue, (TcpClient) (object) socket);
+            SocketListener socketListener = new(_receiveQueue, (TcpClient)(object)socket);
 			_clientListeners[clientId] = socketListener;
 			socketListener.Start();
-		}
+            Trace.WriteLine($"[Networking] Client added with clientID: {clientId}");
+        }
 
 		/// <summary>
 		/// This function is to be called only on the server when a client is leaves.
@@ -203,97 +194,64 @@ namespace PlexShareNetwork.Communication
 		/// <returns> void </returns>
 		public void RemoveClient(string clientId)
 		{
-			if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E")
-			{
-				return;
-			}
-			var socketListener = _clientListeners[clientId];
+			SocketListener socketListener = _clientListeners[clientId];
 			socketListener.Stop();
 
-			var socket = _clientIdToSocket[clientId];
+			TcpClient socket = _clientIdToSocket[clientId];
 			socket.GetStream().Close();
 			socket.Close();
 
 			_clientListeners.Remove(clientId);
 			_clientIdToSocket.Remove(clientId);
-		}
+            Trace.WriteLine($"[Networking] Client removed with clientID: {clientId}");
+        }
 
-		/// <summary>
-		/// This function broadcasts data to all the clients.
-		/// </summary>
-		/// <param name="serializedData"> The serialzed data to be sent over the network. </param>
-		/// <param name="moduleIdentifier"> Module Identifier of the module. </param>
-		/// <returns> void </returns>
-		public void Send(string serializedData, string moduleIdentifier)
+        /// <summary>
+        /// This function broadcasts data to all the clients.
+        /// </summary>
+        /// <param name="serializedData"> The serialzed data to be sent over the network. </param>
+        /// <param name="moduleOfPacket"> Module sneding the data. </param>
+        /// <returns> void </returns>
+        public void Send(string serializedData, string moduleOfPacket)
 		{
-			if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E")
-			{
-				File.WriteAllText("networking_test.json", serializedData);
-				return;
-			}
+            Packet packet = new(serializedData, null, moduleOfPacket);
+			_sendQueue.Enqueue(packet);
+            Trace.WriteLine($"[Networking] Enqueued packet in send queue of the module : {moduleOfPacket} for destination: broadcast.");
+        }
 
-			var packet = new Packet (serializedData, null, moduleIdentifier);
-			try
-			{
-				_sendQueue.Enqueue(packet);
-			}
-			catch (Exception e)
-			{
-				Trace.WriteLine($"[Networking] Error in CommunicatorServer: {e.Message}");
-				throw;
-			}
-		}
-
-		/// <summary>
-		/// Function to send data to a specific client given by the destination argument.
-		/// This function is to be called only on the server side.
-		/// </summary>
-		/// <param name="serializedData"> The serialzed data to be sent over the network. </param>
-		/// <param name="moduleIdentifier"> Module Identifier of the module. </param>
-		/// <param name="destination"> The destination or client Id to which to send the data. </param>
-		/// <returns> void </returns>
-		public void Send(string serializedData, string moduleIdentifier, string destination)
+        /// <summary>
+        /// Function to send data to a specific client given by the destination argument.
+        /// This function is to be called only on the server side.
+        /// </summary>
+        /// <param name="serializedData"> The serialzed data to be sent over the network. </param>
+        /// <param name="moduleOfPacket"> Module sending the data. </param>
+        /// <param name="destination"> The destination or client Id to which to send the data. </param>
+        /// <returns> void </returns>
+        public void Send(string serializedData, string moduleOfPacket, string destination)
 		{
-			if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E")
-			{
-				File.WriteAllText("networking_test.json", serializedData);
-				return;
-			}
-
 			if (!_clientIdToSocket.ContainsKey(destination))
 			{
-				throw new Exception("Client given in the destination of packet does not exist in the room!");
+				throw new Exception($"[Networking] Sending Falied. Client with ID: {destination} does not exist in the room!");
 			}
 
-			var packet = new Packet(serializedData, destination, moduleIdentifier);
-			try
-			{
-				_sendQueue.Enqueue(packet);
-			}
-			catch (Exception e)
-			{
-				Trace.WriteLine($"[Networking] Error in CommunicatorServer: {e.Message}");
-				throw;
-			}
-		}
+            Packet packet = new(serializedData, destination, moduleOfPacket);
+			_sendQueue.Enqueue(packet);
+            Trace.WriteLine($"[Networking] Enqueued packet in send queue of the module : {moduleOfPacket} for destination : {destination}");
+        }
 
-		/// <summary>
-		/// Other modules can subscribe using this function to be notified on receiving data over the network.
-		/// </summary>
-		/// <param name="moduleIdentifier"> Module Identifier of the module. </param>
-		/// <param name="handler"> Module implementation of the INotificationHandler. </param>
-		/// <param name="isHighPriority"> Boolean which tells whether data is high priority or low priority. </param>
-		/// <returns> void </returns>
-		public void Subscribe(string moduleIdentifier, INotificationHandler notificationHandler, bool isHighPriority)
+        /// <summary>
+        /// Other modules can subscribe using this function to be notified on receiving data over the network.
+        /// </summary>
+        /// <param name="moduleName"> Name of the module. </param>
+        /// <param name="notificationHandler"> Module implementation of the INotificationHandler. </param>
+        /// <param name="isHighPriority"> Boolean which tells whether data is high priority or low priority. </param>
+        /// <returns> void </returns>
+        public void Subscribe(string moduleName, INotificationHandler notificationHandler, bool isHighPriority)
 		{
-			if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E")
-			{
-				return;
-			}
-			_subscribedModulesToHandler.Add(moduleIdentifier, notificationHandler);
-			_sendQueue.RegisterModule(moduleIdentifier, isHighPriority);
-			//_receiveQueue.RegisterModule(moduleIdentifier, isHighPriority);
-			Trace.WriteLine($"[Networking] Module: {moduleIdentifier} registered with priority is high?: {isHighPriority}");
+			_subscribedModulesToHandler.Add(moduleName, notificationHandler);
+			_sendQueue.RegisterModule(moduleName, isHighPriority);
+            _receiveQueueListener.RegisterModule(moduleName, notificationHandler);
+			Trace.WriteLine($"[Networking] Module: {moduleName} registered with priority is high?: {isHighPriority}");
 		}
 	}
 }

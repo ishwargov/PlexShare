@@ -55,8 +55,8 @@ namespace PlexShareNetwork.Sockets
 		/// <returns> void </returns>
 		public void Start()
 		{
-			_thread = new Thread(() => _socket.BeginReceive(buffer, 0, bufferSize, 0, ReceiveCallback, null));
 			_threadRun = true;
+			_thread = new Thread(() => _socket.BeginReceive(buffer, 0, bufferSize, 0, ReceiveCallback, null));
 			_thread.Start();
 			Trace.WriteLine("[Networking] SocketListener thread started.");
 		}
