@@ -77,7 +77,7 @@ namespace PlexShareNetwork.Queues
                 Packet packet = _receivingQueue.Dequeue();
 
                 // Identifying the module which the packet belongs to
-                string moduleName = packet.getModuleOfPacket();
+                string moduleName = packet.moduleOfPacket;
 
                 if (!_modulesToNotificationHandlerMap.ContainsKey(moduleName))
                 {
@@ -88,7 +88,7 @@ namespace PlexShareNetwork.Queues
                 INotificationHandler notificationHandler = _modulesToNotificationHandlerMap[moduleName];
 
                 // Calling the method 'OnDataReceived' on the handler of the appropriate module
-                notificationHandler.OnDataReceived(packet.getSerializedData());
+                notificationHandler.OnDataReceived(packet.serializedData);
             }
         }
 

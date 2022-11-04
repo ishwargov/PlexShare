@@ -56,7 +56,7 @@ namespace PlexShareNetwork.Queues
         /// </summary>
         public bool Enqueue(Packet packet)
         {
-            string moduleName = packet.getModuleOfPacket();
+            string moduleName = packet.moduleOfPacket;
             bool isHighPriority, containsKey;
 
             // Finding out if the module is registered in the first place
