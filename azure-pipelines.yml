@@ -1,24 +1,38 @@
-# Pipeline to sync Azure repo with Github main branch
-name: Keep clone up to date
+# .NET Desktop
+
+# Build and run tests for .NET Desktop or Windows classic desktop solutions.
+# Add steps that publish symbols, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/apps/windows/dot-net
+
+trigger:
+- main
+
 pool: selfBot
+
 variables:
-  REMOTE_ADDR: 'https://github.com/ishwargov/PlexShare.git'
-stages:
-  - stage: running_git_commands
-    displayName: running_git_commands
-    jobs:
-      - job: initiate
-        displayName: initiate
-        continueOnError: false
-        steps:
-        - checkout: self
-          clean: true
-          persistCredentials: true
-          displayName: run_commands
-        - bash: | 
-            git checkout main
-            git remote add PlexShare $(REMOTE_ADDR)
-            git fetch PlexShare main
-            git reset --hard PlexShare/main
-            git pull --rebase PlexShare main
-            git push -f origin
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+
+steps:
+- task: NuGetToolInstaller@1
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'build'
+    projects: '**/*.csproj'
+    
+- task: NuGetCommand@2
+  inputs:
+    restoreSolution: '$(solution)'
+
+- task: VSBuild@1
+  inputs:
+    solution: '$(solution)'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+
+- task: VSTest@2
+  inputs:
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
