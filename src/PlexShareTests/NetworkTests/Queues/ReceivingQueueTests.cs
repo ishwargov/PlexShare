@@ -3,19 +3,18 @@
 /// This file contains all the tests written for the sending queues
 /// </summary>
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections;
 using System.Threading;
 using System.Threading.Tasks;
+using Xunit;
 
-namespace Networking.Queues.Test
+namespace PlexShareNetwork.Queues.Tests
 {
-    [TestClass()]
     public class ReceivingQueueTests
     {
         ReceivingQueue _receivingQueue = new ReceivingQueue();
 
-        [TestMethod()]
+        [Fact]
         public void EnqueueOnePacketTest()
         {
             string serializedString = NetworkingGlobals.RandomString(10);
@@ -27,10 +26,10 @@ namespace Networking.Queues.Test
             // Enqueueing a single random packet
             _receivingQueue.Enqueue(packet);
 
-            Assert.AreEqual(_receivingQueue.Size(), 1);
+            Assert.Equal(_receivingQueue.Size(), 1);
         }
 
-        [TestMethod()]
+        [Fact]
         public void EnqueueMultiplePacketsTest()
         {
             string moduleName = NetworkingGlobals.dashboardName;
@@ -42,10 +41,10 @@ namespace Networking.Queues.Test
             for (int i = 0; i < number_of_packets; ++i)
                 _receivingQueue.Enqueue(new Packet(NetworkingGlobals.RandomString(10), destinationModule, moduleName));
 
-            Assert.AreEqual(_receivingQueue.Size(), number_of_packets);
+            Assert.Equal(_receivingQueue.Size(), number_of_packets);
         }
 
-        [TestMethod()]
+        [Fact]
         public void EnqueueOrderMultiplePacketsOrderTest()
         {
             string moduleName = NetworkingGlobals.dashboardName;
@@ -72,14 +71,14 @@ namespace Networking.Queues.Test
 
             // Checking each element
             while (reverseStack.Count != 0 && !_receivingQueue.IsEmpty())
-                Assert.AreEqual(_receivingQueue.Dequeue(), reverseStack.Pop());
+                Assert.Equal(_receivingQueue.Dequeue(), reverseStack.Pop());
 
             // The reverse stack and receiving queue need to be empty
-            Assert.AreEqual(_receivingQueue.Size(), 0);
-            Assert.AreEqual(_receivingQueue.Size(), reverseStack.Count);
+            Assert.Equal(_receivingQueue.Size(), 0);
+            Assert.Equal(_receivingQueue.Size(), reverseStack.Count);
         }
 
-        [TestMethod()]
+        [Fact]
         public void ConcurrentEnqueuesTest()
         {
             int number_of_packets = 100;
@@ -117,10 +116,10 @@ namespace Networking.Queues.Test
             // Waiting for all tasks to be finished
             Task.WaitAll(thread1, thread2);
 
-            Assert.AreEqual(_receivingQueue.Size(), 2 * number_of_packets);
+            Assert.Equal(_receivingQueue.Size(), 2 * number_of_packets);
         }
 
-        [TestMethod()]
+        [Fact]
         public void ClearReceivingQueueTest()
         {
             int number_of_packets = 100;
@@ -137,15 +136,15 @@ namespace Networking.Queues.Test
             }
 
             // Checking if all packets are enqueued
-            Assert.AreEqual(_receivingQueue.Size(), number_of_packets);
+            Assert.Equal(_receivingQueue.Size(), number_of_packets);
 
             _receivingQueue.Clear();
 
             // Checking if all packets are removed
-            Assert.AreEqual(_receivingQueue.Size(), 0);
+            Assert.Equal(_receivingQueue.Size(), 0);
         }
 
-        [TestMethod()]
+        [Fact]
         public void concurrentDequeueTest()
         {
             string serializedData = NetworkingGlobals.RandomString(10);
@@ -166,17 +165,17 @@ namespace Networking.Queues.Test
                 );
 
             // Exactly one of the dequeue must be fruitful
-            Assert.IsTrue(dequeueOne == null || dequeueTwo == null);
-            Assert.IsTrue(dequeueOne != null || dequeueTwo != null);
+            Assert.True(dequeueOne == null || dequeueTwo == null);
+            Assert.True(dequeueOne != null || dequeueTwo != null);
 
             // Comparing with the packet enqueued
             if (dequeueOne != null)
-                Assert.AreEqual(packet, dequeueOne);
+                Assert.Equal(packet, dequeueOne);
             else
-                Assert.AreEqual(packet, dequeueTwo);
+                Assert.Equal(packet, dequeueTwo);
         }
 
-        [TestMethod()]
+        [Fact]
         public void concurrentPeekTest()
         {
             string serializedData = NetworkingGlobals.RandomString(10);
@@ -197,14 +196,14 @@ namespace Networking.Queues.Test
                 );
 
             // Output of both peeks must be same and not null
-            Assert.IsTrue(peekOne != null);
-            Assert.AreEqual(peekOne, peekTwo);
+            Assert.True(peekOne != null);
+            Assert.Equal(peekOne, peekTwo);
 
             // Comparing with the packet enqueued
-            Assert.AreEqual(packet, peekOne);
+            Assert.Equal(packet, peekOne);
         }
 
-        [TestMethod()]
+        [Fact]
         public void WaitForPacketTest()
         {
             string serializedData = NetworkingGlobals.RandomString(10);
@@ -232,23 +231,23 @@ namespace Networking.Queues.Test
             waitThread.Start();
 
             // Sleeping for some time
-            Thread.Sleep(1000);
+            Thread.Sleep(3000);
 
             // Checking that the thread has not terminated yet
-            Assert.IsTrue(waitThread.IsAlive);
+            Assert.True(waitThread.IsAlive);
 
             // Enqueueing a packet now
             enqueueThread.Start();
 
-            // Sleeping for some more time
-            Thread.Sleep(3000);
+            // Sleeping until the thread is terminated
+            while (waitThread.IsAlive)
+                Thread.Sleep(1000);
 
             // The waiting thread must have been terminated by now
-            Assert.IsFalse(waitThread.IsAlive);
-            Assert.IsFalse(isEmpty);
+            Assert.False(isEmpty);
         }
 
-        [TestMethod()]
+        [Fact]
         public void WaitForeverForPacketTest()
         {
             // Thread to wait for a packet
@@ -261,10 +260,10 @@ namespace Networking.Queues.Test
             waitThread.Start();
 
             // Sleeping for some time
-            Thread.Sleep(3000);
+            Thread.Sleep(5000);
 
             // Checking that the thread has not terminated yet
-            Assert.IsTrue(waitThread.IsAlive);
+            Assert.True(waitThread.IsAlive);
         }
     }
 }
