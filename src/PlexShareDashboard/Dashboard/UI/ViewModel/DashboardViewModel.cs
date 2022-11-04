@@ -26,181 +26,181 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         //defining the variables for the client session manager 
         //SessionData stores the values of the session data which consists of the list of users and some important function
         //and sessionAnlaytics stores the telemetric data that we will get from the getAnalytics function 
-        private  ClientSessionManager clientSessionManager;
-        private  SessionData sessionData;
-        private  SessionAnalytics sessionAnalytics;
+        private ClientSessionManager clientSessionManager;
+        private SessionData sessionData;
+        private SessionAnalytics sessionAnalytics;
 
 
 
         //this is the view model for the dashboard in this we will be fetaching the details from the models and then storing it in the viewmodel and then we will be binding to the view of the application 
         //ObservableCollection  for storing the list of pariticipants and their status of screensharing
-        public ObservableCollection<User> participantsList { get; set; }
-      
+        public ObservableCollection<User> ParticipantsList { get; set; }
 
-       //ObservableCollection for storing usercount at every time stamp 
-        public ObservableCollection<UserCountVsTimeStamp> userCountVsTimeStamps { get; set; }
+
+        //ObservableCollection for storing usercount at every time stamp 
+        public ObservableCollection<UserCountVsTimeStamp> UserCountVsTimeStamps { get; set; }
 
         //ObservableCollection for storing the number of chat count for each user 
-        public ObservableCollection<UserIdVsChatCount> userIdVsChatCounts { get; set; }
+        public ObservableCollection<UserIdVsChatCount> UserIdVsChatCounts { get; set; }
 
         //storing the attentive and non attentive users in the meeting 
-        private int attentiveUsers { get; set; }
-        private int nonAttentiveUsers { get; set; }
+        private int AttentiveUsers { get; set; }
+        private int NonAttentiveUsers { get; set; }
 
-        private int totalMessageCount { get; set; }
+        private int TotalMessageCount { get; set; }
 
-        private int totalParticipantsCount { get; set; }
+        private int TotalParticipantsCount { get; set; }
 
-        private string engagementRate { get; set; }
+        private string EngagementRate { get; set; }
 
-        private int sessionScore { get; set; }
+        private int SessionScore { get; set; }
 
-        private string sessionMode { get; set; }
+        private string SessionMode { get; set; }
 
 
         /// <summary>
         /// Total number of messages sent in chat during the session
         /// </summary>
-        public int TotalMessageCount
+        public int TotalMessageCountSetter
         {
-            get { return this.totalMessageCount; }
+            get { return this.TotalMessageCount; }
             set
             {
-                if (this.totalMessageCount != value)
+                if (this.TotalMessageCount != value)
                 {
-                    this.totalMessageCount = value;
-                    OnPropertyChanged("TotalMessageCount");
+                    this.TotalMessageCount = value;
+                    OnPropertyChanged("TotalMessageCountSetter");
                 }
             }
         }
 
-        public int TotalParticipantsCount
+        public int TotalParticipantsCountSetter
         {
-            get { return totalParticipantsCount; }
+            get { return TotalParticipantsCount; }
             set
             {
-                if (totalParticipantsCount != value)
+                if (TotalParticipantsCount != value)
                 {
-                    totalParticipantsCount = value;
-                    OnPropertyChanged("TotalParticipantsCount");
-                }
-            }
-        }
-
-
-        public string EngagementRate
-        {
-            get { return engagementRate; }
-            set
-            {
-                if (engagementRate != value)
-                {
-                    engagementRate = value;
-                    OnPropertyChanged("EngagementRate");
-                }
-            }
-        }
-
-        public int AttentiveUsers
-        {
-            get { return attentiveUsers; }
-            set
-            {
-                if (attentiveUsers != value)
-                {
-                    attentiveUsers = value;
-                    OnPropertyChanged("AttentiveUsers");
-                }
-            }
-        }
-
-        public int NonAttentiveUsers
-        {
-            get { return nonAttentiveUsers; }
-            set
-            {
-                if (nonAttentiveUsers != value)
-                {
-                    nonAttentiveUsers = value;
-                    OnPropertyChanged("NonAttentiveUsers");
-                }
-            }
-        }
-
-        public int SessionScore
-        {
-            get { return sessionScore; }
-            set
-            {
-                if (sessionScore != value)
-                {
-                    sessionScore = value;
-                    OnPropertyChanged("SessionScore");
+                    TotalParticipantsCount = value;
+                    OnPropertyChanged("TotalParticipantsCountSetter");
                 }
             }
         }
 
 
-        public string SessionMode
+        public string EngagementRateSetter
         {
-            get { return sessionMode; }
+            get { return EngagementRate; }
             set
             {
-                if (sessionMode != value)
+                if (EngagementRate != value)
                 {
-                    sessionMode = value;
-                    OnPropertyChanged("SessionMode");
+                    EngagementRate = value;
+                    OnPropertyChanged("EngagementRateSetter");
+                }
+            }
+        }
+
+        public int AttentiveUsersSetter
+        {
+            get { return AttentiveUsers; }
+            set
+            {
+                if (AttentiveUsers != value)
+                {
+                    AttentiveUsers = value;
+                    OnPropertyChanged("AttentiveUsersSetter");
+                }
+            }
+        }
+
+        public int NonAttentiveUsersSetter
+        {
+            get { return NonAttentiveUsers; }
+            set
+            {
+                if (NonAttentiveUsers != value)
+                {
+                    NonAttentiveUsers = value;
+                    OnPropertyChanged("NonAttentiveUsersSetter");
+                }
+            }
+        }
+
+        public int SessionScoreSetter
+        {
+            get { return SessionScore; }
+            set
+            {
+                if (SessionScore != value)
+                {
+                    SessionScore = value;
+                    OnPropertyChanged("SessionScoreSetter");
+                }
+            }
+        }
+
+
+        public string SessionModeSetter
+        {
+            get { return SessionMode; }
+            set
+            {
+                if (SessionMode != value)
+                {
+                    SessionMode = value;
+                    OnPropertyChanged("SessionModeSetter");
                 }
             }
         }
         //constructor for view model 
         public DashboardViewModel()
         {
-            
-            
-            //initialising participantsList 
-            participantsList = new ObservableCollection<User>();
+
+
+            //initialising ParticipantsList 
+            ParticipantsList = new ObservableCollection<User>();
             User user1 = new User(1, "Rupesh Kumar", "Presenting");
             User user2 = new User(2, "Shubham Raj", "Presenting");
             User user3 = new User(3, "Hrishi Raaj", "Presenting");
             User user4 = new User(4, "Saurabh kumar", "Not Presenting");
             User user5 = new User(5, "Aditya Agarwal", "Not Presenting");
-            participantsList.Add(user1);
-            participantsList.Add(user2);
-            participantsList.Add(user3);
-            participantsList.Add(user4);
-            participantsList.Add(user5);
+            ParticipantsList.Add(user1);
+            ParticipantsList.Add(user2);
+            ParticipantsList.Add(user3);
+            ParticipantsList.Add(user4);
+            ParticipantsList.Add(user5);
 
 
 
-            //initialising userCountVsTimeStamps
-            userCountVsTimeStamps = new ObservableCollection<UserCountVsTimeStamp>();
-            userCountVsTimeStamps.Add(new UserCountVsTimeStamp(10, new DateTime(2019, 05, 09, 9, 20, 0)));
-            userCountVsTimeStamps.Add(new UserCountVsTimeStamp(20, new DateTime(2019, 05, 09, 9, 25, 0)));
-            userCountVsTimeStamps.Add(new UserCountVsTimeStamp(30, new DateTime(2019, 05, 09, 9, 35, 0)));
-            userCountVsTimeStamps.Add(new UserCountVsTimeStamp(40, new DateTime(2019, 05, 09, 9, 45, 0)));
+            //initialising UserCountVsTimeStamps
+            UserCountVsTimeStamps = new ObservableCollection<UserCountVsTimeStamp>();
+            UserCountVsTimeStamps.Add(new UserCountVsTimeStamp(10, 15));
+            UserCountVsTimeStamps.Add(new UserCountVsTimeStamp(20, 20));
+            UserCountVsTimeStamps.Add(new UserCountVsTimeStamp(30, 25));
+            UserCountVsTimeStamps.Add(new UserCountVsTimeStamp(40, 30));
 
 
 
 
             //initialising the uservschatcount collection 
-            userIdVsChatCounts = new ObservableCollection<UserIdVsChatCount>();
+            UserIdVsChatCounts = new ObservableCollection<UserIdVsChatCount>();
 
-            userIdVsChatCounts.Add(new UserIdVsChatCount(1, 10));
-            userIdVsChatCounts.Add(new UserIdVsChatCount(2, 12));
-            userIdVsChatCounts.Add(new UserIdVsChatCount(3, 13));
-            userIdVsChatCounts.Add(new UserIdVsChatCount(4, 4));
+            UserIdVsChatCounts.Add(new UserIdVsChatCount(1, 10));
+            UserIdVsChatCounts.Add(new UserIdVsChatCount(2, 12));
+            UserIdVsChatCounts.Add(new UserIdVsChatCount(3, 13));
+            UserIdVsChatCounts.Add(new UserIdVsChatCount(4, 4));
 
 
 
-            AttentiveUsers = 60;
-            NonAttentiveUsers = 100 - AttentiveUsers;
+            AttentiveUsersSetter = 60;
+            NonAttentiveUsersSetter = 100 - AttentiveUsersSetter;
 
-            TotalParticipantsCount = 140;
-            TotalMessageCount = 104;
-            EngagementRate = "94.2";
-            TotalParticipantsCount = 200;
-            SessionMode = "LabMode";
+            TotalParticipantsCountSetter = 140;
+            TotalMessageCountSetter = 104;
+            EngagementRateSetter = "94.2";
+            TotalParticipantsCountSetter = 200;
+            SessionModeSetter = "LabMode";
 
 
 
@@ -233,12 +233,12 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
             //Convert the sessionAnalytics properly to show to the graph 
 
-            //userCountVsTimeStamps.Clear();
-            userCountVsTimeStamps.Add(new UserCountVsTimeStamp(50,new DateTime(2019, 05, 09, 9, 15, 0)));
+            //UserCountVsTimeStamps.Clear();
+            UserCountVsTimeStamps.Add(new UserCountVsTimeStamp(50, 35));
 
-            //userIdVsChatCounts.Clear();
+            //UserIdVsChatCounts.Clear();
 
-            userIdVsChatCounts.Add(new UserIdVsChatCount(5, 16 ));
+            UserIdVsChatCounts.Add(new UserIdVsChatCount(5, 16));
 
 
 
@@ -248,11 +248,11 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             //update the total message count
 
             //update total paritcipant count 
-            TotalParticipantsCount = 201;
-            TotalMessageCount = 120;
-            EngagementRate = "95%";
-            NonAttentiveUsers = 50;
-            AttentiveUsers = 50;
+            TotalParticipantsCountSetter = 201;
+            TotalMessageCountSetter = 120;
+            EngagementRateSetter = "95%";
+            NonAttentiveUsersSetter = 50;
+            AttentiveUsersSetter = 50;
             //TotalParticipantsCount = 200;
 
             //update the engagement rate 
@@ -261,16 +261,16 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
 
             return;
-    
+
         }
 
 
 
 
-        //function to update the participantsList of viewmodel 
+        //function to update the ParticipantsList of viewmodel 
         public void UpdateParticipantsList(List<UserData> users)
         {
-            participantsList.Clear();
+            ParticipantsList.Clear();
 
             //using the for loop to push the updated list of the users into participants list 
             foreach (var currUser in users)
@@ -280,8 +280,8 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
                 string currUserStatus = "Presenting";
                 User newUser = new User(currUserId, currUserName, currUserStatus);
 
-                participantsList.Add(newUser);
-            
+                ParticipantsList.Add(newUser);
+
             }
 
             return;
@@ -290,9 +290,9 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
         //function to update usercountvstimestamp observable collection to update the view 
         public void UpdateUserCountVsTimeStamp(Dictionary<DateTime, int> currUserCountVsTimeStamp)
-        { 
+        {
             //we have to update the observable collection userCountVsTimeStamp 
-            userCountVsTimeStamps.Clear();
+            UserCountVsTimeStamps.Clear();
 
             //using the for loop for this purpose 
             foreach (var currElement in currUserCountVsTimeStamp)
@@ -300,45 +300,47 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
                 int currUserCount = currElement.Value;
                 DateTime currTimeStamp = currElement.Key;
 
-                UserCountVsTimeStamp newUserCountVsTimeStampElement = new UserCountVsTimeStamp(currUserCount, currTimeStamp);
+                //TODO to convert the date time into the minutes and then append
+                int currTimeStampInt = 20;
+                UserCountVsTimeStamp newUserCountVsTimeStampElement = new UserCountVsTimeStamp(currUserCount, currTimeStampInt);
 
-                userCountVsTimeStamps.Add(newUserCountVsTimeStampElement);
-            
+                UserCountVsTimeStamps.Add(newUserCountVsTimeStampElement);
+
             }
 
             //say everything went fine 
             return;
 
-        
+
         }
 
         //function to update the useridvschatcounts 
         public void UpdateUserIdVsChatCount(Dictionary<int, int> chatCountForEachUser)
         {
-            userIdVsChatCounts.Clear();
+            UserIdVsChatCounts.Clear();
             int chatCount = 0;
 
             //using the for loop for this purpose 
-            foreach(var currUserChatCount in chatCountForEachUser)
+            foreach (var currUserChatCount in chatCountForEachUser)
             {
                 var currUserid = currUserChatCount.Key;
                 var currChatCount = currUserChatCount.Value;
-                
+
                 UserIdVsChatCount currUserIdChatCount = new UserIdVsChatCount(currUserid, currChatCount);
 
-                userIdVsChatCounts.Add(currUserIdChatCount);
+                UserIdVsChatCounts.Add(currUserIdChatCount);
 
                 chatCount = chatCount + currChatCount;
             }
 
 
             //updating the total chatcount 
-            TotalMessageCount = chatCount;
+            TotalMessageCountSetter = chatCount;
 
 
             //say everything went fine 
             return;
-        
+
         }
 
 
@@ -349,29 +351,29 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             int attentivePercentage = 100 - nonAttentivePercentage;
 
             //updating the percentages
-            NonAttentiveUsers = nonAttentivePercentage;
-            AttentiveUsers = attentivePercentage;
+            NonAttentiveUsersSetter = nonAttentivePercentage;
+            AttentiveUsersSetter = attentivePercentage;
 
             //say everything went fine 
             return;
         }
 
 
-       
 
 
-//#####################################################################################
+
+        //#####################################################################################
 
         //function to listen to any of the session data changed subscribed to the IClientSessionNotifications
         public void OnClientSessionChanged(SessionData newSessionData)
         {
-            
+
             if (newSessionData != null)
             {
-                //we have to update the participants list and sessionMode
+                //we have to update the participants list and SessionMode
                 UpdateParticipantsList(newSessionData.users);
                 SessionMode = newSessionData.sessionMode;
-                TotalParticipantsCount = participantsList.Count;
+                TotalParticipantsCount = ParticipantsList.Count;
 
             }
 
@@ -405,7 +407,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             int currAttentiveUsers = TotalParticipantsCount - currNonAttentiveUsers;
 
             CalculatePercentageOfAttentiveAndNonAttentiveUsers(currNonAttentiveUsers, currAttentiveUsers);
-            
+
             //say everything went fine 
             return;
         }
@@ -417,9 +419,9 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         {
             int activeMembers = currChatCountForEachUser.Count;
 
-            float engagementRate = (float)(activeMembers / TotalParticipantsCount) * 100;
-            EngagementRate =  engagementRate.ToString("0") + "%";
-            
+            float EngagementRate = (float)(activeMembers / TotalParticipantsCount) * 100;
+            EngagementRateSetter = EngagementRate.ToString("0") + "%";
+
 
             //say everything went fine 
             return;
@@ -437,8 +439,8 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
 
-       
-        
+
+
 
         public event PropertyChangedEventHandler PropertyChanged;
 

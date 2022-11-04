@@ -9,19 +9,19 @@ namespace Client.Models
     public class User
     {
         //storing the details about the user 
-        public int userId { get; set; }
+        public int UserId { get; set; }
        
-        public string userName { get; set; }
+        public string UserName { get; set; }
         
-        public string status { get; set; }
+        public string Status { get; set; }
        
 
         //constructor for the User 
-        public User(int userId , string username, string statuss)
+        public User(int UserId , string username, string Statuss)
         {
-            this.userId = userId;
-            this.userName = username;
-            this.status = statuss;
+            this.UserId = UserId;
+            this.UserName = username;
+            this.Status = Statuss;
         }
     }
 
