@@ -4,11 +4,11 @@
 /// once packets appear in the receiving queue
 /// </summary>
 
-using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 
-namespace Networking.Queues
+namespace PlexShareNetwork.Queues
 {
     public class ReceiveQueueListener
     {
@@ -77,18 +77,18 @@ namespace Networking.Queues
                 Packet packet = _receivingQueue.Dequeue();
 
                 // Identifying the module which the packet belongs to
-                string moduleName = packet.getModuleOfPacket();
+                string moduleName = packet.moduleOfPacket;
 
                 if (!_modulesToNotificationHandlerMap.ContainsKey(moduleName))
                 {
-                    Console.WriteLine("Module %s does not contain a handler.\n", moduleName);
+                    Trace.WriteLine($"Module {moduleName} does not have a handler.\n");
                     continue;
                 }
 
                 INotificationHandler notificationHandler = _modulesToNotificationHandlerMap[moduleName];
 
                 // Calling the method 'OnDataReceived' on the handler of the appropriate module
-                notificationHandler.OnDataReceived(packet.getSerializedData());
+                notificationHandler.OnDataReceived(packet.serializedData);
             }
         }
 
