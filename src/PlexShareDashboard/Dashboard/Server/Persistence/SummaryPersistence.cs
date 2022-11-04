@@ -1,11 +1,4 @@
-﻿/// <author>Parmanand Kumar</author>
-/// <created>15/11/2021</created>
-/// <summary>
-///     It contains the SummaryPersistence class
-///     It implements the ISummaryPersistence interface functions.
-/// </summary> 
-
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
