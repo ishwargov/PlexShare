@@ -175,9 +175,9 @@ namespace PlexShareNetwork.Serialization.Tests
             string encodedString = serializer.Serialize(packet);
 
             Packet decodedPacket = serializer.Deserialize<Packet>(encodedString);
-            Assert.Equal(packet._serializedData, decodedPacket._serializedData);
-            Assert.Equal(packet._destination, decodedPacket._destination);
-            Assert.Equal(packet._moduleOfPacket, decodedPacket._moduleOfPacket);
+            Assert.Equal(packet.serializedData, decodedPacket.serializedData);
+            Assert.Equal(packet.destination, decodedPacket.destination);
+            Assert.Equal(packet.moduleOfPacket, decodedPacket.moduleOfPacket);
         }
     }
     

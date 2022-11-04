@@ -102,7 +102,7 @@ namespace PlexShareNetwork.Sockets
 							if (!(client.Poll(1, SelectMode.SelectRead) && client.Available == 0))
 							{
 								client.Send(bytes);
-								Trace.WriteLine($"[Networking] Data sent from server to client by {packet.getModuleOfPacket()}.");
+								Trace.WriteLine($"[Networking] Data sent from server to client by {packet.moduleOfPacket}.");
 							}
 							else // else the client is disconnected so we try to reconnect 3 times
 							{
@@ -128,7 +128,7 @@ namespace PlexShareNetwork.Sockets
 											{
 												Trace.WriteLine("[Networking] Client connected.");
 												clientTry.Send(bytesTry);
-												Trace.WriteLine($"[Networking] Data sent from server to client by {packet.getModuleOfPacket()}.");
+												Trace.WriteLine($"[Networking] Data sent from server to client by {packet.moduleOfPacket}.");
 												isSent = true; // after sending the data we can set isSent to true
 												break;
 											}
@@ -180,13 +180,13 @@ namespace PlexShareNetwork.Sockets
 		private HashSet<TcpClient> DestinationToSocket(Packet packet)
 		{
 			var sockets = new HashSet<TcpClient>();
-			if (packet.getDestination() == null)
+			if (packet.destination == null)
 			{
 				foreach (var keyValue in _clientIdToSocket) sockets.Add(keyValue.Value);
 			}
 			else
 			{
-				sockets.Add(_clientIdToSocket[packet.getDestination()]);
+				sockets.Add(_clientIdToSocket[packet.destination]);
 			}
 			return sockets;
 		}

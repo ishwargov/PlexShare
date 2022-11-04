@@ -113,7 +113,7 @@ namespace PlexShareNetwork.Sockets
             {
                 Packet packet = _serializer.Deserialize<Packet>(receivedString[packetBeginIndex..packetEndIndex]);
                 receivedString = receivedString[(packetEndIndex + 3)..]; // remove the first packet from the packets string
-                Trace.WriteLine($"[Networking] Received data from module {packet._moduleOfPacket}.");
+                Trace.WriteLine($"[Networking] Received data from module {packet.moduleOfPacket}.");
                 _queue.Enqueue(packet);
                 packetBeginIndex = receivedString.IndexOf("BEGIN", StringComparison.Ordinal) + 5;
                 packetEndIndex = receivedString.IndexOf("END", StringComparison.Ordinal);

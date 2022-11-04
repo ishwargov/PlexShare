@@ -55,9 +55,9 @@ namespace PlexShareNetwork.Sockets.Tests
             Assert.True(_receivingQueue.Size() == 1);
 
             Packet receivedPacket = _receivingQueue.Dequeue();
-			Assert.Equal(sendPacket.getSerializedData(), receivedPacket.getSerializedData());
-			Assert.Equal(sendPacket.getDestination(), receivedPacket.getDestination());
-			Assert.Equal(sendPacket.getModuleOfPacket(), receivedPacket.getModuleOfPacket());
+			Assert.Equal(sendPacket.serializedData, receivedPacket.serializedData);
+			Assert.Equal(sendPacket.destination, receivedPacket.destination);
+			Assert.Equal(sendPacket.moduleOfPacket, receivedPacket.moduleOfPacket);
 		}
 
 		[Fact]
@@ -73,9 +73,9 @@ namespace PlexShareNetwork.Sockets.Tests
             Assert.True(_receivingQueue.Size() == 1);
 
             Packet receivedPacket = _receivingQueue.Dequeue();
-			Assert.Equal(sendPacket.getSerializedData(), receivedPacket.getSerializedData());
-            Assert.Equal(sendPacket.getDestination(), receivedPacket.getDestination());
-            Assert.Equal(sendPacket.getModuleOfPacket(), receivedPacket.getModuleOfPacket());
+			Assert.Equal(sendPacket.serializedData, receivedPacket.serializedData);
+            Assert.Equal(sendPacket.destination, receivedPacket.destination);
+            Assert.Equal(sendPacket.moduleOfPacket, receivedPacket.moduleOfPacket);
 		}
 
 		[Fact]
@@ -96,9 +96,9 @@ namespace PlexShareNetwork.Sockets.Tests
             for (var i = 1; i <= 10; i++)
 			{
                 Packet receivedPacket = _receivingQueue.Dequeue();
-				Assert.Equal("Test string" + i, receivedPacket.getSerializedData());
-                Assert.Equal("To Server", receivedPacket.getDestination());
-                Assert.Equal("Test Module", receivedPacket.getModuleOfPacket());
+				Assert.Equal("Test string" + i, receivedPacket.serializedData);
+                Assert.Equal("To Server", receivedPacket.destination);
+                Assert.Equal("Test Module", receivedPacket.moduleOfPacket);
             }
 		}
 	}

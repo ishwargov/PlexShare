@@ -80,7 +80,7 @@ namespace PlexShareNetwork.Sockets
 					try
 					{
 						_socket.Client.Send(Encoding.ASCII.GetBytes(sendString));
-						Trace.WriteLine($"[Networking] Data sent from client to server by module {packet.getModuleOfPacket()}.");
+						Trace.WriteLine($"[Networking] Data sent from client to server by module {packet.moduleOfPacket}.");
 					}
 					catch (Exception e)
 					{
