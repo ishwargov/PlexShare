@@ -12,20 +12,27 @@ namespace Dashboard
 
     public class SessionData
     {
+        
+
         // the List of users in the meeting 
         public List<UserData> users;
 
         // default SessionMode is LabMode
         public string sessionMode;
 
+        //used to store the session id
+        public int sessionId;
+        
 
 
 
         ///     Constructor to initialise and empty list of users
         public SessionData()
         {
+            Random rnd = new Random();
             if (users == null) users = new List<UserData>();
             if (users == null) sessionMode = "LabMode";
+            if (users == null) sessionId = rnd.Next();
         }
 
         ///     Adds a user to the list of users in the session
