@@ -62,7 +62,7 @@ namespace PlexShareNetwork.Sockets.Tests
 		[Fact]
 		public void LargeSizePacketReceiveTest()
 		{
-			Packet sendPacket = new Packet(NetworkingGlobals.RandomString(5000), "Test Destination", "Test Module");
+			Packet sendPacket = new Packet(NetworkingGlobals.RandomString(1000), "Test Destination", "Test Module");
             string sendString = "BEGIN" + _serializer.Serialize(sendPacket) + "END";
             _clientSocket.Client.Send(Encoding.ASCII.GetBytes(sendString));
 

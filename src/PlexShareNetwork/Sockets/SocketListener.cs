@@ -17,7 +17,7 @@ namespace PlexShareNetwork.Sockets
 	public class SocketListener
 	{
 		// max size of the send buffer
-		private const int bufferSize = 1024 * 1024;
+		private const int bufferSize = 1000000;
 		// create the buffer
 		private readonly byte[] buffer = new byte[bufferSize];
 

@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace PlexShareNetwork.Sockets
 {
@@ -22,10 +23,10 @@ namespace PlexShareNetwork.Sockets
 		private volatile bool _threadRun;
 
 		// variable to store the send queue
-		private readonly SendingQueue _sendQueue;
+		private readonly SendingQueue _sendingQueue;
 
 		// variable to store the socket
-		private readonly TcpClient _socket;
+		private readonly TcpClient _clientSocket;
 
         // serializer object to serialize the packet to send
         readonly Serializer _serializer = new();
@@ -33,13 +34,14 @@ namespace PlexShareNetwork.Sockets
         /// <summary>
         /// It is the Constructor which initializes the queue and socket
         /// </summary>
-        /// <param name="queue"> The the send queue. </param>
-        /// <param name="socket"> The socket to send the data. </param>
-        public SendQueueListenerClient(SendingQueue sendQueue, TcpClient socket)
+        /// <param name="sendingQueue"> The the send queue. </param>
+        /// <param name="clientSocket"> The socket object to send the data. </param>
+        public SendQueueListenerClient(SendingQueue sendingQueue, TcpClient clientSocket)
 		{
-            _sendQueue = sendQueue;
-			_socket = socket;
-		}
+            _sendingQueue = sendingQueue;
+            _clientSocket = clientSocket;
+			_thread = new Thread(Listen);
+        }
 
 		/// <summary>
 		/// This function starts the thread.
@@ -48,7 +50,6 @@ namespace PlexShareNetwork.Sockets
 		public void Start()
 		{
 			_threadRun = true;
-			_thread = new Thread(Listen);
 			_thread.Start();
 			Trace.WriteLine("[Networking] SendQueueListenerClient thread started.");
 		}
@@ -60,11 +61,12 @@ namespace PlexShareNetwork.Sockets
 		public void Stop()
 		{
 			_threadRun = false;
-			Trace.WriteLine("[Networking] SendQueueListenerClient thread stopped.");
+            _thread.Join();
+            Trace.WriteLine("[Networking] SendQueueListenerClient thread stopped.");
 		}
 
 		/// <summary>
-		/// This function listens to send queue and when some packet comes in the send queue then
+		/// This function listens to the send queue and when some packet comes in the queue then
 		/// it sends the packet to the server. The thread will be running this function.
 		/// </summary>
 		/// <returns> void </returns>
@@ -72,19 +74,19 @@ namespace PlexShareNetwork.Sockets
 		{
 			while (_threadRun)
 			{
-                _sendQueue.WaitForPacket();
-				while (!_sendQueue.IsEmpty())
+                _sendingQueue.WaitForPacket();
+				while (!_sendingQueue.IsEmpty())
 				{
-					Packet packet = _sendQueue.Dequeue();
+					Packet packet = _sendingQueue.Dequeue();
                     string sendString = "BEGIN" + _serializer.Serialize(packet) + "END";
 					try
 					{
-						_socket.Client.Send(Encoding.ASCII.GetBytes(sendString));
-						Trace.WriteLine($"[Networking] Data sent from client to server by module {packet.moduleOfPacket}.");
+                        _clientSocket.Client.Send(Encoding.ASCII.GetBytes(sendString));
+						Trace.WriteLine($"[Networking] SendQueueListenerClient. Data sent from client to server by module: {packet.moduleOfPacket}.");
 					}
 					catch (Exception e)
 					{
-						Trace.WriteLine($"[Networking] Error in SendQueueListenerClient thread: {e.Message}");
+						Trace.WriteLine($"[Networking] SendQueueListenerClient. Error in sending data: {e.Message}");
 					}
 				}
 			}
