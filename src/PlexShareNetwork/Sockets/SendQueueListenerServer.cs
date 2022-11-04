@@ -24,13 +24,13 @@ namespace PlexShareNetwork.Sockets
 		private volatile bool _threadRun;
 
 		// variable to store the send queue
-		private readonly SendingQueue _queue;
+		private readonly SendingQueue _sendingQueue;
 
 		// variable to store the dictionary which maps clientIds to their respective sockets
-		private readonly Dictionary<string, TcpClient> _clientIdToSocket;
+		private readonly Dictionary<string, TcpClient> _clientIdToClientSocketMap;
 
 		// variable to store the dictionary which maps module identifiers to their respective notification handlers
-		private readonly Dictionary<string, INotificationHandler> _subscribedModules;
+		private readonly Dictionary<string, INotificationHandler> _moduleToNotificationHandlerMap;
 
         // serializer object to serialize the packet to send
         readonly Serializer _serializer = new();
@@ -38,18 +38,19 @@ namespace PlexShareNetwork.Sockets
         /// <summary>
         /// It is the Constructor which initializes the queue, clientIdSocket and subscribedModules
         /// </summary>
-        /// <param name="queue"> The the send queue. </param>
-        /// <param name="clientIdToSocket"> The dictionary which maps clientIds to their respective sockets. </param>
-        /// <param name="subscribedModules">
+        /// <param name="sendingQueue"> The the sending queue. </param>
+        /// <param name="clientIdToClientSocketMap"> The map from clientIds to their respective sockets. </param>
+        /// <param name="moduleToNotificationHandlerMap">
         /// The dictionary which maps module identifiers to their respective notification handlers.
         /// </param>
-        public SendQueueListenerServer(SendingQueue queue, Dictionary<string, TcpClient> clientIdToSocket,
-			Dictionary<string, INotificationHandler> subscribedModules)
+        public SendQueueListenerServer(SendingQueue sendingQueue, Dictionary<string, TcpClient> clientIdToClientSocketMap,
+			Dictionary<string, INotificationHandler> moduleToNotificationHandlerMap)
 		{
-			_queue = queue;
-			_clientIdToSocket = clientIdToSocket;
-			_subscribedModules = subscribedModules;
-		}
+            _sendingQueue = sendingQueue;
+			_clientIdToClientSocketMap = clientIdToClientSocketMap;
+			_moduleToNotificationHandlerMap = moduleToNotificationHandlerMap;
+			_thread = new Thread(Listen); // the thread is only created and not started here
+        }
 
 		/// <summary>
 		/// This function starts the thread.
@@ -57,8 +58,8 @@ namespace PlexShareNetwork.Sockets
 		/// <returns> void </returns>
 		public void Start()
 		{
-			_threadRun = true;
-			_thread = new Thread(Listen);
+            Trace.WriteLine("[Networking] SendQueueListenerServer.Start() function called.");
+            _threadRun = true;
 			_thread.Start();
 			Trace.WriteLine("[Networking] SendQueueListenerServer thread started.");
 		}
@@ -69,8 +70,9 @@ namespace PlexShareNetwork.Sockets
 		/// <returns> void </returns>
 		public void Stop()
 		{
-			_threadRun = false;
-			Trace.WriteLine("[Networking] SendQueueListenerServer thread stopped.");
+            Trace.WriteLine("[Networking] SendQueueListenerServer.Stop() function called.");
+            _threadRun = false;
+            Trace.WriteLine("[Networking] SendQueueListenerServer thread stopped.");
 		}
 
 		/// <summary>
@@ -83,10 +85,10 @@ namespace PlexShareNetwork.Sockets
 		{
 			while (_threadRun)
 			{
-				_queue.WaitForPacket();
-				while (!_queue.IsEmpty())
+                _sendingQueue.WaitForPacket();
+				while (!_sendingQueue.IsEmpty())
 				{
-					Packet packet = _queue.Dequeue();
+					Packet packet = _sendingQueue.Dequeue();
                     string sendString = "BEGIN" + _serializer.Serialize(packet) + "END";
 
                     // get the socket corresponding to the destination in the packet
@@ -141,7 +143,7 @@ namespace PlexShareNetwork.Sockets
 											var clientId = SocketToClientId(socketTry);
 
 											// call the OnClientLeft() handler of each subscribed module
-											foreach (var module in _subscribedModules)
+											foreach (var module in _moduleToNotificationHandlerMap)
 											{
 												if (clientId != null)
 												{
@@ -182,11 +184,11 @@ namespace PlexShareNetwork.Sockets
 			var sockets = new HashSet<TcpClient>();
 			if (packet.destination == null)
 			{
-				foreach (var keyValue in _clientIdToSocket) sockets.Add(keyValue.Value);
+				foreach (var keyValue in _clientIdToClientSocketMap) sockets.Add(keyValue.Value);
 			}
 			else
 			{
-				sockets.Add(_clientIdToSocket[packet.destination]);
+				sockets.Add(_clientIdToClientSocketMap[packet.destination]);
 			}
 			return sockets;
 		}
@@ -198,9 +200,9 @@ namespace PlexShareNetwork.Sockets
 		/// <returns> ClientId string. </returns>
 		private string SocketToClientId(TcpClient socket)
 		{
-			foreach (var clientId in _clientIdToSocket.Keys)
+			foreach (var clientId in _clientIdToClientSocketMap.Keys)
 			{
-				if (_clientIdToSocket[clientId] == socket)
+				if (_clientIdToClientSocketMap[clientId] == socket)
 				{
 					return clientId;
 				}

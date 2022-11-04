@@ -27,27 +27,27 @@ namespace PlexShareNetwork.Sockets.Tests
         public SocketListenerTest()
 		{
 			var IPAndPort = _server.Communicator.Start().Split(":");
+			_server.Communicator.Stop();
 			IPAddress IP = IPAddress.Parse(IPAndPort[0]);
 			int port = int.Parse(IPAndPort[1]);
-			_server.Communicator.Stop();
-            _clientSocket.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, true);
-            TcpListener serverSocket = new TcpListener(IP, port);
+            TcpListener serverSocket = new(IP, port);
 			serverSocket.Start();
+            _clientSocket.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, true);
 			Task t1 = Task.Run(() => { _clientSocket.Connect(IP, port); });
             Task t2 = Task.Run(() => { _serverSocket = serverSocket.AcceptTcpClient(); });
 			Task.WaitAll(t1, t2);
-			_socketListener = new SocketListener(_receivingQueue, _serverSocket);
+			_socketListener = new(_receivingQueue, _serverSocket);
 			_socketListener.Start();
         }
 
 		[Fact]
 		public void SinglePacketReceiveTest()
 		{
-			Packet sendPacket = new Packet("Test string", "Test Destination", "Test Module");
+			Packet sendPacket = new("Test string", "Test Destination", "Test Module");
             string sendString = "BEGIN" + _serializer.Serialize(sendPacket) + "END";
             _clientSocket.Client.Send(Encoding.ASCII.GetBytes(sendString));
 
-            while (_receivingQueue.IsEmpty())
+            while (_receivingQueue.Size() < 1)
 			{
                 Thread.Sleep(100);
             }
@@ -62,11 +62,11 @@ namespace PlexShareNetwork.Sockets.Tests
 		[Fact]
 		public void LargeSizePacketReceiveTest()
 		{
-			Packet sendPacket = new Packet(NetworkingGlobals.RandomString(1000), "Test Destination", "Test Module");
+			Packet sendPacket = new(NetworkingGlobals.RandomString(1000), "Test Destination", "Test Module");
             string sendString = "BEGIN" + _serializer.Serialize(sendPacket) + "END";
             _clientSocket.Client.Send(Encoding.ASCII.GetBytes(sendString));
 
-			while (_receivingQueue.IsEmpty())
+			while (_receivingQueue.Size() < 1)
 			{
                 Thread.Sleep(100);
             }
@@ -79,12 +79,13 @@ namespace PlexShareNetwork.Sockets.Tests
 		}
 
 		[Fact]
-		public void MultiplePacketReceiveTest()
+		public void MultiplePacketReceiveFromSameDestinationAndSameModuleTest()
 		{
-			for (var i = 1; i <= 10; i++)
+            Packet[] sendPackets = new Packet[10];
+            for (var i = 0; i < 10; i++)
 			{
-				Packet sendPacket = new Packet("Test string" + i, "Test Destination" + i, "Test Module" + i);
-                string sendString = "BEGIN" + _serializer.Serialize(sendPacket) + "END";
+                sendPackets[i] = new("Test string" + i, "Test Destination", "Test Module");
+                string sendString = "BEGIN" + _serializer.Serialize(sendPackets[i]) + "END";
                 _clientSocket.Client.Send(Encoding.ASCII.GetBytes(sendString));
 			}
 
@@ -94,13 +95,117 @@ namespace PlexShareNetwork.Sockets.Tests
 			}
             Assert.True(_receivingQueue.Size() == 10);
 
-            for (var i = 1; i <= 10; i++)
+            for (var i = 0; i < 10; i++)
 			{
 				Packet receivedPacket = _receivingQueue.Dequeue();
-				Assert.Equal("Test string" + i, receivedPacket.serializedData);
-                Assert.Equal("Test Destination" + i, receivedPacket.destination);
-                Assert.Equal("Test Module" + i, receivedPacket.moduleOfPacket);
+                Assert.Equal(sendPackets[i].serializedData, receivedPacket.serializedData);
+                Assert.Equal(sendPackets[i].destination, receivedPacket.destination);
+                Assert.Equal(sendPackets[i].moduleOfPacket, receivedPacket.moduleOfPacket);
             }
 		}
-	}
+
+        [Fact]
+        public void MultiplePacketReceiveFromSameDestinationAndDifferentModuleTest()
+        {
+            Packet[] sendPackets = new Packet[10];
+            for (var i = 0; i < 10; i++)
+            {
+                sendPackets[i] = new("Test string" + i, "Test Destination", "Test Module" + i);
+                string sendString = "BEGIN" + _serializer.Serialize(sendPackets[i]) + "END";
+                _clientSocket.Client.Send(Encoding.ASCII.GetBytes(sendString));
+            }
+
+            while (_receivingQueue.Size() < 10)
+            {
+                Thread.Sleep(1000);
+            }
+            Assert.True(_receivingQueue.Size() == 10);
+
+            for (var i = 0; i < 10; i++)
+            {
+                Packet receivedPacket = _receivingQueue.Dequeue();
+                Assert.Equal(sendPackets[i].serializedData, receivedPacket.serializedData);
+                Assert.Equal(sendPackets[i].destination, receivedPacket.destination);
+                Assert.Equal(sendPackets[i].moduleOfPacket, receivedPacket.moduleOfPacket);
+            }
+        }
+
+        [Fact]
+        public void MultiplePacketReceiveFromDifferentDestinationAndSameModuleTest()
+        {
+            Packet[] sendPackets = new Packet[10];
+            for (var i = 0; i < 10; i++)
+            {
+                sendPackets[i] = new("Test string" + i, "Test Destination" + i, "Test Module");
+                string sendString = "BEGIN" + _serializer.Serialize(sendPackets[i]) + "END";
+                _clientSocket.Client.Send(Encoding.ASCII.GetBytes(sendString));
+            }
+
+            while (_receivingQueue.Size() < 10)
+            {
+                Thread.Sleep(1000);
+            }
+            Assert.True(_receivingQueue.Size() == 10);
+
+            for (var i = 0; i < 10; i++)
+            {
+                Packet receivedPacket = _receivingQueue.Dequeue();
+                Assert.Equal(sendPackets[i].serializedData, receivedPacket.serializedData);
+                Assert.Equal(sendPackets[i].destination, receivedPacket.destination);
+                Assert.Equal(sendPackets[i].moduleOfPacket, receivedPacket.moduleOfPacket);
+            }
+        }
+
+        [Fact]
+        public void MultiplePacketReceiveFromDifferentDestinationAndDifferentModuleTest()
+        {
+            Packet[] sendPackets = new Packet[10];
+            for (var i = 0; i < 10; i++)
+            {
+                sendPackets[i] = new("Test string" + i, "Test Destination" + i, "Test Module" + i);
+                string sendString = "BEGIN" + _serializer.Serialize(sendPackets[i]) + "END";
+                _clientSocket.Client.Send(Encoding.ASCII.GetBytes(sendString));
+            }
+
+            while (_receivingQueue.Size() < 10)
+            {
+                Thread.Sleep(1000);
+            }
+            Assert.True(_receivingQueue.Size() == 10);
+
+            for (var i = 0; i < 10; i++)
+            {
+                Packet receivedPacket = _receivingQueue.Dequeue();
+                Assert.Equal(sendPackets[i].serializedData, receivedPacket.serializedData);
+                Assert.Equal(sendPackets[i].destination, receivedPacket.destination);
+                Assert.Equal(sendPackets[i].moduleOfPacket, receivedPacket.moduleOfPacket);
+            }
+        }
+
+        [Fact]
+        public void MultipleLargeSizePacketReceiveTest()
+        {
+            Packet[] sendPackets = new Packet[10];
+            for (var i = 0; i < 10; i++)
+            {
+                sendPackets[i] = new(NetworkingGlobals.RandomString(1000), "Test Destination", "Test Module");
+                string sendString = "BEGIN" + _serializer.Serialize(sendPackets[i]) + "END";
+                _clientSocket.Client.Send(Encoding.ASCII.GetBytes(sendString));
+            }
+
+            while (_receivingQueue.Size() < 10)
+            {
+                Thread.Sleep(1000);
+            }
+            Assert.True(_receivingQueue.Size() == 10);
+
+            for (var i = 0; i < 10; i++)
+            {
+                Packet receivedPacket = _receivingQueue.Dequeue();
+                Assert.Equal(sendPackets[i].serializedData, receivedPacket.serializedData);
+                Assert.Equal(sendPackets[i].destination, receivedPacket.destination);
+                Assert.Equal(sendPackets[i].moduleOfPacket, receivedPacket.moduleOfPacket);
+            }
+        }
+    }
 }

@@ -58,7 +58,9 @@ namespace PlexShareNetwork.Communication
         /// </returns>
         public string Start(string serverIP = null, string serverPort = null)
 		{
-			IPAddress ip = IPAddress.Parse(FindIpAddress());
+            Trace.WriteLine("[Networking] CommunicatorServer.Start() function called.");
+
+            IPAddress ip = IPAddress.Parse(FindIpAddress());
 			int port = FindFreePort(ip);
 			_socket = new TcpListener(IPAddress.Any, port);
 			_socket.Start();
@@ -83,8 +85,9 @@ namespace PlexShareNetwork.Communication
 		/// <returns> void </returns>
 		public void Stop()
 		{
-			_threadRun = false;
+            Trace.WriteLine("[Networking] CommunicatorServer.Stop() function called.");
 
+            _threadRun = false;
 			_socket.Stop();
 
 			foreach (var clientIdToSocketListener in _clientListeners)
@@ -108,7 +111,8 @@ namespace PlexShareNetwork.Communication
 		/// <returns> String IP address </returns>
 		private static string FindIpAddress()
 		{
-			var host = Dns.GetHostEntry(Dns.GetHostName());
+            Trace.WriteLine("[Networking] CommunicatorServer.FindIpAddress() function called.");
+            var host = Dns.GetHostEntry(Dns.GetHostName());
 			foreach (var IP in host.AddressList)
 			{
 				if (IP.AddressFamily == AddressFamily.InterNetwork)
@@ -131,6 +135,7 @@ namespace PlexShareNetwork.Communication
 		/// <returns> The port number </returns>
 		private static int FindFreePort(IPAddress IP)
 		{
+            Trace.WriteLine("[Networking] CommunicatorServer.FindFreePort() function called.");
             TcpListener tcpListener = new(IP, 0);
 			tcpListener.Start();
 			var port = ((IPEndPoint) tcpListener.LocalEndpoint).Port;
@@ -144,7 +149,8 @@ namespace PlexShareNetwork.Communication
 		/// <returns> void </returns>
 		private void AcceptRequest()
 		{
-			while (_threadRun)
+            Trace.WriteLine("[Networking] CommunicatorServer.AcceptRequest() function called.");
+            while (_threadRun)
 			{
 				try
 				{

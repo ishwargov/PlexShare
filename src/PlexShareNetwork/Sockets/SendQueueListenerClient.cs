@@ -40,7 +40,7 @@ namespace PlexShareNetwork.Sockets
 		{
             _sendingQueue = sendingQueue;
             _clientSocket = clientSocket;
-			_thread = new Thread(Listen);
+			_thread = new Thread(Listen); // the thread is only created and not started here
         }
 
 		/// <summary>
@@ -61,7 +61,6 @@ namespace PlexShareNetwork.Sockets
 		public void Stop()
 		{
 			_threadRun = false;
-            _thread.Join();
             Trace.WriteLine("[Networking] SendQueueListenerClient thread stopped.");
 		}
 
