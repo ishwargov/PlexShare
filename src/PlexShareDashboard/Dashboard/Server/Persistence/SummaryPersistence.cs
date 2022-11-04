@@ -1,11 +1,12 @@
-﻿/// <author>Parmanand Kumar</author>
-/// <created>15/11/2021</created>
+﻿/// <author>Hrishi Raaj Singh</author>
+/// <created>1/11/2022</created>
 /// <summary>
 ///     It contains the SummaryPersistence class
 ///     It implements the ISummaryPersistence interface functions.
 /// </summary> 
 
 using System;
+>>>>>>> origin/main
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
