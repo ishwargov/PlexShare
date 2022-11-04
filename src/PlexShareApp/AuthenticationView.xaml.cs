@@ -32,24 +32,19 @@ namespace PlexShareApp
 
         private async void Home_Click(object sender, RoutedEventArgs e)
         {
-
             AuthenticationViewModel viewModel = this.DataContext as AuthenticationViewModel;
             var returnVal = await viewModel.AuthenticateUser();
             
             if (returnVal == true)
             {
                 var homePage = new HomePageView();
-
                 homePage.Show();
                 Close(); 
-            } else
+            } 
+            else
             {
                 this.SignInButton.Content = "Try Again!";
-            }
-            
+            }            
         }
-
-
-
     }
 }

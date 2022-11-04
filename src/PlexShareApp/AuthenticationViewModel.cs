@@ -32,7 +32,6 @@ public class AuthenticationViewModel
     public static string EncodeInputBuffer(byte[] buffer)
     {
         string base64 = Convert.ToBase64String(buffer);
-
         // Converts base64 to base64url.
         base64 = base64.Replace("+", "-");
         base64 = base64.Replace("/", "_");
@@ -61,8 +60,8 @@ public class AuthenticationViewModel
         string code_verifier = GenerateDataBase(32);
         string code_challenge = EncodeInputBuffer(Sha256(code_verifier));
         const string code_challenge_method = "S256";
-
         string redirectURI = string.Format("http://{0}:{1}/", IPAddress.Loopback, "8080");
+        
         Console.WriteLine("redirect URI: " + redirectURI);
 
         var http = new HttpListener();
@@ -83,10 +82,13 @@ public class AuthenticationViewModel
         try
         {
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(authorizationRequest) { UseShellExecute = true});
-        } catch (System.ComponentModel.Win32Exception noBrowser)
+        } 
+        catch (System.ComponentModel.Win32Exception noBrowser)
         {
             if (noBrowser.ErrorCode == -2147467259)
+            {
                 System.Diagnostics.Debug.WriteLine("Error finding browser");
+            }
         }
         catch (System.Exception other)
         {
@@ -94,12 +96,12 @@ public class AuthenticationViewModel
         }
 
         var context = await http.GetContextAsync();
-
         var response = context.Response;
         string responseString = string.Format("<html><head><meta http-equiv='refresh' content='10;url=https://google.com'></head><body>Authentication is complete! You can return to your app.</body></html>");
         var buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
         response.ContentLength64 = buffer.Length;
         var responseOutput = response.OutputStream;
+
         Task responseTask = responseOutput.WriteAsync(buffer, 0, buffer.Length).ContinueWith((task) =>
         {
             responseOutput.Close();
@@ -165,10 +167,8 @@ public class AuthenticationViewModel
                 // reads response body
                 string responseText = await reader.ReadToEndAsync();
                 System.Diagnostics.Debug.WriteLine(responseText);
-
                 // converts to dictionary
                 Dictionary<string, string> tokenEndpointDecoded = JsonConvert.DeserializeObject<Dictionary<string, string>>(responseText);
-
                 string access_token = tokenEndpointDecoded["access_token"];
                 userinfoCall(access_token);
             }
@@ -212,12 +212,9 @@ public class AuthenticationViewModel
             // reads response body
             string userinfoResponseText = await userinfoResponseReader.ReadToEndAsync();
             System.Diagnostics.Debug.WriteLine("USER INFO:\n" + userinfoResponseText);
-
             var json = JObject.Parse(userinfoResponseText);
-
             // Extracting Data from Json file received
             System.Diagnostics.Debug.WriteLine(json["name"] + " " + json["email"] + " " + json["picture"]);
         }
     }
-
 }
