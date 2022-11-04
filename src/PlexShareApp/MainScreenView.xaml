@@ -9,13 +9,14 @@
         Title="PlexShare"
         MinHeight= "800"
         MinWidth="1500"
-        Background="MediumPurple"
-        >
+        AllowsTransparency="True"
+        ShowInTaskbar="False"
+        Background="Transparent"
+        ResizeMode="CanResize"
+        WindowStyle="None" >
 
     <Grid>
-        
         <Grid>
-
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="15*"/>
                 <ColumnDefinition Width="15*"/>
@@ -28,16 +29,55 @@
             </Grid.ColumnDefinitions>
             
             <Grid.RowDefinitions>
+                <RowDefinition Height="20" />
                 <RowDefinition Height="35" />
                 <RowDefinition />
             </Grid.RowDefinitions>
 
-            <Button Name="Dashboard" Grid.Column="0" Grid.ColumnSpan="2" Click="DashboardClick" Background="#3C4048">Dashboard</Button>
-            <Button Name="Whiteboard"  Grid.Column="2" Grid.ColumnSpan="2" Grid.Row="0" Click="WhiteboardClick" Background="#3C4048">Whiteboard</Button>
-            <Button Name="Screenshare"  Grid.Column="4" Grid.Row="0" Grid.ColumnSpan="3" Click="ScreenShareClick" Background="#3C4048">Screenshare</Button>
-            <Button Name="ChatWindow"  Grid.Column="6" Grid.Row="1" Click="ChatButtonClick" Background="#3C4048"> Chat </Button>
-            <Frame x:Name="Main" NavigationUIVisibility="Hidden" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="6"/>
-            <Frame x:Name="ScreenWithChat" Grid.Column="5" Grid.Row="1" Grid.ColumnSpan="1" NavigationUIVisibility="Hidden"></Frame>
+            <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="10" Background="#272537"/>
+            <TextBlock Grid.Row="0" Grid.Column="0"> PlexShare </TextBlock>
+
+            <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="5" Grid.ColumnSpan="2" HorizontalAlignment="Right">
+
+                        <Button Width="15" Background="Red" BorderThickness="0" Height="15">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="10"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+                <StackPanel Width="5"></StackPanel>
+
+
+                <Button Width="15"  Height="15" Background="Yellow">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="10"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+
+                <StackPanel Width="5"></StackPanel>
+
+                <Button Width="15" Height="15" Background="Green"  > 
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="10"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+
+                <StackPanel Width="5"></StackPanel>
+
+
+            </StackPanel>
+            
+            <Button Name="Dashboard" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Click="DashboardClick" Background="#3C4048">Dashboard</Button>
+            <Button Name="Whiteboard" Grid.Column="2" Grid.ColumnSpan="2" Grid.Row="1" Click="WhiteboardClick" Background="#3C4048">Whiteboard</Button>
+            <Button Name="Screenshare" Grid.Column="4" Grid.Row="1" Grid.ColumnSpan="3" Click="ScreenShareClick" Background="#3C4048">Screenshare</Button>
+            <Button Name="ChatWindow"  Grid.Column="6" Grid.Row="2" Click="ChatButtonClick" Background="#3C4048"> Chat </Button>
+            <Frame x:Name="Main" NavigationUIVisibility="Hidden" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="6"/>
+            <Frame x:Name="ScreenWithChat" Grid.Column="5" Grid.Row="2" Grid.ColumnSpan="1" NavigationUIVisibility="Hidden"></Frame>
         </Grid>
         
         
