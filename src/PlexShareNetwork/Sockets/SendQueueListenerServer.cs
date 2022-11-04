@@ -24,7 +24,7 @@ namespace PlexShareNetwork.Sockets
 		private volatile bool _threadRun;
 
 		// variable to store the send queue
-		private readonly SendingQueues _queue;
+		private readonly SendingQueue _queue;
 
 		// variable to store the dictionary which maps clientIds to their respective sockets
 		private readonly Dictionary<string, TcpClient> _clientIdToSocket;
@@ -43,7 +43,7 @@ namespace PlexShareNetwork.Sockets
         /// <param name="subscribedModules">
         /// The dictionary which maps module identifiers to their respective notification handlers.
         /// </param>
-        public SendQueueListenerServer(SendingQueues queue, Dictionary<string, TcpClient> clientIdToSocket,
+        public SendQueueListenerServer(SendingQueue queue, Dictionary<string, TcpClient> clientIdToSocket,
 			Dictionary<string, INotificationHandler> subscribedModules)
 		{
 			_queue = queue;

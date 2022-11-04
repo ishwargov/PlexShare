@@ -22,7 +22,7 @@ namespace PlexShareNetwork.Sockets
 		private volatile bool _threadRun;
 
 		// variable to store the send queue
-		private readonly SendingQueues _sendQueue;
+		private readonly SendingQueue _sendQueue;
 
 		// variable to store the socket
 		private readonly TcpClient _socket;
@@ -35,7 +35,7 @@ namespace PlexShareNetwork.Sockets
         /// </summary>
         /// <param name="queue"> The the send queue. </param>
         /// <param name="socket"> The socket to send the data. </param>
-        public SendQueueListenerClient(SendingQueues sendQueue, TcpClient socket)
+        public SendQueueListenerClient(SendingQueue sendQueue, TcpClient socket)
 		{
             _sendQueue = sendQueue;
 			_socket = socket;

@@ -20,7 +20,7 @@ namespace PlexShareNetwork.Communication
 	public class CommunicatorClient : ICommunicator
 	{
 		// initialize the send queue and receive queue
-		private readonly SendingQueues _sendQueue = new();
+		private readonly SendingQueue _sendQueue = new();
 		private readonly ReceivingQueue _receiveQueue = new();
 
 		// declate the variable of SendQueueListenerClient class

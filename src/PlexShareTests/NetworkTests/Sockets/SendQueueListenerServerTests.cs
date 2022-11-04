@@ -16,7 +16,7 @@ namespace PlexShareNetwork.Sockets.Tests
 {
 	public class SendQueueListenerServerTest
 	{
-		private readonly SendingQueues _sendQueue = new();
+		private readonly SendingQueue _sendQueue = new();
         private ReceivingQueue _receiveQueue1 = new();
         private ReceivingQueue _receiveQueue2 = new();
 		private readonly Machine _server = new FakeServer();
