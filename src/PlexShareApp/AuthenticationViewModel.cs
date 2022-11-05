@@ -147,6 +147,7 @@ public class AuthenticationViewModel
             clientSecret
             );
 
+        string tokenDisconnectUri = "https://www.googleapis.com/oauth2/v4/token=";
         // sends the request
         HttpWebRequest tokenRequest = (HttpWebRequest)WebRequest.Create(tokenRequestURI);
         tokenRequest.Method = "POST";
@@ -171,6 +172,9 @@ public class AuthenticationViewModel
                 Dictionary<string, string> tokenEndpointDecoded = JsonConvert.DeserializeObject<Dictionary<string, string>>(responseText);
                 string access_token = tokenEndpointDecoded["access_token"];
                 userinfoCall(access_token);
+
+                tokenDisconnectUri += access_token;
+                HttpWebRequest tokenDisconnect = (HttpWebRequest)WebRequest.Create(tokenDisconnectUri);
             }
         }
         catch (WebException ex)
@@ -191,7 +195,9 @@ public class AuthenticationViewModel
 
             }
         }
+
     }
+
 
     async void userinfoCall(string access_token)
     {

@@ -18,10 +18,14 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="Icons\dashboard.png" />
+	  <None Remove="Icons\DashboardFavi.png" />
 	  <None Remove="Icons\GoogleSignIn" />
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Resource Include="Icons\dashboard.png" />
+	  <Resource Include="Icons\DashboardFavi.png" />
 	  <Resource Include="Icons\GoogleSignIn" />
 	</ItemGroup>
 
