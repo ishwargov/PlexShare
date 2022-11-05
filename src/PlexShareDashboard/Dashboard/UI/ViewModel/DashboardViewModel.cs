@@ -259,21 +259,9 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
             UserData currUser = clientSessionManager.GetUser();
 
-            if (currUser == null)
-            {
-                ButtonContentSetter = "Meeting Not Started";
-            }
-            else if (currUser.userID == 1)
-            {
-                //this is host hence we have to show the button content according to the host 
-                ButtonContentSetter = "Switch To ExamMode";
-            }
-            else
-            {
-                //we have to show the user about the current exam mode 
-                ButtonContentSetter = SessionModeSetter;
-                
-            }
+            UpdateButtonContent(currUser);
+
+           
 
 
 
@@ -339,6 +327,30 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
         }
 
+
+        //function to update the button content 
+        private void UpdateButtonContent(UserData currUser)
+        {
+            if (currUser == null)
+            {
+                ButtonContentSetter = "Meeting Not Started";
+            }
+            else if (currUser.userID == 1)
+            {
+                //this is host hence we have to show the button content according to the host 
+                ButtonContentSetter = "Switch To ExamMode";
+            }
+            else
+            {
+                //we have to show the user about the current exam mode 
+                ButtonContentSetter = SessionModeSetter;
+
+            }
+
+            //say everything went fine 
+            return;
+
+        }
 
         //function to change the session mode 
         public void SwitchSessionMode()
@@ -518,6 +530,8 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
                 TotalParticipantsCountSetter = ParticipantsList.Count;
 
             }
+            UserData currUser = clientSessionManager.GetUser();
+            UpdateButtonContent(currUser);
 
 
             return;
