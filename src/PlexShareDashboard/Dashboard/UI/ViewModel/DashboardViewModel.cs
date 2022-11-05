@@ -41,7 +41,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
 
         //ObservableCollection for storing usercount at every time stamp 
-        public ObservableCollection<UserCountVsTimeStamp> UserCountVsTimeStamps { get; set; }
+        //public ObservableCollection<UserCountVsTimeStamp> UserCountVsTimeStamps { get; set; }
         //public ObservableCollection<int> UserCountList { get; set; }
         public ChartValues<int> UserCountList { get; set; }
         public ObservableCollection<string> TimeStampsList { get; set; }
@@ -66,6 +66,9 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         private int SessionScore { get; set; }
 
         private string SessionMode { get; set; }
+
+        //variable for storing the button content to be shown according to the user 
+        private string ButtonContent { get; set; }
 
 
         /// <summary>
@@ -163,6 +166,20 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
                 }
             }
         }
+
+
+        public string ButtonContentSetter
+        {
+            get { return ButtonContent; }
+            set
+            {
+                if (ButtonContent != value)
+                {
+                    ButtonContent = value;
+                    OnPropertyChanged("ButtonContentSetter");
+                }
+            }
+        }
         //constructor for view model 
         public DashboardViewModel()
         {
@@ -186,12 +203,12 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             TimeStampsList = new ObservableCollection<string>();
 
 
-            //initialising UserCountVsTimeStamps
-            UserCountVsTimeStamps = new ObservableCollection<UserCountVsTimeStamp>();
-            UserCountVsTimeStamps.Add(new UserCountVsTimeStamp(10, 15));
-            UserCountVsTimeStamps.Add(new UserCountVsTimeStamp(20, 20));
-            UserCountVsTimeStamps.Add(new UserCountVsTimeStamp(30, 25));
-            UserCountVsTimeStamps.Add(new UserCountVsTimeStamp(40, 30));
+            ////initialising UserCountVsTimeStamps
+            //UserCountVsTimeStamps = new ObservableCollection<UserCountVsTimeStamp>();
+            //UserCountVsTimeStamps.Add(new UserCountVsTimeStamp(10, 15));
+            //UserCountVsTimeStamps.Add(new UserCountVsTimeStamp(20, 20));
+            //UserCountVsTimeStamps.Add(new UserCountVsTimeStamp(30, 25));
+            //UserCountVsTimeStamps.Add(new UserCountVsTimeStamp(40, 30));
             UserCountList.Add(10);
             UserCountList.Add(20);
             UserCountList.Add(30);
@@ -234,6 +251,20 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             SessionModeSetter = "LabMode";
             SessionScoreSetter = 40;
 
+            UserData currUser = clientSessionManager.GetUser();
+
+            if (currUser.userID == 1)
+            {
+                //this is host hence we have to show the button content according to the host 
+                ButtonContentSetter = "Switch To ExamMode";
+            }
+            else
+            {
+                //we have to show the user about the current exam mode 
+                ButtonContentSetter = SessionModeSetter;
+                
+            }
+
 
 
             //############################################################################################
@@ -265,8 +296,8 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
             //Convert the sessionAnalytics properly to show to the graph 
 
-            //UserCountVsTimeStamps.Clear();
-            UserCountVsTimeStamps.Add(new UserCountVsTimeStamp(50, 35));
+            ////UserCountVsTimeStamps.Clear();
+            //UserCountVsTimeStamps.Add(new UserCountVsTimeStamp(50, 35));
 
             //UserIdVsChatCounts.Clear();
 
@@ -371,7 +402,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         public void UpdateUserCountVsTimeStamp(Dictionary<DateTime, int> currUserCountVsTimeStamp)
         {
             //we have to update the observable collection userCountVsTimeStamp 
-            UserCountVsTimeStamps.Clear();
+            //UserCountVsTimeStamps.Clear();
 
             //we have to clear the userscountList 
             UserCountList.Clear();
@@ -388,7 +419,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
                 int currTimeStampInt = 20;
                 UserCountVsTimeStamp newUserCountVsTimeStampElement = new UserCountVsTimeStamp(currUserCount, currTimeStampInt);
 
-                UserCountVsTimeStamps.Add(newUserCountVsTimeStampElement);
+                //UserCountVsTimeStamps.Add(newUserCountVsTimeStampElement);
 
 
 
