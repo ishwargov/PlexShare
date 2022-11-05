@@ -8,7 +8,7 @@
         WindowStartupLocation = "Manual"
         Left="0" Top="0"
         Title="HomePageView"
-        MinWidth="1500" MinHeight="850" WindowStyle="None" Height="787" Width="1138">
+        MinWidth="1411" MinHeight="800" WindowStyle="None" Height="722" Width="1291">
     <Window.Resources>
         <Style TargetType="TextBox" x:Key="Round_textbox">
             <Setter Property="Height" Value="50"/>
@@ -61,7 +61,7 @@
                                     <Storyboard>
                                         <ColorAnimation Storyboard.TargetName="Border"
                                                     Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
-                                                    To="#FF4CD661"
+                                                    To="#ffe2dcc8"
                                                     Duration="0:0:0.1" />
                                         <ThicknessAnimation Storyboard.TargetName="Ellipse"
                                                         Storyboard.TargetProperty="Margin"
@@ -75,7 +75,7 @@
                                     <Storyboard>
                                         <ColorAnimation Storyboard.TargetName="Border"
                                                     Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
-                                                    To="White"
+                                                    To="#FF0F3D3E"
                                                     Duration="0:0:0.1" />
                                         <ThicknessAnimation Storyboard.TargetName="Ellipse"
                                                         Storyboard.TargetProperty="Margin"
@@ -90,10 +90,10 @@
             </Setter>
         </Style>
     </Window.Resources>
-    
+
     <Grid Background="#E2DCC8" Margin="0,0,0,-6">
         <Grid.RowDefinitions>
-            <RowDefinition Height="53*"/>
+            <RowDefinition Height="20"/>
             <RowDefinition Height="93*"/>
             <RowDefinition Height="25*"/>
             <RowDefinition Height="240*"/>
@@ -116,7 +116,41 @@
         <Grid Grid.Column="1" HorizontalAlignment="Center" Grid.Row="4">
             <Image Source="/Resources/[removal.ai]_tmp-635051040cac5.png" Stretch="Fill" HorizontalAlignment="Center" Margin="85,24,85,24"/>
         </Grid>-->
+        <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="10" Background="#272537" MouseDown="TitleBarDrag"/>
+        <TextBlock Grid.Row="0" Grid.Column="0" FontFamily="Cascadia Mono" FontSize="15" Foreground="#FFB0ADAD"> PlexShare</TextBlock>
 
+        <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="5" Grid.ColumnSpan="2" HorizontalAlignment="Right">
+
+
+
+            <Button Width="15"  Height="15" Background="Yellow" Click="MinimizeApp">
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="10"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
+
+            <StackPanel Width="5"></StackPanel>
+
+            <Button Width="15" Height="15" Background="Green" Click="MaximizeApp" >
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="10"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
+            <StackPanel Width="5"></StackPanel>
+
+            <Button Width="15" Background="Red" BorderThickness="0" Height="15" Click="CloseApp">
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="10"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
+            <StackPanel Width="5"></StackPanel>
+        </StackPanel>
         <Grid Grid.Column="5" Grid.Row="3" Grid.RowSpan="4" Grid.ColumnSpan="2" Margin="0,0,135,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="39*"/>
@@ -138,13 +172,19 @@
             <!--Profile Details-->
             <Rectangle Fill="#FF0F3D3E" RadiusX="16" RadiusY="16" Grid.ColumnSpan="5" Grid.RowSpan="8"/>
             <!--Profile Image-->
+
+            <!--<Image Name="pro_pic" Source="C:\Users\LENOVO\source\repos\Homescreen_wpf\Homescreen_wpf\Image1.png" Grid.Column="2" Grid.Row="1" Stretch="Uniform">
+                <Image.Clip>
+                    <EllipseGeometry Center="80,80" RadiusX="70" RadiusY="70"/>
+                </Image.Clip>
+            </Image>-->
             <Border CornerRadius="100,100,100,100" Grid.Column="1" BorderBrush="White" BorderThickness="7" Grid.RowSpan="2" Grid.ColumnSpan="3" Margin="99,39,97,0">
                 <Border.Background>
-                    <ImageBrush ImageSource="/Resources/UserProfilePicture.png" Stretch="UniformToFill"/>
+                    <ImageBrush x:Name="profile_picture" ImageSource="{Binding ReceivedImage}" Stretch="UniformToFill"/>
                 </Border.Background>
                 <TextBlock HorizontalAlignment="Left" Height="9" Margin="51,131,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Width="16"/>
             </Border>
-            <!--Name--> 
+            <!--Name-->
             <Border BorderThickness="1" CornerRadius="16" Grid.Column="1"  Grid.ColumnSpan="3" Grid.Row="3" Margin="0,15,0,15" >
                 <TextBox Name="Name_box" Text="" Style="{StaticResource Round_textbox}">
                     <TextBox.Resources>
@@ -176,7 +216,7 @@
             </TextBlock>
             <!--Email Address-->
             <Border BorderThickness="1" CornerRadius="16" Grid.Column="1"  Grid.ColumnSpan="3" Grid.Row="4" Margin="0,14,0,15" >
-                <TextBox x:Name="Email" Text="" Style="{StaticResource Round_textbox}">
+                <TextBox x:Name="Email_textbox" Text="Email" Style="{StaticResource Round_textbox}">
                     <TextBox.Resources>
                         <Style TargetType="{x:Type Border}">
                             <Setter Property="CornerRadius" Value="18"></Setter>
@@ -184,36 +224,7 @@
                     </TextBox.Resources>
                 </TextBox>
             </Border>
-            <TextBlock Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3"  IsHitTestVisible="False" Text="Email" VerticalAlignment="Center" >
-                <TextBlock.Style>
-                    <Style TargetType="{x:Type TextBlock}">
-                        <Setter Property="Visibility" Value="Collapsed"/>
-                        <Setter Property="Height" Value="40"/>
-                        <Setter Property="VerticalAlignment" Value="Center"/>
-                        <Setter Property="Width" Value="NaN"/>
-                        <Setter Property="FontSize" Value="24"/>
-                        <Setter Property="FontFamily" Value="Yu Gothic UI Semibold"/>
-                        <Setter Property="Foreground" Value="#FF6B6767"/>
-                        <Setter Property="Padding" Value="15,0,0,0"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding Text, ElementName=Email}" Value="">
-                                <Setter Property="Visibility" Value="Visible"/>
-                            </DataTrigger>
-
-                        </Style.Triggers>
-                    </Style>
-                </TextBlock.Style>
-            </TextBlock>
             <!--Server IP-->
-            <!--<Border BorderThickness="1" CornerRadius="16" Grid.Column="1"  Grid.ColumnSpan="3" Grid.Row="5" Margin="0,15,0,15"  >
-                <TextBlock Name="Server_IP" Text="Server IP" Grid.Row="3" Style="{StaticResource Round_textblock}" >
-                    <TextBlock.Resources>
-                        <Style TargetType="{x:Type Border}">
-                            <Setter Property="CornerRadius" Value="18"></Setter>
-                        </Style>
-                    </TextBlock.Resources>
-                </TextBlock>
-            </Border>-->
             <Border BorderThickness="1" CornerRadius="16" Grid.Column="1"  Grid.ColumnSpan="3" Grid.Row="5" Margin="0,14,0,15" >
                 <TextBox x:Name="Server_IP" Style="{StaticResource Round_textbox}">
                     <TextBox.Resources>
@@ -223,8 +234,8 @@
                     </TextBox.Resources>
                 </TextBox>
             </Border>
-            
-            <TextBlock Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3"  IsHitTestVisible="False" Text="Server IP" VerticalAlignment="Center" >
+
+            <TextBlock Name="Server_IP_textblock" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3"  IsHitTestVisible="False" Text="Server IP" VerticalAlignment="Center" >
                 <TextBlock.Style>
                     <Style TargetType="{x:Type TextBlock}">
                         <Setter Property="Visibility" Value="Collapsed"/>
@@ -239,7 +250,7 @@
                             <DataTrigger Binding="{Binding Text, ElementName=Server_IP}" Value="">
                                 <Setter Property="Visibility" Value="Visible"/>
                             </DataTrigger>
-                            
+
                         </Style.Triggers>
                     </Style>
                 </TextBlock.Style>
@@ -255,7 +266,7 @@
                     </TextBox.Resources>
                 </TextBox>
             </Border>
-            <TextBlock Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="3"  IsHitTestVisible="False" Text="Server PORT" VerticalAlignment="Center" >
+            <TextBlock Name="Server_PORT_textblock" Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="3"  IsHitTestVisible="False" Text="Server PORT" VerticalAlignment="Center" >
                 <TextBlock.Style>
                     <Style TargetType="{x:Type TextBlock}">
                         <Setter Property="Visibility" Value="Collapsed"/>
@@ -277,10 +288,10 @@
             </TextBlock>
         </Grid>
         <!--Join Button-->
-        <Button Grid.Row="4"   Grid.Column="3" Background="#071E1E">
-        <Grid Grid.Column="3" HorizontalAlignment="Center" Grid.Row="4">
-            <Image Name="Join_Meeting_image" Source="/Resources/[removal.ai]_tmp-6350549d077ef.png" Stretch="Fill" Margin="55,12,55,12"/>
-        </Grid>
+        <Button Name="Join_Meeting_Button" Click="Join_Meeting_Button_Click" Grid.Row="4"   Grid.Column="3" Background="#071E1E">
+            <Grid Grid.Column="3" HorizontalAlignment="Center" Grid.Row="4">
+                <Image Name="Join_Meeting_image" Source="/Resources/[removal.ai]_tmp-6350549d077ef.png" Stretch="Fill" Margin="55,12,55,12"/>
+            </Grid>
             <Button.Resources>
                 <Style TargetType="Border">
                     <Setter Property="CornerRadius" Value="16"/>
@@ -325,19 +336,20 @@
             <TextBlock Name="Date" Text="Monday, August 24, 2022" Foreground="White" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" FontSize="26" FontFamily="Yu Gothic UI Semibold" FontWeight="Bold" TextWrapping="Wrap" />
         </Grid>
         <!--PlexShare Title-->
-        <TextBlock Grid.ColumnSpan="2" Grid.RowSpan="2" HorizontalAlignment="Left" FontSize="48" FontStyle="Normal" FontFamily="Cascadia Code SemiBold" Grid.Row="1" Grid.Column="1" TextWrapping="Wrap" Text="PlexShare" Width="300"/>
+        <TextBlock Grid.ColumnSpan="2" Grid.RowSpan="2" HorizontalAlignment="Left" FontSize="48" FontStyle="Normal" FontFamily="Cascadia Code SemiBold" Grid.Row="2" Grid.Column="1" TextWrapping="Wrap" Text="PlexShare" Width="300"/>
         <!--New Meeting Textbox-->
         <TextBlock Name="New_Meeting1" Grid.Column="1" Grid.Row="5" FontFamily="Cascadia Code SemiBold" TextWrapping="Wrap" Text="New Meeting" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="28"/>
         <!--Join Meeting Textbox-->
         <TextBlock Name="Join_Meeting" Grid.Column="3" Grid.Row="5" FontFamily="Cascadia Code SemiBold" TextWrapping="Wrap" Text="Join Meeting" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="28"/>
-
-        <Button Grid.Column="6" FontSize="18" Background="#FF0F3D3E" Foreground="White" FontWeight="DemiBold" Padding="0,0,0,5" Content="Session"  VerticalAlignment="Top"  Grid.Row="1">
+        <!--Session button-->
+        <Button Grid.Column="6" FontSize="18" Background="#FF0F3D3E" Foreground="White" FontWeight="DemiBold" Margin="0,5,0,0" Padding="0,0,0,5" Content="Session"  VerticalAlignment="Top"  Grid.Row="1">
             <Button.Resources>
                 <Style TargetType="Border">
                     <Setter Property="CornerRadius" Value="16"/>
                 </Style>
             </Button.Resources>
         </Button>
+        <!--Logout button-->
         <Button Grid.Column="6" FontSize="18" Background="#FF0F3D3E" Foreground="White" FontWeight="DemiBold" Padding="0,0,0,5" Content="Logout"  VerticalAlignment="Bottom"  Grid.Row="1">
             <Button.Resources>
                 <Style TargetType="Border">
@@ -350,5 +362,6 @@
             <ToggleButton HorizontalAlignment="Left" Height="22" VerticalAlignment="Center" Width="44"  Cursor="Hand" />
             <TextBlock Text="Theme" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="24" FontFamily="Cascadia Code SemiBold"/>
         </DockPanel>
+
     </Grid>
 </Window>
