@@ -20,22 +20,24 @@ namespace Dashboard.Server.Persistence
             var folderPath = Path.Combine(configPath, "plexshare");
             string path = folderPath + "/Server/Persistence/PersistenceDownloads/SummaryDownloads/";
             // path = path +"_"+ DateTime.Now.ToString("MM/dd/yyyy")+"_";
-            summaryPath = path;
+            SummaryPath = path;
+            SummaryPath = SummaryPath + "Summary_" + DateTime.Now.ToString("MM/dd/yyyy");
         }
 
-        public string summaryPath { get; set; }
+        public string SummaryPath { get; set; }
 
         public bool SaveSummary(string message)
         {
-            var sessionId1 = "Summary"+"_"+ DateTime.Now.ToString("MM/dd/yyyy");
+            var sessionId1 = "Summary_of_the_session";
             var createText = "Summary : --------- " + Environment.NewLine + message + Environment.NewLine;
 
 
             try
             {
-                if (!Directory.Exists(summaryPath)) Directory.CreateDirectory(summaryPath);
+                bool t = Directory.Exists(SummaryPath);
+                if (!Directory.Exists(SummaryPath)) Directory.CreateDirectory(SummaryPath);
 
-                File.WriteAllText(Path.Combine(summaryPath, sessionId1 + ".txt"), createText);
+                File.WriteAllText(Path.Combine(SummaryPath, sessionId1 + ".txt"), createText);
                 Trace.WriteLine("Summary saved Suceessfully!!");
                 bool isSaved = true;
                 return isSaved;
