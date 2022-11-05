@@ -19,7 +19,7 @@ namespace Dashboard.Server.Persistence
             var configPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             var folderPath = Path.Combine(configPath, "plexshare");
             string path = folderPath + "/Server/Persistence/PersistenceDownloads/SummaryDownloads/";
-            path = path + DateTime.Now.ToString("MM/dd/yyyy");
+            path = path +"_"+ DateTime.Now.ToString("MM/dd/yyyy")+"_";
             summaryPath = path;
         }
 
@@ -27,7 +27,7 @@ namespace Dashboard.Server.Persistence
 
         public bool SaveSummary(string message)
         {
-            var sessionId1 = string.Format("Summary_{0:yyyy - MM - dd_hh - mm - ss - tt}", DateTime.Now);
+            var sessionId1 = "Summary";
             var createText = "Summary : --------- " + Environment.NewLine + message + Environment.NewLine;
 
 
@@ -43,7 +43,7 @@ namespace Dashboard.Server.Persistence
             catch (Exception except)
             {
                 Trace.WriteLine(except.Message);
-                bool isSaved = true;
+                bool isSaved = false;
                 return isSaved;
             }
         }

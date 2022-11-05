@@ -200,6 +200,8 @@
                 <!--<ProgressBar Grid.Row="1" Margin="10,10,0,13" Name="PBar2" HorizontalAlignment="Center" VerticalAlignment="Center" Width="300" Height="30" Value="60" ></ProgressBar>-->
 
             </Grid>
+            
+            
 
             <!--now adding the different buttons for the user-->
             <Grid Grid.Row="2" Grid.ColumnSpan="2" Background="LightGray">
@@ -219,15 +221,15 @@
                 </Button>
                 <!--</Border>-->
                 <Button Grid.Column="1" HorizontalAlignment="center" VerticalAlignment="center" Background="#24a0ed" FontWeight="Bold" x:Name="SwitchMode" Height="40" Width="120"   
-                Content="Switch to Lab Mode" >
+                Content="{Binding ButtonContentSetter}" Click="OnSwitchModeButtonClick">
                 </Button>
 
                 <Button Grid.Column="2" HorizontalAlignment="center" VerticalAlignment="center" Background="#24a0ed" FontWeight="Bold" x:Name="UploadAssignment" Height="40" Width="120"   
-                Content="Upload" >
+                Content="Upload" Click="OnUploadButtonClick">
                 </Button>
 
                 <Button Grid.Column="3" HorizontalAlignment="center" VerticalAlignment="center" Background="Red" FontWeight="Bold" x:Name="LeaveMeeting" Height="40" Width="120"   
-                Content="Leave" >
+                Content="Leave" Click="OnLeaveButtonClick">
                 </Button>
                 <!--<TextBlock Grid.Row="0" TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Hello this is rupesh kumar and here i will be adding the different buttons for the user to be able to show and refresh the contents for the user for this purpose"></TextBlock>-->
             </Grid>
@@ -246,6 +248,9 @@
                 </LinearGradientBrush>
             </Grid.Background>
             <Grid.RowDefinitions>
+                <!--to show the current mode of the session-->
+                <RowDefinition Height="1*"/>
+
                 <!--the first will be for showing the logo for the plexshare with the name of the application-->
                 <RowDefinition Height="1*"/>
                 <!--this row to show the participant count-->
@@ -258,7 +263,36 @@
             <Grid.Effect>
                 <DropShadowEffect BlurRadius="20" Color="#FFDEDEDE" RenderingBias="Quality" ShadowDepth="1"/>
             </Grid.Effect>
+
             <Grid Grid.Row="0">
+
+
+                <!--<Border BorderBrush="blue" BorderThickness="2" >-->
+
+                <Rectangle Height="120" Width="200"  Fill="White" RadiusY="10" RadiusX="10" >
+                    <Rectangle.Effect>
+                        <DropShadowEffect BlurRadius="20" Color="#FFDEDEDE" 
+                                          RenderingBias="Quality" ShadowDepth="1"/>
+                    </Rectangle.Effect>
+                </Rectangle>
+                <!--</Border>-->
+                <Grid  Height="50">
+                    <Grid Width="17" Height="26"  Background="#FFFFAF24" 
+                          HorizontalAlignment="Left" VerticalAlignment="Top" Margin="18,-24,0,0">
+                        <Grid.Effect>
+                            <DropShadowEffect BlurRadius="20" Color="#FFECECEC" 
+                                              RenderingBias="Quality" ShadowDepth="1"/>
+                        </Grid.Effect>
+                    </Grid>
+                    <StackPanel Orientation="Vertical"  HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <TextBlock x:Name="SessionMode" Text="{Binding SessionModeSetter, Mode=OneWay}" 
+                                   FontFamily="Champagne &amp; Limousines" Foreground="Black" FontSize="30" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <TextBlock Text="Session Mode" 
+                                   FontFamily="Champagne &amp; Limousines" FontSize="13" Foreground="Black" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="WrapWithOverflow"/>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+            <Grid Grid.Row="1">
 
 
                 <!--<Border BorderBrush="blue" BorderThickness="2" >-->
@@ -287,7 +321,7 @@
                 </Grid>
             </Grid>
 
-            <Grid Grid.Row="1">
+            <Grid Grid.Row="2">
 
 
                 <!--<Border BorderBrush="blue" BorderThickness="2" >-->
@@ -316,7 +350,7 @@
                 </Grid>
             </Grid>
 
-            <Grid Grid.Row="2">
+            <Grid Grid.Row="3">
 
 
                 <!--<Border BorderBrush="blue" BorderThickness="2" >-->
@@ -346,7 +380,7 @@
             </Grid>
             <!--</Border>-->
             <!--<Border BorderBrush="Black" BorderThickness="2" >-->
-            <Grid Grid.Row="3">
+            <Grid Grid.Row="4">
 
 
                 <!--<Border BorderBrush="blue" BorderThickness="2" >-->
