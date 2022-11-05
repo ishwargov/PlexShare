@@ -66,7 +66,7 @@ namespace PlexShareTests.DashboardTests.Persistence
 
             var response = telemetryPersist.Save(sessionAnalytics);
 
-            var p1 = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/TelemetryAnalytics/" + DateTime.Now.ToString("MM/dd/yyyy");
+            var p1 = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/TelemetryAnalytics/" + response.FileName;
 
             var IsChatCountForUserSaved = File.Exists(Path.Combine(p1, "ChatCountVsUserID.png"));
             var IsInsincereMembersSaved = File.Exists(Path.Combine(p1, "insincereMembersList.txt"));
