@@ -9,13 +9,16 @@
         Title="PlexShare"
         MinHeight= "800"
         MinWidth="1500"
-        Background="MediumPurple"
+        AllowsTransparency="True"
+        ShowInTaskbar="False"
+        Background="Transparent"
+        ResizeMode="CanResize"
+        WindowStyle="None"
+        SizeChanged="Window_SizeChanged"
         >
 
     <Grid>
-        
         <Grid>
-
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="15*"/>
                 <ColumnDefinition Width="15*"/>
@@ -28,69 +31,65 @@
             </Grid.ColumnDefinitions>
             
             <Grid.RowDefinitions>
+                <RowDefinition Height="20" />
                 <RowDefinition Height="35" />
                 <RowDefinition />
             </Grid.RowDefinitions>
 
-            <Button Name="Dashboard" Grid.Column="0" Grid.ColumnSpan="2" Click="DashboardClick" Background="#3C4048">Dashboard</Button>
-            <Button Name="Whiteboard"  Grid.Column="2" Grid.ColumnSpan="2" Grid.Row="0" Click="WhiteboardClick" Background="#3C4048">Whiteboard</Button>
-            <Button Name="Screenshare"  Grid.Column="4" Grid.Row="0" Grid.ColumnSpan="3" Click="ScreenShareClick" Background="#3C4048">Screenshare</Button>
-            <Button Name="ChatWindow"  Grid.Column="6" Grid.Row="1" Click="ChatButtonClick" Background="#3C4048"> Chat </Button>
-            <Frame x:Name="Main" NavigationUIVisibility="Hidden" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="6"/>
-            <Frame x:Name="ScreenWithChat" Grid.Column="5" Grid.Row="1" Grid.ColumnSpan="1" NavigationUIVisibility="Hidden"></Frame>
+            <Grid Height ="20" Grid.Column="0" Grid.ColumnSpan="10" Background="#272537" MouseDown="TitleBarDrag"/>
+
+            <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="10" Background="#272537" MouseDown="TitleBarDrag"/>
+            <TextBlock Grid.Row="0" Grid.Column="0" FontFamily="Cascadia Mono" FontSize="15" Foreground="#FFB0ADAD"> PlexShare </TextBlock>
+
+            <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="5" Grid.ColumnSpan="2" HorizontalAlignment="Right">
+
+                <Button Width="15" Background="Red" BorderThickness="0" Height="15" Click="CloseApp">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="10"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+                <StackPanel Width="5"></StackPanel>
+
+
+                <Button Width="15"  Height="15" Background="Yellow" Click="MinimizeApp">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="10"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+
+                <StackPanel Width="5"></StackPanel>
+
+                <Button Width="15" Height="15" Background="Green" Click="MaximizeApp" >
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="10"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+                <StackPanel Width="5"></StackPanel>
+            </StackPanel>
+
+            <Button Name="Dashboard" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Click="DashboardClick" Background ="PeachPuff" FontFamily="Cascadia Mono" FontSize="20" >
+                <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+                    <TextBlock Text="Dashboard" VerticalAlignment="Center"> </TextBlock>
+                </StackPanel>
+            </Button>
+            <Button Name="Whiteboard" Grid.Column="2" Grid.ColumnSpan="2" Grid.Row="1" Click="WhiteboardClick" Background="DarkSlateGray" FontFamily="Cascadia Mono" FontSize="20" Foreground="SeaShell">
+                Whiteboard
+            </Button>
+            <Button Name="Screenshare" Grid.Column="4" Grid.Row="1" Grid.ColumnSpan="3" Click="ScreenShareClick" Background="DarkSlateGray" FontFamily="Cascadia Mono" FontSize="20" Foreground="SeaShell">
+                Screenshare
+            </Button>
+            <Button Name="ChatWindow"  Grid.Column="6" Grid.Row="2" Click="ChatButtonClick" Background="DarkSlateGray">
+                Chat
+            </Button>
+            <Frame x:Name="Main" NavigationUIVisibility="Hidden" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="6"/>
+            <Frame x:Name="ScreenWithChat" Grid.Column="5" Grid.Row="2" Grid.ColumnSpan="1" NavigationUIVisibility="Hidden"></Frame>
         </Grid>
-        
-        
-        
-        <!--<Grid>
-            <Grid.ColumnDefinitions>
-
-                <ColumnDefinition />
-                <ColumnDefinition />
-                <ColumnDefinition />
-                <ColumnDefinition />
-
-            </Grid.ColumnDefinitions>
-
-            <Grid.RowDefinitions>
-                <RowDefinition Height="70" />
-                <RowDefinition Height="5*"/>
-                <RowDefinition Height="10" />
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="100" />
-
-            </Grid.RowDefinitions>
-
-            <Frame Grid.Row="1" Grid.Column="3" x:Name="ChatWindow" NavigationUIVisibility="Hidden"></Frame>
-            
-        </Grid>-->
-
-        <!--<Grid>
-            <Grid.ColumnDefinitions>
-
-                <ColumnDefinition Width="16*"/>
-                <ColumnDefinition />
-                <ColumnDefinition Width="10"/>
-
-
-            </Grid.ColumnDefinitions>
-
-            <Grid.RowDefinitions>
-                <RowDefinition Height="70" />
-                <RowDefinition Height="7*"/>
-                <RowDefinition Height="10" />
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="100" />
-
-            </Grid.RowDefinitions>
-            <Canvas></Canvas>
-            
-            <Button Name ="ChatButton" Grid.Column="1" Grid.Row="3" Click="openChat"> Chat </Button>
-
-
-        </Grid>-->
-
-       
 
     </Grid>
 

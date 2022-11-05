@@ -39,18 +39,44 @@ namespace PlexShareApp
 
         private void DashboardClick(object sender, RoutedEventArgs e)
         {
+            Dashboard.Background = Brushes.PeachPuff;
+            Whiteboard.Background = Brushes.DarkSlateGray;
+            Screenshare.Background = Brushes.DarkSlateGray;
+
+            Dashboard.Foreground = Brushes.Black;
+            Whiteboard.Foreground = Brushes.SeaShell;
+            Screenshare.Foreground = Brushes.SeaShell;
+
+
             Debug.WriteLine("DashBoardUX");
             Main.Content = dashboardPage;
+
         }
 
         private void ScreenShareClick(object sender, RoutedEventArgs e)
         {
+            Dashboard.Background = Brushes.DarkSlateGray;
+            Whiteboard.Background = Brushes.DarkSlateGray;
+            Screenshare.Background = Brushes.PeachPuff;
+
+            Dashboard.Foreground = Brushes.SeaShell;
+            Whiteboard.Foreground = Brushes.SeaShell;
+            Screenshare.Foreground = Brushes.Black;
+
             System.Console.WriteLine("ScreenShareUX");
             Main.Content = whiteBoardPage;
         }
 
         private void WhiteboardClick(object sender, RoutedEventArgs e)
         {
+            Dashboard.Background = Brushes.DarkSlateGray;
+            Whiteboard.Background = Brushes.PeachPuff;
+            Screenshare.Background = Brushes.DarkSlateGray;
+
+            Dashboard.Foreground = Brushes.SeaShell;
+            Whiteboard.Foreground = Brushes.Black;
+            Screenshare.Foreground = Brushes.SeaShell;
+
             System.Console.WriteLine("Whiteboard UX");
             Main.Content = screenSharePage;
         }
@@ -66,6 +92,49 @@ namespace PlexShareApp
             {
                 chatOn=false;
                 ScreenWithChat.Content = null;
+            }
+        }
+
+        private void TitleBarDrag(object sender, MouseButtonEventArgs e)
+        {
+            DragMove();
+        }
+
+        private void CloseApp(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
+        private void MinimizeApp(object sender, RoutedEventArgs e)
+        {
+            if (WindowState == WindowState.Normal || WindowState == WindowState.Maximized)
+                WindowState = WindowState.Minimized;
+            else
+                WindowState = WindowState.Normal;
+        }
+
+        private void MaximizeApp(object sender, RoutedEventArgs e)
+        {
+            if(WindowState == WindowState.Maximized)
+            {
+                WindowState = WindowState.Normal;
+            }
+            else
+            {
+                MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
+                WindowState = WindowState.Maximized;
+            }
+        }
+
+        public void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (this.WindowState == WindowState.Maximized)
+            {
+                this.BorderThickness = new System.Windows.Thickness(8);
+            }
+            else
+            {
+                this.BorderThickness = new System.Windows.Thickness(0);
             }
         }
 
