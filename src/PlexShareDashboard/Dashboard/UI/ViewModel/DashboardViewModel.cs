@@ -48,6 +48,8 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
         //ObservableCollection for storing the number of chat count for each user 
         public ObservableCollection<UserIdVsChatCount> UserIdVsChatCounts { get; set; }
+        public ChartValues<int> ChatCountList { get; set; }
+        public ObservableCollection<string> UserIdList { get; set; }
         //debug.assert 
         //checkbills & free 
         //Trace  
@@ -201,6 +203,10 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             TimeStampsList.Add("35");
 
 
+
+            ChatCountList = new ChartValues<int>();
+            UserIdList = new ObservableCollection<string>();
+
             //initialising the uservschatcount collection 
             UserIdVsChatCounts = new ObservableCollection<UserIdVsChatCount>();
 
@@ -208,8 +214,15 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             UserIdVsChatCounts.Add(new UserIdVsChatCount(2, 12));
             UserIdVsChatCounts.Add(new UserIdVsChatCount(3, 13));
             UserIdVsChatCounts.Add(new UserIdVsChatCount(4, 4));
+            ChatCountList.Add(10);
+            ChatCountList.Add(12);
+            ChatCountList.Add(13);
+            ChatCountList.Add(4);
 
-
+            UserIdList.Add("1");
+            UserIdList.Add("2");
+            UserIdList.Add("3");
+            UserIdList.Add("4");
 
             AttentiveUsersSetter = 60;
             NonAttentiveUsersSetter = 100 - AttentiveUsersSetter;
