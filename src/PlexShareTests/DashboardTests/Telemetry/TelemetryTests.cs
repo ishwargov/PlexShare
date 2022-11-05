@@ -217,5 +217,61 @@ namespace PlexShareTests.DashboardTests.Telemetry
             //say everything went fine 
             return;
         }
+
+
+
+
+        [Fact]
+        //function to test the exit time of the users when no user exits 
+        public void CalculateArrivalExitTimeOfUser_Test_Exit_Time_Calculation_When_No_User_Exits()
+        {
+            UserData user1 = new UserData("Rupesh Kumar", 1);
+            UserData user2 = new UserData("Shubham Raj", 2);
+            UserData user3 = new UserData("Saurabh Kumar", 3);
+
+
+            DateTime currDateTime1 = new DateTime(2021, 11, 23, 1, 0, 0);
+            DateTime currDateTime2 = new DateTime(2021, 11, 23, 1, 1, 0);
+            DateTime currDateTime3 = new DateTime(2021, 11, 23, 1, 2, 0);
+
+
+            SessionData sessionData = new SessionData();
+            sessionData.AddUser(user1);
+            sessionData.AddUser(user2);
+            sessionData.AddUser(user3);
+
+            var telemetryInstance = TelemetryFactory.GetTelemetryInstance();
+            telemetryInstance.CalculateArrivalExitTimeOfUser(sessionData, currDateTime1);
+
+            //Act
+            bool check1 = false;
+            if (telemetryInstance.eachUserExitTime.Count() == 0)
+            {
+                check1 = true;
+            }
+
+            //Assert 
+            Assert.True(check1);
+
+
+            //say everything went fine 
+            return;
+
+        }
+
+
+        //function to check the exit time 
+        public void CalculateArrivalExitTimeOfUser_Test_Exit_Time_Calculation_Complex_Test()
+        {
+            UserData user1 = new UserData("Rupesh Kumar", 1);
+            UserData user2 = new UserData("Shubham Raj", 2);
+            UserData user3 = new UserData("Saurabh Kumar", 3);
+            UserData user4 = new UserData("Aditya Agarwal", 4);
+            UserData user5 = new UserData("Hrishi Raaj", 5);
+
+            //say everything went fine 
+            return;
+
+        }
     }
 }
