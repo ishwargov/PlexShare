@@ -16,12 +16,12 @@ namespace PlexShareScreenshare.Client
     /// <summary>
     /// Class contains implementation of the screen capturing using threads (tasks)
     /// </summary>
-    internal class ScreenCapturer
+    public class ScreenCapturer
     {
         readonly Queue<Bitmap> _capturedFrame;
 
         // Limits the number of frames in the queue
-        const int MaxQueueLength = 50;
+        public const int MaxQueueLength = 50;
 
         // Token and its source for killing the task
         private CancellationTokenSource? Source;
@@ -37,15 +37,25 @@ namespace PlexShareScreenshare.Client
         /// <returns>Bitmap image of 720p dimension</returns>
         public Bitmap? GetImage()
         {
-            try
+            while(_capturedFrame.Count == 0)
+            {
+                Thread.Sleep(100);
+            }
+            
+            // TODO : check if lock is freed after returning
+            lock(_capturedFrame)
             {
                 return _capturedFrame.Dequeue();
             }
-            catch (Exception e)
-            {
-                Trace.WriteLine($"[ScreenSharing] Dequeue failed: {e.Message}");
-                return null;
-            }
+        }
+
+        /// <summary>
+        /// Returns the length of the _capturedFrame queue
+        /// </summary>
+        /// <returns>Integer value containing the length of queue.</returns>
+        public int GetCapturedFrameLength()
+        {
+            return _capturedFrame.Count;
         }
 
         /// <summary>
