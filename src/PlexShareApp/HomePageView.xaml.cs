@@ -25,7 +25,7 @@ namespace PlexShareApp
             InitializeComponent();
         }
 
-        private void toMainScreen(object sender, RoutedEventArgs e)
+        private void ToMainScreen(object sender, RoutedEventArgs e)
         {
 
             MainScreenView mainScreenView = new MainScreenView();
