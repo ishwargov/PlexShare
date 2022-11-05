@@ -8,14 +8,15 @@ using PlexShareDashboard;
 using Dashboard;
 //using PlexShareDashboard.Dashboard.Server.Summary;
 using PlexShareDashboard.Dashboard.Server.Telemetry;
-using Networking;
 using PlexShare.Dashboard;
 using PlexShare.Dashboard.Server.SessionManagement;
 using PlexShareScreenshare;
 using PlexShareWhiteboard;
 using PlexShareDashboard.Dashboard.Server.SessionManagement;
-using Networking.Serialization;
 using PlexShareDashboard.Dashboard;
+using PlexShareNetwork.Communication;
+using PlexShareNetwork.Serialization;
+using PlexShareNetwork;
 
 namespace Dashboard.Server.SessionManagement
 {
