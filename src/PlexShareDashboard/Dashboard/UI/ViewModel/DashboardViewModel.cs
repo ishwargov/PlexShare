@@ -180,6 +180,10 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
                 }
             }
         }
+
+
+        //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         //constructor for view model 
         public DashboardViewModel()
         {
@@ -258,8 +262,13 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             Trace.WriteLine("Initializing the dashboard viewmodel");
 
             UserData currUser = clientSessionManager.GetUser();
-
-            UpdateButtonContent(currUser, SessionModeSetter);
+            //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            UserData currU = new UserData("Rupesh", 1);
+            currUser = currU;
+            //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            UpdateButtonContent(currUser);
 
            
 
@@ -285,7 +294,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         {
             //########################################################
             //we have to fetech the analytics 
-            //clientSessionManager.GetAnalytics();
+            clientSessionManager.GetAnalytics();
             //########################################################
 
             //Convert the sessionAnalytics properly to show to the graph 
@@ -329,17 +338,17 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
 
         //function to update the button content 
-        private void UpdateButtonContent(UserData currUser, string currSessionMode)
+        private void UpdateButtonContent(UserData currUser)
         {
-            UserData currU = new UserData("Rupesh", 1);
-            currUser = currU;
+            //UserData currU = new UserData("Rupesh", 1);
+            //currUser = currU;
             if (currUser == null)
             {
                 ButtonContentSetter = "Meeting Not Started";
             }
-            else if (currUser.userID == 1)
+            else
             {
-                if (currSessionMode == "LabMode")
+                if (SessionModeSetter == "LabMode")
                 {
                     ButtonContentSetter = "Switch To ExamMode";
 
@@ -350,12 +359,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
                 }
                 //this is host hence we have to show the button content according to the host 
             }
-            else
-            {
-                //we have to show the user about the current exam mode 
-                ButtonContentSetter = SessionModeSetter;
-
-            }
+           
 
             //say everything went fine 
             return;
@@ -367,10 +371,39 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         {
             UserData currUser = clientSessionManager.GetUser();
 
+
+            //code for testing 
+            //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            UserData currU = new UserData("Rupesh", 1);
+            currUser = currU;
+            //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+
             if (currUser.userID == 1)
             {
                 //this user is host hence it can switch the mode 
-                clientSessionManager.ToggleSessionMode();
+                //clientSessionManager.ToggleSessionMode();
+                //code for testing purpose 
+                //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+                //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+                if (SessionModeSetter == "LabMode")
+                {
+                    SessionModeSetter = "ExamMode";
+
+
+                }
+                else
+                {
+                    SessionModeSetter = "LabMode";
+                }
+                UpdateButtonContent(currUser);
+                //UpdateButtonContent(currUser);
+
+                //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+                //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
                 //buttonValue = "Switch Mode"
             }
             else
@@ -536,12 +569,12 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             {
                 //we have to update the participants list and SessionMode
                 UpdateParticipantsList(newSessionData.users);
+                UserData currUser = clientSessionManager.GetUser();
+                UpdateButtonContent(currUser);
                 SessionModeSetter = newSessionData.sessionMode;
                 TotalParticipantsCountSetter = ParticipantsList.Count;
 
             }
-            UserData currUser = clientSessionManager.GetUser();
-            UpdateButtonContent(currUser, SessionModeSetter);
 
 
             return;
