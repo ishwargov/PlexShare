@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace PlexShare.Dashboard.Server.SessionManagement
 {
-    internal interface ITelemetrySessionManager
+    public interface ITelemetrySessionManager
     {
         //     Subscribes to changes in the session object
-        void Subscribe(ITelemetryNotifications listener);
+      public  void Subscribe(ITelemetryNotifications listener);
     }
 }
