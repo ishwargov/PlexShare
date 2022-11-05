@@ -202,10 +202,14 @@ namespace PlexShareScreenshare.Client
            _processedFrame.Clear();
         }
 
+        /// <summary>
+        /// Setting new resolution for sending the image 
+        /// </summary>
+        /// <param name="res"> New resolution values </param>
         public void SetNewResolution(Tuple<int, int> res)
         {
-            // update the new resolution to be used by the Processor
-            // processor.setNewResolution()
+            // taking lock since newres is shared variable as it is
+            // used even in Compress function
             lock (NewRes)
             {
                 NewRes = res;
@@ -214,7 +218,8 @@ namespace PlexShareScreenshare.Client
 
         /// <summary>
         /// Called by StartProcessing
-        /// run the compression algorithm and returns list of changes in pixels
+        /// if the image resolution has changed then set the 
+        /// new image resolution and inititalise prevImage variable
         /// </summary>
         public Bitmap Compress(Bitmap img)
         {
