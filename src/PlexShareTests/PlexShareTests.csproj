@@ -53,9 +53,7 @@
     <None Remove="DashboardTests\Summary\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="DashboardTests\" />
     <Folder Include="DashboardTests\SessionManagement\" />
-    <Folder Include="DashboardTests\Telemetry\" />
     <Folder Include="DashboardTests\Persistence\" />
     <Folder Include="DashboardTests\Summary\" />
   </ItemGroup>

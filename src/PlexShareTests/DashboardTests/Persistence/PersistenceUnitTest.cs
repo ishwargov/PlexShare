@@ -66,7 +66,7 @@ namespace PlexShareTests.DashboardTests.Persistence
             // Actually Saving it
             var response = telemetryPersist.Save(sessionAnalytics);
 
-            var p1 = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/TelemetryAnalytics/" + DateTime.Now.ToString("MM/dd/yyyy");
+            var p1 = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/TelemetryAnalytics/" + response.FileName;
 
             // Check if such .png and .txt files are present or not
             var IsChatCountForUserSaved = File.Exists(Path.Combine(p1, "ChatCountVsUserID.png"));
