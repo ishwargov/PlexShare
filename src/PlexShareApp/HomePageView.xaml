@@ -5,12 +5,350 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PlexShareApp"
         mc:Ignorable="d"
-        WindowStartupLocation = "CenterScreen"
-        Title="HomePageView" Height="850" Width="1500">
-    <Grid Background="Red">
-        <Frame x:Name="HomePage" NavigationUIVisibility="Hidden" />
-        <StackPanel>
-            <Button Click="ToMainScreen">Click to Main Screen</Button>
-        </StackPanel>
+        WindowStartupLocation = "Manual"
+        Left="0" Top="0"
+        Title="HomePageView"
+        MinWidth="1500" MinHeight="850" WindowStyle="None" Height="787" Width="1138">
+    <Window.Resources>
+        <Style TargetType="TextBox" x:Key="Round_textbox">
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Width" Value="NaN"/>
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontFamily" Value="Yu Gothic UI Semibold"/>
+            <Setter Property="Padding" Value="13,5,0,0"/>
+            <Setter Property="Background" Value="#ffe2dcc8"/>
+            <!--<Setter Property="Background" Value="Transparent"/>-->
+        </Style>
+        <Style TargetType="TextBlock" x:Key="Round_textblock">
+            <!--<Setter Property="Background" Value="#E2DCC8"/>-->
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Width" Value="NaN"/>
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontFamily" Value="Yu Gothic UI Semibold"/>
+            <Setter Property="Foreground" Value="#FF6B6767"/>
+            <Setter Property="Padding" Value="15,5,0,0"/>
+        </Style>
+        <Style TargetType="Border" x:Key="Round_Border_16">
+            <Setter Property="CornerRadius" Value="16"/>
+        </Style>
+        <Style TargetType="{x:Type ToggleButton}" x:Name="Theme_button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ToggleButton}">
+                        <Viewbox>
+                            <Border x:Name="Border" CornerRadius="10"
+                            Background="#FF0F3D3E"
+                            Width="40" Height="20">
+                                <Border.Effect>
+                                    <DropShadowEffect ShadowDepth="0.5" Direction="0" Opacity="0.3" />
+                                </Border.Effect>
+                                <Ellipse x:Name="Ellipse" Fill="#FFFFFFFF" Stretch="Uniform"
+                                 Margin="2 1 2 1"
+                                 Stroke="Gray" StrokeThickness="0.2"
+                                 HorizontalAlignment="Stretch">
+                                    <Ellipse.Effect>
+                                        <DropShadowEffect BlurRadius="10" ShadowDepth="1" Opacity="0.3" Direction="260" />
+                                    </Ellipse.Effect>
+                                </Ellipse>
+                            </Border>
+                        </Viewbox>
+                        <ControlTemplate.Triggers>
+                            <EventTrigger RoutedEvent="Checked">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation Storyboard.TargetName="Border"
+                                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                    To="#FF4CD661"
+                                                    Duration="0:0:0.1" />
+                                        <ThicknessAnimation Storyboard.TargetName="Ellipse"
+                                                        Storyboard.TargetProperty="Margin"
+                                                        To="20 1 2 1"
+                                                        Duration="0:0:0.1" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <EventTrigger RoutedEvent="Unchecked">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation Storyboard.TargetName="Border"
+                                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                    To="White"
+                                                    Duration="0:0:0.1" />
+                                        <ThicknessAnimation Storyboard.TargetName="Ellipse"
+                                                        Storyboard.TargetProperty="Margin"
+                                                        To="2 1 2 1"
+                                                        Duration="0:0:0.1" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    
+    <Grid Background="#E2DCC8" Margin="0,0,0,-6">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="53*"/>
+            <RowDefinition Height="93*"/>
+            <RowDefinition Height="25*"/>
+            <RowDefinition Height="240*"/>
+            <RowDefinition Height="196*"/>
+            <RowDefinition Height="63*"/>
+            <RowDefinition Height="253*"/>
+            <RowDefinition Height="148*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="165*"/>
+            <ColumnDefinition Width="305*"/>
+            <ColumnDefinition Width="137*"/>
+            <ColumnDefinition Width="305*"/>
+            <ColumnDefinition Width="119*"/>
+            <ColumnDefinition Width="725*"/>
+            <ColumnDefinition Width="136*"/>
+            <ColumnDefinition Width="30*"/>
+        </Grid.ColumnDefinitions>
+        <!--<Rectangle RadiusX="10" Grid.Row="4" RadiusY="10" Fill="#FF0F3D3E" Grid.Column="1" Margin="0,0,0,0"  />
+        <Grid Grid.Column="1" HorizontalAlignment="Center" Grid.Row="4">
+            <Image Source="/Resources/[removal.ai]_tmp-635051040cac5.png" Stretch="Fill" HorizontalAlignment="Center" Margin="85,24,85,24"/>
+        </Grid>-->
+
+        <Grid Grid.Column="5" Grid.Row="3" Grid.RowSpan="4" Grid.ColumnSpan="2" Margin="0,0,135,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="39*"/>
+                <RowDefinition Height="165*"/>
+                <RowDefinition Height="53*"/>
+                <RowDefinition Height="83*"/>
+                <RowDefinition Height="83*"/>
+                <RowDefinition Height="83*"/>
+                <RowDefinition Height="83*"/>
+                <RowDefinition Height="27*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="83*"/>
+                <ColumnDefinition Width="95*"/>
+                <ColumnDefinition Width="158*"/>
+                <ColumnDefinition Width="93*"/>
+                <ColumnDefinition Width="84*"/>
+            </Grid.ColumnDefinitions>
+            <!--Profile Details-->
+            <Rectangle Fill="#FF0F3D3E" RadiusX="16" RadiusY="16" Grid.ColumnSpan="5" Grid.RowSpan="8"/>
+            <!--Profile Image-->
+            <Border CornerRadius="100,100,100,100" Grid.Column="1" BorderBrush="White" BorderThickness="7" Grid.RowSpan="2" Grid.ColumnSpan="3" Margin="99,39,97,0">
+                <Border.Background>
+                    <ImageBrush ImageSource="C:\Users\LENOVO\source\repos\Homescreen_wpf\Homescreen_wpf\Image1.png" Stretch="UniformToFill"/>
+                </Border.Background>
+                <TextBlock HorizontalAlignment="Left" Height="9" Margin="51,131,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Width="16"/>
+            </Border>
+            <!--Name--> 
+            <Border BorderThickness="1" CornerRadius="16" Grid.Column="1"  Grid.ColumnSpan="3" Grid.Row="3" Margin="0,15,0,15" >
+                <TextBox Name="Name_box" Text="" Style="{StaticResource Round_textbox}">
+                    <TextBox.Resources>
+                        <Style TargetType="{x:Type Border}">
+                            <Setter Property="CornerRadius" Value="18"></Setter>
+                        </Style>
+                    </TextBox.Resources>
+                </TextBox>
+            </Border>
+            <TextBlock Name="Name_block" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3"  IsHitTestVisible="False" Text="Name" VerticalAlignment="Center" >
+                <TextBlock.Style>
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Setter Property="Height" Value="40"/>
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                        <Setter Property="Width" Value="NaN"/>
+                        <Setter Property="FontSize" Value="24"/>
+                        <Setter Property="FontFamily" Value="Yu Gothic UI Semibold"/>
+                        <Setter Property="Foreground" Value="#FF6B6767"/>
+                        <Setter Property="Padding" Value="15,0,0,0"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Text, ElementName=Name_box}" Value="">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+            <!--Email Address-->
+            <Border BorderThickness="1" CornerRadius="16" Grid.Column="1"  Grid.ColumnSpan="3" Grid.Row="4" Margin="0,14,0,15" >
+                <TextBox x:Name="Email" Text="" Style="{StaticResource Round_textbox}">
+                    <TextBox.Resources>
+                        <Style TargetType="{x:Type Border}">
+                            <Setter Property="CornerRadius" Value="18"></Setter>
+                        </Style>
+                    </TextBox.Resources>
+                </TextBox>
+            </Border>
+            <TextBlock Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3"  IsHitTestVisible="False" Text="Email" VerticalAlignment="Center" >
+                <TextBlock.Style>
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Setter Property="Height" Value="40"/>
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                        <Setter Property="Width" Value="NaN"/>
+                        <Setter Property="FontSize" Value="24"/>
+                        <Setter Property="FontFamily" Value="Yu Gothic UI Semibold"/>
+                        <Setter Property="Foreground" Value="#FF6B6767"/>
+                        <Setter Property="Padding" Value="15,0,0,0"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Text, ElementName=Email}" Value="">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+            <!--Server IP-->
+            <!--<Border BorderThickness="1" CornerRadius="16" Grid.Column="1"  Grid.ColumnSpan="3" Grid.Row="5" Margin="0,15,0,15"  >
+                <TextBlock Name="Server_IP" Text="Server IP" Grid.Row="3" Style="{StaticResource Round_textblock}" >
+                    <TextBlock.Resources>
+                        <Style TargetType="{x:Type Border}">
+                            <Setter Property="CornerRadius" Value="18"></Setter>
+                        </Style>
+                    </TextBlock.Resources>
+                </TextBlock>
+            </Border>-->
+            <Border BorderThickness="1" CornerRadius="16" Grid.Column="1"  Grid.ColumnSpan="3" Grid.Row="5" Margin="0,14,0,15" >
+                <TextBox x:Name="Server_IP" Style="{StaticResource Round_textbox}">
+                    <TextBox.Resources>
+                        <Style TargetType="{x:Type Border}">
+                            <Setter Property="CornerRadius" Value="18"></Setter>
+                        </Style>
+                    </TextBox.Resources>
+                </TextBox>
+            </Border>
+            
+            <TextBlock Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3"  IsHitTestVisible="False" Text="Server IP" VerticalAlignment="Center" >
+                <TextBlock.Style>
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Setter Property="Height" Value="40"/>
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                        <Setter Property="Width" Value="NaN"/>
+                        <Setter Property="FontSize" Value="24"/>
+                        <Setter Property="FontFamily" Value="Yu Gothic UI Semibold"/>
+                        <Setter Property="Foreground" Value="#FF6B6767"/>
+                        <Setter Property="Padding" Value="15,0,0,0"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Text, ElementName=Server_IP}" Value="">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                            
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+
+            <!--Server Port-->
+            <Border BorderThickness="1" CornerRadius="16" Grid.Column="1"  Grid.ColumnSpan="3" Grid.Row="6" Margin="0,14,0,15" >
+                <TextBox Name="Server_PORT" Text="" Style="{StaticResource Round_textbox}">
+                    <TextBox.Resources>
+                        <Style TargetType="{x:Type Border}">
+                            <Setter Property="CornerRadius" Value="18"></Setter>
+                        </Style>
+                    </TextBox.Resources>
+                </TextBox>
+            </Border>
+            <TextBlock Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="3"  IsHitTestVisible="False" Text="Server PORT" VerticalAlignment="Center" >
+                <TextBlock.Style>
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Setter Property="Height" Value="40"/>
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                        <Setter Property="Width" Value="NaN"/>
+                        <Setter Property="FontSize" Value="24"/>
+                        <Setter Property="FontFamily" Value="Yu Gothic UI Semibold"/>
+                        <Setter Property="Foreground" Value="#FF6B6767"/>
+                        <Setter Property="Padding" Value="15,0,0,0"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Text, ElementName=Server_PORT}" Value="">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+        </Grid>
+        <!--Join Button-->
+        <Button Grid.Row="4"   Grid.Column="3" Background="#071E1E">
+        <Grid Grid.Column="3" HorizontalAlignment="Center" Grid.Row="4">
+            <Image Name="Join_Meeting_image" Source="/Resources/[removal.ai]_tmp-6350549d077ef.png" Stretch="Fill" Margin="55,12,55,12"/>
+        </Grid>
+            <Button.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="16"/>
+                </Style>
+            </Button.Resources>
+        </Button>
+        <!--New Meeting-->
+        <Button Name="New_Meeting_Button" Click="New_Meeting_Button_Click"  Grid.Row="4"   Grid.Column="1" Background="#071E1E">
+            <Grid Grid.Column="1" HorizontalAlignment="Center" Grid.Row="4">
+                <Image Name="New_Meeting_image" Source="/Resources/[removal.ai]_tmp-635051040cac5.png" Stretch="Fill" Margin="85,25,65,22"/>
+            </Grid>
+            <Button.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="16"/>
+                </Style>
+            </Button.Resources>
+        </Button>
+        <!--Time Block-->
+        <Grid Grid.ColumnSpan="3" Margin="0,0,0,0" Grid.Row="6" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="51*"/>
+                <ColumnDefinition Width="159*"/>
+                <ColumnDefinition Width="129*"/>
+                <ColumnDefinition Width="211*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50*"/>
+                <RowDefinition Height="56*"/>
+                <RowDefinition Height="33*"/>
+                <RowDefinition Height="74*"/>
+                <RowDefinition Height="39*"/>
+            </Grid.RowDefinitions>
+            <!--Time Background-->
+            <Border CornerRadius="16,16,16,16"  Grid.RowSpan="5" Grid.ColumnSpan="4">
+                <Border.Background>
+                    <ImageBrush ImageSource="/Resources/time_background.jpg"  Stretch="UniformToFill"/>
+                </Border.Background>
+                <TextBlock HorizontalAlignment="Left" Height="9" Margin="51,131,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Width="16"/>
+            </Border>
+            <!--Time Real Time Update-->
+            <TextBlock Name="Time" Text="10:32 AM" Foreground="White" Grid.Row="1" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="40" FontFamily="Yu Gothic UI Semibold" FontWeight="Bold" Grid.Column="1"/>
+            <TextBlock Name="Date" Text="Monday, August 24, 2022" Foreground="White" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" FontSize="26" FontFamily="Yu Gothic UI Semibold" FontWeight="Bold" TextWrapping="Wrap" />
+        </Grid>
+        <!--PlexShare Title-->
+        <TextBlock Grid.ColumnSpan="2" Grid.RowSpan="2" HorizontalAlignment="Left" FontSize="48" FontStyle="Normal" FontFamily="Cascadia Code SemiBold" Grid.Row="1" Grid.Column="1" TextWrapping="Wrap" Text="PlexShare" Width="300"/>
+        <!--New Meeting Textbox-->
+        <TextBlock Name="New_Meeting1" Grid.Column="1" Grid.Row="5" FontFamily="Cascadia Code SemiBold" TextWrapping="Wrap" Text="New Meeting" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="28"/>
+        <!--Join Meeting Textbox-->
+        <TextBlock Name="Join_Meeting" Grid.Column="3" Grid.Row="5" FontFamily="Cascadia Code SemiBold" TextWrapping="Wrap" Text="Join Meeting" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="28"/>
+
+        <Button Grid.Column="6" FontSize="18" Background="#FF0F3D3E" Foreground="White" FontWeight="DemiBold" Padding="0,0,0,5" Content="Session"  VerticalAlignment="Top"  Grid.Row="1">
+            <Button.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="16"/>
+                </Style>
+            </Button.Resources>
+        </Button>
+        <Button Grid.Column="6" FontSize="18" Background="#FF0F3D3E" Foreground="White" FontWeight="DemiBold" Padding="0,0,0,5" Content="Logout"  VerticalAlignment="Bottom"  Grid.Row="1">
+            <Button.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="16"/>
+                </Style>
+            </Button.Resources>
+        </Button>
+        <!--Theme Toggle Button-->
+        <DockPanel Grid.Column="6" Grid.Row="7" Grid.ColumnSpan="2">
+            <ToggleButton HorizontalAlignment="Left" Height="22" VerticalAlignment="Center" Width="44"  Cursor="Hand" />
+            <TextBlock Text="Theme" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="24" FontFamily="Cascadia Code SemiBold"/>
+        </DockPanel>
     </Grid>
 </Window>
