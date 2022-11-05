@@ -294,15 +294,17 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         {
             //########################################################
             //we have to fetech the analytics 
+
+
+            //TODO WHILE INTEGRATION 
             //clientSessionManager.GetAnalytics();
+
+
+
+
             //########################################################
 
-            //Convert the sessionAnalytics properly to show to the graph 
-
-            ////UserCountVsTimeStamps.Clear();
-            //UserCountVsTimeStamps.Add(new UserCountVsTimeStamp(50, 35));
-
-            //UserIdVsChatCounts.Clear();
+            
 
             UserIdVsChatCounts.Add(new UserIdVsChatCount(5, 16));
 
@@ -385,7 +387,13 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             if (currUser.userID == 1)
             {
                 //this user is host hence it can switch the mode 
+
+
+                //TODO WHILE INTEGRATION
                 //clientSessionManager.ToggleSessionMode();
+
+
+
                 //code for testing purpose 
                 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -422,18 +430,23 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         {
             UserData currUser = clientSessionManager.GetUser();
 
-            if (currUser.userID == 1)
-            {
-                //this user is host hence it will end the meet  
-                clientSessionManager.EndMeet();
-                //buttonValue = "Switch Mode"
-            }
-            else
-            {
-                //buttonValue = SessionMode;
-                //the user will be just removed by session manager 
-                clientSessionManager.RemoveClient();
-            }
+
+            //TODO during integration 
+
+
+
+            //if (currUser.userID == 1)
+            //{
+            //    //this user is host hence it will end the meet  
+            //    //clientSessionManager.EndMeet();
+            //    //buttonValue = "Switch Mode"
+            //}
+            //else
+            //{
+            //    //buttonValue = SessionMode;
+            //    //the user will be just removed by session manager 
+            //    //clientSessionManager.RemoveClient();
+            //}
 
         }
 
@@ -571,8 +584,8 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
                 //we have to update the participants list and SessionMode
                 UpdateParticipantsList(newSessionData.users);
                 UserData currUser = clientSessionManager.GetUser();
-                UpdateButtonContent(currUser);
                 SessionModeSetter = newSessionData.sessionMode;
+                UpdateButtonContent(currUser);
                 TotalParticipantsCountSetter = ParticipantsList.Count;
 
             }
