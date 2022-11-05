@@ -4,14 +4,15 @@
 /// This file contains the class definition of SendQueueListenerClient.
 /// </summary>
 
-using Networking.Queues;
+using PlexShareNetwork.Queues;
+using PlexShareNetwork.Serialization;
 using System;
 using System.Diagnostics;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 
-namespace Networking
+namespace PlexShareNetwork.Sockets
 {
 	public class SendQueueListenerClient
 	{
@@ -21,19 +22,22 @@ namespace Networking
 		private volatile bool _threadRun;
 
 		// variable to store the send queue
-		private readonly SendingQueues _queue;
+		private readonly SendingQueues _sendQueue;
 
 		// variable to store the socket
 		private readonly TcpClient _socket;
 
-		/// <summary>
-		/// It is the Constructor which initializes the queue and socket
-		/// </summary>
-		/// <param name="queue"> The the send queue. </param>
-		/// <param name="socket"> The socket to send the data. </param>
-		public SendQueueListenerClient(SendingQueues queue, TcpClient socket)
+        // serializer object to serialize the packet to send
+        readonly Serializer _serializer = new();
+
+        /// <summary>
+        /// It is the Constructor which initializes the queue and socket
+        /// </summary>
+        /// <param name="queue"> The the send queue. </param>
+        /// <param name="socket"> The socket to send the data. </param>
+        public SendQueueListenerClient(SendingQueues sendQueue, TcpClient socket)
 		{
-			_queue = queue;
+            _sendQueue = sendQueue;
 			_socket = socket;
 		}
 
@@ -43,8 +47,8 @@ namespace Networking
 		/// <returns> void </returns>
 		public void Start()
 		{
-			_thread = new Thread(Listen);
 			_threadRun = true;
+			_thread = new Thread(Listen);
 			_thread.Start();
 			Trace.WriteLine("[Networking] SendQueueListenerClient thread started.");
 		}
@@ -68,22 +72,15 @@ namespace Networking
 		{
 			while (_threadRun)
 			{
-				_queue.WaitForPacket();
-				while (!_queue.IsEmpty())
+                _sendQueue.WaitForPacket();
+				while (!_sendQueue.IsEmpty())
 				{
-					var packet = _queue.Dequeue();
-
-					/// we put flag string at the start and end of the packet, and we need to put
-					/// escape string before the flag and escape strings which are in the packet
-					var pkt = packet.getModuleOfPacket() + ":" + packet.getSerializedData();
-					pkt = pkt.Replace("[ESC]", "[ESC][ESC]");
-					pkt = pkt.Replace("[FLAG]", "[ESC][FLAG]");
-					pkt = "[FLAG]" + pkt + "[FLAG]";
-					var bytes = Encoding.ASCII.GetBytes(pkt);
+					Packet packet = _sendQueue.Dequeue();
+                    string sendString = "BEGIN" + _serializer.Serialize(packet) + "END";
 					try
 					{
-						_socket.Client.Send(bytes);
-						Trace.WriteLine($"[Networking] Data sent from client to server by module {packet.getModuleOfPacket()}.");
+						_socket.Client.Send(Encoding.ASCII.GetBytes(sendString));
+						Trace.WriteLine($"[Networking] Data sent from client to server by module {packet.moduleOfPacket}.");
 					}
 					catch (Exception e)
 					{
