@@ -221,7 +221,7 @@
                 </Button>
                 <!--</Border>-->
                 <Button Grid.Column="1" HorizontalAlignment="center" VerticalAlignment="center" Background="#24a0ed" FontWeight="Bold" x:Name="SwitchMode" Height="40" Width="120"   
-                Content="Switch to Lab Mode" >
+                Content="{Binding ButtonContentSetter}" >
                 </Button>
 
                 <Button Grid.Column="2" HorizontalAlignment="center" VerticalAlignment="center" Background="#24a0ed" FontWeight="Bold" x:Name="UploadAssignment" Height="40" Width="120"   

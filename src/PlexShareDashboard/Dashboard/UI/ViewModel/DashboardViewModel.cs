@@ -251,9 +251,17 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             SessionModeSetter = "LabMode";
             SessionScoreSetter = 40;
 
+            clientSessionManager = SessionManagerFactory.GetClientSessionManager();
+            //we also have to subscribe to the IClientSessionNotifications if any session data changes 
+            clientSessionManager.SubscribeSession(this);
+
             UserData currUser = clientSessionManager.GetUser();
 
-            if (currUser.userID == 1)
+            if (currUser == null)
+            {
+                ButtonContentSetter = "Meeting Not Started";
+            }
+            else if (currUser.userID == 1)
             {
                 //this is host hence we have to show the button content according to the host 
                 ButtonContentSetter = "Switch To ExamMode";
@@ -268,10 +276,6 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
 
             //############################################################################################
-
-            clientSessionManager = SessionManagerFactory.GetClientSessionManager();
-            //we also have to subscribe to the IClientSessionNotifications if any session data changes 
-            clientSessionManager.SubscribeSession(this);
 
             ////defining the sessionanalytics to store the information about the sessionanalytics 
             sessionAnalytics = new SessionAnalytics();
