@@ -479,6 +479,21 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         }
 
 
+        //function to fetch the hour and the minute format 
+        private string GetHourAndMinute(DateTime currDateTime)
+        {
+            string currHour = currDateTime.ToString("HH");
+            string currSecond = currDateTime.ToString("mm");
+
+            string finalTimeStamp = currHour + ":" + currSecond;
+            //TimeStampsList.Add(finalTimeStamp);
+
+            //say everything went fine 
+            return finalTimeStamp;
+
+        }
+
+
         //function to update usercountvstimestamp observable collection to update the view 
         public void UpdateUserCountVsTimeStamp(Dictionary<DateTime, int> currUserCountVsTimeStamp)
         {
@@ -495,10 +510,10 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             {
                 int currUserCount = currElement.Value;
                 DateTime currTimeStamp = currElement.Key;
-
+                string finalTimeStampToShow = GetHourAndMinute(currTimeStamp);
                 //TODO to convert the date time into the minutes and then append
-                int currTimeStampInt = 20;
-                UserCountVsTimeStamp newUserCountVsTimeStampElement = new UserCountVsTimeStamp(currUserCount, currTimeStampInt);
+                //int currTimeStampInt = 20;
+                //UserCountVsTimeStamp newUserCountVsTimeStampElement = new UserCountVsTimeStamp(currUserCount, finalTimeStampToShow);
 
                 //UserCountVsTimeStamps.Add(newUserCountVsTimeStampElement);
 
@@ -510,7 +525,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
                 UserCountList.Add(currUserCount);
 
                 //adding the new entry to the timestamp 
-                TimeStampsList.Add(currTimeStampInt.ToString());
+                TimeStampsList.Add(finalTimeStampToShow);
 
             }
 
