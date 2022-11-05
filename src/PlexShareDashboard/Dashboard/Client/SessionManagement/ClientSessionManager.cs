@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using PlexShareContent;
 using PlexShareDashboard.Dashboard.Server.Telemetry;
-using Networking;
-using Networking.Serialization;
+using PlexShareNetwork;
+using PlexShareNetwork.Serialization;
 using PlexShareDashboard.Dashboard;
 using Dashboard;
 using PlexShareDashboard.Dashboard.Client.SessionManagement;
@@ -12,6 +12,7 @@ using PlexShareScreenshare;
 using PlexShareWhiteboard;
 using PlexShare.Dashboard.Client.SessionManagement;
 using PlexShare.Dashboard;
+using PlexShareNetwork.Communication;
 
 namespace PlexShareDashboard.Dashboard.Client.SessionManagement
 {
