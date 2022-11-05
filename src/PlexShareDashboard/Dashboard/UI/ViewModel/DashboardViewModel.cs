@@ -310,8 +310,14 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
             //adding the new stuff into the usercount list and the participant list 
             UserCountList.Add(50);
-            TimeStampsList.Add("35");
+            //TimeStampsList.Add("35");
+            //string currDateTime = DateTime.Now.ToString("yyyyMMddHHmmss");
+            DateTime currDateTime = DateTime.Now;
+            string currHour = currDateTime.ToString("HH");
+            string currSecond = currDateTime.ToString("mm");
 
+            string finalTimeStamp = currHour  + ":" + currSecond;
+            TimeStampsList.Add(finalTimeStamp);
 
 
 
