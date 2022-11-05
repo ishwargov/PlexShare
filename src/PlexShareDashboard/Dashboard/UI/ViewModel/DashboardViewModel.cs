@@ -17,7 +17,10 @@ using PlexShareDashboard.Dashboard;
 using PlexShare.Dashboard;
 using PlexShareDashboard.Dashboard.Client.SessionManagement;
 using PlexShare.Dashboard.Client.SessionManagement;
-using Dashboard;
+using Dashboard; 
+using System.Diagnostics;
+using LiveCharts.Wpf;
+using LiveCharts;
 
 namespace PlexShareDashboard.Dashboard.UI.ViewModel
 {
@@ -39,10 +42,17 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
         //ObservableCollection for storing usercount at every time stamp 
         public ObservableCollection<UserCountVsTimeStamp> UserCountVsTimeStamps { get; set; }
+        //public ObservableCollection<int> UserCountList { get; set; }
+        public ChartValues<int> UserCountList { get; set; }
+        public ObservableCollection<string> TimeStampsList { get; set; }
 
         //ObservableCollection for storing the number of chat count for each user 
         public ObservableCollection<UserIdVsChatCount> UserIdVsChatCounts { get; set; }
-
+        public ChartValues<int> ChatCountList { get; set; }
+        public ObservableCollection<string> UserIdList { get; set; }
+        //debug.assert 
+        //checkbills & free 
+        //Trace  
         //storing the attentive and non attentive users in the meeting 
         private int AttentiveUsers { get; set; }
         private int NonAttentiveUsers { get; set; }
@@ -172,6 +182,9 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             ParticipantsList.Add(user5);
 
 
+            UserCountList = new ChartValues<int>();
+            TimeStampsList = new ObservableCollection<string>();
+
 
             //initialising UserCountVsTimeStamps
             UserCountVsTimeStamps = new ObservableCollection<UserCountVsTimeStamp>();
@@ -179,9 +192,20 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             UserCountVsTimeStamps.Add(new UserCountVsTimeStamp(20, 20));
             UserCountVsTimeStamps.Add(new UserCountVsTimeStamp(30, 25));
             UserCountVsTimeStamps.Add(new UserCountVsTimeStamp(40, 30));
+            UserCountList.Add(10);
+            UserCountList.Add(20);
+            UserCountList.Add(30);
+            UserCountList.Add(40);
+
+            TimeStampsList.Add("15");
+            TimeStampsList.Add("20");
+            TimeStampsList.Add("25");
+            TimeStampsList.Add("35");
 
 
 
+            ChatCountList = new ChartValues<int>();
+            UserIdList = new ObservableCollection<string>();
 
             //initialising the uservschatcount collection 
             UserIdVsChatCounts = new ObservableCollection<UserIdVsChatCount>();
@@ -190,8 +214,15 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             UserIdVsChatCounts.Add(new UserIdVsChatCount(2, 12));
             UserIdVsChatCounts.Add(new UserIdVsChatCount(3, 13));
             UserIdVsChatCounts.Add(new UserIdVsChatCount(4, 4));
+            ChatCountList.Add(10);
+            ChatCountList.Add(12);
+            ChatCountList.Add(13);
+            ChatCountList.Add(4);
 
-
+            UserIdList.Add("1");
+            UserIdList.Add("2");
+            UserIdList.Add("3");
+            UserIdList.Add("4");
 
             AttentiveUsersSetter = 60;
             NonAttentiveUsersSetter = 100 - AttentiveUsersSetter;
@@ -201,6 +232,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             EngagementRateSetter = "94.2";
             TotalParticipantsCountSetter = 200;
             SessionModeSetter = "LabMode";
+            SessionScoreSetter = 40;
 
 
 
@@ -253,6 +285,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             EngagementRateSetter = "95%";
             NonAttentiveUsersSetter = 50;
             AttentiveUsersSetter = 50;
+            SessionScoreSetter = 100;
             //TotalParticipantsCount = 200;
 
             //update the engagement rate 
@@ -264,6 +297,47 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
         }
 
+
+        //function to change the session mode 
+        public void SwitchSessionMode()
+        {
+            UserData currUser = clientSessionManager.GetUser();
+
+            if (currUser.userID == 1)
+            {
+                //this user is host hence it can switch the mode 
+                clientSessionManager.ToggleSessionMode();
+                //buttonValue = "Switch Mode"
+            }
+            else
+            {
+                //buttonValue = SessionMode;
+            }
+
+            //say everything went fine 
+            return;
+
+        }
+
+        //function to initiate leavemeeting procedure 
+        public void LeaveMeetingProcedure()
+        {
+            UserData currUser = clientSessionManager.GetUser();
+
+            if (currUser.userID == 1)
+            {
+                //this user is host hence it will end the meet  
+                clientSessionManager.EndMeet();
+                //buttonValue = "Switch Mode"
+            }
+            else
+            {
+                //buttonValue = SessionMode;
+                //the user will be just removed by session manager 
+                clientSessionManager.RemoveClient();
+            }
+
+        }
 
 
 
@@ -347,7 +421,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         //function to calculate the number of attentive and non attentive users in the meeting 
         public void CalculatePercentageOfAttentiveAndNonAttentiveUsers(int currNonAttentiveUsers, int currAttentiveUsers)
         {
-            int nonAttentivePercentage = (currNonAttentiveUsers) / TotalParticipantsCount * 100;
+            int nonAttentivePercentage = (currNonAttentiveUsers) / TotalParticipantsCountSetter * 100;
             int attentivePercentage = 100 - nonAttentivePercentage;
 
             //updating the percentages
@@ -372,8 +446,8 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             {
                 //we have to update the participants list and SessionMode
                 UpdateParticipantsList(newSessionData.users);
-                SessionMode = newSessionData.sessionMode;
-                TotalParticipantsCount = ParticipantsList.Count;
+                SessionModeSetter = newSessionData.sessionMode;
+                TotalParticipantsCountSetter = ParticipantsList.Count;
 
             }
 
@@ -395,7 +469,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             var currScore = sessionAnalytics.sessionSummary.score;
 
 
-            SessionScore = currScore;
+            SessionScoreSetter = currScore;
 
             //we have to update all the lists so that we can show to the dahsboard
             UpdateUserCountVsTimeStamp(sessionAnalytics.userCountVsTimeStamp);
@@ -404,7 +478,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
 
             int currNonAttentiveUsers = sessionAnalytics.listOfInSincereMembers.Count;
-            int currAttentiveUsers = TotalParticipantsCount - currNonAttentiveUsers;
+            int currAttentiveUsers = TotalParticipantsCountSetter - currNonAttentiveUsers;
 
             CalculatePercentageOfAttentiveAndNonAttentiveUsers(currNonAttentiveUsers, currAttentiveUsers);
 
@@ -419,7 +493,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         {
             int activeMembers = currChatCountForEachUser.Count;
 
-            float EngagementRate = (float)(activeMembers / TotalParticipantsCount) * 100;
+            float EngagementRate = (float)(activeMembers / TotalParticipantsCountSetter) * 100;
             EngagementRateSetter = EngagementRate.ToString("0") + "%";
 
 

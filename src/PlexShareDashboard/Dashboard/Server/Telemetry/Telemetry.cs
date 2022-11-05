@@ -127,6 +127,7 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             return;
         }
 
+        //this function will be called whenever the session analytics will be changed at the server side session manager using publisher subscriber model 
         public void OnAnalyticsChanged(SessionData newSession)
         {
             var currTime = DateTime.Now;
@@ -162,7 +163,7 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             foreach (var currUser in eachUserEnterTimeInMeeting)
             { 
                 if (newSession.users.Contains(currUser.Key) == false && eachUserEnterTimeInMeeting.ContainsKey(currUser.Key) == false)
-                    eachUserEnterTimeInMeeting[currUser.Key] = currTime;
+                    eachUserExitTime[currUser.Key] = currTime;
             
             }
 

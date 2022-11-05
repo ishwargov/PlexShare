@@ -1,4 +1,4 @@
-﻿/// <author>Hrishi Raaj Singh</author>
+/// <author>Hrishi Raaj Singh</author>
 /// <created>1/11/2022</created>
 /// <summary>
 ///     It contains the SummaryPersistence class
@@ -6,7 +6,6 @@
 /// </summary> 
 
 using System;
->>>>>>> origin/main
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;

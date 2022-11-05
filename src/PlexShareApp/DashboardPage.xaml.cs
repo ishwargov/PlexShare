@@ -57,18 +57,10 @@ namespace PlexShareApp
 
         public void OnSwitchModeButtonClick(object sender, RoutedEventArgs e)
         {
+            
             //just call the session manager to change the mode of the current lab 
-            //just call the session manager to change the mode of the current lab 
-            //currUser = clientSessionManager.GetUsesr();
-            //if (currUser.userId == 1)
-            //{
-            //    clientSessionManager.ChangeSessionMode();
-            //}
-            //else
-            //{ 
-            //    //say you cannot change the mode of the session 
-
-            //}
+            this.DashboardViewModelInstance.SwitchSessionMode();
+            
 
         }
 
@@ -76,19 +68,7 @@ namespace PlexShareApp
         public void OnLeaveButtonClick(object sender, RoutedEventArgs e)
         {
 
-            //just call the client session manager to leave the meeting 
-
-            //just call the client session manager to leave the meeting 
-            //clientSessionManager.RemoveClient();
-            //currUser = clientSessionManager.GetUsesr();
-            //if(currUser.userId == '1')
-            //{
-            //    clientSessionmanager.EndMeet();
-            //}
-            //else
-            //{
-            //    clientSessionManager.RemoveClient();
-            //}
+            this.DashboardViewModelInstance.LeaveMeetingProcedure();
         }
 
         public void OnUploadButtonClick(object sender, RoutedEventArgs e)
