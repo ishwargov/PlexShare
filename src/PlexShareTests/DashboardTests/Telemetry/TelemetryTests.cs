@@ -16,6 +16,19 @@ namespace PlexShareTests.DashboardTests.Telemetry
         //in  this we write the unit test for the telemetry submodule 
         //defining  the persistence factory for this purpose 
         private readonly TelemetryPersistence persistenceInstance = new TelemetryPersistence();
+
+        //checking the test case for singleton design pattern 
+        [Fact]
+        public void SingletonFactory_Test_Check()
+        {
+            ITelemetry telemetryInstance1 = TelemetryFactory.GetTelemetryInstance();
+            ITelemetry telemetryInstance2 = TelemetryFactory.GetTelemetryInstance();
+
+            Assert.Equal(telemetryInstance1, telemetryInstance2);
+            //Assert.True(telemetryInstance1.Equals(telemetryInstance2));
+        
+        }
+
         [Fact]
         //writing the first test to checking the function CalculateUserCountVsTimeStamp 
         public void CalculateUserCountVsTimeStamp_ShouldGiveUserCountAtTimeStamp()
