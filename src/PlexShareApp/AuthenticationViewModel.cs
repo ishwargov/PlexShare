@@ -22,6 +22,7 @@ using System.Text.Json.Nodes;
 using Newtonsoft.Json.Linq;
 using System.Windows.Controls;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace AuthViewModel;
 
@@ -195,7 +196,7 @@ public class AuthenticationViewModel
                 // converts to dictionary
                 Dictionary<string, string> tokenEndpointDecoded = JsonConvert.DeserializeObject<Dictionary<string, string>>(responseText);
                 string access_token = tokenEndpointDecoded["access_token"];
-                userinfoCall(access_token);
+                UserInfoCall(access_token);
 
                 tokenDisconnectUri += access_token;
                 HttpWebRequest tokenDisconnect = (HttpWebRequest)WebRequest.Create(tokenDisconnectUri);
@@ -221,15 +222,7 @@ public class AuthenticationViewModel
 
     }
 
-    void DownloadImage(string url)
-    {
-        imageName = "UserProfilePicture.png";
-        string localFileName = "../../../Resources/" + imageName;
-        WebClient webClient = new WebClient();
-        webClient.DownloadFile(url, localFileName);
-    }
-
-    async void userinfoCall(string access_token)
+    async void UserInfoCall(string access_token)
     {
         // builds the  request
         string userinfoRequestURI = "https://www.googleapis.com/oauth2/v3/userinfo";
@@ -253,8 +246,7 @@ public class AuthenticationViewModel
             // Storing Data from Json file received
             userName = json["name"].ToString();
             userEmail = json["email"].ToString();
-            string imageURL = json["picture"].ToString();
-            DownloadImage(imageURL);
+            imageName = json["picture"].ToString();
         }
     }
 }
