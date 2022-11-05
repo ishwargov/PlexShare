@@ -91,7 +91,7 @@ namespace PlexShareNetwork.Sockets
                 string sendString = "BEGIN" + _serializer.Serialize(packet) + "END";
 
                 // get the socket corresponding to the destination in the packet
-                var clientSockets = GetClientIdToSocket(packet.destination);
+                var clientSockets = ClientIdToSocket(packet.destination);
 				foreach (var clientSocket in clientSockets)
 				{
 					var bytes = Encoding.ASCII.GetBytes(sendString);
@@ -171,9 +171,9 @@ namespace PlexShareNetwork.Sockets
         /// </summary>
         /// <param name="destination"> It is the client ID for unicast and null for boradcast. </param>
         /// <returns> Set of client sockets. </returns>
-        private HashSet<TcpClient> GetClientIdToSocket(string destination)
+        private HashSet<TcpClient> ClientIdToSocket(string destination)
 		{
-            Trace.WriteLine("[Networking] SendQueueListenerServer.DestinationToSocket() function called.");
+            Trace.WriteLine("[Networking] SendQueueListenerServer.ClientIdToSocket() function called.");
             var clientSockets = new HashSet<TcpClient>();
 			if (destination == null)
 			{
