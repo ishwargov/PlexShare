@@ -373,6 +373,11 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             //we have to update the observable collection userCountVsTimeStamp 
             UserCountVsTimeStamps.Clear();
 
+            //we have to clear the userscountList 
+            UserCountList.Clear();
+            TimeStampsList.Clear();
+
+
             //using the for loop for this purpose 
             foreach (var currElement in currUserCountVsTimeStamp)
             {
@@ -384,6 +389,16 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
                 UserCountVsTimeStamp newUserCountVsTimeStampElement = new UserCountVsTimeStamp(currUserCount, currTimeStampInt);
 
                 UserCountVsTimeStamps.Add(newUserCountVsTimeStampElement);
+
+
+
+
+
+                //adding this new users count into the usercountlist 
+                UserCountList.Add(currUserCount);
+
+                //adding the new entry to the timestamp 
+                TimeStampsList.Add(currTimeStampInt.ToString());
 
             }
 
@@ -397,6 +412,13 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         public void UpdateUserIdVsChatCount(Dictionary<int, int> chatCountForEachUser)
         {
             UserIdVsChatCounts.Clear();
+
+            //we have to clear the array of the userid list and 
+            UserIdList.Clear();
+            ChatCountList.Clear();
+
+
+
             int chatCount = 0;
 
             //using the for loop for this purpose 
@@ -408,6 +430,10 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
                 UserIdVsChatCount currUserIdChatCount = new UserIdVsChatCount(currUserid, currChatCount);
 
                 UserIdVsChatCounts.Add(currUserIdChatCount);
+
+                //we have to add  the new element into the chart values 
+                UserIdList.Add(currUserid.ToString());
+                ChatCountList.Add(currChatCount);
 
                 chatCount = chatCount + currChatCount;
             }
