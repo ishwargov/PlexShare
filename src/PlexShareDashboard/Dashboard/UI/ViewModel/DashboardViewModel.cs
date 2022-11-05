@@ -255,6 +255,8 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             //we also have to subscribe to the IClientSessionNotifications if any session data changes 
             clientSessionManager.SubscribeSession(this);
 
+            Trace.WriteLine("Initializing the dashboard viewmodel");
+
             UserData currUser = clientSessionManager.GetUser();
 
             if (currUser == null)
