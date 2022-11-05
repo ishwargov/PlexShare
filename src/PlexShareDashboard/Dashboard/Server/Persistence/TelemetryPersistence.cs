@@ -18,7 +18,7 @@ namespace Dashboard.Server.Persistence
             var folderPath = Path.Combine(Path1, "plexshare");
             ServerDataPath = folderPath + "/Server/Persistence/PersistenceDownloads/TelemetryDownloads/ServerData/";
             TelemetryAnalyticsPath = folderPath + "/Server/Persistence/PersistenceDownloads/TelemetryDownloads/TelemetryAnalytics/";
-            TelemetryAnalyticsPath = TelemetryAnalyticsPath + DateTime.Now.ToString("MM/dd/yyyy");
+            TelemetryAnalyticsPath = TelemetryAnalyticsPath + "_" + DateTime.Now.ToString("MM/dd/yyyy") + "_";
         }
 
         public string ServerDataPath { get; set; }
@@ -30,8 +30,7 @@ namespace Dashboard.Server.Persistence
 
         public bool Save(SessionAnalytics sessionAnalyticsData)
         {
-            var sessionId = string.Format("Analytics_{0:yyyy - MM - dd_hh - mm - ss - tt}", DateTime.Now);
-
+            var sessionId = "Analytics";
             bool t1 = UserCountVsTimeStamp_PlotUtil(sessionAnalyticsData.userCountVsTimeStamp, sessionId);
 
             bool t2 = ChatCountVsUserID_PlotUtil(sessionAnalyticsData.chatCountForEachUser, sessionId);

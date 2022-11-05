@@ -14,9 +14,9 @@ namespace PlexShareTests.DashboardTests.Persistence
             var summary = "Unit Testing";
             var textToBeSaved = "Summary : --------- " + Environment.NewLine + summary + Environment.NewLine;
             var response = PersistenceFactory.GetSummaryPersistenceInstance().SaveSummary(summary);
-
-            var textActuallySaved = File.ReadAllText(Path.Combine(path, DateTime.Now.ToString("MM/dd/yyyy")));
-            File.Delete(Path.Combine(path,DateTime.Now.ToString("MM/dd/yyyy")));
+            var p1 = "_"+ DateTime.Now.ToString("MM/dd/yyyy")+"_"+"Summary";
+            var textActuallySaved = File.ReadAllText(Path.Combine(path, p1));
+            File.Delete(Path.Combine(path,p1));
 
             if (textToBeSaved == textActuallySaved)
             {
@@ -66,7 +66,7 @@ namespace PlexShareTests.DashboardTests.Persistence
 
             var response = telemetryPersist.Save(sessionAnalytics);
 
-            var p1 = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/TelemetryAnalytics/" + DateTime.Now.ToString("MM/dd/yyyy");
+            var p1 = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/TelemetryAnalytics/" + "_"+ DateTime.Now.ToString("MM/dd/yyyy")+"_";
 
             var IsChatCountForUserSaved = File.Exists(Path.Combine(p1, "ChatCountVsUserID.png"));
             var IsInsincereMembersSaved = File.Exists(Path.Combine(p1, "insincereMembersList.txt"));
