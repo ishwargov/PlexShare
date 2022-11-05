@@ -25,7 +25,6 @@ namespace PlexShareApp
         public AuthenticationView()
         {
             InitializeComponent();
-
             AuthenticationViewModel viewModel = new AuthenticationViewModel();
             this.DataContext = viewModel;
         }
@@ -35,9 +34,9 @@ namespace PlexShareApp
             AuthenticationViewModel viewModel = this.DataContext as AuthenticationViewModel;
             var returnVal = await viewModel.AuthenticateUser();
             
-            if (returnVal == true)
+            if (returnVal[0] == "true")
             {
-                var homePage = new HomePageView();
+                var homePage = new HomePageView(returnVal[1], returnVal[2], returnVal[2]);
                 homePage.Show();
                 Close(); 
             } 
