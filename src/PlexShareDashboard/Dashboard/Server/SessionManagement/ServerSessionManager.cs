@@ -62,8 +62,8 @@ namespace Dashboard.Server.SessionManagement
 
             userCount = 0;
 
-            _communicator = CommunicationFactory.GetCommunicator(false);
-            _communicator.Subscribe(moduleIdentifier, this);
+          //  _communicator = CommunicationFactory.GetCommunicator(false);
+         //   _communicator.Subscribe(moduleIdentifier, this);
 
             //------------------------------------_telemetry = new Telemetry.Telemetry();
           //  _ = ServerBoardCommunicator.Instance;
