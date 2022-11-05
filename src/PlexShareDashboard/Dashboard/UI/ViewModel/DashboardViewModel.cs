@@ -272,6 +272,11 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
             UserIdVsChatCounts.Add(new UserIdVsChatCount(5, 16));
 
+            //adding the new stuff into the usercount list and the participant list 
+            UserCountList.Add(50);
+            TimeStampsList.Add("35");
+
+
 
 
             //once got the sessionAnalytics 
