@@ -1,12 +1,4 @@
-﻿/// <author>Hrishi Raaj Singh Chauhan</author>
-/// <created>1/11/2022</created>
-/// <summary>
-///     It contains the TelemetryPersistence class
-///     It implements the ITelemetryPersistence interface functions.
-/// </summary> 
-/// 
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -14,7 +6,6 @@ using System.IO;
 using System.Linq;
 using OxyPlot.Wpf;
 using PlexShareDashboard.Dashboard.Server.Telemetry;
-//using PlexShareDashboard.Dashboard.Server.Telemetry;
 using ScottPlot;
 
 namespace Dashboard.Server.Persistence
