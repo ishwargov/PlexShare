@@ -29,6 +29,48 @@ namespace PlexShareApp
             this.DataContext = viewModel;
         }
 
+        private void TitleBarDrag(object sender, MouseButtonEventArgs e)
+        {
+            DragMove();
+        }
+
+        private void CloseApp(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
+        private void MinimizeApp(object sender, RoutedEventArgs e)
+        {
+            if (WindowState == WindowState.Normal || WindowState == WindowState.Maximized)
+                WindowState = WindowState.Minimized;
+            else
+                WindowState = WindowState.Normal;
+        }
+
+        private void MaximizeApp(object sender, RoutedEventArgs e)
+        {
+            if (WindowState == WindowState.Maximized)
+            {
+                WindowState = WindowState.Normal;
+            }
+            else
+            {
+                MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
+                WindowState = WindowState.Maximized;
+            }
+        }
+
+        public void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (this.WindowState == WindowState.Maximized)
+            {
+                this.BorderThickness = new System.Windows.Thickness(8);
+            }
+            else
+            {
+                this.BorderThickness = new System.Windows.Thickness(0);
+            }
+        }
         private async void Home_Click(object sender, RoutedEventArgs e)
         {
             AuthenticationViewModel viewModel = this.DataContext as AuthenticationViewModel;

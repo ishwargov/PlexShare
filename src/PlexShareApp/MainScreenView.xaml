@@ -26,31 +26,22 @@
                 <ColumnDefinition Width="15*"/>
                 <ColumnDefinition Width="10*"/>
                 <ColumnDefinition Width="20*"/>
-                
+
                 <ColumnDefinition Width="1.5*"/>
             </Grid.ColumnDefinitions>
-            
+
             <Grid.RowDefinitions>
                 <RowDefinition Height="20" />
                 <RowDefinition Height="35" />
                 <RowDefinition />
             </Grid.RowDefinitions>
 
-            <Grid Height ="20" Grid.Column="0" Grid.ColumnSpan="10" Background="#272537" MouseDown="TitleBarDrag"/>
 
             <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="10" Background="#272537" MouseDown="TitleBarDrag"/>
-            <TextBlock Grid.Row="0" Grid.Column="0" FontFamily="Cascadia Mono" FontSize="15" Foreground="#FFB0ADAD"> PlexShare </TextBlock>
+            <TextBlock Grid.Row="0" Grid.Column="0" FontFamily="Cascadia Mono" FontSize="15" Foreground="#FFB0ADAD"> PlexShare</TextBlock>
 
             <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="5" Grid.ColumnSpan="2" HorizontalAlignment="Right">
 
-                <Button Width="15" Background="Red" BorderThickness="0" Height="15" Click="CloseApp">
-                    <Button.Resources>
-                        <Style TargetType="Border">
-                            <Setter Property="CornerRadius" Value="10"/>
-                        </Style>
-                    </Button.Resources>
-                </Button>
-                <StackPanel Width="5"></StackPanel>
 
 
                 <Button Width="15"  Height="15" Background="Yellow" Click="MinimizeApp">
@@ -71,11 +62,22 @@
                     </Button.Resources>
                 </Button>
                 <StackPanel Width="5"></StackPanel>
+
+                <Button Width="15" Background="Red" BorderThickness="0" Height="15" Click="CloseApp">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="10"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+                <StackPanel Width="5"></StackPanel>
             </StackPanel>
+
+
 
             <Button Name="Dashboard" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Click="DashboardClick" Background ="PeachPuff" FontFamily="Cascadia Mono" FontSize="20" >
                 <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
-                    <TextBlock Text="Dashboard" VerticalAlignment="Center"> </TextBlock>
+                    <TextBlock Text="Dashboard" VerticalAlignment="Center"></TextBlock>
                 </StackPanel>
             </Button>
             <Button Name="Whiteboard" Grid.Column="2" Grid.ColumnSpan="2" Grid.Row="1" Click="WhiteboardClick" Background="DarkSlateGray" FontFamily="Cascadia Mono" FontSize="20" Foreground="SeaShell">

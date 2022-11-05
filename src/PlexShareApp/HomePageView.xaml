@@ -140,7 +140,7 @@
             <!--Profile Image-->
             <Border CornerRadius="100,100,100,100" Grid.Column="1" BorderBrush="White" BorderThickness="7" Grid.RowSpan="2" Grid.ColumnSpan="3" Margin="99,39,97,0">
                 <Border.Background>
-                    <ImageBrush ImageSource="C:\Users\LENOVO\source\repos\Homescreen_wpf\Homescreen_wpf\Image1.png" Stretch="UniformToFill"/>
+                    <ImageBrush ImageSource="/Resources/UserProfilePicture.png" Stretch="UniformToFill"/>
                 </Border.Background>
                 <TextBlock HorizontalAlignment="Left" Height="9" Margin="51,131,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Width="16"/>
             </Border>
