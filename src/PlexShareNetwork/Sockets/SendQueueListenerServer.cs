@@ -171,7 +171,7 @@ namespace PlexShareNetwork.Sockets
         /// </summary>
         /// <param name="destination"> It is the client ID for unicast and null for boradcast. </param>
         /// <returns> Set of client sockets. </returns>
-        private HashSet<TcpClient> ClientIdToSocket(string destination)
+        private HashSet<TcpClient> ClientIdToSocket(string? destination)
 		{
             Trace.WriteLine("[Networking] SendQueueListenerServer.ClientIdToSocket() function called.");
             var clientSockets = new HashSet<TcpClient>();
@@ -204,10 +204,10 @@ namespace PlexShareNetwork.Sockets
                     return clientIdToClientSocket.Key;
                 }
             }
-            // this null will never be returned because we got the socket from the
-            // _clientIdToClientSocketMap map only, so we will find the socket in
-            // this map in the above for loop
-            return null;
+            // this string "null" will never be returned because we got the socket
+            // from the _clientIdToClientSocketMap map only, so we will find the
+            // socket in this map in the above for loop
+            return "null";
 		}
 	}
 }

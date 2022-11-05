@@ -18,7 +18,7 @@ namespace PlexShareNetwork.Sockets
 	public class SendQueueListenerClient
 	{
 		// the thread which will be running
-		private Thread _thread;
+		private readonly Thread _thread;
 		// boolean to tell whether thread is running or stopped
 		private volatile bool _threadRun;
 
