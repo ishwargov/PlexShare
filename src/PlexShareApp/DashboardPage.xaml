@@ -221,15 +221,15 @@
                 </Button>
                 <!--</Border>-->
                 <Button Grid.Column="1" HorizontalAlignment="center" VerticalAlignment="center" Background="#24a0ed" FontWeight="Bold" x:Name="SwitchMode" Height="40" Width="120"   
-                Content="{Binding ButtonContentSetter}" >
+                Content="{Binding ButtonContentSetter}" Click="OnSwitchModeButtonClick">
                 </Button>
 
                 <Button Grid.Column="2" HorizontalAlignment="center" VerticalAlignment="center" Background="#24a0ed" FontWeight="Bold" x:Name="UploadAssignment" Height="40" Width="120"   
-                Content="Upload" >
+                Content="Upload" Click="OnUploadButtonClick">
                 </Button>
 
                 <Button Grid.Column="3" HorizontalAlignment="center" VerticalAlignment="center" Background="Red" FontWeight="Bold" x:Name="LeaveMeeting" Height="40" Width="120"   
-                Content="Leave" >
+                Content="Leave" Click="OnLeaveButtonClick">
                 </Button>
                 <!--<TextBlock Grid.Row="0" TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Hello this is rupesh kumar and here i will be adding the different buttons for the user to be able to show and refresh the contents for the user for this purpose"></TextBlock>-->
             </Grid>
