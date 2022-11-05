@@ -4,11 +4,12 @@
 /// </summary>
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace Networking.Serialization
+namespace PlexShareNetwork.Serialization
 {
     public class Serializer : ISerializer
     {
@@ -25,7 +26,7 @@ namespace Networking.Serialization
             catch(InvalidOperationException e)
             {
                 // Arises if the class 'T' does not have an empty constructor
-                Console.WriteLine(e.StackTrace);
+                Trace.WriteLine($"{e.StackTrace}");
                 return null;
             }
 
@@ -40,7 +41,7 @@ namespace Networking.Serialization
             }
             catch(ArgumentNullException e)
             {
-                Console.WriteLine(e.StackTrace);
+                Trace.WriteLine($"{e.StackTrace}");
                 return null;
             }
 
@@ -51,7 +52,7 @@ namespace Networking.Serialization
             }
             catch(InvalidOperationException e)
             {
-                Console.WriteLine(e.StackTrace);
+                Trace.WriteLine($"{e.StackTrace}");
                 return null;
             }
 
@@ -71,7 +72,7 @@ namespace Networking.Serialization
             catch (InvalidOperationException e)
             {
                 // Arises if the class 'T' does not have an empty constructor
-                Console.WriteLine(e.StackTrace);
+                Trace.WriteLine($"{e.StackTrace}");
                 return default(T);
             }
 
@@ -83,7 +84,7 @@ namespace Networking.Serialization
             }
             catch(ArgumentNullException e)
             {
-                Console.WriteLine(e.StackTrace);
+                Trace.WriteLine($"{e.StackTrace}");
                 return default(T);
             }
 
@@ -95,7 +96,7 @@ namespace Networking.Serialization
             }
             catch(ArgumentNullException e)
             {
-                Console.WriteLine(e.StackTrace);
+                Trace.WriteLine($"{e.StackTrace}");
                 return default(T);
             }
 

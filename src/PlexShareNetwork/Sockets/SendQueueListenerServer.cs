@@ -4,7 +4,8 @@
 /// This file contains the class definition of SendQueueListenerServer.
 /// </summary>
 
-using Networking.Queues;
+using PlexShareNetwork.Queues;
+using PlexShareNetwork.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,7 +14,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Networking
+namespace PlexShareNetwork.Sockets
 {
 	public class SendQueueListenerServer
 	{
@@ -31,15 +32,18 @@ namespace Networking
 		// variable to store the dictionary which maps module identifiers to their respective notification handlers
 		private readonly Dictionary<string, INotificationHandler> _subscribedModules;
 
-		/// <summary>
-		/// It is the Constructor which initializes the queue, clientIdSocket and subscribedModules
-		/// </summary>
-		/// <param name="queue"> The the send queue. </param>
-		/// <param name="clientIdToSocket"> The dictionary which maps clientIds to their respective sockets. </param>
-		/// <param name="subscribedModules">
-		/// The dictionary which maps module identifiers to their respective notification handlers.
-		/// </param>
-		public SendQueueListenerServer(SendingQueues queue, Dictionary<string, TcpClient> clientIdToSocket,
+        // serializer object to serialize the packet to send
+        readonly Serializer _serializer = new();
+
+        /// <summary>
+        /// It is the Constructor which initializes the queue, clientIdSocket and subscribedModules
+        /// </summary>
+        /// <param name="queue"> The the send queue. </param>
+        /// <param name="clientIdToSocket"> The dictionary which maps clientIds to their respective sockets. </param>
+        /// <param name="subscribedModules">
+        /// The dictionary which maps module identifiers to their respective notification handlers.
+        /// </param>
+        public SendQueueListenerServer(SendingQueues queue, Dictionary<string, TcpClient> clientIdToSocket,
 			Dictionary<string, INotificationHandler> subscribedModules)
 		{
 			_queue = queue;
@@ -53,8 +57,8 @@ namespace Networking
 		/// <returns> void </returns>
 		public void Start()
 		{
-			_thread = new Thread(Listen);
 			_threadRun = true;
+			_thread = new Thread(Listen);
 			_thread.Start();
 			Trace.WriteLine("[Networking] SendQueueListenerServer thread started.");
 		}
@@ -82,20 +86,14 @@ namespace Networking
 				_queue.WaitForPacket();
 				while (!_queue.IsEmpty())
 				{
-					var packet = _queue.Dequeue();
+					Packet packet = _queue.Dequeue();
+                    string sendString = "BEGIN" + _serializer.Serialize(packet) + "END";
 
-					/// we put flag string at the start and end of the packet, and we need to put
-					/// escape string before the flag and escape strings which are in the packet
-					var pkt = packet.getModuleOfPacket() + ":" + packet.getSerializedData();
-					pkt = pkt.Replace("[ESC]", "[ESC][ESC]");
-					pkt = pkt.Replace("[FLAG]", "[ESC][FLAG]");
-					pkt = "[FLAG]" + pkt + "[FLAG]";
-
-					// get the socket corresponding to the destination in the packet
-					var sockets = DestinationToSocket(packet);
+                    // get the socket corresponding to the destination in the packet
+                    var sockets = DestinationToSocket(packet);
 					foreach (var socket in sockets)
 					{
-						var bytes = Encoding.ASCII.GetBytes(pkt);
+						var bytes = Encoding.ASCII.GetBytes(sendString);
 						try
 						{
 							var client = socket.Client;
@@ -104,7 +102,7 @@ namespace Networking
 							if (!(client.Poll(1, SelectMode.SelectRead) && client.Available == 0))
 							{
 								client.Send(bytes);
-								Trace.WriteLine($"[Networking] Data sent from server to client by {packet.getModuleOfPacket()}.");
+								Trace.WriteLine($"[Networking] Data sent from server to client by {packet.moduleOfPacket}.");
 							}
 							else // else the client is disconnected so we try to reconnect 3 times
 							{
@@ -130,7 +128,7 @@ namespace Networking
 											{
 												Trace.WriteLine("[Networking] Client connected.");
 												clientTry.Send(bytesTry);
-												Trace.WriteLine($"[Networking] Data sent from server to client by {packet.getModuleOfPacket()}.");
+												Trace.WriteLine($"[Networking] Data sent from server to client by {packet.moduleOfPacket}.");
 												isSent = true; // after sending the data we can set isSent to true
 												break;
 											}
@@ -182,13 +180,13 @@ namespace Networking
 		private HashSet<TcpClient> DestinationToSocket(Packet packet)
 		{
 			var sockets = new HashSet<TcpClient>();
-			if (packet.getDestination() == null)
+			if (packet.destination == null)
 			{
 				foreach (var keyValue in _clientIdToSocket) sockets.Add(keyValue.Value);
 			}
 			else
 			{
-				sockets.Add(_clientIdToSocket[packet.getDestination()]);
+				sockets.Add(_clientIdToSocket[packet.destination]);
 			}
 			return sockets;
 		}
