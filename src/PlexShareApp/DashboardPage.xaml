@@ -4,6 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:PlexShareApp" xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
+      xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf" xmlns:viewmodel="clr-namespace:PlexShareDashboard.Dashboard.UI.ViewModel;assembly=PlexShareDashboard" d:DataContext="{d:DesignInstance Type=viewmodel:DashboardViewModel}"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="Page1">
@@ -82,7 +83,7 @@
             </Grid.ColumnDefinitions>
             <!--<Border BorderBrush="orange" BorderThickness="2">-->
 
-            <syncfusion:SfChart Grid.Column="0" Grid.Row="0" Background="WhiteSmoke">
+            <!--<syncfusion:SfChart Grid.Column="0" Grid.Row="0" Background="WhiteSmoke">
                 <syncfusion:SfChart.PrimaryAxis>
                     <syncfusion:CategoryAxis Header="Time Stamp" />
                 </syncfusion:SfChart.PrimaryAxis>
@@ -98,7 +99,46 @@
                         </syncfusion:ChartAdornmentInfo>
                     </syncfusion:ColumnSeries.AdornmentsInfo>
                 </syncfusion:ColumnSeries>
-            </syncfusion:SfChart>
+            </syncfusion:SfChart>-->
+            <!--<lvc:CartesianChart>
+                <lvc:CartesianChart.Series>
+                    <lvc:ColumnSeries Title="Country Cases" Values="{Binding CoronavirusCountryCaseCounts}"/>
+                </lvc:CartesianChart.Series>
+                <lvc:CartesianChart.AxisX>
+                    <lvc:Axis Title="Countries" Labels="{Binding CoronavirusCountryNames}">
+                        <lvc:Axis.Separator>
+                            <lvc:Separator Step="1"/>
+                        </lvc:Axis.Separator>
+                    </lvc:Axis>
+                </lvc:CartesianChart.AxisX>
+                <lvc:CartesianChart.AxisY>
+                    <lvc:Axis Title="Case Count"/>
+                </lvc:CartesianChart.AxisY>
+            </lvc:CartesianChart>-->
+            <!--<lvc:CartesianChart Series="{Binding SeriesCollection}" LegendLocation="Left">
+                <lvc:CartesianChart.AxisX>
+                    <lvc:Axis Title="Belts" Labels="{Binding Labels}"></lvc:Axis>
+                </lvc:CartesianChart.AxisX>
+                <lvc:CartesianChart.AxisY>
+                    <lvc:Axis Title="Members" LabelFormatter="{Binding Formatter}"></lvc:Axis>
+                </lvc:CartesianChart.AxisY>
+            </lvc:CartesianChart>-->
+
+            <lvc:CartesianChart>
+                <lvc:CartesianChart.Series>
+                    <lvc:ColumnSeries d:DataContext="{d:DesignInstance Type=viewmodel:DashboardViewModel}" Title="Country Cases" Values="{Binding UserCountList}"/>
+                </lvc:CartesianChart.Series>
+                <lvc:CartesianChart.AxisX>
+                    <lvc:Axis Title="TimeStamps" Labels="{Binding TimeStampsList}">
+                        <lvc:Axis.Separator>
+                            <lvc:Separator Step="1"/>
+                        </lvc:Axis.Separator>
+                    </lvc:Axis>
+                </lvc:CartesianChart.AxisX>
+                <lvc:CartesianChart.AxisY>
+                    <lvc:Axis Title="User Count"/>
+                </lvc:CartesianChart.AxisY>
+            </lvc:CartesianChart>
 
             <!--chart for showing the chat count vs each user-->
             <syncfusion:SfChart Grid.Column="1" Grid.Row="0" Background="WhiteSmoke">

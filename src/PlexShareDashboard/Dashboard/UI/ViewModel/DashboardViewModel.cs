@@ -17,7 +17,10 @@ using PlexShareDashboard.Dashboard;
 using PlexShare.Dashboard;
 using PlexShareDashboard.Dashboard.Client.SessionManagement;
 using PlexShare.Dashboard.Client.SessionManagement;
-using Dashboard;
+using Dashboard; 
+using System.Diagnostics;
+using LiveCharts.Wpf;
+using LiveCharts;
 
 namespace PlexShareDashboard.Dashboard.UI.ViewModel
 {
@@ -39,10 +42,15 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
         //ObservableCollection for storing usercount at every time stamp 
         public ObservableCollection<UserCountVsTimeStamp> UserCountVsTimeStamps { get; set; }
+        //public ObservableCollection<int> UserCountList { get; set; }
+        public ChartValues<int> UserCountList { get; set; }
+        public ObservableCollection<string> TimeStampsList { get; set; }
 
         //ObservableCollection for storing the number of chat count for each user 
         public ObservableCollection<UserIdVsChatCount> UserIdVsChatCounts { get; set; }
-
+        //debug.assert 
+        //checkbills & free 
+        //Trace  
         //storing the attentive and non attentive users in the meeting 
         private int AttentiveUsers { get; set; }
         private int NonAttentiveUsers { get; set; }
@@ -172,6 +180,9 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             ParticipantsList.Add(user5);
 
 
+            UserCountList = new ChartValues<int>();
+            TimeStampsList = new ObservableCollection<string>();
+
 
             //initialising UserCountVsTimeStamps
             UserCountVsTimeStamps = new ObservableCollection<UserCountVsTimeStamp>();
@@ -179,8 +190,15 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             UserCountVsTimeStamps.Add(new UserCountVsTimeStamp(20, 20));
             UserCountVsTimeStamps.Add(new UserCountVsTimeStamp(30, 25));
             UserCountVsTimeStamps.Add(new UserCountVsTimeStamp(40, 30));
+            UserCountList.Add(10);
+            UserCountList.Add(20);
+            UserCountList.Add(30);
+            UserCountList.Add(40);
 
-
+            TimeStampsList.Add("15");
+            TimeStampsList.Add("20");
+            TimeStampsList.Add("25");
+            TimeStampsList.Add("35");
 
 
             //initialising the uservschatcount collection 
