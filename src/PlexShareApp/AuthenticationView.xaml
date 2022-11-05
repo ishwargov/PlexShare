@@ -1,0 +1,18 @@
+﻿<Window x:Class="PlexShareApp.AuthenticationView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PlexShareApp"
+        mc:Ignorable="d"
+        WindowStartupLocation = "CenterScreen"
+        Title="AuthenticationView" Height="700" Width="1100">
+
+    <Grid Background="Blue">
+        <Frame x:Name="AuthView" NavigationUIVisibility="Hidden" />
+        <StackPanel>
+            <Button Width="100" Click="Home_Click">Go To Home Page</Button>
+        </StackPanel>
+        
+    </Grid>
+</Window>

@@ -30,17 +30,17 @@ namespace PlexShareScreenshare.Client
     {
         // The queue in which the image will be enqueued after
         // processing it
-        private readonly Queue<Frame> ProcessedFrame;
+        private readonly Queue<Frame> _processedFrame;
 
         // Processing task
-        private Task? ProcessorTask;
+        private Task? _processorTask;
 
         // The screen capturer object
-        private readonly ScreenCapturer Capturer;
+        private readonly ScreenCapturer _capturer;
 
         // Old and the new resolutions 
-        private Tuple<int, int> OldRes { get; set; }
-        public Tuple<int, int> NewRes { private get; set; }
+        private Tuple<int, int> OldRes;
+        private Tuple<int, int> NewRes { get; set; }
 
         // Tokens added to be able to stop the thread execution
         private CancellationTokenSource? tokenSource;
@@ -56,8 +56,8 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         public ScreenProcessor(ScreenCapturer Capturer)
         {
-            this.Capturer = Capturer;
-            ProcessedFrame = new Queue<Frame>();
+            this._capturer = Capturer;
+            _processedFrame = new Queue<Frame>();
             OldRes = new Tuple<int, int>(720, 1280);
             NewRes = new Tuple<int, int>(720, 1280);
             prevImage = new Bitmap(720, 1280);
@@ -68,10 +68,10 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         public Frame GetImage()
         {
-            while (ProcessedFrame.Count != 0) Thread.Sleep(100);
-            lock (ProcessedFrame)
+            while (_processedFrame.Count != 0) Thread.Sleep(100);
+            lock (_processedFrame)
             {
-                return ProcessedFrame.Dequeue();
+                return _processedFrame.Dequeue();
             }
         }
         /// <summary>
@@ -101,7 +101,7 @@ namespace PlexShareScreenshare.Client
             BitmapData bitmapData1 = processedBitmap1.LockBits(new Rectangle(0, 0, processedBitmap1.Width, processedBitmap1.Height), ImageLockMode.ReadWrite, processedBitmap1.PixelFormat);
 
             // Flattening of image into an array
-            int bytesPerPixel1 = Bitmap.GetPixelFormatSize(processedBitmap1.PixelFormat) / 8;
+            // int bytesPerPixel1 = Bitmap.GetPixelFormatSize(processedBitmap1.PixelFormat) / 8;
             int byteCount1 = bitmapData1.Stride * processedBitmap1.Height;
             byte[] pixels1 = new byte[byteCount1];
             IntPtr ptrFirstPixel1 = bitmapData1.Scan0;
@@ -142,19 +142,19 @@ namespace PlexShareScreenshare.Client
             return tmp;
         }
         /// <summary>
-        /// main function which will run in loop and capture the image
-        /// calculate the image bits differences and 
+        /// Main function which will run in loop and capture the image
+        /// calculate the image bits differences and append it in the array
         /// </summary>
         private void Processing()
         {
             while (true)
             {
-                Bitmap img = Capturer.GetImage();
+                Bitmap img = _capturer.GetImage();
                 img = Compress(img);
                 ImageDiffList DiffList = ProcessUsingLockbits(prevImage, img);
-                lock (ProcessedFrame)
+                lock (_processedFrame)
                 {
-                    ProcessedFrame.Enqueue(new Frame(NewRes, DiffList));
+                    _processedFrame.Enqueue(new Frame(NewRes, DiffList));
                 }
                 prevImage = img;
             }
@@ -169,8 +169,8 @@ namespace PlexShareScreenshare.Client
         {
             tokenSource = new CancellationTokenSource();
             token = tokenSource.Token;
-            ProcessorTask = new Task(Processing, token);
-            ProcessorTask.Start();
+            _processorTask = new Task(Processing, token);
+            _processorTask.Start();
         }
 
         /// <summary>
@@ -200,7 +200,7 @@ namespace PlexShareScreenshare.Client
         public void StopProcessing()
         {
             tokenSource?.Cancel();
-            ProcessedFrame.Clear();
+           _processedFrame.Clear();
         }
 
         /// <summary>

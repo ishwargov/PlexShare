@@ -4,6 +4,7 @@
 /// This file contains the class definition of SendQueueListenerClient.
 /// </summary>
 
+using Networking.Queues;
 using System;
 using System.Diagnostics;
 using System.Net.Sockets;
@@ -20,17 +21,17 @@ namespace Networking
 		private volatile bool _threadRun;
 
 		// variable to store the send queue
-		private readonly IQueue _queue;
+		private readonly SendingQueues _queue;
 
 		// variable to store the socket
-		private readonly TcpCleint _socket;
+		private readonly TcpClient _socket;
 
 		/// <summary>
 		/// It is the Constructor which initializes the queue and socket
 		/// </summary>
 		/// <param name="queue"> The the send queue. </param>
 		/// <param name="socket"> The socket to send the data. </param>
-		public SendQueueListenerClient(IQueue queue, TcpCleint socket)
+		public SendQueueListenerClient(SendingQueues queue, TcpClient socket)
 		{
 			_queue = queue;
 			_socket = socket;
@@ -74,7 +75,7 @@ namespace Networking
 
 					/// we put flag string at the start and end of the packet, and we need to put
 					/// escape string before the flag and escape strings which are in the packet
-					var pkt = packet.ModuleIdentifier + ":" + packet.SerializedData;
+					var pkt = packet.getModuleOfPacket() + ":" + packet.getSerializedData();
 					pkt = pkt.Replace("[ESC]", "[ESC][ESC]");
 					pkt = pkt.Replace("[FLAG]", "[ESC][FLAG]");
 					pkt = "[FLAG]" + pkt + "[FLAG]";
@@ -82,9 +83,9 @@ namespace Networking
 					try
 					{
 						_socket.Client.Send(bytes);
-						Trace.WriteLine($"[Networking] Data sent from client to server by module {packet.ModuleIdentifier}.");
+						Trace.WriteLine($"[Networking] Data sent from client to server by module {packet.getModuleOfPacket()}.");
 					}
-					catch (exception e)
+					catch (Exception e)
 					{
 						Trace.WriteLine($"[Networking] Error in SendQueueListenerClient thread: {e.Message}");
 					}
