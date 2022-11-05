@@ -4,9 +4,10 @@
 /// This file contains the factory for the communicator which used factory design pattern.
 /// </summary>
 
+using PlexShareNetwork.Communication;
 using System;
 
-namespace Networking
+namespace PlexShareNetwork
 {
 	public static class CommunicationFactory
 	{
