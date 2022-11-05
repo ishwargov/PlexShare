@@ -204,7 +204,10 @@ namespace PlexShareNetwork.Sockets
                     return clientIdToClientSocket.Key;
                 }
             }
-			return null;
+            // this null will never be returned because we got the socket from the
+            // _clientIdToClientSocketMap map only, so we will find the socket in
+            // this map in the above for loop
+            return null;
 		}
 	}
 }
