@@ -1,5 +1,4 @@
-﻿/// <author>Hrishi Raaj singh Chauhan</author>
-/// <created>01/11/2022</created>
+﻿
 /// <summary>
 ///     It contains the SummaryPersistence class
 ///     It implements the ISummaryPersistence interface functions.
