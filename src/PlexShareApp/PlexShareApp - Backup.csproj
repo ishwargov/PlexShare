@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -18,10 +18,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <None Remove="Resources\497-4973038_profile-picture-circle-png-transparent-png.png" />
-	  <None Remove="Resources\time_background.jpg" />
-	  <None Remove="Resources\[removal.ai]_tmp-635051040cac5.png" />
-	  <None Remove="Resources\[removal.ai]_tmp-6350549d077ef.png" />
 	  <Compile Remove="Icons\**" />
 	  <EmbeddedResource Remove="Icons\**" />
 	  <None Remove="Icons\**" />
@@ -29,26 +25,22 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Resource Include="Resources\497-4973038_profile-picture-circle-png-transparent-png.png" />
-	  <Resource Include="Resources\time_background.jpg" />
-	  <Resource Include="Resources\[removal.ai]_tmp-635051040cac5.png" />
-	  <Resource Include="Resources\[removal.ai]_tmp-6350549d077ef.png" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <None Remove="Resources\dashboard.png" />
-	  <None Remove="Resources\DashboardFavi.png" />
-	  <None Remove="Resources\DashFavi.png" />
 	  <None Remove="Resources\GoogleSignIn" />
 	  <None Remove="Resources\UserProfilePicture.png" />
+	  <None Remove="Icons\dashboard.png" />
+	  <None Remove="Icons\DashboardFavi.png" />
+	  <None Remove="Icons\GoogleSignIn" />
   </ItemGroup>
 
 	<ItemGroup>
-	  <Resource Include="Resources\dashboard.png" />
-	  <Resource Include="Resources\DashboardFavi.png" />
-	  <Resource Include="Resources\DashFavi.png" />
 	  <Resource Include="Resources\GoogleSignIn" />
 	  <Resource Include="Resources\UserProfilePicture.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Resource Include="Icons\dashboard.png" />
+	  <Resource Include="Icons\DashboardFavi.png" />
+	  <Resource Include="Icons\GoogleSignIn" />
 	</ItemGroup>
 
 	<ItemGroup>

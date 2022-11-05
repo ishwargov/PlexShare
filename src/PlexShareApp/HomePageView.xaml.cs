@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,10 +21,7 @@ namespace PlexShareApp
     /// </summary>
     public partial class HomePageView : Window
     {
-        //string Name = "";
-        //string Email = "";
-        //string ImageLocation = "";
-        public HomePageView()
+        public HomePageView(string name, string email, string imageLocation)
         {
             InitializeComponent();
             DispatcherTimer timer = new DispatcherTimer(new TimeSpan(0, 0, 1), DispatcherPriority.Normal, delegate
@@ -44,5 +42,14 @@ namespace PlexShareApp
                 this.Name_block.Foreground = Brushes.Red;
             }
         }
+
+        private void ToMainScreen(object sender, RoutedEventArgs e)
+        {
+
+            MainScreenView mainScreenView = new MainScreenView();
+            mainScreenView.Show();
+            this.Close();
+        }
+
     }
 }
