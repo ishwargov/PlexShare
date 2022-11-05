@@ -4,6 +4,7 @@
 /// </summary>
 
 using PlexShareNetwork.Communication;
+using PlexShareNetwork.Queues;
 using System;
 using System.Dynamic;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace PlexShareNetwork
 		public static ICommunicator NewServerCommunicator => CommunicationFactory.GetCommunicator(false, true);
 
 		// Used to generate random strings
-		private static Random random = new Random();
+		private static readonly Random random = new();
 
 		/// <summary>
 		/// Returns a randomly generated alphanumeric string
@@ -34,6 +35,13 @@ namespace PlexShareNetwork
 			return new string(Enumerable.Repeat(chars, length)
 			.Select(s => s[random.Next(s.Length)]).ToArray());
 		}
+
+        public static void AssertPacketEquality(Packet packet1, Packet packet2)
+        {
+            Assert.Equal(packet1.serializedData, packet2.serializedData);
+            Assert.Equal(packet1.destination, packet2.destination);
+            Assert.Equal(packet1.moduleOfPacket, packet2.moduleOfPacket);
+        }
 	}
 
 	/// <summary>
@@ -169,5 +177,4 @@ namespace PlexShareNetwork
 			Communicator = NetworkingGlobals.NewServerCommunicator;
 		}
 	}
-
 }

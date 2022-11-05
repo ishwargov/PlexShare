@@ -54,9 +54,7 @@ namespace PlexShareNetwork.Sockets.Tests
             Assert.True(_receivingQueue.Size() == 1);
 
             Packet receivedPacket = _receivingQueue.Dequeue();
-			Assert.Equal(sendPacket.serializedData, receivedPacket.serializedData);
-            Assert.Equal(sendPacket.destination, receivedPacket.destination);
-            Assert.Equal(sendPacket.moduleOfPacket, receivedPacket.moduleOfPacket);
+            NetworkingGlobals.AssertPacketEquality(sendPacket, receivedPacket);
 		}
 
 		[Fact]
@@ -73,9 +71,7 @@ namespace PlexShareNetwork.Sockets.Tests
             Assert.True(_receivingQueue.Size() == 1);
 
             Packet receivedPacket = _receivingQueue.Dequeue();
-			Assert.Equal(sendPacket.serializedData, receivedPacket.serializedData);
-            Assert.Equal(sendPacket.destination, receivedPacket.destination);
-            Assert.Equal(sendPacket.moduleOfPacket, receivedPacket.moduleOfPacket);
+            NetworkingGlobals.AssertPacketEquality(sendPacket, receivedPacket);
 		}
 
 		[Fact]
@@ -91,16 +87,14 @@ namespace PlexShareNetwork.Sockets.Tests
 
 			while (_receivingQueue.Size() < 10)
 			{
-				Thread.Sleep(1000);
+				Thread.Sleep(100);
 			}
             Assert.True(_receivingQueue.Size() == 10);
 
             for (var i = 0; i < 10; i++)
 			{
 				Packet receivedPacket = _receivingQueue.Dequeue();
-                Assert.Equal(sendPackets[i].serializedData, receivedPacket.serializedData);
-                Assert.Equal(sendPackets[i].destination, receivedPacket.destination);
-                Assert.Equal(sendPackets[i].moduleOfPacket, receivedPacket.moduleOfPacket);
+                NetworkingGlobals.AssertPacketEquality(sendPackets[i], receivedPacket);
             }
 		}
 
@@ -117,16 +111,14 @@ namespace PlexShareNetwork.Sockets.Tests
 
             while (_receivingQueue.Size() < 10)
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(100);
             }
             Assert.True(_receivingQueue.Size() == 10);
 
             for (var i = 0; i < 10; i++)
             {
                 Packet receivedPacket = _receivingQueue.Dequeue();
-                Assert.Equal(sendPackets[i].serializedData, receivedPacket.serializedData);
-                Assert.Equal(sendPackets[i].destination, receivedPacket.destination);
-                Assert.Equal(sendPackets[i].moduleOfPacket, receivedPacket.moduleOfPacket);
+                NetworkingGlobals.AssertPacketEquality(sendPackets[i], receivedPacket);
             }
         }
 
@@ -143,16 +135,14 @@ namespace PlexShareNetwork.Sockets.Tests
 
             while (_receivingQueue.Size() < 10)
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(100);
             }
             Assert.True(_receivingQueue.Size() == 10);
 
             for (var i = 0; i < 10; i++)
             {
                 Packet receivedPacket = _receivingQueue.Dequeue();
-                Assert.Equal(sendPackets[i].serializedData, receivedPacket.serializedData);
-                Assert.Equal(sendPackets[i].destination, receivedPacket.destination);
-                Assert.Equal(sendPackets[i].moduleOfPacket, receivedPacket.moduleOfPacket);
+                NetworkingGlobals.AssertPacketEquality(sendPackets[i], receivedPacket);
             }
         }
 
@@ -169,16 +159,14 @@ namespace PlexShareNetwork.Sockets.Tests
 
             while (_receivingQueue.Size() < 10)
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(100);
             }
             Assert.True(_receivingQueue.Size() == 10);
 
             for (var i = 0; i < 10; i++)
             {
                 Packet receivedPacket = _receivingQueue.Dequeue();
-                Assert.Equal(sendPackets[i].serializedData, receivedPacket.serializedData);
-                Assert.Equal(sendPackets[i].destination, receivedPacket.destination);
-                Assert.Equal(sendPackets[i].moduleOfPacket, receivedPacket.moduleOfPacket);
+                NetworkingGlobals.AssertPacketEquality(sendPackets[i], receivedPacket);
             }
         }
 
@@ -195,16 +183,14 @@ namespace PlexShareNetwork.Sockets.Tests
 
             while (_receivingQueue.Size() < 10)
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(100);
             }
             Assert.True(_receivingQueue.Size() == 10);
 
             for (var i = 0; i < 10; i++)
             {
                 Packet receivedPacket = _receivingQueue.Dequeue();
-                Assert.Equal(sendPackets[i].serializedData, receivedPacket.serializedData);
-                Assert.Equal(sendPackets[i].destination, receivedPacket.destination);
-                Assert.Equal(sendPackets[i].moduleOfPacket, receivedPacket.moduleOfPacket);
+                NetworkingGlobals.AssertPacketEquality(sendPackets[i], receivedPacket);
             }
         }
     }

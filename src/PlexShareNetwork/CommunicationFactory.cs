@@ -11,8 +11,8 @@ namespace PlexShareNetwork
 {
 	public static class CommunicationFactory
 	{
-		private static readonly Lazy<ICommunicator> _clientCommunicator = new(() => new CommunicatorClient());
-		private static readonly Lazy<ICommunicator> _serverCommunicator = new(() => new CommunicatorServer());
+		private static readonly CommunicatorClient _clientCommunicator = new();
+		private static readonly CommunicatorServer _serverCommunicator = new();
 
 		/// <summary>
 		/// 
@@ -29,9 +29,9 @@ namespace PlexShareNetwork
 			}
 			if (isClient)
 			{
-				return _clientCommunicator.Value;
+				return _clientCommunicator;
 			}
-			return _serverCommunicator.Value;
+			return _serverCommunicator;
 		}
 	}
 }
