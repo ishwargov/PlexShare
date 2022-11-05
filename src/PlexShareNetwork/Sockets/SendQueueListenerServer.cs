@@ -19,18 +19,18 @@ namespace PlexShareNetwork.Sockets
 	public class SendQueueListenerServer
 	{
 		// the thread which will be running
-		private Thread _thread;
+		private readonly Thread _thread;
 		// boolean to tell whether thread is running or stopped
 		private volatile bool _threadRun;
 
 		// variable to store the send queue
-		private readonly SendingQueues _queue;
+		private readonly SendingQueue _sendingQueue;
 
 		// variable to store the dictionary which maps clientIds to their respective sockets
-		private readonly Dictionary<string, TcpClient> _clientIdToSocket;
+		private readonly Dictionary<string, TcpClient> _clientIdToClientSocketMap;
 
 		// variable to store the dictionary which maps module identifiers to their respective notification handlers
-		private readonly Dictionary<string, INotificationHandler> _subscribedModules;
+		private readonly Dictionary<string, INotificationHandler> _moduleToNotificationHandlerMap;
 
         // serializer object to serialize the packet to send
         readonly Serializer _serializer = new();
@@ -38,18 +38,19 @@ namespace PlexShareNetwork.Sockets
         /// <summary>
         /// It is the Constructor which initializes the queue, clientIdSocket and subscribedModules
         /// </summary>
-        /// <param name="queue"> The the send queue. </param>
-        /// <param name="clientIdToSocket"> The dictionary which maps clientIds to their respective sockets. </param>
-        /// <param name="subscribedModules">
+        /// <param name="sendingQueue"> The sending queue. </param>
+        /// <param name="clientIdToClientSocketMap"> The map from clientIds to their respective sockets. </param>
+        /// <param name="moduleToNotificationHandlerMap">
         /// The dictionary which maps module identifiers to their respective notification handlers.
         /// </param>
-        public SendQueueListenerServer(SendingQueues queue, Dictionary<string, TcpClient> clientIdToSocket,
-			Dictionary<string, INotificationHandler> subscribedModules)
+        public SendQueueListenerServer(SendingQueue sendingQueue, Dictionary<string, TcpClient> clientIdToClientSocketMap,
+			Dictionary<string, INotificationHandler> moduleToNotificationHandlerMap)
 		{
-			_queue = queue;
-			_clientIdToSocket = clientIdToSocket;
-			_subscribedModules = subscribedModules;
-		}
+            _sendingQueue = sendingQueue;
+			_clientIdToClientSocketMap = clientIdToClientSocketMap;
+			_moduleToNotificationHandlerMap = moduleToNotificationHandlerMap;
+			_thread = new Thread(Listen); // the thread is only created and not started here
+        }
 
 		/// <summary>
 		/// This function starts the thread.
@@ -57,8 +58,8 @@ namespace PlexShareNetwork.Sockets
 		/// <returns> void </returns>
 		public void Start()
 		{
-			_threadRun = true;
-			_thread = new Thread(Listen);
+            Trace.WriteLine("[Networking] SendQueueListenerServer.Start() function called.");
+            _threadRun = true;
 			_thread.Start();
 			Trace.WriteLine("[Networking] SendQueueListenerServer thread started.");
 		}
@@ -69,8 +70,9 @@ namespace PlexShareNetwork.Sockets
 		/// <returns> void </returns>
 		public void Stop()
 		{
-			_threadRun = false;
-			Trace.WriteLine("[Networking] SendQueueListenerServer thread stopped.");
+            Trace.WriteLine("[Networking] SendQueueListenerServer.Stop() function called.");
+            _threadRun = false;
+            Trace.WriteLine("[Networking] SendQueueListenerServer thread stopped.");
 		}
 
 		/// <summary>
@@ -81,114 +83,110 @@ namespace PlexShareNetwork.Sockets
 		/// <returns> void </returns>
 		private void Listen()
 		{
-			while (_threadRun)
+            Trace.WriteLine("[Networking] SendQueueListenerServer.Listen() function called.");
+            while (_threadRun)
 			{
-				_queue.WaitForPacket();
-				while (!_queue.IsEmpty())
+                _sendingQueue.WaitForPacket();
+				Packet packet = _sendingQueue.Dequeue();
+                string sendString = "BEGIN" + _serializer.Serialize(packet) + "END";
+
+                // get the socket corresponding to the destination in the packet
+                var clientSockets = GetClientIdToSocket(packet.destination);
+				foreach (var clientSocket in clientSockets)
 				{
-					Packet packet = _queue.Dequeue();
-                    string sendString = "BEGIN" + _serializer.Serialize(packet) + "END";
-
-                    // get the socket corresponding to the destination in the packet
-                    var sockets = DestinationToSocket(packet);
-					foreach (var socket in sockets)
+					var bytes = Encoding.ASCII.GetBytes(sendString);
+					try
 					{
-						var bytes = Encoding.ASCII.GetBytes(sendString);
-						try
+						// if client is connected then we send the data
+						if (!(clientSocket.Client.Poll(1, SelectMode.SelectRead) && clientSocket.Client.Available == 0))
 						{
-							var client = socket.Client;
-
-							// if client is connected then we can send the data
-							if (!(client.Poll(1, SelectMode.SelectRead) && client.Available == 0))
-							{
-								client.Send(bytes);
-								Trace.WriteLine($"[Networking] Data sent from server to client by {packet.moduleOfPacket}.");
-							}
-							else // else the client is disconnected so we try to reconnect 3 times
-							{
-								Trace.WriteLine("[Networking] Client lost connection. Retrying ...");
-
-								// the work performed by a Task object typically executes asynchronously on a
-								// thread pool thread rather than synchronously on the main application thread
-								_ = Task.Run(() =>
-								{
-									var socketTry = socket;
-									var bytesTry = bytes;
-									var clientTry = socketTry.Client;
-									var isSent = false;
-									try
-									{
-										// try to reconnect 3 times
-										for (var i = 0; i < 3; i++)
-										{
-											Thread.Sleep(100); // the time is in milliseconds
-
-											// check if the client is now connected and send the data
-											if (!(clientTry.Poll(1, SelectMode.SelectRead) && clientTry.Available == 0))
-											{
-												Trace.WriteLine("[Networking] Client connected.");
-												clientTry.Send(bytesTry);
-												Trace.WriteLine($"[Networking] Data sent from server to client by {packet.moduleOfPacket}.");
-												isSent = true; // after sending the data we can set isSent to true
-												break;
-											}
-										}
-
-										// if data was not send even after trying 3 more times then client is disconnected
-										if (isSent == false)
-										{
-											Trace.WriteLine("[Networking] Client disconnected. Removing client ...");
-											var clientId = SocketToClientId(socketTry);
-
-											// call the OnClientLeft() handler of each subscribed module
-											foreach (var module in _subscribedModules)
-											{
-												if (clientId != null)
-												{
-													module.Value.OnClientLeft(clientId);
-												}
-												else
-												{
-													Trace.WriteLine("[Networking] Client ID not present.");
-												}
-											}
-										}
-									}
-									catch (Exception e)
-									{
-										Trace.WriteLine($"[Networking] Error in SendQueueListenerServer thread: {e.Message}");
-
-									}
-								});
-							}
+                            clientSocket.Client.Send(bytes);
+							Trace.WriteLine($"[Networking] Data sent from server to client by module: {packet.moduleOfPacket}.");
 						}
-						catch (Exception e)
+						else // else the client is disconnected so we try to reconnect
 						{
-							Trace.WriteLine($"[Networking] Error in SendQueueListenerServer thread: {e.Message}");
+							Trace.WriteLine("[Networking] Client got disconnected. Trying to reconnect...");
+                            Task.Run(() => TryReconnectingToClient(clientSocket, bytes, packet));
 						}
+					}
+					catch (Exception e)
+					{
+						Trace.WriteLine($"[Networking] Error in SendQueueListenerServer thread: {e.Message}");
 					}
 				}
 			}
 		}
 
-		/// <summary>
-		/// This function gets the destination from the packet and returns the respective socket for that client.
-		/// If the destination is null then its a broadcast packet, then it returns sockets of all clients.
+        /// <summary>
+		/// This function tries to connect to the client 3 times and if connected then send the data
+		/// to the client, otherwise it notifies all other modules that the client got disconnected.
 		/// </summary>
-		/// <param name="packet"> The packet which contains the destination. </param>
-		/// <returns> Set of sockets. </returns>
-		private HashSet<TcpClient> DestinationToSocket(Packet packet)
+        ///  /// <param name="clientSocket"> The socket object to send to client. </param>
+        /// <param name="bytes"> The data that is to be sent. </param>
+        /// <param name="packet"> The packet to check which module sent the data. </param>
+		/// <returns> void </returns>
+        private void TryReconnectingToClient(TcpClient clientSocket, byte[] bytes, Packet packet)
+        {
+            Trace.WriteLine("[Networking] SendQueueListenerServer.TryReconnectingToClient() function called.");
+            try
+            {
+                var isSent = false;
+                // try to reconnect 3 times
+                for (var i = 0; i < 3 && !isSent; i++)
+                {
+                    Thread.Sleep(100);
+
+                    // check if the client is now connected and send the data
+                    if (!(clientSocket.Client.Poll(1, SelectMode.SelectRead) && clientSocket.Client.Available == 0))
+                    {
+                        Trace.WriteLine("[Networking] Client reconnected.");
+                        clientSocket.Client.Send(bytes);
+                        Trace.WriteLine($"[Networking] Data sent from server to client by {packet.moduleOfPacket}.");
+                        isSent = true;
+                    }
+                }
+
+                // if data was not send even after trying 3 times then client is disconnected
+                if (!isSent)
+                {
+                    Trace.WriteLine("[Networking] Client has left. Removing client...");
+                    var clientId = SocketToClientId(clientSocket);
+                    foreach (var moduleToNotificationHandler in _moduleToNotificationHandlerMap)
+                    {
+                        moduleToNotificationHandler.Value.OnClientLeft(clientId);
+                        Trace.WriteLine($"[Networking] Notifed module:{moduleToNotificationHandler.Key} that the client has left.");
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine($"[Networking] Error in SendQueueListenerServer thread: {e.Message}");
+
+            }
+        }
+
+        /// <summary>
+        /// This function returns the socket for the given destination/ClientId. If destination 
+        /// is null then destination is broadcast, then it returns sockets of all clients.
+        /// </summary>
+        /// <param name="destination"> It is the client ID for unicast and null for boradcast. </param>
+        /// <returns> Set of client sockets. </returns>
+        private HashSet<TcpClient> GetClientIdToSocket(string destination)
 		{
-			var sockets = new HashSet<TcpClient>();
-			if (packet.destination == null)
+            Trace.WriteLine("[Networking] SendQueueListenerServer.DestinationToSocket() function called.");
+            var clientSockets = new HashSet<TcpClient>();
+			if (destination == null)
 			{
-				foreach (var keyValue in _clientIdToSocket) sockets.Add(keyValue.Value);
+                foreach (var clientIdToClientSocket in _clientIdToClientSocketMap)
+                {
+                    clientSockets.Add(clientIdToClientSocket.Value);
+                }
 			}
 			else
 			{
-				sockets.Add(_clientIdToSocket[packet.destination]);
+                clientSockets.Add(_clientIdToClientSocketMap[destination]);
 			}
-			return sockets;
+			return clientSockets;
 		}
 
 		/// <summary>
@@ -198,14 +196,15 @@ namespace PlexShareNetwork.Sockets
 		/// <returns> ClientId string. </returns>
 		private string SocketToClientId(TcpClient socket)
 		{
-			foreach (var clientId in _clientIdToSocket.Keys)
-			{
-				if (_clientIdToSocket[clientId] == socket)
-				{
-					return clientId;
-				}
-			}
+            Trace.WriteLine("[Networking] SendQueueListenerServer.SocketToClientId() function called.");
+            foreach (var clientIdToClientSocket in _clientIdToClientSocketMap)
+            {
+                if (clientIdToClientSocket.Value == socket)
+                {
+                    return clientIdToClientSocket.Key;
+                }
+            }
 			return null;
-		}	
+		}
 	}
 }

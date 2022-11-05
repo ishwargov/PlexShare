@@ -12,7 +12,7 @@ namespace PlexShareNetwork.Queues.Tests
 {
     public class SendingQueuesTests
     {
-        private SendingQueues _sendingQueues = new SendingQueues();
+        private SendingQueue _sendingQueues = new();
 
         [Fact]
         public void EnqueueOnePacketTest()

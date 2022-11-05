@@ -16,7 +16,7 @@ namespace PlexShareNetwork.Sockets.Tests
 {
 	public class SendQueueListenerServerTest
 	{
-		private readonly SendingQueues _sendQueue = new();
+		private readonly SendingQueue _sendQueue = new();
         private ReceivingQueue _receiveQueue1 = new();
         private ReceivingQueue _receiveQueue2 = new();
 		private readonly Machine _server = new FakeServer();
@@ -86,7 +86,7 @@ namespace PlexShareNetwork.Sockets.Tests
 		[Fact]
 		public void LargeSizePacketUnicastTest()
 		{
-            Packet sendPacket = new Packet (NetworkingGlobals.RandomString(4000), "Client1 ID", "Test Module");
+            Packet sendPacket = new Packet (NetworkingGlobals.RandomString(1000), "Client1 ID", "Test Module");
 			_sendQueue.Enqueue(sendPacket);
 
 			while (_receiveQueue1.IsEmpty())
@@ -151,7 +151,7 @@ namespace PlexShareNetwork.Sockets.Tests
         [Fact]
         public void LargeSizePacketBroadcastTest()
         {
-            Packet sendPacket = new(NetworkingGlobals.RandomString(4000), null, "Test Module");
+            Packet sendPacket = new(NetworkingGlobals.RandomString(1000), null, "Test Module");
             _sendQueue.Enqueue(sendPacket);
 
             while (_receiveQueue1.IsEmpty() || _receiveQueue2.IsEmpty())

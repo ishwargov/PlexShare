@@ -15,7 +15,7 @@ namespace PlexShareNetwork.Sockets.Tests
 {
 	public class SendQueueListenerClientTest
 	{
-		private readonly SendingQueues _sendQueue = new();
+		private readonly SendingQueue _sendingQueue = new();
 		private readonly ReceivingQueue _receivingQueue = new();
 		private readonly Machine _server = new FakeServer();
 		private readonly SendQueueListenerClient _sendQueueListenerClient;
@@ -35,20 +35,21 @@ namespace PlexShareNetwork.Sockets.Tests
 			Task t1 = Task.Run(() => { _clientSocket.Connect(IP, port); });
             Task t2 = Task.Run(() => { _serverSocket = serverSocket.AcceptTcpClient(); });
 			Task.WaitAll(t1, t2);
-			_sendQueue.RegisterModule("Test Module", true);
-			_sendQueueListenerClient = new SendQueueListenerClient(_sendQueue, _clientSocket);
+            _sendingQueue.RegisterModule("Test Module1", true);
+            _sendingQueue.RegisterModule("Test Module2", true);
+            _sendQueueListenerClient = new(_sendingQueue, _clientSocket);
 			_sendQueueListenerClient.Start();
-			_socketListener = new SocketListener(_receivingQueue, _serverSocket);
+			_socketListener = new(_receivingQueue, _serverSocket);
 			_socketListener.Start();
 		}
 
 		[Fact]
 		public void SinglePacketSendTest()
 		{
-            Packet sendPacket = new("Test string", "To Server", "Test Module");
-			_sendQueue.Enqueue(sendPacket);
+            Packet sendPacket = new("Test string", "To Server", "Test Module1");
+            _sendingQueue.Enqueue(sendPacket);
 
-			while (_receivingQueue.IsEmpty())
+			while (_receivingQueue.Size() < 1)
 			{
                 Thread.Sleep(100);
             }
@@ -63,10 +64,10 @@ namespace PlexShareNetwork.Sockets.Tests
 		[Fact]
 		public void LargeSizePacketSendTest()
 		{
-            Packet sendPacket = new(NetworkingGlobals.RandomString(5000), "To Server", "Test Module");
-			_sendQueue.Enqueue(sendPacket);
+            Packet sendPacket = new(NetworkingGlobals.RandomString(1000), "To Server", "Test Module1");
+            _sendingQueue.Enqueue(sendPacket);
 
-			while (_receivingQueue.IsEmpty())
+			while (_receivingQueue.Size() < 1)
 			{
                 Thread.Sleep(100);
             }
@@ -79,27 +80,89 @@ namespace PlexShareNetwork.Sockets.Tests
 		}
 
 		[Fact]
-		public void MultiplePacketSendTest()
+		public void MultiplePacketSendFromSameModuleTest()
 		{
-			for (var i = 1; i <= 10; i++)
+            Packet[] sendPackets = new Packet[10];
+            for (var i = 0; i < 10; i++)
 			{
-                Packet sendPacket = new("Test string" + i, "To Server", "Test Module");
-				_sendQueue.Enqueue(sendPacket);
+                sendPackets[i] = new Packet("Test string" + i, "To Server", "Test Module1");
+                _sendingQueue.Enqueue(sendPackets[i]);
 			}
 
-			while (_receivingQueue.Size() != 10)
+			while (_receivingQueue.Size() < 10)
 			{
 				Thread.Sleep(100);
 			}
             Assert.True(_receivingQueue.Size() == 10);
 
-            for (var i = 1; i <= 10; i++)
+            for (var i = 0; i < 10; i++)
 			{
                 Packet receivedPacket = _receivingQueue.Dequeue();
-				Assert.Equal("Test string" + i, receivedPacket.serializedData);
-                Assert.Equal("To Server", receivedPacket.destination);
-                Assert.Equal("Test Module", receivedPacket.moduleOfPacket);
+                Assert.Equal(sendPackets[i].serializedData, receivedPacket.serializedData);
+                Assert.Equal(sendPackets[i].destination, receivedPacket.destination);
+                Assert.Equal(sendPackets[i].moduleOfPacket, receivedPacket.moduleOfPacket);
             }
 		}
-	}
+
+        [Fact]
+        public void MultiplePacketSendFromDifferentModulesTest()
+        {
+            Packet[] sendPackets = new Packet[10];
+            for (var i = 0; i < 10; i++)
+            {
+                sendPackets[i] = new Packet("Test string" + i, "To Server", "Test Module" + (i%2+1));
+                _sendingQueue.Enqueue(sendPackets[i]);
+            }
+
+            while (_receivingQueue.Size() < 10)
+            {
+                Thread.Sleep(100);
+            }
+            Assert.True(_receivingQueue.Size() == 10);
+
+            for (var i = 0; i < 10; i++)
+            {
+                Packet receivedPacket = _receivingQueue.Dequeue();
+                Assert.Equal(sendPackets[i].serializedData, receivedPacket.serializedData);
+                Assert.Equal(sendPackets[i].destination, receivedPacket.destination);
+                Assert.Equal(sendPackets[i].moduleOfPacket, receivedPacket.moduleOfPacket);
+            }
+        }
+
+        [Fact]
+        public void MultipleLargeSizePacketsSendTest()
+        {
+            Packet[] sendPackets = new Packet[10];
+            for (var i = 0; i < 10; i++)
+            {
+                sendPackets[i] = new Packet(NetworkingGlobals.RandomString(1000), "To Server", "Test Module1");
+                _sendingQueue.Enqueue(sendPackets[i]);
+            }
+
+            while (_receivingQueue.Size() < 10)
+            {
+                Thread.Sleep(100);
+            }
+            Assert.True(_receivingQueue.Size() == 10);
+
+            for (var i = 0; i < 10; i++)
+            {
+                Packet receivedPacket = _receivingQueue.Dequeue();
+                Assert.Equal(sendPackets[i].serializedData, receivedPacket.serializedData);
+                Assert.Equal(sendPackets[i].destination, receivedPacket.destination);
+                Assert.Equal(sendPackets[i].moduleOfPacket, receivedPacket.moduleOfPacket);
+            }
+        }
+
+        [Fact]
+        public void PacketSendFromUnregisteredModuleTest()
+        {
+            // packet from an unregistered module should not be sent because
+            // SendingQueue only enqueues packets that are registered
+            Packet sendPacket = new("Test string", "To Server", "Unregistered Module");
+            _sendingQueue.Enqueue(sendPacket);
+            Thread.Sleep(5000);
+            Assert.True(_receivingQueue.Size() == 0);
+        }
+    }
 }

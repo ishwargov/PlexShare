@@ -48,15 +48,6 @@ namespace PlexShareNetwork.Communication
 		public void RemoveClient(string clientId);
 
         /// <summary>
-        /// Client side: Sends data to the server.
-        /// Server side: Broadcasts data to all clients.
-        /// </summary>
-        /// <param name="serializedData"> The serialzed data to be sent over the network. </param>
-        /// <param name="moduleOfPacket"> Module sending the data. </param>
-        /// <returns> void </returns>
-        public void Send(string serializedData, string moduleOfPacket);
-
-        /// <summary>
         /// Function to send data to a specific client given by the destination argument.
         /// This function is to be called only on the server side.
         /// </summary>

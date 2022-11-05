@@ -19,7 +19,7 @@ namespace PlexShareNetwork.Communication
 	public class CommunicatorServer : ICommunicator
 	{
 		// initialize the send queue and receive queue
-		private readonly SendingQueues _sendQueue = new();
+		private readonly SendingQueue _sendQueue = new();
 		private readonly ReceivingQueue _receiveQueue = new();
 
 		// declate the variable of SendQueueListenerClient class
@@ -58,7 +58,9 @@ namespace PlexShareNetwork.Communication
         /// </returns>
         public string Start(string serverIP = null, string serverPort = null)
 		{
-			IPAddress ip = IPAddress.Parse(FindIpAddress());
+            Trace.WriteLine("[Networking] CommunicatorServer.Start() function called.");
+
+            IPAddress ip = IPAddress.Parse(FindIpAddress());
 			int port = FindFreePort(ip);
 			_socket = new TcpListener(IPAddress.Any, port);
 			_socket.Start();
@@ -83,8 +85,9 @@ namespace PlexShareNetwork.Communication
 		/// <returns> void </returns>
 		public void Stop()
 		{
-			_threadRun = false;
+            Trace.WriteLine("[Networking] CommunicatorServer.Stop() function called.");
 
+            _threadRun = false;
 			_socket.Stop();
 
 			foreach (var clientIdToSocketListener in _clientListeners)
@@ -108,7 +111,8 @@ namespace PlexShareNetwork.Communication
 		/// <returns> String IP address </returns>
 		private static string FindIpAddress()
 		{
-			var host = Dns.GetHostEntry(Dns.GetHostName());
+            Trace.WriteLine("[Networking] CommunicatorServer.FindIpAddress() function called.");
+            var host = Dns.GetHostEntry(Dns.GetHostName());
 			foreach (var IP in host.AddressList)
 			{
 				if (IP.AddressFamily == AddressFamily.InterNetwork)
@@ -131,6 +135,7 @@ namespace PlexShareNetwork.Communication
 		/// <returns> The port number </returns>
 		private static int FindFreePort(IPAddress IP)
 		{
+            Trace.WriteLine("[Networking] CommunicatorServer.FindFreePort() function called.");
             TcpListener tcpListener = new(IP, 0);
 			tcpListener.Start();
 			var port = ((IPEndPoint) tcpListener.LocalEndpoint).Port;
@@ -144,7 +149,8 @@ namespace PlexShareNetwork.Communication
 		/// <returns> void </returns>
 		private void AcceptRequest()
 		{
-			while (_threadRun)
+            Trace.WriteLine("[Networking] CommunicatorServer.AcceptRequest() function called.");
+            while (_threadRun)
 			{
 				try
 				{
@@ -207,29 +213,15 @@ namespace PlexShareNetwork.Communication
         }
 
         /// <summary>
-        /// This function broadcasts data to all the clients.
-        /// </summary>
-        /// <param name="serializedData"> The serialzed data to be sent over the network. </param>
-        /// <param name="moduleOfPacket"> Module sneding the data. </param>
-        /// <returns> void </returns>
-        public void Send(string serializedData, string moduleOfPacket)
-		{
-            Packet packet = new(serializedData, null, moduleOfPacket);
-			_sendQueue.Enqueue(packet);
-            Trace.WriteLine($"[Networking] Enqueued packet in send queue of the module : {moduleOfPacket} for destination: broadcast.");
-        }
-
-        /// <summary>
-        /// Function to send data to a specific client given by the destination argument.
-        /// This function is to be called only on the server side.
+        /// Function to send data to a client or all clients form server.
         /// </summary>
         /// <param name="serializedData"> The serialzed data to be sent over the network. </param>
         /// <param name="moduleOfPacket"> Module sending the data. </param>
-        /// <param name="destination"> The destination or client Id to which to send the data. </param>
+        /// <param name="destination"> The destination or client Id to which to send the data. To broadcast give null in detination. </param>
         /// <returns> void </returns>
         public void Send(string serializedData, string moduleOfPacket, string destination)
 		{
-			if (!_clientIdToSocket.ContainsKey(destination))
+			if (!_clientIdToSocket.ContainsKey(destination) && destination != null)
 			{
 				throw new Exception($"[Networking] Sending Falied. Client with ID: {destination} does not exist in the room!");
 			}
