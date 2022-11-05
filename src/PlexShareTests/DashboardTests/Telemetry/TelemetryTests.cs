@@ -4,6 +4,7 @@ using PlexShareDashboard.Dashboard.Server.Telemetry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -31,7 +32,7 @@ namespace PlexShareTests.DashboardTests.Telemetry
 
         [Fact]
         //writing the first test to checking the function CalculateUserCountVsTimeStamp 
-        public void CalculateUserCountVsTimeStamp_ShouldGiveUserCountAtTimeStamp()
+        public void CalculateUserCountVsTimeStamp_ShouldGiveUserCountAtTimeStamp_Simple_Test()
         { 
             //Arrange 
             //first we have to arrange or do the setup 
@@ -67,6 +68,82 @@ namespace PlexShareTests.DashboardTests.Telemetry
 
 
         }
+        [Fact]
+        //Complex test case to check the calculate user count vs time stamp function 
+        public void CalculateUserCountVsTimeStamp_ShouldGiveUserCountAtTimeStamp_Complex_Test()
+        {
+            //Arrange ==> defining the users 
+            UserData user1 = new UserData("Rupesh Kumar", 1);
+            UserData user2 = new UserData("Shubham Raj", 2);
+            UserData user3 = new UserData("Saurabh Kumar", 3);
+            UserData user4 = new UserData("Aditya Agarwal", 4);
+            UserData user5 = new UserData("Hrishi Raaj", 5);
+            UserData user6 = new UserData("user6", 6);
+            UserData user7 = new UserData("user7", 7);
+            UserData user8 = new UserData("user8", 8);
 
+            //defining the session data 
+            SessionData sessionData = new SessionData();
+            //var currTime = new DateTime(2021, 11, 23, 1, 0, 0);
+            DateTime currDateTime1 = new DateTime(2021, 11, 23, 1, 0, 0);
+            DateTime currDateTime2 = new DateTime(2021, 11, 23, 1, 1, 0);
+            DateTime currDateTime3 = new DateTime(2021, 11, 23, 1, 2, 0);
+
+            sessionData.AddUser(user1);
+            sessionData.AddUser(user2);
+            sessionData.AddUser(user3);
+
+            var telemetryInstance = TelemetryFactory.GetTelemetryInstance();
+            telemetryInstance.CalculateUserCountVsTimeStamp(sessionData, currDateTime1);
+            int result1 = telemetryInstance.userCountVsEachTimeStamp[currDateTime1];
+
+            sessionData.AddUser(user4);
+            sessionData.AddUser(user5);
+
+            telemetryInstance.CalculateUserCountVsTimeStamp(sessionData, currDateTime2);
+            int result2 = telemetryInstance.userCountVsEachTimeStamp[currDateTime2];
+
+
+            sessionData.AddUser(user6);
+            sessionData.AddUser(user7);
+            sessionData.AddUser(user8);
+
+            telemetryInstance.CalculateUserCountVsTimeStamp(sessionData, currDateTime3);
+            int result3 = telemetryInstance.userCountVsEachTimeStamp[currDateTime3];
+            
+            
+            bool check1 = false;
+            bool check2 = false;
+            bool check3 = false;
+
+            if (result1 == 3)
+            {
+                check1 = true;
+            }
+
+            if (result2 == 5)
+            {
+                check2 = true;
+            }
+
+            if (result3 == 8)
+            {
+                check3 = true;
+            }
+
+            Assert.True(check1 && check2 && check3);
+
+            //say everything went fine 
+            return;
+        }
+
+
+
+
+        //Testing for calculation of entry time of the users 
+        public void CalculateArrivalExitTimeOfUser_Test_Entry_Time_Calculation()
+        { 
+            //Arrange ==> this 
+        }
     }
 }
