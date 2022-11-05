@@ -14,7 +14,7 @@ namespace PlexShareTests.DashboardTests.Persistence
             var summary = "Unit Testing";
             var textToBeSaved = "Summary : --------- " + Environment.NewLine + summary + Environment.NewLine;
             var response = PersistenceFactory.GetSummaryPersistenceInstance().SaveSummary(summary);
-            var p1 = "_"+ DateTime.Now.ToString("MM/dd/yyyy")+"_"+"Summary";
+            var p1 = "Summary" + "_"+ DateTime.Now.ToString("MM/dd/yyyy");
             var textActuallySaved = File.ReadAllText(Path.Combine(path, p1));
             File.Delete(Path.Combine(path,p1));
 
