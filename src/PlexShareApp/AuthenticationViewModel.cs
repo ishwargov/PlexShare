@@ -224,7 +224,7 @@ public class AuthenticationViewModel
     void DownloadImage(string url)
     {
         imageName = "UserProfilePicture.png";
-        string localFileName = "../../../../Resources/" + imageName;
+        string localFileName = "../../../Resources/" + imageName;
         WebClient webClient = new WebClient();
         webClient.DownloadFile(url, localFileName);
     }

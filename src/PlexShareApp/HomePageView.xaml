@@ -10,7 +10,7 @@
     <Grid Background="Red">
         <Frame x:Name="HomePage" NavigationUIVisibility="Hidden" />
         <StackPanel>
-            <Button Click="toMainScreen">Click to Main Screen</Button>
+            <Button Click="ToMainScreen">Click to Main Screen</Button>
         </StackPanel>
     </Grid>
 </Window>

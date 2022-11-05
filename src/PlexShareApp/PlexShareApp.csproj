@@ -25,22 +25,19 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Resources\dashboard.png" />
+	  <None Remove="Resources\DashboardFavi.png" />
+	  <None Remove="Resources\DashFavi.png" />
 	  <None Remove="Resources\GoogleSignIn" />
 	  <None Remove="Resources\UserProfilePicture.png" />
-	  <None Remove="Icons\dashboard.png" />
-	  <None Remove="Icons\DashboardFavi.png" />
-	  <None Remove="Icons\GoogleSignIn" />
   </ItemGroup>
 
 	<ItemGroup>
+	  <Resource Include="Resources\dashboard.png" />
+	  <Resource Include="Resources\DashboardFavi.png" />
+	  <Resource Include="Resources\DashFavi.png" />
 	  <Resource Include="Resources\GoogleSignIn" />
 	  <Resource Include="Resources\UserProfilePicture.png" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Resource Include="Icons\dashboard.png" />
-	  <Resource Include="Icons\DashboardFavi.png" />
-	  <Resource Include="Icons\GoogleSignIn" />
 	</ItemGroup>
 
 	<ItemGroup>
