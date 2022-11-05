@@ -20,12 +20,12 @@ namespace PlexShareApp
     /// </summary>
     public partial class HomePageView : Window
     {
-        public HomePageView()
+        public HomePageView(string name, string email, string imageLocation)
         {
             InitializeComponent();
         }
 
-        private void toMainScreen(object sender, RoutedEventArgs e)
+        private void ToMainScreen(object sender, RoutedEventArgs e)
         {
 
             MainScreenView mainScreenView = new MainScreenView();

@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Drawing;
+using System.Threading;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
@@ -18,6 +20,8 @@ using Microsoft.Extensions.Logging;
 using PlexShareApp;
 using System.Text.Json.Nodes;
 using Newtonsoft.Json.Linq;
+using System.Windows.Controls;
+using System.Diagnostics;
 
 namespace AuthViewModel;
 
@@ -26,6 +30,12 @@ public class AuthenticationViewModel
     private const string clientId = "1045131640492-c68nvtdorbftv7ejvkoh4h8flo7tl2q9.apps.googleusercontent.com";
     private const string clientSecret = "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";
     const string authorizationEndpoint = "https://accounts.google.com/o/oauth2/v2/auth";
+
+    // User Information
+    string userName = "";
+    string userEmail = "";
+    string imageName = "";
+
     public AuthenticationViewModel()
     {
     }
@@ -54,19 +64,18 @@ public class AuthenticationViewModel
         return EncodeInputBuffer(bytes);
     }
   
-    public async Task<bool> AuthenticateUser()
+    public async Task<List<string>> AuthenticateUser()
     {
         string state = GenerateDataBase(32);
         string code_verifier = GenerateDataBase(32);
         string code_challenge = EncodeInputBuffer(Sha256(code_verifier));
         const string code_challenge_method = "S256";
         string redirectURI = string.Format("http://{0}:{1}/", IPAddress.Loopback, "8080");
+        List<string> result = new List<string>();
         
-        Console.WriteLine("redirect URI: " + redirectURI);
-
         var http = new HttpListener();
         http.Prefixes.Add(redirectURI);
-        System.Diagnostics.Debug.WriteLine("Listening..");
+        Debug.WriteLine("Listening..");
         http.Start();
 
         string authorizationRequest = string.Format("{0}?response_type=code&scope=openid%20email%20profile&redirect_uri={1}&client_id={2}&state={3}&code_challenge={4}&code_challenge_method={5}",
@@ -78,27 +87,27 @@ public class AuthenticationViewModel
                 code_challenge_method);
         string vr = "https://www.google.com/";
 
-        System.Diagnostics.Debug.WriteLine("Debugging: " + vr);
+        Debug.WriteLine("Debugging: " + vr);
         try
         {
-            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(authorizationRequest) { UseShellExecute = true});
+            Process.Start(new ProcessStartInfo(authorizationRequest) { UseShellExecute = true});
         } 
         catch (System.ComponentModel.Win32Exception noBrowser)
         {
             if (noBrowser.ErrorCode == -2147467259)
             {
-                System.Diagnostics.Debug.WriteLine("Error finding browser");
+                Debug.WriteLine("Error finding browser");
             }
         }
-        catch (System.Exception other)
+        catch (Exception other)
         {
-            System.Diagnostics.Debug.WriteLine(other.Message);
+            Debug.WriteLine(other.Message);
         }
 
         var context = await http.GetContextAsync();
         var response = context.Response;
         string responseString = string.Format("<html><head><meta http-equiv='refresh' content='10;url=https://google.com'></head><body>Authentication is complete! You can return to your app.</body></html>");
-        var buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
+        var buffer = Encoding.UTF8.GetBytes(responseString);
         response.ContentLength64 = buffer.Length;
         var responseOutput = response.OutputStream;
 
@@ -106,19 +115,21 @@ public class AuthenticationViewModel
         {
             responseOutput.Close();
             http.Stop();
-            System.Diagnostics.Debug.WriteLine("HTTP server stopped.");
+            Debug.WriteLine("HTTP server stopped.");
         });
 
         if (context.Request.QueryString.Get("error") != null)
         {
-            System.Diagnostics.Debug.WriteLine(String.Format("OAuth authorization error: {0}.", context.Request.QueryString.Get("error")));
-            return false;
+            Debug.WriteLine(String.Format("OAuth authorization error: {0}.", context.Request.QueryString.Get("error")));
+            result.Add("false");
+            return result;
         }
 
         if (context.Request.QueryString.Get("code") == null || context.Request.QueryString.Get("state") == null)
         {
-            System.Diagnostics.Debug.WriteLine("Malformed authorization response. " + context.Request.QueryString);
-            return false;
+            Debug.WriteLine("Malformed authorization response. " + context.Request.QueryString);
+            result.Add("false");
+            return result;
         }
 
         var code = context.Request.QueryString.Get("code");
@@ -126,13 +137,25 @@ public class AuthenticationViewModel
 
         if (incoming_state != state)
         {
-            System.Diagnostics.Debug.WriteLine(String.Format("Received request with invalid state ({0})", incoming_state));
-            return false;
+            Debug.WriteLine(String.Format("Received request with invalid state ({0})", incoming_state));
+            result.Add("false");
+            return result;
         }
 
-        GetUserData(code, code_verifier, redirectURI);
+        Task task = Task.Factory.StartNew(() => GetUserData(code, code_verifier, redirectURI));
+        Task.WaitAll(task);
 
-        return true;
+        Debug.WriteLine("Above tasks are finished!\n" + userName + " " + userEmail + " " + imageName);
+        result.Add("true");
+
+        while(userName == "" || userEmail == "" || imageName == "" )
+        {
+            Thread.Sleep(100);
+        }
+        result.Add(userName);
+        result.Add(userEmail);
+        result.Add(imageName);
+        return result;
     }
 
     async void GetUserData(string code, string code_verifier, string redirectURI)
@@ -163,11 +186,12 @@ public class AuthenticationViewModel
         {
             // gets the response
             WebResponse tokenResponse = await tokenRequest.GetResponseAsync();
+
             using (StreamReader reader = new StreamReader(tokenResponse.GetResponseStream()))
             {
                 // reads response body
                 string responseText = await reader.ReadToEndAsync();
-                System.Diagnostics.Debug.WriteLine(responseText);
+                Debug.WriteLine(responseText);
                 // converts to dictionary
                 Dictionary<string, string> tokenEndpointDecoded = JsonConvert.DeserializeObject<Dictionary<string, string>>(responseText);
                 string access_token = tokenEndpointDecoded["access_token"];
@@ -184,20 +208,26 @@ public class AuthenticationViewModel
                 var response = ex.Response as HttpWebResponse;
                 if (response != null)
                 {
-                    System.Diagnostics.Debug.WriteLine("HTTP: " + response.StatusCode);
+                    Debug.WriteLine("HTTP: " + response.StatusCode);
                     using (StreamReader reader = new StreamReader(response.GetResponseStream()))
                     {
                         // reads response body
                         string responseText = await reader.ReadToEndAsync();
-                        System.Diagnostics.Debug.WriteLine(responseText);
+                        Debug.WriteLine(responseText);
                     }
                 }
-
             }
         }
 
     }
 
+    void DownloadImage(string url)
+    {
+        imageName = "UserProfilePicture.png";
+        string localFileName = "../../../../Resources/" + imageName;
+        WebClient webClient = new WebClient();
+        webClient.DownloadFile(url, localFileName);
+    }
 
     async void userinfoCall(string access_token)
     {
@@ -219,8 +249,12 @@ public class AuthenticationViewModel
             string userinfoResponseText = await userinfoResponseReader.ReadToEndAsync();
             System.Diagnostics.Debug.WriteLine("USER INFO:\n" + userinfoResponseText);
             var json = JObject.Parse(userinfoResponseText);
-            // Extracting Data from Json file received
-            System.Diagnostics.Debug.WriteLine(json["name"] + " " + json["email"] + " " + json["picture"]);
+
+            // Storing Data from Json file received
+            userName = json["name"].ToString();
+            userEmail = json["email"].ToString();
+            string imageURL = json["picture"].ToString();
+            DownloadImage(imageURL);
         }
     }
 }
