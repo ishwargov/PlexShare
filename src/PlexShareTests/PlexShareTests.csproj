@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.3.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -53,7 +54,11 @@
     <None Remove="DashboardTests\Summary\" />
   </ItemGroup>
   <ItemGroup>
+<<<<<<< HEAD
+    <Folder Include="DashboardTests\Telemetry\" />
+=======
     <Folder Include="DashboardTests\SessionManagement\" />
+>>>>>>> 2e7d3df55b20af4de7cecbbb8fbfca8f2ed5eaaa
     <Folder Include="DashboardTests\Persistence\" />
     <Folder Include="DashboardTests\Summary\" />
   </ItemGroup>

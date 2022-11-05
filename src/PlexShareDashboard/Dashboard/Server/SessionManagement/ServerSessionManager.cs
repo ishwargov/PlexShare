@@ -20,13 +20,13 @@ using PlexShareNetwork;
 
 namespace Dashboard.Server.SessionManagement
 {
-    // Delegate for the MeetingEnded event
-    public delegate void NotifyEndMeet();  //this will be invoked when the meeting ended.
+    // Delegate for the MeetingEnded event  this will be invoked when the meeting ended.
+    public delegate void NotifyEndMeet(); 
 
     public class ServerSessionManager : ITelemetrySessionManager, IUXServerSessionManager, INotificationHandler
     {
         private readonly ICommunicator _communicator;
-        //private readonly IContentServer _contentServer;
+      //  private readonly IContentServer _contentServer;
         private readonly ISerializer _serializer;
 
         private readonly SessionData _sessionData;
@@ -42,7 +42,7 @@ namespace Dashboard.Server.SessionManagement
         private ITelemetry _telemetry;
         public bool summarySaved;
         private int userCount;
-       // private ScreenShareServer _screenShareServer;
+      //  private ScreenShareServer _screenShareServer;
 
         //Constructor for the ServerSessionManager.
         //It initialises whiteboard module,content module, screenshare module,
@@ -62,18 +62,39 @@ namespace Dashboard.Server.SessionManagement
 
             userCount = 0;
 
-          //  _communicator = CommunicationFactory.GetCommunicator(false);
-           // _communicator.Subscribe(moduleIdentifier, this);
+            _communicator = CommunicationFactory.GetCommunicator(false);
+            _communicator.Subscribe(moduleIdentifier, this);
 
             //------------------------------------_telemetry = new Telemetry.Telemetry();
           //  _ = ServerBoardCommunicator.Instance;
           //  _screenShareServer = ScreenShareFactory.GetScreenShareServer();
-         //   _contentServer = ContentServerFactory.GetInstance();
+          //  _contentServer = ContentServerFactory.GetInstance();
         }
 
 
         //constructor for testing to be added 
+        public ServerSessionManager(ICommunicator communicator)
+        {
+          //  _contentServer = contentServer;
+            _sessionData = new SessionData();
+            _serializer = new Serializer();
+            _telemetrySubscribers = new List<ITelemetryNotifications>();
+          //  _summarizer = SummarizerFactory.GetSummarizer();
+          //  _screenShareServer = ScreenShareFactory.GetScreenShareServer();
 
+         //   TraceManager traceManager = new();
+           // traceManager.TraceListener();
+
+            userCount = 0;
+            moduleIdentifier = "serverSessionManager";
+
+            _communicator = communicator;
+            _communicator.Subscribe(moduleIdentifier, this);
+            summarySaved = false;
+            testmode = true;
+           // if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E") return;
+          //  _ = ScreenShareFactory.GetScreenShareServer();
+        }
 
         // This function is called by the networking module when a user joins the meeting.
         // The  SocketObject received from the networking module is then passed again but with a unique ID to identify object uniquely.
