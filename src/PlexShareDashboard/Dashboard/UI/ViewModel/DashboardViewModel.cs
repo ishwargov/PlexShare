@@ -294,7 +294,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         {
             //########################################################
             //we have to fetech the analytics 
-            clientSessionManager.GetAnalytics();
+            //clientSessionManager.GetAnalytics();
             //########################################################
 
             //Convert the sessionAnalytics properly to show to the graph 
@@ -375,7 +375,8 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             //code for testing 
             //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
             //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-            UserData currU = new UserData("Rupesh", 1);
+            //UserData currU = new UserData("Rupesh", 1);
+            UserData currU = new UserData("Rupesh", 2);
             currUser = currU;
             //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
             //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
