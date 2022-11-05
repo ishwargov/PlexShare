@@ -142,24 +142,16 @@ namespace PlexShareNetwork.Communication
         /// <summary>
         /// This function sends data to the server.
         /// </summary>
-        /// <param name="serializedData"> The serialzed data to be sent over the network. </param>
+        /// <param name="serializedData"> The serialzed data to be sent. </param>
         /// <param name="moduleOfPacket"> Module sending the data. </param>
+        /// <param name="destination"> It has to be null. </param>
         /// <returns> void </returns>
-        public void Send(string serializedData, string moduleOfPacket)
+        public void Send(string serializedData, string moduleOfPacket, string destination)
 		{
+            // the packet is to be sent to the server, the given destination argument is ignored
 			Packet packet = new(serializedData, null, moduleOfPacket);
 			_sendQueue.Enqueue(packet);
 			Trace.WriteLine($"[Networking] Enqueued packet in send queue of the module : {moduleOfPacket}");
-		}
-
-		/// <summary>
-		/// Function to send data to a specific client given by the destination argument.
-		/// This function is to be called only on the server side.
-		/// </summary>
-		[ExcludeFromCodeCoverage]
-		public void Send(string serializedData, string moduleOfPacket, string destination)
-		{
-			throw new NotSupportedException();
 		}
 
         /// <summary>

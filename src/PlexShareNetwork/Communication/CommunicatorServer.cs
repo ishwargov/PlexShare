@@ -213,29 +213,15 @@ namespace PlexShareNetwork.Communication
         }
 
         /// <summary>
-        /// This function broadcasts data to all the clients.
-        /// </summary>
-        /// <param name="serializedData"> The serialzed data to be sent over the network. </param>
-        /// <param name="moduleOfPacket"> Module sneding the data. </param>
-        /// <returns> void </returns>
-        public void Send(string serializedData, string moduleOfPacket)
-		{
-            Packet packet = new(serializedData, null, moduleOfPacket);
-			_sendQueue.Enqueue(packet);
-            Trace.WriteLine($"[Networking] Enqueued packet in send queue of the module : {moduleOfPacket} for destination: broadcast.");
-        }
-
-        /// <summary>
-        /// Function to send data to a specific client given by the destination argument.
-        /// This function is to be called only on the server side.
+        /// Function to send data to a client or all clients form server.
         /// </summary>
         /// <param name="serializedData"> The serialzed data to be sent over the network. </param>
         /// <param name="moduleOfPacket"> Module sending the data. </param>
-        /// <param name="destination"> The destination or client Id to which to send the data. </param>
+        /// <param name="destination"> The destination or client Id to which to send the data. To broadcast give null in detination. </param>
         /// <returns> void </returns>
         public void Send(string serializedData, string moduleOfPacket, string destination)
 		{
-			if (!_clientIdToSocket.ContainsKey(destination))
+			if (!_clientIdToSocket.ContainsKey(destination) && destination != null)
 			{
 				throw new Exception($"[Networking] Sending Falied. Client with ID: {destination} does not exist in the room!");
 			}

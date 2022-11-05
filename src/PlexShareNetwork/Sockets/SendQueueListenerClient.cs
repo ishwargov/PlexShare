@@ -49,7 +49,8 @@ namespace PlexShareNetwork.Sockets
 		/// <returns> void </returns>
 		public void Start()
 		{
-			_threadRun = true;
+            Trace.WriteLine("[Networking] SendQueueListenerClient.Start() function called.");
+            _threadRun = true;
 			_thread.Start();
 			Trace.WriteLine("[Networking] SendQueueListenerClient thread started.");
 		}
@@ -60,7 +61,8 @@ namespace PlexShareNetwork.Sockets
 		/// <returns> void </returns>
 		public void Stop()
 		{
-			_threadRun = false;
+            Trace.WriteLine("[Networking] SendQueueListenerClient.Stop() function called.");
+            _threadRun = false;
             Trace.WriteLine("[Networking] SendQueueListenerClient thread stopped.");
 		}
 
@@ -71,22 +73,20 @@ namespace PlexShareNetwork.Sockets
 		/// <returns> void </returns>
 		private void Listen()
 		{
-			while (_threadRun)
+            Trace.WriteLine("[Networking] SendQueueListenerClient.Listen() function called.");
+            while (_threadRun)
 			{
                 _sendingQueue.WaitForPacket();
-				while (!_sendingQueue.IsEmpty())
+				Packet packet = _sendingQueue.Dequeue();
+                string sendString = "BEGIN" + _serializer.Serialize(packet) + "END";
+				try
 				{
-					Packet packet = _sendingQueue.Dequeue();
-                    string sendString = "BEGIN" + _serializer.Serialize(packet) + "END";
-					try
-					{
-                        _clientSocket.Client.Send(Encoding.ASCII.GetBytes(sendString));
-						Trace.WriteLine($"[Networking] SendQueueListenerClient. Data sent from client to server by module: {packet.moduleOfPacket}.");
-					}
-					catch (Exception e)
-					{
-						Trace.WriteLine($"[Networking] SendQueueListenerClient. Error in sending data: {e.Message}");
-					}
+                    _clientSocket.Client.Send(Encoding.ASCII.GetBytes(sendString));
+					Trace.WriteLine($"[Networking] SendQueueListenerClient. Data sent from client to server by module: {packet.moduleOfPacket}.");
+				}
+				catch (Exception e)
+				{
+					Trace.WriteLine($"[Networking] SendQueueListenerClient. Error in sending data: {e.Message}");
 				}
 			}
 		}

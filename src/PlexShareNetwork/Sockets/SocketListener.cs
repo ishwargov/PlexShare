@@ -79,6 +79,7 @@ namespace PlexShareNetwork.Sockets
         /// <returns> void </returns>
         private void ReceiveCallback(IAsyncResult ar)
 		{
+            Trace.WriteLine("[Networking] SocketListener.ReceiveCallback() function called.");
             if (_threadRun)
             {
                 try
@@ -107,6 +108,7 @@ namespace PlexShareNetwork.Sockets
         /// <returns> The remaining string after processing the packets from the given string. </returns>
         private string ProcessReceivedString(string receivedString)
 		{
+            Trace.WriteLine("[Networking] SocketListener.ProcessReceivedString() function called.");
             int packetBeginIndex = receivedString.IndexOf("BEGIN", StringComparison.Ordinal) + 5;
             int packetEndIndex = receivedString.IndexOf("END", StringComparison.Ordinal);
             while (packetBeginIndex != -1 && packetEndIndex != -1)
