@@ -57,9 +57,16 @@ namespace PlexShareNetwork.Sockets
         public void Start()
 		{
             Trace.WriteLine("[Networking] SocketListener.Start() function called.");
-            _threadRun = true;
-			_thread.Start();
-			Trace.WriteLine("[Networking] SocketListener thread started.");
+            try
+            {
+                _threadRun = true;
+                _thread.Start();
+                Trace.WriteLine("[Networking] SocketListener thread started.");
+            }
+            catch(Exception e)
+            {
+                Trace.WriteLine($"[Networking] Error in starting the thread: {e.Message}.");
+            }
 		}
 
         /// <summary>

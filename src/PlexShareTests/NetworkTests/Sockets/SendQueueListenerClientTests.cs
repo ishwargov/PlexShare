@@ -48,35 +48,19 @@ namespace PlexShareNetwork.Sockets.Tests
 		{
             Packet sendPacket = new("Test string", "To Server", "Test Module1");
             _sendingQueue.Enqueue(sendPacket);
-
-			while (_receivingQueue.Size() < 1)
-			{
-                Thread.Sleep(100);
-            }
-            Assert.True(_receivingQueue.Size() == 1);
-
-            Packet receivedPacket = _receivingQueue.Dequeue();
-            NetworkingGlobals.AssertPacketEquality(sendPacket, receivedPacket);
-		}
+            NetworkingGlobals.AssertSinglePacketReceive(sendPacket, _receivingQueue);
+        }
 
 		[Fact]
-		public void LargeSizePacketSendTest()
+		public void LargePacketSendTest()
 		{
             Packet sendPacket = new(NetworkingGlobals.RandomString(1000), "To Server", "Test Module1");
             _sendingQueue.Enqueue(sendPacket);
-
-			while (_receivingQueue.Size() < 1)
-			{
-                Thread.Sleep(100);
-            }
-            Assert.True(_receivingQueue.Size() == 1);
-
-            Packet receivedPacket = _receivingQueue.Dequeue();
-            NetworkingGlobals.AssertPacketEquality(sendPacket, receivedPacket);
-		}
+            NetworkingGlobals.AssertSinglePacketReceive(sendPacket, _receivingQueue);
+        }
 
 		[Fact]
-		public void MultiplePacketSendFromSameModuleTest()
+		public void MultiplePacketsFromSameModuleSendTest()
 		{
             Packet[] sendPackets = new Packet[10];
             for (var i = 0; i < 10; i++)
@@ -84,45 +68,24 @@ namespace PlexShareNetwork.Sockets.Tests
                 sendPackets[i] = new Packet("Test string" + i, "To Server", "Test Module1");
                 _sendingQueue.Enqueue(sendPackets[i]);
 			}
-
-			while (_receivingQueue.Size() < 10)
-			{
-				Thread.Sleep(100);
-			}
-            Assert.True(_receivingQueue.Size() == 10);
-
-            for (var i = 0; i < 10; i++)
-			{
-                Packet receivedPacket = _receivingQueue.Dequeue();
-                NetworkingGlobals.AssertPacketEquality(sendPackets[i], receivedPacket);
-            }
-		}
+            NetworkingGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue);
+        }
 
         [Fact]
-        public void MultiplePacketSendFromDifferentModulesTest()
+        public void MultiplePacketsFromDifferentModulesSendTest()
         {
             Packet[] sendPackets = new Packet[10];
             for (var i = 0; i < 10; i++)
             {
+                // alternately send packet from "Test Module1" and "Test Module2"
                 sendPackets[i] = new Packet("Test string" + i, "To Server", "Test Module" + (i%2+1));
                 _sendingQueue.Enqueue(sendPackets[i]);
             }
-
-            while (_receivingQueue.Size() < 10)
-            {
-                Thread.Sleep(100);
-            }
-            Assert.True(_receivingQueue.Size() == 10);
-
-            for (var i = 0; i < 10; i++)
-            {
-                Packet receivedPacket = _receivingQueue.Dequeue();
-                NetworkingGlobals.AssertPacketEquality(sendPackets[i], receivedPacket);
-            }
+            NetworkingGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue);
         }
 
         [Fact]
-        public void MultipleLargeSizePacketsSendTest()
+        public void MultipleLargePacketsSendTest()
         {
             Packet[] sendPackets = new Packet[10];
             for (var i = 0; i < 10; i++)
@@ -130,22 +93,11 @@ namespace PlexShareNetwork.Sockets.Tests
                 sendPackets[i] = new Packet(NetworkingGlobals.RandomString(1000), "To Server", "Test Module1");
                 _sendingQueue.Enqueue(sendPackets[i]);
             }
-
-            while (_receivingQueue.Size() < 10)
-            {
-                Thread.Sleep(100);
-            }
-            Assert.True(_receivingQueue.Size() == 10);
-
-            for (var i = 0; i < 10; i++)
-            {
-                Packet receivedPacket = _receivingQueue.Dequeue();
-                NetworkingGlobals.AssertPacketEquality(sendPackets[i], receivedPacket);
-            }
+            NetworkingGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue);
         }
 
         [Fact]
-        public void PacketSendFromUnregisteredModuleTest()
+        public void PacketFromUnregisteredModuleSendTest()
         {
             // packet from an unregistered module should not be sent because
             // SendingQueue only enqueues packets that are registered

@@ -156,6 +156,8 @@ namespace PlexShareNetwork.Sockets
                         moduleToNotificationHandler.Value.OnClientLeft(clientId);
                         Trace.WriteLine($"[Networking] Notifed module:{moduleToNotificationHandler.Key} that the client has left.");
                     }
+                    // here we dont need to remove the client socket from the _clientIdToClientSocketMap, it will
+                    // be done when the CommunicatorServer.RemoveClient() function will be called by the Dashboard
                 }
             }
             catch (Exception e)

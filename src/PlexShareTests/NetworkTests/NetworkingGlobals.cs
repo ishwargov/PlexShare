@@ -5,9 +5,12 @@
 
 using PlexShareNetwork.Communication;
 using PlexShareNetwork.Queues;
+using PlexShareNetwork.Serialization;
 using System;
 using System.Dynamic;
 using System.Linq;
+using System.Net.Sockets;
+using System.Text;
 using System.Threading;
 
 namespace PlexShareNetwork
@@ -26,15 +29,51 @@ namespace PlexShareNetwork
 		// Used to generate random strings
 		private static readonly Random random = new();
 
-		/// <summary>
-		/// Returns a randomly generated alphanumeric string
-		/// </summary>
-		public static string RandomString(int length)
+        private static readonly Serializer _serializer = new();
+
+        /// <summary>
+        /// Returns a randomly generated alphanumeric string
+        /// </summary>
+        public static string RandomString(int length)
 		{
 			const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 			return new string(Enumerable.Repeat(chars, length)
 			.Select(s => s[random.Next(s.Length)]).ToArray());
 		}
+
+        public static void SendPacket(Packet packet, TcpClient socket)
+        {
+            string sendString = "BEGIN" + _serializer.Serialize(packet) + "END";
+            byte[] bytes = Encoding.ASCII.GetBytes(sendString);
+            socket.Client.Send(bytes);
+        }
+
+        public static void AssertSinglePacketReceive(Packet sendPacket, ReceivingQueue receivingQueue)
+        {
+            while (receivingQueue.Size() < 1)
+            {
+                Thread.Sleep(100);
+            }
+            Assert.True(receivingQueue.Size() == 1);
+
+            Packet receivedPacket = receivingQueue.Dequeue();
+            AssertPacketEquality(sendPacket, receivedPacket);
+        }
+
+        public static void AssertTenPacketsReceive(Packet[] sendPackets, ReceivingQueue receivingQueue)
+        {
+            while (receivingQueue.Size() < 10)
+            {
+                Thread.Sleep(100);
+            }
+            Assert.True(receivingQueue.Size() == 10);
+
+            for (var i = 0; i < 10; i++)
+            {
+                Packet receivedPacket = receivingQueue.Dequeue();
+                AssertPacketEquality(sendPackets[i], receivedPacket);
+            }
+        }
 
         public static void AssertPacketEquality(Packet packet1, Packet packet2)
         {

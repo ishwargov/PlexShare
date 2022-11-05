@@ -44,154 +44,52 @@ namespace PlexShareNetwork.Sockets.Tests
 		public void SinglePacketReceiveTest()
 		{
 			Packet sendPacket = new("Test string", "Test Destination", "Test Module");
-            string sendString = "BEGIN" + _serializer.Serialize(sendPacket) + "END";
-            _clientSocket.Client.Send(Encoding.ASCII.GetBytes(sendString));
-
-            while (_receivingQueue.Size() < 1)
-			{
-                Thread.Sleep(100);
-            }
-            Assert.True(_receivingQueue.Size() == 1);
-
-            Packet receivedPacket = _receivingQueue.Dequeue();
-            NetworkingGlobals.AssertPacketEquality(sendPacket, receivedPacket);
+            NetworkingGlobals.SendPacket(sendPacket, _clientSocket);
+            NetworkingGlobals.AssertSinglePacketReceive(sendPacket, _receivingQueue);
 		}
 
 		[Fact]
-		public void LargeSizePacketReceiveTest()
+		public void LargePacketReceiveTest()
 		{
 			Packet sendPacket = new(NetworkingGlobals.RandomString(1000), "Test Destination", "Test Module");
-            string sendString = "BEGIN" + _serializer.Serialize(sendPacket) + "END";
-            _clientSocket.Client.Send(Encoding.ASCII.GetBytes(sendString));
-
-			while (_receivingQueue.Size() < 1)
-			{
-                Thread.Sleep(100);
-            }
-            Assert.True(_receivingQueue.Size() == 1);
-
-            Packet receivedPacket = _receivingQueue.Dequeue();
-            NetworkingGlobals.AssertPacketEquality(sendPacket, receivedPacket);
-		}
+            NetworkingGlobals.SendPacket(sendPacket, _clientSocket);
+            NetworkingGlobals.AssertSinglePacketReceive(sendPacket, _receivingQueue);
+        }
 
 		[Fact]
-		public void MultiplePacketReceiveFromSameDestinationAndSameModuleTest()
+		public void MultiplePacketsFromSameModuleReceiveTest()
 		{
             Packet[] sendPackets = new Packet[10];
             for (var i = 0; i < 10; i++)
 			{
                 sendPackets[i] = new("Test string" + i, "Test Destination", "Test Module");
-                string sendString = "BEGIN" + _serializer.Serialize(sendPackets[i]) + "END";
-                _clientSocket.Client.Send(Encoding.ASCII.GetBytes(sendString));
-			}
-
-			while (_receivingQueue.Size() < 10)
-			{
-				Thread.Sleep(100);
-			}
-            Assert.True(_receivingQueue.Size() == 10);
-
-            for (var i = 0; i < 10; i++)
-			{
-				Packet receivedPacket = _receivingQueue.Dequeue();
-                NetworkingGlobals.AssertPacketEquality(sendPackets[i], receivedPacket);
+                NetworkingGlobals.SendPacket(sendPackets[i], _clientSocket);
             }
-		}
+            NetworkingGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue);
+        }
 
         [Fact]
-        public void MultiplePacketReceiveFromSameDestinationAndDifferentModuleTest()
+        public void MultiplePacketsFromDifferentModulesReceiveTest()
         {
             Packet[] sendPackets = new Packet[10];
             for (var i = 0; i < 10; i++)
             {
                 sendPackets[i] = new("Test string" + i, "Test Destination", "Test Module" + i);
-                string sendString = "BEGIN" + _serializer.Serialize(sendPackets[i]) + "END";
-                _clientSocket.Client.Send(Encoding.ASCII.GetBytes(sendString));
+                NetworkingGlobals.SendPacket(sendPackets[i], _clientSocket);
             }
-
-            while (_receivingQueue.Size() < 10)
-            {
-                Thread.Sleep(100);
-            }
-            Assert.True(_receivingQueue.Size() == 10);
-
-            for (var i = 0; i < 10; i++)
-            {
-                Packet receivedPacket = _receivingQueue.Dequeue();
-                NetworkingGlobals.AssertPacketEquality(sendPackets[i], receivedPacket);
-            }
+            NetworkingGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue);
         }
 
         [Fact]
-        public void MultiplePacketReceiveFromDifferentDestinationAndSameModuleTest()
-        {
-            Packet[] sendPackets = new Packet[10];
-            for (var i = 0; i < 10; i++)
-            {
-                sendPackets[i] = new("Test string" + i, "Test Destination" + i, "Test Module");
-                string sendString = "BEGIN" + _serializer.Serialize(sendPackets[i]) + "END";
-                _clientSocket.Client.Send(Encoding.ASCII.GetBytes(sendString));
-            }
-
-            while (_receivingQueue.Size() < 10)
-            {
-                Thread.Sleep(100);
-            }
-            Assert.True(_receivingQueue.Size() == 10);
-
-            for (var i = 0; i < 10; i++)
-            {
-                Packet receivedPacket = _receivingQueue.Dequeue();
-                NetworkingGlobals.AssertPacketEquality(sendPackets[i], receivedPacket);
-            }
-        }
-
-        [Fact]
-        public void MultiplePacketReceiveFromDifferentDestinationAndDifferentModuleTest()
-        {
-            Packet[] sendPackets = new Packet[10];
-            for (var i = 0; i < 10; i++)
-            {
-                sendPackets[i] = new("Test string" + i, "Test Destination" + i, "Test Module" + i);
-                string sendString = "BEGIN" + _serializer.Serialize(sendPackets[i]) + "END";
-                _clientSocket.Client.Send(Encoding.ASCII.GetBytes(sendString));
-            }
-
-            while (_receivingQueue.Size() < 10)
-            {
-                Thread.Sleep(100);
-            }
-            Assert.True(_receivingQueue.Size() == 10);
-
-            for (var i = 0; i < 10; i++)
-            {
-                Packet receivedPacket = _receivingQueue.Dequeue();
-                NetworkingGlobals.AssertPacketEquality(sendPackets[i], receivedPacket);
-            }
-        }
-
-        [Fact]
-        public void MultipleLargeSizePacketReceiveTest()
+        public void MultipleLargePacketsReceiveTest()
         {
             Packet[] sendPackets = new Packet[10];
             for (var i = 0; i < 10; i++)
             {
                 sendPackets[i] = new(NetworkingGlobals.RandomString(1000), "Test Destination", "Test Module");
-                string sendString = "BEGIN" + _serializer.Serialize(sendPackets[i]) + "END";
-                _clientSocket.Client.Send(Encoding.ASCII.GetBytes(sendString));
+                NetworkingGlobals.SendPacket(sendPackets[i], _clientSocket);
             }
-
-            while (_receivingQueue.Size() < 10)
-            {
-                Thread.Sleep(100);
-            }
-            Assert.True(_receivingQueue.Size() == 10);
-
-            for (var i = 0; i < 10; i++)
-            {
-                Packet receivedPacket = _receivingQueue.Dequeue();
-                NetworkingGlobals.AssertPacketEquality(sendPackets[i], receivedPacket);
-            }
+            NetworkingGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue);
         }
     }
 }
