@@ -196,11 +196,20 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             User user3 = new User(3, "Hrishi Raaj", "Presenting");
             User user4 = new User(4, "Saurabh kumar", "Not Presenting");
             User user5 = new User(5, "Aditya Agarwal", "Not Presenting");
+
             ParticipantsList.Add(user1);
             ParticipantsList.Add(user2);
             ParticipantsList.Add(user3);
             ParticipantsList.Add(user4);
             ParticipantsList.Add(user5);
+            for (int i = 6;i < 100;i++)
+            { 
+            //User user5 = new User(5, "Aditya Agarwal", "Not Presenting");
+                User user = new User(i, "Aditya Agarwal", "Not Presenting");
+                ParticipantsList.Add(user);
+
+            }
+
 
 
             UserCountList = new ChartValues<int>();
