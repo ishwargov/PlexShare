@@ -1,6 +1,8 @@
-﻿using Dashboard.Server.SessionManagement;
+﻿using Client.Models;
+using Dashboard.Server.SessionManagement;
 using PlexShare.Dashboard;
 using PlexShareDashboard.Dashboard.Client.SessionManagement;
+using PlexShareDashboard.Dashboard.Server.SessionManagement;
 using PlexShareNetwork.Serialization;
 using PlexShareTests.DashboardTests.SessionManagement.TestModules;
 using System;
@@ -38,7 +40,32 @@ namespace PlexShareTests.DashboardTests.SessionManagement
             IUXClientSessionManager clientSessionManager2 = SessionManagerFactory.GetClientSessionManager();
 
             //Assert(ReferenceEquals(clientSessionManager1, clientSessionManager2));
-            Assert.True(ReferenceEquals(clientSessionManager1, clientSessionManager2));
+            //Assert.Equal(clientSessionManager1, clientSessionManager2);
+            Assert.True(clientSessionManager2.Equals(clientSessionManager1));
+        }
+
+        [Fact]
+        public void GetServerSessionManager_TwoInstancesCreated_MustHaveSameReference()
+        {
+            IUXServerSessionManager serverSessionManager1 = SessionManagerFactory.GetServerSessionManager();
+            IUXServerSessionManager serverSessionManager2 = SessionManagerFactory.GetServerSessionManager();
+
+            Assert.True(serverSessionManager1.Equals(serverSessionManager2));
+        }
+
+        [Fact]
+        public void NotifyUX_SessionDataChanges_UXShouldBeNotified()
+        {
+            FakeClientUX fakeClientUX = new(_clientSessionManager);
+            fakeClientUX.sessionSummary = null;
+
+            var users = Utils.GetUsers();
+           
+            _clientSessionManager.SetSessionUsers(users);
+
+            _clientSessionManager.NotifyUXSession();
+
+            Assert.Equal(users, fakeClientUX.sessionData.users);
         }
     }
     
