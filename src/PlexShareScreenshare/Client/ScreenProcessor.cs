@@ -6,22 +6,20 @@
 ///</summary>
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Threading;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Linq;
 using System.Runtime.InteropServices;
-
-// This datatype is for storing a list of the coordinate
-// of pixel and its RGB values i.e. list of ((x, y), (R, G, B))
-using ImageDiffList = System.Collections.Generic.List<System.Tuple<System.Tuple<int, int>,
-                        System.Tuple<int, int, int>>>;
-
+using System.Threading;
+using System.Threading.Tasks;
 // Each frame consists of the resolution of the image and the ImageDiffList
 using Frame = System.Tuple<System.Tuple<int, int>,
                         System.Collections.Generic.List<System.Tuple<System.Tuple<int, int>,
                         System.Tuple<int, int, int>>>>;
+// This datatype is for storing a list of the coordinate
+// of pixel and its RGB values i.e. list of ((x, y), (R, G, B))
+using ImageDiffList = System.Collections.Generic.List<System.Tuple<System.Tuple<int, int>,
+                        System.Tuple<int, int, int>>>;
 
 namespace PlexShareScreenshare.Client
 {
@@ -32,21 +30,21 @@ namespace PlexShareScreenshare.Client
     {
         // The queue in which the image will be enqueued after
         // processing it
-        private Queue<Frame> ProcessedFrame;
+        private readonly Queue<Frame> ProcessedFrame;
 
         // Processing task
-        private Task ProcessorTask;
+        private Task? ProcessorTask;
 
         // The screen capturer object
-        private ScreenCapturer Capturer;
+        private readonly ScreenCapturer Capturer;
 
         // Old and the new resolutions 
         private Tuple<int, int> OldRes { get; set; }
         public Tuple<int, int> NewRes { private get; set; }
 
         // Tokens added to be able to stop the thread execution
-        CancellationTokenSource tokenSource;
-        CancellationToken token;
+        private CancellationTokenSource? tokenSource;
+        private CancellationToken token;
 
         // Storing the previous frame
         Bitmap prevImage;
@@ -56,14 +54,12 @@ namespace PlexShareScreenshare.Client
         /// Initialize queue, oldRes, newRes,
         /// cancellation token and the previous image
         /// </summary>
-        ScreenProcessor(ScreenCapturer Capturer)
+        public ScreenProcessor(ScreenCapturer Capturer)
         {
             this.Capturer = Capturer;
             ProcessedFrame = new Queue<Frame>();
             OldRes = new Tuple<int, int>(720, 1280);
             NewRes = new Tuple<int, int>(720, 1280);
-            tokenSource = new CancellationTokenSource();
-            token = tokenSource.Token;
             prevImage = new Bitmap(720, 1280);
         }
 
@@ -82,7 +78,7 @@ namespace PlexShareScreenshare.Client
         /// In this function we go through every pixel of both the images and
         /// returns list of those pixels which are different in both the images
         /// </summary>
-        private ImageDiffList ProcessUsingLockbits(Bitmap processedBitmap, Bitmap processedBitmap1)
+        private static ImageDiffList ProcessUsingLockbits(Bitmap processedBitmap, Bitmap processedBitmap1)
         {
             // List for storing the difference in pixels
             ImageDiffList tmp = new();
@@ -110,8 +106,8 @@ namespace PlexShareScreenshare.Client
             byte[] pixels1 = new byte[byteCount1];
             IntPtr ptrFirstPixel1 = bitmapData1.Scan0;
             Marshal.Copy(ptrFirstPixel1, pixels1, 0, pixels1.Length);
-            int heightInPixels1 = bitmapData1.Height;
-            int widthInBytes1 = bitmapData1.Width * bytesPerPixel1;
+            // int heightInPixels1 = bitmapData1.Height;
+            // int widthInBytes1 = bitmapData1.Width * bytesPerPixel1;
             processedBitmap1.UnlockBits(bitmapData1);
 
             // Now iterating over the image array and checking the difference 
@@ -120,7 +116,7 @@ namespace PlexShareScreenshare.Client
             {
                 int currentLine = y * bitmapData.Stride;
                 int currentLine1 = y * bitmapData1.Stride;
-                for (int x = 0; x < widthInBytes; x = x + bytesPerPixel)
+                for (int x = 0; x < widthInBytes; x += bytesPerPixel)
                 {
                     // getting the color values from the two images
                     int oldBlue = pixels[currentLine + x];
@@ -135,8 +131,8 @@ namespace PlexShareScreenshare.Client
                     // coordinates and the RGB value of the second image
                     if (oldBlue != newBlue || oldGreen != newGreen || oldRed != newRed)
                     {
-                        Tuple<int, int> coordinates = new Tuple<int, int>(x / bytesPerPixel, y);
-                        Tuple<int, int, int> colors = new Tuple<int, int, int>(newRed, newGreen, newBlue);
+                        Tuple<int, int> coordinates = new(x / bytesPerPixel, y);
+                        Tuple<int, int, int> colors = new(newRed, newGreen, newBlue);
                         tmp.Add(new Tuple<Tuple<int, int>, Tuple<int, int, int>>(coordinates, colors));
                         count++;
                     }
@@ -158,7 +154,7 @@ namespace PlexShareScreenshare.Client
                 ImageDiffList DiffList = ProcessUsingLockbits(prevImage, img);
                 lock (ProcessedFrame)
                 {
-                    ProcessedFrame.Append(new Frame(NewRes, DiffList));
+                    ProcessedFrame.Enqueue(new Frame(NewRes, DiffList));
                 }
                 prevImage = img;
             }
@@ -171,9 +167,10 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         public void StartProcessing()
         {
+            tokenSource = new CancellationTokenSource();
+            token = tokenSource.Token;
             ProcessorTask = new Task(Processing, token);
             ProcessorTask.Start();
-
         }
 
         /// <summary>
@@ -202,7 +199,7 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         public void StopProcessing()
         {
-            tokenSource.Cancel();
+            tokenSource?.Cancel();
             ProcessedFrame.Clear();
         }
 
