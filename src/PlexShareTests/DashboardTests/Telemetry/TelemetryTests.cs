@@ -3,6 +3,7 @@ using Dashboard.Server.Persistence;
 using PlexShareDashboard.Dashboard.Server.Telemetry;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -118,6 +119,7 @@ namespace PlexShareTests.DashboardTests.Telemetry
 
             if (result1 == 3)
             {
+                //Trace.WriteLine("Got True for check1");
                 check1 = true;
             }
 
@@ -141,9 +143,79 @@ namespace PlexShareTests.DashboardTests.Telemetry
 
 
         //Testing for calculation of entry time of the users 
+        [Fact]
         public void CalculateArrivalExitTimeOfUser_Test_Entry_Time_Calculation()
-        { 
-            //Arrange ==> this 
+        {
+            //Arrange ==> this is to check the calculation of the entry time 
+            UserData user1 = new UserData("Rupesh Kumar", 1);
+            UserData user2 = new UserData("Shubham Raj", 2);
+            UserData user3 = new UserData("Saurabh Kumar", 3);
+            UserData user4 = new UserData("Aditya Agarwal", 4);
+            UserData user5 = new UserData("Hrishi Raaj", 5);
+
+            DateTime currDateTime1 = new DateTime(2021, 11, 23, 1, 0, 0);
+            DateTime currDateTime2 = new DateTime(2021, 11, 23, 1, 1, 0);
+            DateTime currDateTime3 = new DateTime(2021, 11, 23, 1, 2, 0);
+            DateTime currDateTime4 = new DateTime(2021, 11, 23, 1, 3, 0);
+
+            SessionData sessionData = new SessionData();
+
+            //Act ==> now we have to add the data to the session data and then call the function 
+            DateTime dateTime1 = new DateTime(2021, 11, 23, 1, 0, 0);
+            DateTime dateTime2 = new DateTime(2021, 11, 23, 1, 1, 0);
+            DateTime dateTime3 = new DateTime(2021, 11, 23, 1, 2, 0);
+            DateTime dateTime4 = new DateTime(2021, 11, 23, 1, 3, 0);
+
+
+            sessionData.AddUser(user1);
+            sessionData.AddUser(user2);
+
+            //calling the function to calculate the entry time whenever the session data changes 
+            var telemetryInstance = TelemetryFactory.GetTelemetryInstance();
+            telemetryInstance.CalculateArrivalExitTimeOfUser(sessionData, currDateTime1);
+            //DateTime dateTime1 = new DateTime()
+            sessionData.AddUser(user3);
+
+            telemetryInstance.CalculateArrivalExitTimeOfUser(sessionData, currDateTime2);
+
+            sessionData.AddUser(user4);
+            telemetryInstance.CalculateArrivalExitTimeOfUser(sessionData, currDateTime4);
+
+            sessionData.AddUser(user5);
+            telemetryInstance.CalculateArrivalExitTimeOfUser(sessionData, currDateTime3);
+
+
+            var check1 = false;
+            var check2 = false;
+            var check3 = false;
+            var check4 = false;
+
+            //ASSERT 
+            if (telemetryInstance.eachUserEnterTimeInMeeting[user1] == dateTime1 && telemetryInstance.eachUserEnterTimeInMeeting[user2] == dateTime1)
+            {
+                check1 = true;
+            }
+
+            if (telemetryInstance.eachUserEnterTimeInMeeting[user3] == dateTime2)
+            {
+                check2 = true;
+            }
+
+            if (telemetryInstance.eachUserEnterTimeInMeeting[user4] == dateTime4)
+            {
+                check3 = true;
+            }
+
+            if (telemetryInstance.eachUserEnterTimeInMeeting[user5] == dateTime3)
+            {
+                check4 = true;
+            }
+
+
+            Assert.True(check1 && check2 && check3 && check4);
+
+            //say everything went fine 
+            return;
         }
     }
 }
