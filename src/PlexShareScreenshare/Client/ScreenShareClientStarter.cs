@@ -26,7 +26,10 @@ namespace PlexShareScreenshare.Client
     public partial class ScreenshareClient : INotificationHandler
     {
 
-        // Object of netorwking module through which
+        // ScreenshareClient Object
+        private static ScreenshareClient? _screenShareClient;
+        
+        // Object of networking module through which
         // we will be communicating to the server
         private readonly ICommunicator _communicator;
 
@@ -45,31 +48,29 @@ namespace PlexShareScreenshare.Client
         private string? _id;
 
         // Tokens added to be able to stop the thread execution
-        private CancellationTokenSource? tokenSource;
+        private CancellationTokenSource? _confirmationCancellationTokenSource;
+        private CancellationTokenSource? _imageCancellationTokenSource;
 
         // Varible to store if screen share is active
         private bool _isScreenSharing = false;
 
-        // ScreenshareClient Object
-        private static ScreenshareClient? _screenShareClient;
-
         /// <summary>
         /// Setting up the ScreenCapturer and ScreenProcessor Class
         /// Taking instance of communicator from communicator factory
-        /// and subscribing to it
+        /// and subscribing to it.
         /// </summary>
         private ScreenshareClient()
         {
             _capturer = new ScreenCapturer();
             _processor = new ScreenProcessor(_capturer);
-            _communicator = CommunicationFactory.GetCommunicator(true);
+            _communicator = CommunicationFactory.GetCommunicator();
             _communicator.Subscribe("ScreenShare", this, true);
             _serializer = new();
         }
 
         /// <summary>
         /// Gives an instance of ScreenshareClient class and that instance is always 
-        /// the same i.e. singleton pattern
+        /// the same i.e. singleton pattern.
         /// </summary>
         public ScreenshareClient GetInstance()
         {
@@ -83,7 +84,7 @@ namespace PlexShareScreenshare.Client
         /// <summary>
         /// Firstly it will send a REGISTER packet to the server then 
         /// start capturer, processor, image sending function and 
-        /// the confirmation sending function
+        /// the confirmation sending function.
         /// </summary>
         public void StartScreenSharing()
         {
@@ -94,7 +95,7 @@ namespace PlexShareScreenshare.Client
             _communicator.Send(serializedData, "ScreenShare");
 
             StartImageSending();
-            //SendConfirmationPacket();
+            SendConfirmationPacket();
 
             _capturer.StartCapture();
             _processor.StartProcessing();
@@ -103,10 +104,10 @@ namespace PlexShareScreenshare.Client
         /// <summary>
         /// This function will be invoked on message from server
         /// If the message is SEND then start screen sharing and set the 
-        /// appropriate resolution
-        /// else if the message was STOP then stop the screen sharing
+        /// appropriate resolution.
+        /// Otherwise the message was STOP then stop the screen sharing.
         /// </summary>
-        /// <param name="serializedData"> serialized data from the network module </param>
+        /// <param name="serializedData"> Serialized data from the network module </param>
         void INotificationHandler.OnDataReceived(string serializedData)
         {
             DataPacket dataPacket = _serializer.Deserialize<DataPacket>(serializedData);
@@ -121,19 +122,21 @@ namespace PlexShareScreenshare.Client
             }
             else
             {
-                // StopScreenSharing();
+                StopScreensharing();
             }
         }
 
         /// <summary>
         /// Image sending function which will take image pixel diffs from processor and 
-        /// send it to the server via the networking module
+        /// send it to the server via the networking module. Images are sent only if there
+        /// are any changes in pixels as compared to previous image.
         /// </summary>
         private void ImageSending()
         {
-            while (true)
+            while (!_imageCancellationTokenSource.IsCancellationRequested)
             {
                 Frame img = _processor.GetImage();
+                if (img.Item2.Count == 0) continue;
                 string serializedImg = _serializer.Serialize(img);
                 DataPacket dataPacket = new(_id, _name, ClientDataHeader.Image.ToString(), serializedImg);
                 string serializedData = _serializer.Serialize(dataPacket);
@@ -142,22 +145,15 @@ namespace PlexShareScreenshare.Client
         }
 
         /// <summary>
-        /// Starting the image sending function on a thread
+        /// Starting the image sending function on a thread.
         /// </summary>
         private void StartImageSending()
         {
-            tokenSource = new CancellationTokenSource();
-            CancellationToken token = tokenSource.Token;
+            _imageCancellationTokenSource = new CancellationTokenSource();
+            CancellationToken token = _imageCancellationTokenSource.Token;
             _sendImageTask = new Task(ImageSending, token);
             _sendImageTask.Start();
         }
 
-        /// <summary>
-        /// Resuming screen share
-        /// </summary>
-        private void ResumeImageSending()
-        {
-            StartImageSending();
-        }
     }
 }
