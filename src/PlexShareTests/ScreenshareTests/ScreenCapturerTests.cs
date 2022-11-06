@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PlexShareScreenshare.Client;
 using System.Drawing;
-
-using PlexShareScreenshare.Client;
 
 namespace PlexShareTests.ScreenshareTests
 {
@@ -20,8 +14,6 @@ namespace PlexShareTests.ScreenshareTests
             ScreenCapturer screenCapturer = new ScreenCapturer();
             screenCapturer.StartCapture();
             Thread.Sleep(500);
-            screenCapturer.StopCapture();
-
             int count = 0;
             for (int i = 0; i < 10; i++)
             {
@@ -29,6 +21,8 @@ namespace PlexShareTests.ScreenshareTests
                 if (frame != null)
                     count++;
             }
+
+            screenCapturer.StopCapture();
             Assert.Equal(10, count);
         }
 
@@ -40,10 +34,12 @@ namespace PlexShareTests.ScreenshareTests
         {
             ScreenCapturer screenCapturer = new ScreenCapturer();
             screenCapturer.StartCapture();
-            Thread.Sleep(500);
-            screenCapturer.StopCapture();
 
-            Assert.True(screenCapturer.GetCapturedFrameLength() is >= 0 and <= ScreenCapturer.MaxQueueLength);
+            Thread.Sleep(500);
+            int framesCaptured = screenCapturer.GetCapturedFrameLength();
+
+            screenCapturer.StopCapture();
+            Assert.True(framesCaptured is > 0 and <= ScreenCapturer.MaxQueueLength);
         }
     }
 }

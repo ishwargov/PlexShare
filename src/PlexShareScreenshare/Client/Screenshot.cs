@@ -49,7 +49,7 @@ namespace PlexShareScreenshare.Client
 
         public static Screenshot Instance()
         {
-            if(instance == null)
+            if (instance == null)
             {
                 instance = new Screenshot();
             }
@@ -68,6 +68,7 @@ namespace PlexShareScreenshare.Client
             InitializeVariables(displayIndex, adapterIndex);
             Resource screenResource;
             OutputDuplication.TryAcquireNextFrame(maxTimeout, out _, out screenResource);
+            if (screenResource == null) return null;
             Texture2D screenTexture2D = screenResource.QueryInterface<Texture2D>();
             Device.ImmediateContext.CopyResource(screenTexture2D, Texture2D);
             DataBox dataBox = Device.ImmediateContext.MapSubresource(Texture2D, 0, MapMode.Read, MapFlags.None);
@@ -85,7 +86,8 @@ namespace PlexShareScreenshare.Client
             OutputDuplication.ReleaseFrame();
             screenTexture2D.Dispose();
             screenResource.Dispose();
-            return Bitmap;
+            Bitmap SmallBitmap = new Bitmap(Bitmap, 2 * Bitmap.Width / 3, 2 * Bitmap.Height / 3);
+            return SmallBitmap;
         }
 
         /// <summary>

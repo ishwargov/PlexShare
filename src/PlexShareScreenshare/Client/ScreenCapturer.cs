@@ -26,6 +26,8 @@ namespace PlexShareScreenshare.Client
         // Token and its source for killing the task
         private CancellationTokenSource? Source;
 
+        private Task? _captureTask;
+
         public ScreenCapturer()
         {
             _capturedFrame = new Queue<Bitmap>();
@@ -37,13 +39,13 @@ namespace PlexShareScreenshare.Client
         /// <returns>Bitmap image of 720p dimension</returns>
         public Bitmap GetImage()
         {
-            while(_capturedFrame.Count == 0)
+            while (_capturedFrame.Count == 0)
             {
                 Thread.Sleep(100);
             }
-            
+
             // TODO : check if lock is freed after returning
-            lock(_capturedFrame)
+            lock (_capturedFrame)
             {
                 return _capturedFrame.Dequeue();
             }
@@ -55,7 +57,10 @@ namespace PlexShareScreenshare.Client
         /// <returns>Integer value containing the length of queue.</returns>
         public int GetCapturedFrameLength()
         {
-            return _capturedFrame.Count;
+            lock (_capturedFrame)
+            {
+                return _capturedFrame.Count;
+            }
         }
 
         /// <summary>
@@ -66,11 +71,11 @@ namespace PlexShareScreenshare.Client
             Source = new CancellationTokenSource();
             CancellationToken Token = Source.Token;
 
-            Task captureTask = new Task(() =>
+            _captureTask = new Task(() =>
             {
                 Screenshot screenshot = Screenshot.Instance();
 
-                while (true)
+                while (!Source.IsCancellationRequested)
                 {
                     if (_capturedFrame.Count < MaxQueueLength)
                     {
@@ -78,7 +83,9 @@ namespace PlexShareScreenshare.Client
                         {
                             try
                             {
-                                _capturedFrame.Enqueue(screenshot.MakeScreenshot());
+                                Bitmap img = screenshot.MakeScreenshot();
+                                if (img != null)
+                                    _capturedFrame.Enqueue(img);
                             }
                             catch (Exception e)
                             {
@@ -94,7 +101,7 @@ namespace PlexShareScreenshare.Client
                 }
             }, Token);
 
-            captureTask.Start();
+            _captureTask.Start();
         }
 
         public void ResumeCapture()
@@ -113,7 +120,11 @@ namespace PlexShareScreenshare.Client
         public void StopCapture()
         {
             Source?.Cancel();
-            _capturedFrame.Clear();
+            _captureTask?.Wait();
+            lock (_capturedFrame)
+            {
+                _capturedFrame.Clear();
+            }
         }
     }
 }
