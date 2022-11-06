@@ -19,7 +19,7 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
         //getting the sessionmanager and persistence instance using the corresponding factory
         private readonly ITelemetrySessionManager serverSessionManager = SessionManagerFactory.GetServerSessionManager();
         private readonly TelemetryPersistence persistence = PersistenceFactory.GetTelemetryPersistenceInstance();
-        private readonly int thresholdTime = 10;
+        private readonly int thresholdTime = 30;
 
 
         //defining the variables to store the telemteric data 
@@ -39,11 +39,12 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
         }
 
 
+        //function to fetch the telemetry analytics and then give it back to the session manager 
         public SessionAnalytics GetTelemetryAnalytics(string allChatMessages)
         {
-
+            DateTime currTime = DateTime.Now;
             GetUserIdVsChatCount(allChatMessages);
-            GetListOfInsincereMembers();
+            GetListOfInsincereMembers(currTime);
 
             var currTotalChatCount = 0;
             var currTotalUser = 0;
@@ -69,11 +70,14 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             return currSessionAnalytics;
         }
 
+
+
         //function fetch the details from the chatcontext and then giving it to persistent to save the analytics on the server 
         public void SaveAnalytics(string allChatMessages)
         {
+            DateTime currDateTime = DateTime.Now;
             GetUserIdVsChatCount(allChatMessages);
-            GetListOfInsincereMembers();
+            GetListOfInsincereMembers(currDateTime);
             var currTotalUser = 0;
             var currTotalChatCount = 0;
 
@@ -109,8 +113,13 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             return;
         }
 
-        public void GetListOfInsincereMembers()
+
+        //function to calculate the insincere members when the meeting ends and the session manager tells to save the details and the insincere members list will only be calculated then only
+        public void GetListOfInsincereMembers(DateTime currTime)
         {
+            //clearing the list to recalculate the insincere members whenever the 
+            listOfInSincereMembers.Clear();
+
             //using the for loop to find who all users are insincere 
             foreach (var currElelement in eachUserEnterTimeInMeeting)
             {
@@ -134,6 +143,7 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             //we have to recalculate and  update the telemetric analytics
             CalculateUserCountVsTimeStamp(newSession, currTime);
             CalculateArrivalExitTimeOfUser(newSession, currTime);
+            GetListOfInsincereMembers(currTime);
 
             return;
 
@@ -162,7 +172,7 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             //checking for the left users 
             foreach (var currUser in eachUserEnterTimeInMeeting)
             { 
-                if (newSession.users.Contains(currUser.Key) == false && eachUserEnterTimeInMeeting.ContainsKey(currUser.Key) == true)
+                if (newSession.users.Contains(currUser.Key) == false && eachUserExitTime.ContainsKey(currUser.Key) == false)
                     eachUserExitTime[currUser.Key] = currTime;
             
             }

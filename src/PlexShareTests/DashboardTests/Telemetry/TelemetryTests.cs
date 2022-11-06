@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -291,6 +292,92 @@ namespace PlexShareTests.DashboardTests.Telemetry
 
 
             Assert.True(check1);
+
+            //say everything went fine 
+            return;
+
+        }
+
+
+        [Fact]
+        //adding test case for GetListOfInsincereMembers
+        public void GetListOfInsincereMembers_Complex_Test()
+        {
+            UserData user1 = new UserData("Rupesh Kumar", 1);
+            UserData user2 = new UserData("Hrishi Raaj Singh Chauhan", 2);
+            UserData user3 = new UserData("Shubham Raj", 3);
+
+            SessionData sessionData1 = new SessionData();
+            sessionData1.AddUser(user1);
+            DateTime currTime1 = new DateTime(2021, 11, 23, 1, 0, 0);
+
+           
+
+            //updating the enter and exit time for this 
+            var telemetryInstance = TelemetryFactory.GetTelemetryInstance();
+            //first we have to clear all the lists 
+            telemetryInstance.eachUserEnterTimeInMeeting.Clear();
+            telemetryInstance.eachUserExitTime.Clear();
+
+           
+            telemetryInstance.CalculateArrivalExitTimeOfUser(sessionData1, currTime1);
+
+            //let user1 exits and user2 joins and hence the user1 will be insincere member 
+            SessionData sessionData2 = new SessionData();
+            sessionData2.AddUser(user2);
+            DateTime currTime2 = new DateTime(2021, 11, 23, 1, 15, 0);
+
+            //updating the entry and exit time for the users 
+            telemetryInstance.CalculateArrivalExitTimeOfUser(sessionData2, currTime2);
+
+
+            //now exiting the user2 and joining the user3 here the user2 will be sincere 
+            SessionData sessionData3 = new SessionData();
+            sessionData3.AddUser(user3);
+
+            DateTime currTime3 = new DateTime(2021, 11, 23, 1, 51, 0);
+
+            //updating the entry and exit time for this purpose 
+            telemetryInstance.CalculateArrivalExitTimeOfUser(sessionData3, currTime3);
+
+
+            //so we will have user1 as insincere and user2 as sincere and also user3 as sincere  member as this is still in the meeting 
+            //calling the getinsincere member for getting the list of insincere members 
+            telemetryInstance.GetListOfInsincereMembers(currTime3);
+
+
+            //for user1 
+            bool check1 = false;
+            //for user2 
+            bool check2 = false;
+            //for user3 
+            bool check3 = false;
+            //for size of list 
+            bool check4 = false;
+
+            //Assert ==> checking the answers now 
+            if (telemetryInstance.listOfInSincereMembers.Contains(user1.userID) == true)
+            {
+                check1 = true;
+            }
+
+            if (telemetryInstance.listOfInSincereMembers.Contains(user2.userID) == false)
+            {
+                check2 = true;
+            }
+
+            if (telemetryInstance.listOfInSincereMembers.Contains(user3.userID) == false)
+            {
+                check3 = true;
+            }
+
+            if (telemetryInstance.listOfInSincereMembers.Count() == 1)
+            {
+                check4 = true;
+            }
+
+
+            Assert.True(check1 && check2 && check3 && check4);
 
             //say everything went fine 
             return;
