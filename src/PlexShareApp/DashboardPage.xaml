@@ -21,7 +21,7 @@
             <ColumnDefinition Width="10*"/>
             <!-- this column to show the relevant data such as total participant count, chat count and so on-->
             <!--<ColumnDefinition Width="2*"/>-->
-            <ColumnDefinition Width="2.5*"/>
+            <ColumnDefinition Width="1.7*"/>
         </Grid.ColumnDefinitions>
 
 
@@ -220,7 +220,7 @@
 
                 </Button>
                 <!--</Border>-->
-                <Button Grid.Column="1" HorizontalAlignment="center" VerticalAlignment="center" Background="#24a0ed" FontWeight="Bold" x:Name="SwitchMode" Height="40" Width="120"   
+                <Button Grid.Column="1" HorizontalAlignment="center" VerticalAlignment="center" Background="#24a0ed" FontWeight="Bold" x:Name="SwitchMode" Height="40" Width="140"   
                 Content="{Binding ButtonContentSetter}" Click="OnSwitchModeButtonClick">
                 </Button>
 
@@ -240,7 +240,7 @@
 
 
         <!--defining the grid for showing the section for the participant count -->
-        <Grid Grid.Column="2" Margin="10, 0, 0, 0">
+        <Grid Grid.Column="2" Margin="5, 0, 0, 0">
             <Grid.Background>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="LightGray" Offset="1"/>
