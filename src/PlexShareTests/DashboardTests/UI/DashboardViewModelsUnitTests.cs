@@ -1,4 +1,5 @@
 ﻿using Dashboard;
+using PlexShareDashboard.Dashboard.Server.Telemetry;
 using PlexShareDashboard.Dashboard.UI.ViewModel;
 using Syncfusion.UI.Xaml.Charts;
 using System;
@@ -251,9 +252,59 @@ namespace PlexShareTests.DashboardTests.UI
             return;
         }
 
+
+        [Fact]
         public void OnAnalyticsChanged_Test()
         {
+            Dictionary<int, int> currUserIdVsChatCount = new Dictionary<int, int>();
+            currUserIdVsChatCount[1] = 10;
+            currUserIdVsChatCount[2] = 20;
+            currUserIdVsChatCount[4] = 30;
+            List<int> array  = new List<int>();
+            array.Add(1);
+            array.Add(2);
+            array.Add(3);
 
+
+            DateTime currDateTime1 = new DateTime(2021, 11, 23, 1, 15, 0);
+            DateTime currDateTime2 = new DateTime(2021, 11, 23, 1, 25, 0);
+            DateTime currDateTime3 = new DateTime(2021, 11, 23, 1, 35, 0);
+
+            Dictionary<DateTime, int> currUserCountVsTimeStamp = new Dictionary<DateTime, int>();
+            currUserCountVsTimeStamp[currDateTime1] = 10;
+            currUserCountVsTimeStamp[currDateTime2] = 20;
+            currUserCountVsTimeStamp[currDateTime3] = 30;
+
+
+            SessionAnalytics sessionAnalytics = new SessionAnalytics();
+            sessionAnalytics.chatCountForEachUser = currUserIdVsChatCount;
+            sessionAnalytics.listOfInSincereMembers = array;
+            sessionAnalytics.userCountVsTimeStamp = currUserCountVsTimeStamp;
+
+            SessionSummary sessionSummary = new SessionSummary();
+            sessionSummary.userCount = 10;
+            sessionSummary.chatCount = 20;
+            sessionSummary.score = 200;
+
+            //setting the summary inside the sessionAnalytics 
+            sessionAnalytics.sessionSummary = sessionSummary;
+
+            //now the analytics is set we have to call the function onanalytics changed 
+            DashboardViewModelForTest.OnAnalyticsChanged(sessionAnalytics);
+
+            //asserting the result values
+            Assert.Equal(10, DashboardViewModelForTest.UserCountList[0]);
+            Assert.Equal(20, DashboardViewModelForTest.UserCountList[1]);
+            Assert.Equal(30, DashboardViewModelForTest.UserCountList[2]);
+
+
+            Assert.Equal(10, DashboardViewModelForTest.ChatCountList[0]);
+            Assert.Equal(20, DashboardViewModelForTest.ChatCountList[1]);
+            Assert.Equal(30, DashboardViewModelForTest.ChatCountList[2]);
+
+            Assert.Equal(200, DashboardViewModelForTest.SessionScoreSetter);
+                
+            
             //say everything went fine 
             return;
         }

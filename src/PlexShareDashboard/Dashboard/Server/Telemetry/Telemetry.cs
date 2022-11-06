@@ -66,6 +66,7 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             currSessionAnalytics.userCountVsTimeStamp = userCountVsEachTimeStamp;
             currSessionAnalytics.sessionSummary.chatCount = currTotalChatCount;
             currSessionAnalytics.sessionSummary.userCount = currTotalUser;
+            currSessionAnalytics.sessionSummary.score = currTotalUser * currTotalChatCount;
 
             return currSessionAnalytics;
         }

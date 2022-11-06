@@ -674,7 +674,12 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             var currScore = sessionAnalytics.sessionSummary.score;
 
 
-            SessionScoreSetter = currScore;
+            //change the session score only then when the current session score is less 
+            if (currScore > SessionScoreSetter)
+            { 
+                SessionScoreSetter = currScore;
+            
+            }
 
             //we have to update all the lists so that we can show to the dahsboard
             UpdateUserCountVsTimeStamp(sessionAnalytics.userCountVsTimeStamp);
