@@ -27,7 +27,7 @@ namespace PlexShareScreenshare.Client
             _sendConfirmationTask?.Wait();
             _processor.StopProcessing();
             _capturer.StopCapture();
-            _communicator.Send(serializedDeregisterPacket, "ScreenShare");
+            _communicator.Send(serializedDeregisterPacket, "ScreenShare", null);
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace PlexShareScreenshare.Client
             {
                 while (!_confirmationCancellationTokenSource.IsCancellationRequested)
                 {
-                    _communicator.Send(serializedConfirmationPacket, "ScreenShare");
+                    _communicator.Send(serializedConfirmationPacket, "ScreenShare", null);
                     Thread.Sleep(1000);
                 }
             }, cancelConfirmationToken);

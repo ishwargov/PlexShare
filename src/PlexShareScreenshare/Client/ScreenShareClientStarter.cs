@@ -92,7 +92,7 @@ namespace PlexShareScreenshare.Client
             // sending register packet
             DataPacket dataPacket = new(_id, _name, ClientDataHeader.Register.ToString(), "");
             string serializedData = _serializer.Serialize(dataPacket);
-            _communicator.Send(serializedData, "ScreenShare");
+            _communicator.Send(serializedData, "ScreenShare", null);
 
             StartImageSending();
             SendConfirmationPacket();
@@ -140,7 +140,7 @@ namespace PlexShareScreenshare.Client
                 string serializedImg = _serializer.Serialize(img);
                 DataPacket dataPacket = new(_id, _name, ClientDataHeader.Image.ToString(), serializedImg);
                 string serializedData = _serializer.Serialize(dataPacket);
-                _communicator.Send(serializedData, "ScreenShare");
+                _communicator.Send(serializedData, "ScreenShare", null);
             }
         }
 
