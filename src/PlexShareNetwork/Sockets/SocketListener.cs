@@ -17,7 +17,7 @@ namespace PlexShareNetwork.Sockets
 	public class SocketListener
 	{
 		// max size of the send buffer
-		private const int bufferSize = 1024 * 1024;
+		private const int bufferSize = 1000000;
 		// create the buffer
 		private readonly byte[] buffer = new byte[bufferSize];
 
@@ -33,92 +33,101 @@ namespace PlexShareNetwork.Sockets
 		public volatile bool _threadRun;
 
 		// variable to store the receive queue
-		private readonly ReceivingQueue _queue;
+		private readonly ReceivingQueue _receivingQueue;
 
 		// variable to store the socket
 		private readonly Socket _socket;
 
-		/// <summary>
-		/// It is the Constructor which initializes the queue and socket variables.
-		/// </summary>
-		/// <param name="queue"> The receive queue. </param>
-		/// <param name="socket"> The socket on which to listen. </param>
-		public SocketListener(ReceivingQueue queue, TcpClient socket)
+        /// <summary>
+        /// It is the Constructor which initializes the queue and socket variables.
+        /// </summary>
+        /// <param name="receivingQueue"> The receiving queue. </param>
+        /// <param name="socket"> The socket on which to listen. </param>
+        public SocketListener(ReceivingQueue receivingQueue, TcpClient socket)
 		{
-			_queue = queue;
+            _receivingQueue = receivingQueue;
 			_socket = socket.Client;
-		}
-
-		/// <summary>
-		/// This function starts the thread.
-		/// </summary>
-		/// <returns> void </returns>
-		public void Start()
-		{
-			_threadRun = true;
 			_thread = new Thread(() => _socket.BeginReceive(buffer, 0, bufferSize, 0, ReceiveCallback, null));
-			_thread.Start();
-			Trace.WriteLine("[Networking] SocketListener thread started.");
-		}
-
-		/// <summary>
-		/// This menthod stops the thread.
-		/// </summary>
-		/// <returns> void </returns>
-		public void Stop()
-		{
-			_threadRun = false;
-			Trace.WriteLine("[Networking] SocketListener thread stopped.");
-		}
-
-		/// <summary>
-		/// This menthod is the AsyncCallback function passed to socket.BeginReceive() as an argument.
-		/// </summary>
-		/// <returns> void </returns>
-		private void ReceiveCallback(IAsyncResult ar)
-		{
-			if (!_threadRun)
-			{
-				return;
-			}
-			try
-			{
-				int bytesCount = _socket.EndReceive(ar);
-				if (bytesCount > 0)
-				{
-					_receivedString.Append(Encoding.ASCII.GetString(buffer, 0, bytesCount));
-					string remainingString = ProcessReceivedString(_receivedString.ToString());
-					_receivedString.Clear();
-					_receivedString.Append(remainingString);
-				}
-				_socket.BeginReceive(buffer, 0, bufferSize, 0, ReceiveCallback, null);
-			}
-			catch (Exception e)
-			{
-				Trace.WriteLine($"[Networking] Error in SocketListener thread: {e.Message}");
-			}
 		}
 
         /// <summary>
-        /// This menthod processes the packets from the given packets string, and
-        /// removes the escape characters from each packet and calls the EnqueuePacket() function to enqueue the packet.
+        /// This function starts the thread.
+        /// </summary>
+        /// <returns> void </returns>
+        public void Start()
+		{
+            Trace.WriteLine("[Networking] SocketListener.Start() function called.");
+            try
+            {
+                _threadRun = true;
+                _thread.Start();
+                Trace.WriteLine("[Networking] SocketListener thread started.");
+            }
+            catch(Exception e)
+            {
+                Trace.WriteLine($"[Networking] Error in starting the thread: {e.Message}.");
+            }
+		}
+
+        /// <summary>
+        /// This function stops the thread.
+        /// </summary>
+        /// <returns> void </returns>
+        public void Stop()
+		{
+            Trace.WriteLine("[Networking] SocketListener.Stop() function called.");
+            _threadRun = false;
+			Trace.WriteLine("[Networking] SocketListener thread stopped.");
+		}
+
+        /// <summary>
+        /// This function is the AsyncCallback function passed to socket.BeginReceive() as an argument.
+        /// </summary>
+        /// <returns> void </returns>
+        private void ReceiveCallback(IAsyncResult ar)
+		{
+            Trace.WriteLine("[Networking] SocketListener.ReceiveCallback() function called.");
+            if (_threadRun)
+            {
+                try
+                {
+                    int bytesCount = _socket.EndReceive(ar);
+                    if (bytesCount > 0)
+                    {
+                        _receivedString.Append(Encoding.ASCII.GetString(buffer, 0, bytesCount));
+                        string remainingString = ProcessReceivedString(_receivedString.ToString());
+                        _receivedString.Clear();
+                        _receivedString.Append(remainingString);
+                    }
+                    _socket.BeginReceive(buffer, 0, bufferSize, 0, ReceiveCallback, null);
+                }
+                catch (Exception e)
+                {
+                    Trace.WriteLine($"[Networking] Error in SocketListener.ReceiveCallback(): {e.Message}");
+                }
+            }
+		}
+
+        /// <summary>
+        /// This function processes the packets from the given string, and enqueues the packets.
         /// </summary>
         /// <param name="receivedString"> The string containing packets. </param>
-        /// <returns> The remaining string string after processing the packets from the string. </returns>
+        /// <returns> The remaining string after processing the packets from the given string. </returns>
         private string ProcessReceivedString(string receivedString)
 		{
+            Trace.WriteLine("[Networking] SocketListener.ProcessReceivedString() function called.");
             int packetBeginIndex = receivedString.IndexOf("BEGIN", StringComparison.Ordinal) + 5;
             int packetEndIndex = receivedString.IndexOf("END", StringComparison.Ordinal);
             while (packetBeginIndex != -1 && packetEndIndex != -1)
             {
                 Packet packet = _serializer.Deserialize<Packet>(receivedString[packetBeginIndex..packetEndIndex]);
-                receivedString = receivedString[(packetEndIndex + 3)..]; // remove the first packet from the packets string
-                Trace.WriteLine($"[Networking] Received data from module {packet.moduleOfPacket}.");
-                _queue.Enqueue(packet);
+                _receivingQueue.Enqueue(packet);
+                receivedString = receivedString[(packetEndIndex + 3)..]; // remove the first packet from the string
+                Trace.WriteLine($"[Networking] Received data from module: {packet.moduleOfPacket}.");
                 packetBeginIndex = receivedString.IndexOf("BEGIN", StringComparison.Ordinal) + 5;
                 packetEndIndex = receivedString.IndexOf("END", StringComparison.Ordinal);
             }
-			return receivedString; // return the remaining packets string
+			return receivedString; // return the remaining string
 		}
 	}
 }
