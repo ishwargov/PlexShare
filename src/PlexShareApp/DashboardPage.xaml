@@ -220,7 +220,7 @@
 
                 </Button>
                 <!--</Border>-->
-                <Button Grid.Column="1" HorizontalAlignment="center" VerticalAlignment="center" Background="#24a0ed" FontWeight="Bold" x:Name="SwitchMode" Height="40" Width="120"   
+                <Button Grid.Column="1" HorizontalAlignment="center" VerticalAlignment="center" Background="#24a0ed" FontWeight="Bold" x:Name="SwitchMode" Height="40" Width="140"   
                 Content="{Binding ButtonContentSetter}" Click="OnSwitchModeButtonClick">
                 </Button>
 

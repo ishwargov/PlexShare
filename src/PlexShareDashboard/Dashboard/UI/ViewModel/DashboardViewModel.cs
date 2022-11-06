@@ -396,7 +396,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         }
 
         //function to update the button content 
-        private void UpdateButtonContent(UserData currUser)
+        public void UpdateButtonContent(UserData currUser)
         {
             //UserData currU = new UserData("Rupesh", 1);
             //currUser = currU;

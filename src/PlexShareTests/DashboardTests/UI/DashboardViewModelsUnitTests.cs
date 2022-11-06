@@ -1,4 +1,5 @@
-﻿using PlexShareDashboard.Dashboard.UI.ViewModel;
+﻿using Dashboard;
+using PlexShareDashboard.Dashboard.UI.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -67,7 +68,7 @@ namespace PlexShareTests.DashboardTests.UI
         //function to test the on property change event whether it is triggering or not 
         public void OnPropertyChange_Event_Test()
         {
-            string CheckCurrentProperty = "";
+            string CheckCurrentProperty = DashboardViewModelForTest.EngagementRateSetter;
             DashboardViewModelForTest.PropertyChanged += delegate (object sender, PropertyChangedEventArgs e)
             {
                 CheckCurrentProperty = e.PropertyName;
@@ -84,6 +85,23 @@ namespace PlexShareTests.DashboardTests.UI
         
         }
 
+
+        //function to check the updatebutton setter 
+        [Fact]
+        public void UpdateButtonContent_Test_To_Update_According_To_Current_Mode()
+        {
+            //DashboardViewModelForTest.ButtonContentSetter = "LabMode";
+            DashboardViewModelForTest.SessionModeSetter = "LabMode";
+
+            UserData user1 = new UserData("Rupesh Kumar", 1);
+
+            DashboardViewModelForTest.UpdateButtonContent(user1);
+
+            Assert.Equal("Switch To ExamMode", DashboardViewModelForTest.ButtonContentSetter);
+
+            //say everything went fine 
+            return;
+        }
 
     }
 }
