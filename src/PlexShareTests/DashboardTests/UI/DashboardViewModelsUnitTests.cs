@@ -179,8 +179,25 @@ namespace PlexShareTests.DashboardTests.UI
         
         }
 
+        [Fact]
         public void UpdateUserIdVsChatCount_Test()
         {
+            Dictionary<int, int> currUserIdVsChatCount = new Dictionary<int, int>();
+            currUserIdVsChatCount[1] = 10;
+            currUserIdVsChatCount[2] = 20;
+            currUserIdVsChatCount[4] = 30;
+
+            //calling the function to update the values 
+            DashboardViewModelForTest.UpdateUserIdVsChatCount(currUserIdVsChatCount);
+
+            //now asserting the values for this purpose 
+            Assert.Equal("1", DashboardViewModelForTest.UserIdList[0]);
+            Assert.Equal("2", DashboardViewModelForTest.UserIdList[1]);
+            Assert.Equal("4", DashboardViewModelForTest.UserIdList[2]);
+
+            Assert.Equal(10, DashboardViewModelForTest.ChatCountList[0]);
+            Assert.Equal(20, DashboardViewModelForTest.ChatCountList[1]);
+            Assert.Equal(30, DashboardViewModelForTest.ChatCountList[2]);
 
 
             //say everything went fine 
