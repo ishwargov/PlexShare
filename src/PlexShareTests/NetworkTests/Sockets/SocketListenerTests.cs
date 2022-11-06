@@ -21,12 +21,12 @@ namespace PlexShareNetwork.Sockets.Tests
         private readonly TcpClient _clientSocket = new();
         private TcpClient _serverSocket;
 		private readonly SocketListener _socketListener;
-        private readonly ICommunicator _serverCommunicator = CommunicationFactory.GetCommunicator(false);
+        private readonly ICommunicator _communicatorServer = CommunicationFactory.GetCommunicator(false);
 
         public SocketListenerTests()
 		{
-            string[] IPAndPort = _serverCommunicator.Start().Split(":");
-            _serverCommunicator.Stop();
+            string[] IPAndPort = _communicatorServer.Start().Split(":");
+            _communicatorServer.Stop();
             IPAddress IP = IPAddress.Parse(IPAndPort[0]);
 			int port = int.Parse(IPAndPort[1]);
             TcpListener serverSocket = new(IP, port);

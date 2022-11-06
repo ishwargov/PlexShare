@@ -105,21 +105,9 @@ namespace PlexShareNetwork
 			ClientID = clientId;
 		}
 
-		public void Wait()
+		public void WaitForEvent()
 		{
             while (Event == null)
-            {
-                Thread.Sleep(100);
-            }
-            while (Event == "OnDataReceived" && Data == null)
-            {
-                Thread.Sleep(100);
-            }
-            while (Event == "OnClientJoined" && Socket == null)
-            {
-                Thread.Sleep(100);
-            }
-            while (Event == "OnClientLeft" && ClientID == null)
             {
                 Thread.Sleep(100);
             }

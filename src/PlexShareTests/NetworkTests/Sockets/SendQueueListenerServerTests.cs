@@ -20,7 +20,7 @@ namespace PlexShareNetwork.Sockets.Tests
 		private readonly SendingQueue _sendingQueue = new();
         private readonly ReceivingQueue _receivingQueue1 = new();
         private readonly ReceivingQueue _receivingQueue2 = new();
-        private readonly ICommunicator _serverCommunicator = CommunicationFactory.GetCommunicator(false);
+        private readonly ICommunicator _communicatorServer = CommunicationFactory.GetCommunicator(false);
 		private readonly SendQueueListenerServer _sendQueueListenerServer;
         private readonly SocketListener _socketListener1;
         private readonly SocketListener _socketListener2;
@@ -35,8 +35,8 @@ namespace PlexShareNetwork.Sockets.Tests
 
 		public SendQueueListenerServerTests()
 		{
-			string[] IPAndPort = _serverCommunicator.Start().Split(":");
-            _serverCommunicator.Stop();
+			string[] IPAndPort = _communicatorServer.Start().Split(":");
+            _communicatorServer.Stop();
             _IP = IPAddress.Parse(IPAndPort[0]);
 			_port = int.Parse(IPAndPort[1]);
 			_serverListener = new TcpListener(_IP, _port);
@@ -208,14 +208,21 @@ namespace PlexShareNetwork.Sockets.Tests
         [Fact]
 		public void ClientGotDisconnectedTest()
 		{
+            // client1 got disconnected, other modules should be notified about client1 and
+            // client2 should still receive the sent data as it is being broadcasted
+            TestNotificationHandler testNotificationHandler = (TestNotificationHandler) _subscribedModules["Test Module1"];
+            testNotificationHandler.Reset();
 			_clientSocket1.Close();
 			_clientSocket1.Dispose();
             Packet sendPacket = new("Test string", null, "Test Module1");
             _sendingQueue.Enqueue(sendPacket);
-            TestNotificationHandler testNotificationHandler = (TestNotificationHandler) _subscribedModules["Test Module1"];
-            testNotificationHandler.Wait();
+            testNotificationHandler.WaitForEvent();
+
+            // assert module is notified, client1 did not receive, and client2 received
 			Assert.Equal("OnClientLeft", testNotificationHandler.Event);
             Assert.Equal("Client1 ID", testNotificationHandler.ClientID);
+            Assert.True(_receivingQueue1.IsEmpty());
+            NetworkTestGlobals.AssertSinglePacketReceive(sendPacket, _receivingQueue2);
         }
     }
 }
