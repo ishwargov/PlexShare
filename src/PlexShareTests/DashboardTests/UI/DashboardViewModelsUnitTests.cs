@@ -1,6 +1,7 @@
 ﻿using PlexShareDashboard.Dashboard.UI.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -45,6 +46,7 @@ namespace PlexShareTests.DashboardTests.UI
             return;
         }
 
+        //testing function for testing the initialization of the variables 
         [Fact]
         public void Initialization_Test_Of_Variables()
         {
@@ -61,6 +63,26 @@ namespace PlexShareTests.DashboardTests.UI
             return;
         }
 
+        [Fact]
+        //function to test the on property change event whether it is triggering or not 
+        public void OnPropertyChange_Event_Test()
+        {
+            string CheckCurrentProperty = "";
+            DashboardViewModelForTest.PropertyChanged += delegate (object sender, PropertyChangedEventArgs e)
+            {
+                CheckCurrentProperty = e.PropertyName;
+
+            };
+
+            DashboardViewModelForTest.OnPropertyChanged("EngagementRateSetter");
+
+            Assert.NotNull(CheckCurrentProperty);
+            Assert.Equal("EngagementRateSetter", CheckCurrentProperty);
+
+            //say everything went fine 
+            return;
+        
+        }
 
 
     }
