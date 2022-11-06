@@ -510,5 +510,29 @@ namespace PlexShareTests.DashboardTests.Telemetry
 
 
         }
+
+        public void  GetUserIdVsChatCount_Test()
+        {
+
+            //say everything went fine 
+            return;
+       
+        }
+
+        public void SaveAnalytics_Test()
+        {
+
+            //say everything went fine 
+            return;
+        }
+
+        public SessionAnalytics GetTelemetryAnalytics_Test()
+        {
+
+            SessionAnalytics sessionAnalytics = new SessionAnalytics();
+            
+            //say everything went fine 
+            return sessionAnalytics;
+        }
     }
 }
