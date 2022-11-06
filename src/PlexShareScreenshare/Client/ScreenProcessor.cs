@@ -49,7 +49,7 @@ namespace PlexShareScreenshare.Client
         Bitmap prevImage;
 
         /// <summary>
-        /// Called by ScreenShareClient
+        /// Called by ScreenshareClient
         /// Initialize queue, oldRes, newRes,
         /// cancellation token and the previous image
         /// </summary>
@@ -160,7 +160,7 @@ namespace PlexShareScreenshare.Client
         }
 
         /// <summary>
-        /// Called by ScreenShareClient when the client starts screen sharing
+        /// Called by ScreenshareClient when the client starts screen sharing
         /// Will have a lambda function - Process and pushes to the queue
         /// Create the task for the lambda function 
         /// </summary>
@@ -192,7 +192,7 @@ namespace PlexShareScreenshare.Client
         }
 
         /// <summary>
-        /// Called by ScreenShareClient when the client stops screen sharing
+        /// Called by ScreenshareClient when the client stops screen sharing
         /// kill the processor task and make the processor task variable null
         /// Empty the Queue
         /// </summary>
