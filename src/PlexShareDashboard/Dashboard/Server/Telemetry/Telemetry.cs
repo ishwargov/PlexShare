@@ -40,7 +40,7 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
 
 
         //function to fetch the telemetry analytics and then give it back to the session manager 
-        public SessionAnalytics GetTelemetryAnalytics(string allChatMessages)
+        public SessionAnalytics GetTelemetryAnalytics(ChatThread[] allChatMessages)
         {
             DateTime currTime = DateTime.Now;
             GetUserIdVsChatCount(allChatMessages);
@@ -74,7 +74,7 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
 
 
         //function fetch the details from the chatcontext and then giving it to persistent to save the analytics on the server 
-        public void SaveAnalytics(string allChatMessages)
+        public void SaveAnalytics(ChatThread[] allChatMessages)
         {
             DateTime currDateTime = DateTime.Now;
             GetUserIdVsChatCount(allChatMessages);
@@ -106,9 +106,10 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             return;
         }
 
-        public void GetUserIdVsChatCount(string allMesssages)
+        public void GetUserIdVsChatCount(ChatThread[] allMesssages)
         {
             //we have to implement when we start integrating with the chat module 
+
 
             //say everything went fine 
             return;
