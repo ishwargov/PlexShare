@@ -703,7 +703,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         {
             int activeMembers = currChatCountForEachUser.Count;
 
-            float EngagementRate = (float)(activeMembers / TotalParticipantsCountSetter) * 100;
+            float EngagementRate = (float)(activeMembers*100) / TotalParticipantsCountSetter;
             EngagementRateSetter = EngagementRate.ToString("0") + "%";
 
 
