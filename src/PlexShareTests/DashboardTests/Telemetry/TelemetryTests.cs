@@ -511,6 +511,8 @@ namespace PlexShareTests.DashboardTests.Telemetry
 
         }
 
+        [Fact]
+
         public void  GetUserIdVsChatCount_Test()
         {
 
