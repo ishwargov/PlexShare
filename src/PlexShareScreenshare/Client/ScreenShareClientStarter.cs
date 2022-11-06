@@ -1,14 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Controls;
+﻿///<author>Satyam Mishra</author>
+///<summary>
+/// This file has ScreenshareClient class's partial implementation
+/// In this file functions realted to starting of ScreenCapturing 
+/// are implemented
+///</summary>
+
 using PlexShareNetwork;
 using PlexShareNetwork.Communication;
 using PlexShareNetwork.Serialization;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 // Each frame consists of the resolution of the image and the ImageDiffList
 using Frame = System.Tuple<System.Tuple<int, int>,
                         System.Collections.Generic.List<System.Tuple<System.Tuple<int, int>,
@@ -18,13 +20,13 @@ using Frame = System.Tuple<System.Tuple<int, int>,
 namespace PlexShareScreenshare.Client
 {
     /// <summary>
-    /// Class contains implementation of the ScreenShareClient which will
+    /// Class contains implementation of the ScreenshareClient which will
     /// take the processed images and send it to the server via networking module
     /// </summary>
-    public partial class ScreenShareClient : INotificationHandler
+    public partial class ScreenshareClient : INotificationHandler
     {
 
-        // Object of netowking module through which
+        // Object of netorwking module through which
         // we will be communicating to the server
         private readonly ICommunicator _communicator;
 
@@ -48,15 +50,15 @@ namespace PlexShareScreenshare.Client
         // Varible to store if screen share is active
         private bool _isScreenSharing = false;
 
-        // ScreenShareClient Object
-        private ScreenShareClient? _screenShareClient;
+        // ScreenshareClient Object
+        private static ScreenshareClient? _screenShareClient;
 
         /// <summary>
-        /// Called by view model
-        /// Subscribe the networking by calling `_communicator.Subscribe()`
-        /// Creates the objects of `ScreenCapturer` and `ScreenProcessor`
+        /// Setting up the ScreenCapturer and ScreenProcessor Class
+        /// Taking instance of communicator from communicator factory
+        /// and subscribing to it
         /// </summary>
-        private ScreenShareClient()
+        private ScreenshareClient()
         {
             _capturer = new ScreenCapturer();
             _processor = new ScreenProcessor(_capturer);
@@ -66,15 +68,14 @@ namespace PlexShareScreenshare.Client
         }
 
         /// <summary>
-        /// Gives an instance of ScreenShareClient class
-        /// And that instance is always the same i.e. 
-        /// singleton patter
+        /// Gives an instance of ScreenshareClient class and that instance is always 
+        /// the same i.e. singleton pattern
         /// </summary>
-        public ScreenShareClient GetInstance()
+        public ScreenshareClient GetInstance()
         {
             if (_screenShareClient == null)
             {
-                _screenShareClient = new ScreenShareClient();
+                _screenShareClient = new ScreenshareClient();
             }
             return _screenShareClient;
         }
@@ -93,7 +94,7 @@ namespace PlexShareScreenshare.Client
             _communicator.Send(serializedData, "ScreenShare");
 
             StartImageSending();
-            SendConfirmationPacket();
+            //SendConfirmationPacket();
 
             _capturer.StartCapture();
             _processor.StartProcessing();
@@ -106,7 +107,7 @@ namespace PlexShareScreenshare.Client
         /// else if the message was STOP then stop the screen sharing
         /// </summary>
         /// <param name="serializedData"> serialized data from the network module </param>
-        void INotificationHandler.OnDataReceived(string serializedData) 
+        void INotificationHandler.OnDataReceived(string serializedData)
         {
             DataPacket dataPacket = _serializer.Deserialize<DataPacket>(serializedData);
             if (dataPacket.Header == ServerDataHeader.Send.ToString())
@@ -120,7 +121,7 @@ namespace PlexShareScreenshare.Client
             }
             else
             {
-                StopScreenSharing();
+                // StopScreenSharing();
             }
         }
 
