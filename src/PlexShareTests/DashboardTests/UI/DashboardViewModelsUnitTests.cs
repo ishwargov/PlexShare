@@ -126,5 +126,60 @@ namespace PlexShareTests.DashboardTests.UI
             //say everything went fine 
             return;
         }
+
+        //function to test the GetHourAndMinute
+        public void GetHourAndMinute_Test()
+        {
+            //say everything went fine 
+            return;
+        }
+
+        public void UpdateUserCountVsTimeStamp_Test()
+        {
+
+
+            //say everything went fine 
+            return;
+        
+        }
+
+        public void UpdateUserIdVsChatCount_Test()
+        {
+
+
+            //say everything went fine 
+            return;
+        
+        }
+
+        public void CalculatePercentageOfAttentiveAndNonAttentiveUsers_Test()
+        {
+            //say everything went fine 
+            return;
+        }
+
+
+        public void OnClientSessionChanged_Test()
+        {
+
+            //say everything went fine 
+            return;
+        }
+
+        public void OnAnalyticsChanged_Test()
+        {
+
+            //say everything went fine 
+            return;
+        }
+
+
+        public void CalculateEngagementRate_Test()
+        {
+
+
+            //say everything went fine 
+            return;
+        }
     }
 }

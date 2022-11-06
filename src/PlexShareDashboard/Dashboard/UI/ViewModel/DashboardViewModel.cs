@@ -530,7 +530,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
 
         //function to fetch the hour and the minute format 
-        private string GetHourAndMinute(DateTime currDateTime)
+        public string GetHourAndMinute(DateTime currDateTime)
         {
             string currHour = currDateTime.ToString("HH");
             string currSecond = currDateTime.ToString("mm");
