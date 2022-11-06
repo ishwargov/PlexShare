@@ -10,12 +10,21 @@ using Newtonsoft.Json;
 
 namespace FileStorageApp
 {
-    public static class DownloadFileClass
+    public static class FileStorageApp
     {
+        /*
+        private const string TableName = "Entities"; //SubmittedFiles
+        private const string ConnectionName = "AzureWebJobsStorage"; //Need to change
+        private const string Route = "entity"; // Need to change. (files)
+        
+         */
+
         [FunctionName("DownloadFile")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
-            ILogger log)
+            ILogger log) //Route = Route + "/{sessionid}" + "/{username}" + "/{pdf}" 
+            //below Ilogger log write the sessionid's and username, pdf. 
+            //only get request. after the req write the Table name and deatils. 
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
 
@@ -33,3 +42,15 @@ namespace FileStorageApp
         }
     }
 }
+//How to detect a file from the link mapped in the ui
+//Does it require all file download function for the instructor.
+//Where should be delete file function need to be written whether in client or server side.
+//In the get or download file whether it is by file name or session id or which have preference first. 
+
+
+//get sessions based on username. 
+//and submission based on session id. and also in case of user by username. 
+
+//create session
+//create and update submission
+//delete submission
