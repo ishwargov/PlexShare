@@ -9,6 +9,49 @@
       Title="WhiteBoardPage">
 
     <Grid Background="AntiqueWhite">
-        
+        <ItemsControl x:Name="ItemsControl" ItemsSource="{Binding ShapeItems, Mode=TwoWay}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas  Name="mc2" 
+                        MouseDown="CanvasMouseDown"
+                             MouseMove="CanvasMouseMove"
+                             MouseUp="CanvasMouseUp"
+                             Width="1000"
+                             Height="1000"
+                             Background="Beige"
+                             />
+
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Path Data="{Binding Geometry}"
+					  Fill="{Binding Fill}"
+					  Stroke="{Binding Stroke}"
+                      StrokeThickness="{Binding strokethickness}" 
+                         />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+            <ItemsControl.ItemContainerStyle>
+                <Style TargetType="ContentPresenter">
+                    <Setter Property="Panel.ZIndex" Value="{Binding ZIndex}"/>
+                </Style>
+            </ItemsControl.ItemContainerStyle>
+        </ItemsControl>
+        <Button Click="EllipseCreateMode" Content="Ellipse" HorizontalAlignment="Left" Margin="675,290,0,0" VerticalAlignment="Top"/>
+        <!--<Button Click="Circle_create_mode" Content="Circle" HorizontalAlignment="Left" Margin="675,325,0,0" VerticalAlignment="Top"/>-->
+        <Button Click="RectangleCreateMode" Content="Rectangle" HorizontalAlignment="Left" Margin="675,360,0,0" VerticalAlignment="Top"/>
+        <Button Click="FreehandCreateMode" Content="Freehand" HorizontalAlignment="Left" Margin="675,390,0,0" VerticalAlignment="Top"/>
+
+
+        <Button Click="ColorGreen" Background="Green" Foreground="White" Content="Green" HorizontalAlignment="Left" Margin="708,150,0,0" VerticalAlignment="Top"/>
+        <Button Click="ColorRed" Background="Red" Foreground="White" Content="Red" HorizontalAlignment="Left" Margin="715,95,0,0" VerticalAlignment="Top"/>
+        <Button Click="ColorYellow" Background="yellow" Foreground="White" Content="Yellow" HorizontalAlignment="Left" Margin="708,200,0,0" VerticalAlignment="Top"/>
+
+        <Button Click="DecreaseZIndex" Padding="12 2" Background="Red" Foreground="White" Content="Z-" HorizontalAlignment="Left" Margin="708,450,0,0" VerticalAlignment="Top"/>
+        <Button Click="IncreaseZIndex" Padding="12 2" Background="Green" Foreground="White" Content="Z+" HorizontalAlignment="Left" Margin="708,500,0,0" VerticalAlignment="Top"/>
+
+        <Button Click="ViewMode" Padding="12 2" Content="View" HorizontalAlignment="Left" Margin="708,600,0,0" VerticalAlignment="Top"/>
+        <Button Click="SelectMode" Padding="12 2" Content="Select" HorizontalAlignment="Left" Margin="708,650,0,0" VerticalAlignment="Top"/>
     </Grid>
 </Page>

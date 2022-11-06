@@ -14,4 +14,8 @@
 	<PropertyGroup>
 		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\PlexShareWhiteboard\PlexShareWhiteboard.csproj" />
+	</ItemGroup>
 </Project>
