@@ -1,4 +1,4 @@
-﻿///<author>Satyam Mishra</author>
+﻿///<author>Rudr Tiwari</author>
 ///<summary>
 /// This file has ScreenshareClient class's partial implementation
 /// In this file functions realted to stopping of ScreenCapturing 
