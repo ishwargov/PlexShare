@@ -89,7 +89,7 @@ namespace PlexShareScreenshare.Client
         {
             _isScreenSharing = true;
             // sending register packet
-            DataPacket dataPacket = new(ClientDataHeader.Register.ToString(), "");
+            DataPacket dataPacket = new(_id, _name, ClientDataHeader.Register.ToString(), "");
             string serializedData = _serializer.Serialize(dataPacket);
             _communicator.Send(serializedData, "ScreenShare");
 
@@ -112,7 +112,7 @@ namespace PlexShareScreenshare.Client
             DataPacket dataPacket = _serializer.Deserialize<DataPacket>(serializedData);
             if (dataPacket.Header == ServerDataHeader.Send.ToString())
             {
-                if (_isScreenSharing == false)
+                if (!_isScreenSharing)
                 {
                     StartScreenSharing();
                 }
@@ -135,7 +135,7 @@ namespace PlexShareScreenshare.Client
             {
                 Frame img = _processor.GetImage();
                 string serializedImg = _serializer.Serialize(img);
-                DataPacket dataPacket = new(ClientDataHeader.Image.ToString(), serializedImg);
+                DataPacket dataPacket = new(_id, _name, ClientDataHeader.Image.ToString(), serializedImg);
                 string serializedData = _serializer.Serialize(dataPacket);
                 _communicator.Send(serializedData, "ScreenShare");
             }
