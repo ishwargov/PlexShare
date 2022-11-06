@@ -44,5 +44,24 @@ namespace PlexShareTests.DashboardTests.UI
             //say everything went fine 
             return;
         }
+
+        [Fact]
+        public void Initialization_Test_Of_Variables()
+        {
+            Assert.Equal(100, DashboardViewModelForTest.AttentiveUsersSetter);
+            Assert.Equal(0, DashboardViewModelForTest.NonAttentiveUsersSetter);
+            Assert.Equal(1, DashboardViewModelForTest.TotalParticipantsCountSetter);
+            Assert.Equal(0, DashboardViewModelForTest.TotalMessageCountSetter);
+            Assert.Equal("0", DashboardViewModelForTest.EngagementRateSetter);
+            Assert.Equal("LabMode", DashboardViewModelForTest.SessionModeSetter);
+            Assert.Equal(0, DashboardViewModelForTest.SessionScoreSetter);
+            Assert.Equal("Switch Mode", DashboardViewModelForTest.ButtonContentSetter);
+
+            //say everything went fine 
+            return;
+        }
+
+
+
     }
 }
