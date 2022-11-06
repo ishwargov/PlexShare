@@ -127,9 +127,18 @@ namespace PlexShareTests.DashboardTests.UI
             return;
         }
 
+
+        [Fact]
         //function to test the GetHourAndMinute
         public void GetHourAndMinute_Test()
         {
+
+            DateTime currTime1 = new DateTime(2021, 11, 23, 1, 15, 0);
+
+            string stringFormat = DashboardViewModelForTest.GetHourAndMinute(currTime1);
+
+            Assert.Equal("01:15", stringFormat);
+
             //say everything went fine 
             return;
         }
