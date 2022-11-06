@@ -28,7 +28,7 @@ namespace PlexShareScreenshare.Client
 
         // ScreenshareClient Object
         private static ScreenshareClient? _screenShareClient;
-        
+
         // Object of networking module through which
         // we will be communicating to the server
         private readonly ICommunicator _communicator;

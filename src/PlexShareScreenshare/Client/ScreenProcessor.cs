@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -199,7 +198,7 @@ namespace PlexShareScreenshare.Client
         public void StopProcessing()
         {
             tokenSource?.Cancel();
-           _processedFrame.Clear();
+            _processedFrame.Clear();
         }
 
         /// <summary>

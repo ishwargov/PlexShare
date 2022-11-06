@@ -1,18 +1,12 @@
-﻿///<author>Rudr Tiwari</author>
+﻿using PlexShareNetwork;
+using System.Threading;
+///<author>Rudr Tiwari</author>
 ///<summary>
 /// This file has ScreenshareClient class's partial implementation
 /// In this file functions realted to stopping of ScreenCapturing 
 /// are implemented
 ///</summary>
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using PlexShareScreenshare;
-using PlexShareNetwork;
-using PlexShareNetwork.Serialization;
-using System.Threading;
 
 namespace PlexShareScreenshare.Client
 {
