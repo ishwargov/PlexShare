@@ -1,5 +1,6 @@
 ﻿using Dashboard;
 using PlexShareDashboard.Dashboard.UI.ViewModel;
+using Syncfusion.UI.Xaml.Charts;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -223,9 +224,28 @@ namespace PlexShareTests.DashboardTests.UI
             return;
         }
 
-
+        [Fact]
         public void OnClientSessionChanged_Test()
         {
+            UserData user1 = new UserData("Rupesh kumar", 1);
+            UserData user2 = new UserData("Saurabh Kumar", 2);
+            UserData user3 = new UserData("Hrishi Raaj", 3);
+
+            SessionData sessionData = new SessionData();
+            sessionData.AddUser(user1);
+            sessionData.AddUser(user2);
+            sessionData.AddUser(user3);
+
+            sessionData.sessionMode = "ExamMode";
+            sessionData.sessionId = 1;
+
+            //calling the function 
+            DashboardViewModelForTest.OnClientSessionChanged(sessionData);
+
+            //now asserting the values for this purpose 
+            Assert.Equal("ExamMode", DashboardViewModelForTest.SessionModeSetter);
+            Assert.Equal(3, DashboardViewModelForTest.TotalParticipantsCountSetter);
+            Assert.Equal("Switch To LabMode", DashboardViewModelForTest.ButtonContentSetter);
 
             //say everything went fine 
             return;

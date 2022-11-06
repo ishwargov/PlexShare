@@ -400,23 +400,18 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         {
             //UserData currU = new UserData("Rupesh", 1);
             //currUser = currU;
-            if (currUser == null)
+            
+            if (SessionModeSetter == "LabMode")
             {
-                ButtonContentSetter = "Meeting Not Started";
+                ButtonContentSetter = "Switch To ExamMode";
+
             }
             else
             {
-                if (SessionModeSetter == "LabMode")
-                {
-                    ButtonContentSetter = "Switch To ExamMode";
-
-                }
-                else
-                {
-                    ButtonContentSetter = "Switch To LabMode";
-                }
-                //this is host hence we have to show the button content according to the host 
+                ButtonContentSetter = "Switch To LabMode";
             }
+            //this is host hence we have to show the button content according to the host 
+            
            
 
             //say everything went fine 
