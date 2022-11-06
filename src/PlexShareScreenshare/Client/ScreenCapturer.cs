@@ -6,54 +6,56 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Collections.Concurrent;
-using System.Threading;
 using System.Diagnostics;
+using System.Drawing;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace PlexShareScreenshare.Client
 {
     /// <summary>
     /// Class contains implementation of the screen capturing using threads (tasks)
     /// </summary>
-    internal class ScreenCapturer
+    public class ScreenCapturer
     {
-        private Queue<Bitmap> _capturedFrame;
+        readonly Queue<Bitmap> _capturedFrame;
 
         // Limits the number of frames in the queue
-        const int MaxQueueLength = 50;
-
-        // Task to capture the screen asynchronously
-        private Task _captureTask;
+        public const int MaxQueueLength = 50;
 
         // Token and its source for killing the task
-        private CancellationTokenSource Source;
-        private CancellationToken Token;
+        private CancellationTokenSource? Source;
 
-        ScreenCapturer() 
+        public ScreenCapturer()
         {
             _capturedFrame = new Queue<Bitmap>();
-            _captureTask = null;
         }
 
         /// <summary>
         /// Returns the bitmap image at the front of _capturedFrame queue. 
         /// </summary>
         /// <returns>Bitmap image of 720p dimension</returns>
-        public Bitmap GetImage() 
+        public Bitmap GetImage()
         {
-            try
+            while(_capturedFrame.Count == 0)
+            {
+                Thread.Sleep(100);
+            }
+            
+            // TODO : check if lock is freed after returning
+            lock(_capturedFrame)
             {
                 return _capturedFrame.Dequeue();
             }
-            catch(Exception e)
-            {
-                Trace.WriteLine($"[ScreenSharing] Dequeue failed: {e.Message}");
-                return null;
-            }
+        }
+
+        /// <summary>
+        /// Returns the length of the _capturedFrame queue
+        /// </summary>
+        /// <returns>Integer value containing the length of queue.</returns>
+        public int GetCapturedFrameLength()
+        {
+            return _capturedFrame.Count;
         }
 
         /// <summary>
@@ -62,15 +64,15 @@ namespace PlexShareScreenshare.Client
         public void StartCapture()
         {
             Source = new CancellationTokenSource();
-            Token = Source.Token;
-            
-            _captureTask = new Task(() =>
+            CancellationToken Token = Source.Token;
+
+            Task captureTask = new Task(() =>
             {
-                Screenshot screenshot = new Screenshot();
+                Screenshot screenshot = Screenshot.Instance();
 
                 while (true)
                 {
-                    if(_capturedFrame.Count < MaxQueueLength)
+                    if (_capturedFrame.Count < MaxQueueLength)
                     {
                         lock (_capturedFrame)
                         {
@@ -87,12 +89,12 @@ namespace PlexShareScreenshare.Client
                     else
                     {
                         // Sleep for some time, if queue is filled 
-                        System.Threading.Thread.Sleep(100);
+                        Thread.Sleep(100);
                     }
                 }
             }, Token);
 
-            _captureTask.Start();
+            captureTask.Start();
         }
 
         public void ResumeCapture()
@@ -110,9 +112,8 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         public void StopCapture()
         {
-            Source.Cancel();
+            Source?.Cancel();
             _capturedFrame.Clear();
-            _captureTask = null;
         }
     }
 }

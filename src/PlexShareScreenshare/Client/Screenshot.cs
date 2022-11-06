@@ -23,27 +23,37 @@ namespace PlexShareScreenshare.Client
     /// </summary>
     internal class Screenshot
     {
+        private static Screenshot? instance;
         public Boolean CaptureActive { get; private set; }
-        private Factory1 Factory1;
-        private Adapter1 Adapter1;
-        private Device Device;
-        private Output Output;
-        private Output1 Output1;
+        private Factory1? Factory1;
+        private Adapter1? Adapter1;
+        private Device? Device;
+        private Output? Output;
+        private Output1? Output1;
         private Int32 Width;
         private Int32 Height;
         private Rectangle Bounds;
         private Texture2DDescription Texture2DDescription;
-        private Texture2D Texture2D;
-        private OutputDuplication OutputDuplication;
-        private Bitmap Bitmap;
+        private Texture2D? Texture2D;
+        private OutputDuplication? OutputDuplication;
+        private Bitmap? Bitmap;
 
         private Int32 MakeScreenshot_LastDisplayIndexValue;
         private Int32 MakeScreenshot_LastAdapterIndexValue;
 
-        public Screenshot()
+        protected Screenshot()
         {
             CaptureActive = false;
             InitializeVariables(0, 0, true);
+        }
+
+        public static Screenshot Instance()
+        {
+            if(instance == null)
+            {
+                instance = new Screenshot();
+            }
+            return instance;
         }
 
         /// <summary>
