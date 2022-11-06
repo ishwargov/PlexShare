@@ -149,6 +149,19 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
 
         }
 
+        //function defined for testing purpose so that we can overload the function 
+        public void OnAnalyticsChanged(SessionData newSession, DateTime currTime)
+        {
+            //var currTime = DateTime.Now;
+            //we have to recalculate and  update the telemetric analytics
+            CalculateUserCountVsTimeStamp(newSession, currTime);
+            CalculateArrivalExitTimeOfUser(newSession, currTime);
+            GetListOfInsincereMembers(currTime);
+
+            return;
+
+        }
+
 
         //function to update calculateUserCountVsTimeStamp 
         public void CalculateUserCountVsTimeStamp(SessionData newSession, DateTime currTime)

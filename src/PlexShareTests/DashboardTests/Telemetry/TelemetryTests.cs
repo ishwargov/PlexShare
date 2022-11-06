@@ -407,7 +407,7 @@ namespace PlexShareTests.DashboardTests.Telemetry
             telemetryInstance.eachUserExitTime.Clear();
 
             //whenever the session data changes then we have to call the onanalytics changed function 
-            telemetryInstance.OnAnalyticsChanged(sessionData1);
+            telemetryInstance.OnAnalyticsChanged(sessionData1, currTime1);
 
             //storing the results of the onanlytics changed 
             DateTime user1DateTime = telemetryInstance.eachUserEnterTimeInMeeting[user1];
@@ -420,6 +420,16 @@ namespace PlexShareTests.DashboardTests.Telemetry
             //again changing the session by deleting the user2 and at the same time adding the new user user3 
             DateTime currDateTime2 = new DateTime(2021, 11, 23, 1, 15, 0);
             SessionData sessionData2 = new SessionData();
+            sessionData2.AddUser(user1);
+            sessionData2.AddUser(user3);
+
+            telemetryInstance.OnAnalyticsChanged(sessionData2, currDateTime2);
+            DateTime user1DateTime2 = telemetryInstance.eachUserEnterTimeInMeeting[user1];
+            DateTime user2DateTime2 = telemetryInstance.eachUserEnterTimeInMeeting[user2];
+            DateTime user3DateTime3 = telemetryInstance.eachUserEnterTimeInMeeting[user3];
+            DateTime user1ExitTime = telemetryInstance.eachUserExitTime[user2];
+            int sizeOfEachUserExitTime2 = telemetryInstance.eachUserExitTime.Count();
+            int sizeOfEachUserEntryTime2 = telemetryInstance.eachUserEnterTimeInMeeting.Count();
 
             //check for userCountVstimeStamp 
             bool check1 = false;
@@ -429,7 +439,72 @@ namespace PlexShareTests.DashboardTests.Telemetry
             bool check3 = false;
             //check for calculation of list of insincere members 
             bool check4 = false;
+            bool check5 = false;
+            bool check6 = false;
+            bool check7 = false;
+            bool check8 = false;
+            bool check9 = false;
 
+            bool check10 = false;
+            bool check11 = false;
+            //bool check10 = false;
+
+
+            //now doing the checks for this purpose 
+            if (user1DateTime == currTime1)
+            {
+                check1 = true;
+
+            }
+            if (user2DateTime == currTime1)
+            {
+                check2 = true;
+            }
+
+            if (sizeOfEachUserExitTime == 0)
+            {
+                check3 = true;
+            }
+
+            if (sizeOfEachUserEntryTime == 2)
+            {
+                check4 = true;
+            }
+
+            if (sizeOfListOfInSincereMembers == 0)
+            {
+                check5 = true;
+            }
+
+            if (user1DateTime2 == currTime1)
+            {
+                check6 = true;
+            }
+            if (user2DateTime2 == currTime1)
+            {
+                check7 = true;
+            }
+
+            if (user3DateTime3 == currDateTime2)
+            {
+                check8 = true;
+            }
+            if (user1ExitTime == currDateTime2)
+            {
+                check9 = true;
+            }
+
+            if (sizeOfEachUserExitTime2 == 1)
+            {
+                check10 = true;
+            }
+
+            if (sizeOfEachUserEntryTime2 == 3)
+            {
+                check11 = true;
+            }
+
+            Assert.True(check1 && check2 && check3 && check4 && check5 && check6 && check7 && check8 && check9 && check10 && check11);
             //say everything went fine 
             return;
 
