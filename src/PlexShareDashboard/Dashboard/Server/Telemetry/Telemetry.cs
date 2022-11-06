@@ -106,9 +106,23 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             return;
         }
 
-        public void GetUserIdVsChatCount(ChatThread[] allMesssages)
+        public void GetUserIdVsChatCount(ChatThread[] allMessages)
         {
             //we have to implement when we start integrating with the chat module 
+            //we have to first clear this and then we have to again calculate the useridvschatcount 
+            userIdVsChatCount.Clear();
+
+            //using the for loop 
+            foreach (var currThread in allMessages)
+            {
+                foreach (var currMessage in currThread.MessageList)
+                {
+                    //using the if else statement 
+                    if (userIdVsChatCount.ContainsKey(currMessage.SenderID)) userIdVsChatCount[currMessage.SenderID]++;
+                    else
+                        userIdVsChatCount.Add(currMessage.SenderID, 1);
+                }
+            }
 
 
             //say everything went fine 
