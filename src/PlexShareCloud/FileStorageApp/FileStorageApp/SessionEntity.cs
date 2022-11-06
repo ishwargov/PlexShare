@@ -22,7 +22,7 @@ namespace FileStorageApp
             Timestamp = DateTime.Now;
         }
 
-        public SessionEntity() : this(null) { }
+        public SessionEntity() : this(null, null) { }
 
         [JsonInclude]
         [JsonPropertyName("SessionId")]

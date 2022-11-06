@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using Microsoft.AspNetCore.Routing;
 using Azure.Data.Tables;
 using Azure;
+using System;
 
 namespace FileStorageApp
 {
@@ -75,16 +76,16 @@ namespace FileStorageApp
 
         [FunctionName("CreateSession")]
         public static async Task<IActionResult> CreateSession(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = Route)] HttpRequest req,
+        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = SessionRoute + "/{hostUserName}")] HttpRequest req,
         [Table(SessionTableName, Connection = ConnectionName)] IAsyncCollector<SessionEntity> entityTable,
-        ILogger log, string sessionId, string hostUserName)
+        ILogger log, string hostUserName)
         {
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            string name = JsonSerializer.Deserialize<string>(requestBody);
-            SessionEntity value = new(hostUserName);
+            string sessionId = JsonConvert.DeserializeObject<string>(requestBody);
+            SessionEntity value = new(hostUserName, sessionId);
             await entityTable.AddAsync(value);
 
-            log.LogInformation($"New entity created Id = {value.Id}, Name = {value.Name}.");
+            log.LogInformation($"New entity created Id = {value.SessionId}, Name = {value.HostUserName}.");
 
             return new OkObjectResult(value);
         }
@@ -97,8 +98,9 @@ namespace FileStorageApp
         ILogger log, string username, string sessionId)
         {
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            byte[] name = JsonSerializer.Deserialize<byte[]>(requestBody);
-            SubmissionEntity value = new(sessionId, username, name);
+            byte[] pdf = JsonConvert.DeserializeObject<byte[]>(requestBody);
+            
+            SubmissionEntity value = new(sessionId, username, pdf);
             await entityTable.AddAsync(value);
 
             log.LogInformation($"New entity created Id = {value.SessionId}, Name = {value.UserName}.");
@@ -110,16 +112,17 @@ namespace FileStorageApp
         public static async Task<IActionResult> UpdateSubmission(
         [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route =  SubmissionRoute + "/{sessionId}/{username}")] HttpRequest req,
         [Table(SubmissionTableName, Connection = ConnectionName)] TableClient tableClient,
-        ILogger log,
-        string id)
+        ILogger log, 
+        string userName, 
+        string sessionId)
         {
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            var updatedName = JsonSerializer.Deserialize<string>(requestBody);
-            log.LogInformation($"Updating item with id = {id}");
+            var updatedName = JsonConvert.DeserializeObject<string>(requestBody);
+            log.LogInformation($"Updating item with sessionId = {sessionId}");
             SubmissionEntity existingRow;
             try
             {
-                var findResult = await tableClient.GetEntityAsync<SubmissionEntity>(SubmissionEntity.PartitionKeyName, id);
+                var findResult = await tableClient.GetEntityAsync<SubmissionEntity>(SubmissionEntity.PartitionKeyName, sessionId);
                 existingRow = findResult.Value;
             }
             catch (RequestFailedException e) when (e.Status == 404)
@@ -127,7 +130,7 @@ namespace FileStorageApp
                 return new NotFoundResult();
             }
 
-            existingRow.Name = updatedName;
+            existingRow.UserName = updatedName;
             await tableClient.UpdateEntityAsync(existingRow, existingRow.ETag, TableUpdateMode.Replace);
 
             return new OkObjectResult(existingRow);
