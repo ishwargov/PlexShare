@@ -20,7 +20,7 @@ namespace PlexShareContent.Client
         /// <summary>
         /// Sends chat or file data to clients
         /// </summary>
-        /// <param name="contentData">Data to be sent</param>
+        /// <param name="contentData">Instance of SendContentData class</param>
         void ClientSendData(SendContentData contentData);
 
         /// <summary>
@@ -35,6 +35,12 @@ namespace PlexShareContent.Client
         /// <param name="messageID">ID of the message</param>
         /// <param name="newMessage">Edited message</param>
         void ClientEdit(int messageID, string newMessage);
+
+        /// <summary>
+        /// Delete a previous chat message
+        /// </summary>
+        /// <param name="messageID">ID of the message</param>
+        void ClientDelete(int messageID);
 
         /// <summary>
         /// Download file to specific path on client machine
