@@ -205,8 +205,20 @@ namespace PlexShareTests.DashboardTests.UI
         
         }
 
+        [Fact]
+
         public void CalculatePercentageOfAttentiveAndNonAttentiveUsers_Test()
         {
+            int currNonAttentiveUsers = 50;
+            int currAttentiveUsers = 50;
+            DashboardViewModelForTest.TotalParticipantsCountSetter = 100;
+
+            //calling the function 
+            DashboardViewModelForTest.CalculatePercentageOfAttentiveAndNonAttentiveUsers(currAttentiveUsers, currNonAttentiveUsers);
+
+            //asserting the values 
+            Assert.Equal(50, DashboardViewModelForTest.NonAttentiveUsersSetter);
+            Assert.Equal(50, DashboardViewModelForTest.AttentiveUsersSetter);
             //say everything went fine 
             return;
         }

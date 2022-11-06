@@ -629,7 +629,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         //function to calculate the number of attentive and non attentive users in the meeting 
         public void CalculatePercentageOfAttentiveAndNonAttentiveUsers(int currNonAttentiveUsers, int currAttentiveUsers)
         {
-            int nonAttentivePercentage = (currNonAttentiveUsers) / TotalParticipantsCountSetter * 100;
+            int nonAttentivePercentage = ((currNonAttentiveUsers)*100) / TotalParticipantsCountSetter;
             int attentivePercentage = 100 - nonAttentivePercentage;
 
             //updating the percentages
