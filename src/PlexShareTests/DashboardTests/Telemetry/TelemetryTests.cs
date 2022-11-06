@@ -261,13 +261,36 @@ namespace PlexShareTests.DashboardTests.Telemetry
 
 
         //function to check the exit time 
+        [Fact]
         public void CalculateArrivalExitTimeOfUser_Test_Exit_Time_Calculation_Complex_Test()
         {
             UserData user1 = new UserData("Rupesh Kumar", 1);
-            UserData user2 = new UserData("Shubham Raj", 2);
-            UserData user3 = new UserData("Saurabh Kumar", 3);
-            UserData user4 = new UserData("Aditya Agarwal", 4);
-            UserData user5 = new UserData("Hrishi Raaj", 5);
+            UserData user2 = new UserData("Hrishi Raaj Singh Chauhan", 2);
+
+            SessionData sessionData = new SessionData();
+            sessionData.AddUser(user1);
+            DateTime currTime1 = new DateTime(2021, 11, 23, 1, 0, 0);
+
+            var telemetryInstance = TelemetryFactory.GetTelemetryInstance();
+            telemetryInstance.CalculateArrivalExitTimeOfUser(sessionData, currTime1);
+
+            //let us say that the user1 leaves the meeting 
+            //then the session would be empty 
+            SessionData sessionData2 = new SessionData();
+            sessionData2.AddUser(user2);
+            DateTime currTime2 = new DateTime(2021, 11, 23, 1, 1, 0);
+
+            telemetryInstance.CalculateArrivalExitTimeOfUser(sessionData2, currTime2);
+
+            bool check1 = false;
+
+            if (telemetryInstance.eachUserExitTime[user1] == currTime2)
+            {
+                check1 = true;
+            }
+
+
+            Assert.True(check1);
 
             //say everything went fine 
             return;

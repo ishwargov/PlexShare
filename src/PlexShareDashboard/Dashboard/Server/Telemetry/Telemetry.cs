@@ -162,7 +162,7 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             //checking for the left users 
             foreach (var currUser in eachUserEnterTimeInMeeting)
             { 
-                if (newSession.users.Contains(currUser.Key) == false && eachUserEnterTimeInMeeting.ContainsKey(currUser.Key) == false)
+                if (newSession.users.Contains(currUser.Key) == false && eachUserEnterTimeInMeeting.ContainsKey(currUser.Key) == true)
                     eachUserExitTime[currUser.Key] = currTime;
             
             }
