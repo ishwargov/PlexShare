@@ -10,17 +10,17 @@ namespace PlexShareContent.Server
 {
     public class ContentServerNotificationHandler : INotificationHandler
     {
-        private readonly ContentServer _contentServer;
+        public readonly ContentServer ContentServer;
 
-        internal ContentServerNotificationHandler(ContentServer contentServer)
+        public ContentServerNotificationHandler(ContentServer contentServer)
         {
-            _contentServer = contentServer;
+            ContentServer = contentServer;
         }
 
         /// <inheritdoc />
         public void OnDataReceived(string data)
         {
-            _contentServer.Receive(data);
+            ContentServer.Receive(data);
         }
     }
 }
