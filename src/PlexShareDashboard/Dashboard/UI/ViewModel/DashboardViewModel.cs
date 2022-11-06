@@ -188,7 +188,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         public DashboardViewModel()
         {
 
-
+            sessionData = new SessionData();
             //initialising ParticipantsList 
             ParticipantsList = new ObservableCollection<User>();
             User user1 = new User(1, "Rupesh Kumar", "Presenting");
@@ -358,6 +358,12 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         public SessionAnalytics GetSessionAnalytics()
         {
             return sessionAnalytics;
+        }
+
+        public SessionData GetSessionData()
+        {
+            return sessionData;
+        
         }
 
         //function to update the button content 

@@ -19,7 +19,9 @@ namespace PlexShareTests.DashboardTests.UI
         { 
             Assert.NotNull(DashboardViewModelForTest);
             Assert.IsType<DashboardViewModel>(DashboardViewModelForTest);
-            //Assert.NotNull(DashboardViewModelForTest.)
+            Assert.NotNull(DashboardViewModelForTest.GetClientSessionManager());
+            Assert.NotNull(DashboardViewModelForTest.GetSessionData());
+            Assert.NotNull(DashboardViewModelForTest.GetSessionAnalytics());
         }
     }
 }
