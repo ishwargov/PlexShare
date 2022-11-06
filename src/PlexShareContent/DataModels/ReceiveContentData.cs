@@ -72,7 +72,7 @@ namespace PlexShareContent.DataModels
         public MessageEvent Event;
 
         /// <summary>
-        /// Constrcutor to initialize the fields
+        /// Constructor to create type without parameters.
         /// </summary>
         public ReceiveContentData()
         {

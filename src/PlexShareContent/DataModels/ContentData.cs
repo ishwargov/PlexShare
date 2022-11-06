@@ -21,9 +21,16 @@ namespace PlexShareContent.DataModels
         public SendFileData FileData;
 
         /// <summary>
-        /// Constructor to initialize fields
+        /// Empty constructor to create type without parameters.
         /// </summary>
-        /// <param name="receiveContentData">Object implementing the ReceiveContentData class</param>
+        public ContentData()
+        { 
+        }
+
+        /// <summary>
+        /// Constructor to create type with parameters.
+        /// </summary>
+        /// <param name="receiveContentData">Instance of the ReceiveContentData class</param>
         public ContentData(ReceiveContentData receiveContentData)
         {
             Type = receiveContentData.Type;

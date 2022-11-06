@@ -19,6 +19,7 @@ namespace PlexShareContent.Enums
     {
         New,
         Edit,
+        Delete,
         Star,
         Download
     }

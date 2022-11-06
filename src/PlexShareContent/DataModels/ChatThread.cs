@@ -11,7 +11,6 @@
  *****************************************************************************/
 
 using System;
-using System.CodeDom;
 using System.Collections.Generic;
 
 namespace PlexShareContent.DataModels
@@ -37,9 +36,9 @@ namespace PlexShareContent.DataModels
         /// Dictionary containing mapping from message ID to index in message list
         /// </summary>
         public Dictionary<int, int> MessageIDToIndex;
-        
+
         /// <summary>
-        /// Constructor to initialize fields
+        /// Constructor to create type without parameters.
         /// </summary>
         public ChatThread()
         {
@@ -96,10 +95,11 @@ namespace PlexShareContent.DataModels
         /// <summary>
         /// Add message to the present chat context.
         /// </summary>
-        /// <param name="message">Object implementing the ReceiveContentData class</param>
+        /// <param name="message">Instance of the ReceiveContentData class</param>
         /// <exception cref="ArgumentException"></exception>
         public void AddMessage(ReceiveContentData message)
         {
+            // check for valid message
             if (!IsValidMessage(message.Data))
             {
                 throw new ArgumentException("Invalid message string.");
@@ -133,6 +133,7 @@ namespace PlexShareContent.DataModels
                     throw new ArgumentException("Replied message does not belong to same thread.");
                 }
             }
+            // add message and other data related to the data structures
             MessageList.Add(message);
             MessageIDToIndex.Add(message.MessageID, MessageCount - 1);
         }
@@ -159,6 +160,22 @@ namespace PlexShareContent.DataModels
         }
 
         /// <summary>
+        /// Delete message present in the internal data structures
+        /// </summary>
+        /// <param name="messageID">ID of the message</param>
+        /// <exception cref="ArgumentException"></exception>
+        public void DeleteMessage(int messageID)
+        {
+            int index = GetMessageIndex(messageID);
+            // check if the message type is chat for editing
+            if (MessageList[index].Type != MessageType.Chat)
+            {
+                throw new ArgumentException("Message requested for delete is not chat.");
+            }
+            MessageList[index].Data = "Message Deleted.";
+        }
+
+        /// <summary>
         /// Star message present in the internal data structures
         /// </summary>
         /// <param name="messageID">ID of the message</param>
@@ -173,6 +190,5 @@ namespace PlexShareContent.DataModels
             }
             MessageList[index].Starred = true;
         }
-
     }
 }
