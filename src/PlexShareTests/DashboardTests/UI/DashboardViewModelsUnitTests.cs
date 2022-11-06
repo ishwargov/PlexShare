@@ -103,5 +103,28 @@ namespace PlexShareTests.DashboardTests.UI
             return;
         }
 
+        [Fact]
+        //writing the function to test the update participant list 
+        public void UpdateParticipantsList_Test()
+        {
+            List<UserData> newParticipantsList = new List<UserData>();
+            UserData user1 = new UserData("Rupesh kumar", 1);
+            UserData user2 = new UserData("Saurabh Kumar", 2);
+            UserData user3 = new UserData("Hrishi Raaj", 3);
+
+            newParticipantsList.Add(user1);
+            newParticipantsList.Add(user2);
+            newParticipantsList.Add(user3);
+
+            DashboardViewModelForTest.UpdateParticipantsList(newParticipantsList);
+
+            Assert.Equal("Rupesh kumar", DashboardViewModelForTest.ParticipantsList[0].UserName);
+            Assert.Equal("Saurabh Kumar", DashboardViewModelForTest.ParticipantsList[1].UserName);
+            Assert.Equal("Hrishi Raaj", DashboardViewModelForTest.ParticipantsList[2].UserName);
+            Assert.Equal(3, DashboardViewModelForTest.ParticipantsList.Count);
+
+            //say everything went fine 
+            return;
+        }
     }
 }
