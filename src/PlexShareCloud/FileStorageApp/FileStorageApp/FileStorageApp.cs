@@ -7,6 +7,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Routing;
 
 namespace FileStorageApp
 {
@@ -20,65 +21,54 @@ namespace FileStorageApp
         private const string SessionRoute = "session";
 
         [FunctionName("GetFilesbyUsername")]
-        public static async Task<IActionResult> Run1(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
-            ILogger log) //Route = Route + "/{sessionid}" + "/{username}" + "/{pdf}" 
-            //below Ilogger log write the sessionid's and username, pdf. 
-            //only get request. after the req write the Table name and deatils. 
+        public static IActionResult GetFilesByUser(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = SubmissionRoute + "/{username}")] HttpRequest req,
+        [Table(SubmissionTableName, SubmissionEntity.PartitionKeyName, "{username}", Connection = ConnectionName)] SubmissionEntity entity,
+        ILogger log,
+        string username)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
+            log.LogInformation($"Getting entity {username}");
+            if (entity == null)
+            {
+                log.LogInformation($"Entity {username} not found");
+                return new NotFoundResult();
+            }
 
-            string name = req.Query["name"];
-
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
-            name = name ?? data?.name;
-
-            string responseMessage = string.IsNullOrEmpty(name)
-                ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
-                : $"Hello, {name}. This HTTP triggered function executed successfully.";
-
-            return new OkObjectResult(responseMessage);
+            return new OkObjectResult(entity);
         }
 
         [FunctionName("GetFilesbySessionId")]
-        public static async Task<IActionResult> Run2(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
-            ILogger log) 
+        public static IActionResult GetFilesBySessionId(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = SubmissionRoute + "/{sessionid}")] HttpRequest req,
+        [Table(SubmissionTableName, SubmissionEntity.PartitionKeyName, "{sessionid}", Connection = ConnectionName)] SubmissionEntity entity,
+        ILogger log,
+        string sessionid)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
+            log.LogInformation($"Getting entity {sessionid}");
+            if (entity == null)
+            {
+                log.LogInformation($"Entity {sessionid} not found");
+                return new NotFoundResult();
+            }
 
-            string name = req.Query["name"];
-
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
-            name = name ?? data?.name;
-
-            string responseMessage = string.IsNullOrEmpty(name)
-                ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
-                : $"Hello, {name}. This HTTP triggered function executed successfully.";
-
-            return new OkObjectResult(responseMessage);
+            return new OkObjectResult(entity);
         }
 
         [FunctionName("GetSessionsbyUsername")]
-        public static async Task<IActionResult> Run3(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
-            ILogger log)  
+        public static IActionResult GetSessionsByUser(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = SessionRoute + "/{username}")] HttpRequest req,
+        [Table(SessionTableName, SubmissionEntity.PartitionKeyName, "{username}", Connection = ConnectionName)] SubmissionEntity entity,
+        ILogger log,
+        string username)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
+            log.LogInformation($"Getting entity {username}");
+            if (entity == null)
+            {
+                log.LogInformation($"Entity {username} not found");
+                return new NotFoundResult();
+            }
 
-            string name = req.Query["name"];
-
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
-            name = name ?? data?.name;
-
-            string responseMessage = string.IsNullOrEmpty(name)
-                ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
-                : $"Hello, {name}. This HTTP triggered function executed successfully.";
-
-            return new OkObjectResult(responseMessage);
+            return new OkObjectResult(entity);
         }
     }
 }
@@ -94,3 +84,7 @@ namespace FileStorageApp
 //create session
 //create and update submission
 //delete submission
+
+//Route = Route + "/{sessionid}" + "/{username}" + "/{pdf}" 
+//below Ilogger log write the sessionid's and username, pdf. 
+//only get request. after the req write the Table name and deatils. 
