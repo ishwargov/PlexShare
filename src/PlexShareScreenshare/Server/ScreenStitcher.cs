@@ -44,13 +44,14 @@ namespace ScreenShare.Server
         private CancellationToken Token;
 
         // Called by the `SharedClientScreen`
-        ScreenStitcher(SharedClientScreen scs)
+        public ScreenStitcher(SharedClientScreen scs)
         {
             _stichedImage = null;
             _newFrame = null;
             _oldImage = null;
             _stitchTask = null;
             _resolution = null;
+            _sharedClientScreen= scs;
         }
         /// <summary>
         /// Creates(if not exist) and start the task `_stitchTask`
@@ -64,16 +65,16 @@ namespace ScreenShare.Server
 
             if (_stitchTask == null)
             {
-                while (true)
-                {
+                
                     _stitchTask = new Task(() =>
                     {
-                        _newFrame = _sharedClientScreen.GetImage();
-                        _stichedImage = Stitch(_oldImage, _newFrame);
-                        _sharedClientScreen.PutFinalImage(_stichedImage);
-
+                        while (!Source.IsCancellationRequested)
+                        {
+                            _newFrame = _sharedClientScreen.GetImage();
+                            _stichedImage = Stitch(_oldImage, _newFrame);
+                            _sharedClientScreen.PutFinalImage(_stichedImage);
+                        }
                     }, Token);
-                }
             }
 
             _stitchTask.Start();
@@ -107,7 +108,7 @@ namespace ScreenShare.Server
 
             for (int x = 0; x < frame.Item2.Count; x++)
             {
-                s
+             
                 int xCordinate = frame.Item2[x].Item1.Item1;
                 int yCordinate = frame.Item2[x].Item1.Item2;
                 int red = frame.Item2[x].Item2.Item1;
@@ -118,6 +119,7 @@ namespace ScreenShare.Server
                 oldImage.SetPixel(xCordinate, yCordinate, newColor);
             }
 
+            _resolution= _newResolution;
             return oldImage;
         }
     }
