@@ -14,9 +14,12 @@ namespace PlexShareTests.DashboardTests.SessionManagement.TestModules
         public string transferredData;
         public int userCount;
 
+
+
         public FakeCommunicator(string address = null)
         {
             userCount = 0;
+            
             if (address == null)
                 meetAddress = "192.168.1.1:8080";
             else
@@ -35,12 +38,14 @@ namespace PlexShareTests.DashboardTests.SessionManagement.TestModules
 
         public void Send(string data, string identifier)
         {
+
             transferredData = data;
         }
 
         public void Send(string data, string identifier, string destination)
         {
             throw new NotImplementedException();
+            
         }
 
         public string Start(string serverIp = null, string serverPort = null)
@@ -64,7 +69,7 @@ namespace PlexShareTests.DashboardTests.SessionManagement.TestModules
        */
         public void Subscribe(string moduleName, INotificationHandler notificationHandler, bool isHighPriority = false)
         {
-            throw new NotImplementedException();
+            return;
         }
     }
 }

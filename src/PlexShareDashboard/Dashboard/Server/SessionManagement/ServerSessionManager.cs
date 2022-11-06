@@ -15,7 +15,8 @@ using PlexShareWhiteboard;
 using PlexShareDashboard.Dashboard.Server.SessionManagement;
 using PlexShareDashboard.Dashboard;
 using PlexShareNetwork.Communication;
-using PlexShareNetwork.Serialization;
+//using PlexShareNetwork.Serialization;
+using PlexShareDashboard.Dashboard;
 using PlexShareNetwork;
 
 namespace Dashboard.Server.SessionManagement
@@ -27,7 +28,7 @@ namespace Dashboard.Server.SessionManagement
     {
         private readonly ICommunicator _communicator;
       //  private readonly IContentServer _contentServer;
-        private readonly ISerializer _serializer;
+        private readonly IDashboardSerializer _serializer;
 
         private readonly SessionData _sessionData;
        // private readonly ISummarizer _summarizer;
@@ -56,13 +57,13 @@ namespace Dashboard.Server.SessionManagement
             moduleIdentifier = "Dashboard";
             summarySaved = false;
             _sessionData = new SessionData();
-            _serializer = new Serializer();
+            _serializer = new DashboardSerializer();
             _telemetrySubscribers = new List<ITelemetryNotifications>();
           //  _summarizer = SummarizerFactory.GetSummarizer();
 
             userCount = 0;
 
-          //  _communicator = CommunicationFactory.GetCommunicator(false);
+        //    _communicator = CommunicationFactory.GetCommunicator(false);
          //   _communicator.Subscribe(moduleIdentifier, this);
 
             //------------------------------------_telemetry = new Telemetry.Telemetry();
@@ -77,7 +78,7 @@ namespace Dashboard.Server.SessionManagement
         {
           //  _contentServer = contentServer;
             _sessionData = new SessionData();
-            _serializer = new Serializer();
+            _serializer = new DashboardSerializer();
             _telemetrySubscribers = new List<ITelemetryNotifications>();
           //  _summarizer = SummarizerFactory.GetSummarizer();
           //  _screenShareServer = ScreenShareFactory.GetScreenShareServer();
@@ -99,12 +100,12 @@ namespace Dashboard.Server.SessionManagement
         // This function is called by the networking module when a user joins the meeting.
         // The  SocketObject received from the networking module is then passed again but with a unique ID to identify object uniquely.
         public void OnClientJoined<T>(T socketObject)
-        {
+        {  
             lock (this)
             {
                 userCount += 1;
                 if (userCount == 1)
-                    _telemetry =  TelemetryFactory.GetTelemetryInstance();
+                    _telemetry = testmode ? new Telemetry() : TelemetryFactory.GetTelemetryInstance();
                 UserData tempUser = new("dummy", userCount);
                 _communicator.AddClient(userCount.ToString(), socketObject);
                 SendDataToClient("newID", null, null, null, tempUser, userCount);
@@ -252,6 +253,20 @@ namespace Dashboard.Server.SessionManagement
             SendDataToClient("addClient", _sessionData, null, null, user);
         }
 
+        //this method is added for unit testing purpose to check users are added into SessionData
+        public void FakeClientArrivalProcedure(ClientToServerData arrivedClient)
+        {
+            // create a new user and add it to the session. 
+            var user = new UserData(arrivedClient.username, arrivedClient.userID);
+            AddUserToSession(user);
+
+            // Notify Telemetry about the change in the session object.
+            NotifyTelemetryModule();
+
+            // serialize and broadcast the data back to the client side.
+            SendDataToClient("addClient", _sessionData, null, null, user);
+        }
+
         //     Creates a new user based on the data arrived from the
         //     client side.
         private UserData CreateUser(string username, int userID)
@@ -347,14 +362,19 @@ namespace Dashboard.Server.SessionManagement
                 SendDataToClient("getAnalytics", null, null, null, user);
             }
         }
-
+*/
         //     A getter function to fetch the summary stored in the server side. returns summary in form of string.
         public string GetStoredSummary()
         {
             return _sessionSummary;
         }
 
-        */
+        //GetLocalStoredSummary is just for unit testing purpose
+        public string GetLocalStoredSummary()
+        {
+            return "this is locally generated summary for unit testing";
+        }
+        
         
 
         //this function is just for testing 
@@ -362,6 +382,7 @@ namespace Dashboard.Server.SessionManagement
         {
             return _sessionData;
         }
+
 
 
 
@@ -377,6 +398,7 @@ namespace Dashboard.Server.SessionManagement
         }
         */
 
+       
 
         //     Checks if an IPAddress is valid or not.
         private static bool IsValidIPAddress(string IPAddress)
@@ -452,8 +474,12 @@ namespace Dashboard.Server.SessionManagement
                 serverToClientData =
                     new ServerToClientData(eventName, sessionData, summaryData, sessionAnalytics, user);
                 // Sending data to the client
-                var serializedSessionData = _serializer.Serialize(serverToClientData);
-
+                string serializedSessionData = _serializer.Serialize(serverToClientData);
+                if(testmode == true)
+                {
+                    _communicator.Send(serializedSessionData, moduleIdentifier);
+                    return;
+                }
                 if (userId == -1)
                     _communicator.Send(serializedSessionData, moduleIdentifier);
                 else
