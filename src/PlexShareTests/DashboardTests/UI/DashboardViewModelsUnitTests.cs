@@ -143,8 +143,35 @@ namespace PlexShareTests.DashboardTests.UI
             return;
         }
 
+        [Fact]
         public void UpdateUserCountVsTimeStamp_Test()
         {
+
+            DateTime currDateTime1 = new DateTime(2021, 11, 23, 1, 15, 0);
+            DateTime currDateTime2 = new DateTime(2021, 11, 23, 1, 25, 0);
+            DateTime currDateTime3 = new DateTime(2021, 11, 23, 1, 35, 0);
+            DateTime currDateTime4 = new DateTime(2021, 11, 23, 1, 45, 0);
+
+            Dictionary<DateTime, int> currUserCountVsTimeStamp = new Dictionary<DateTime, int>();
+            currUserCountVsTimeStamp[currDateTime1] = 10;
+            currUserCountVsTimeStamp[currDateTime2] = 20;
+            currUserCountVsTimeStamp[currDateTime3] = 30;
+            currUserCountVsTimeStamp[currDateTime4] = 40;
+
+
+            //calling the function to update these participants count according to the time stamp 
+            DashboardViewModelForTest.UpdateUserCountVsTimeStamp(currUserCountVsTimeStamp);
+            //checking the final answer that is stored in the corresponding arrays for this purpose 
+            Assert.Equal(10, DashboardViewModelForTest.UserCountList[0]);
+            Assert.Equal(20, DashboardViewModelForTest.UserCountList[1]);
+            Assert.Equal(30, DashboardViewModelForTest.UserCountList[2]);
+            Assert.Equal(40, DashboardViewModelForTest.UserCountList[3]);
+
+            Assert.Equal("01:15", DashboardViewModelForTest.TimeStampsList[0]);
+            Assert.Equal("01:25", DashboardViewModelForTest.TimeStampsList[1]);
+            Assert.Equal("01:35", DashboardViewModelForTest.TimeStampsList[2]);
+            Assert.Equal("01:45", DashboardViewModelForTest.TimeStampsList[3]);
+
 
 
             //say everything went fine 
