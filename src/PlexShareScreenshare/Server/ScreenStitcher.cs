@@ -84,6 +84,7 @@ namespace ScreenShare.Server
         public void StopStitching()
         {
             Source.Cancel();
+            _stitchTask.Wait();
             _stichedImage = null;
             _stitchTask = null;
         }
