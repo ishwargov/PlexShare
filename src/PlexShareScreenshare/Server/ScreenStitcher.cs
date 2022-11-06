@@ -1,5 +1,4 @@
-﻿
-///<author>Aditya Agarwal</author>
+﻿///<author>Aditya Agarwal</author>
 ///<summary> 
 ///This file contains the ScreenStitcher Class that implements the
 ///screen stitching functionality. It is used by ScreenshareServer. 
