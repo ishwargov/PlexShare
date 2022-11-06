@@ -45,11 +45,7 @@ namespace PlexShareNetwork.Communication.Test
             _testNotificationHandlerServer.WaitForEvent();
             Assert.Equal("OnDataReceived", _testNotificationHandlerServer.Event);
             Assert.Equal("Hello from client to server", _testNotificationHandlerServer.Data);
-        }
 
-        [Fact]
-        public void ServerSendToClientTest()
-        {
             _testNotificationHandlerClient.Reset();
             _communicatorServer.Send("Hello from server to client1", "Test Module", "Client1 ID");
 

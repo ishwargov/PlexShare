@@ -18,7 +18,7 @@ namespace PlexShareNetwork.Sockets
 	public class SendQueueListenerClient
 	{
 		// the thread which will be running
-		private readonly Thread _thread;
+		private Thread _thread;
 		// boolean to tell whether thread is running or stopped
 		private volatile bool _threadRun;
 
@@ -40,7 +40,6 @@ namespace PlexShareNetwork.Sockets
 		{
             _sendingQueue = sendingQueue;
             _clientSocket = clientSocket;
-			_thread = new Thread(Listen); // the thread is only created and not started here
         }
 
 		/// <summary>
@@ -50,6 +49,7 @@ namespace PlexShareNetwork.Sockets
 		public void Start()
 		{
             Trace.WriteLine("[Networking] SendQueueListenerClient.Start() function called.");
+            _thread = new Thread(Listen);
             _threadRun = true;
 			_thread.Start();
 			Trace.WriteLine("[Networking] SendQueueListenerClient thread started.");
@@ -78,8 +78,8 @@ namespace PlexShareNetwork.Sockets
 			{
                 _sendingQueue.WaitForPacket();
 				Packet packet = _sendingQueue.Dequeue();
-                string sendString = "BEGIN" + _serializer.Serialize(packet) + "END";
-				try
+                string sendString = "BEGIN" + _serializer.Serialize(packet).Replace("END", "NOTEND") + "END";
+                try
 				{
                     _clientSocket.Client.Send(Encoding.ASCII.GetBytes(sendString));
 					Trace.WriteLine($"[Networking] SendQueueListenerClient. Data sent from client to server by module: {packet.moduleOfPacket}.");

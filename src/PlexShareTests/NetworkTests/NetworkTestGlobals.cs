@@ -37,7 +37,7 @@ namespace PlexShareNetwork
 
         public static void SendPacket(Packet packet, TcpClient socket)
         {
-            string sendString = "BEGIN" + _serializer.Serialize(packet) + "END";
+            string sendString = "BEGIN" + _serializer.Serialize(packet).Replace("END", "NOTEND") + "END";
             byte[] bytes = Encoding.ASCII.GetBytes(sendString);
             socket.Client.Send(bytes);
         }
