@@ -44,7 +44,7 @@ namespace PlexShareContent.DataModels
         public int ReplyThreadID;
 
         /// <summary>
-        /// Constrcutor to initialize the fields.
+        /// Constructor to create type without parameters.
         /// </summary>
         public SendContentData()
         {

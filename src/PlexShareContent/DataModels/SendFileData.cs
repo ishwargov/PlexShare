@@ -32,7 +32,7 @@ namespace PlexShareContent.DataModels
         public long Size;
 
         /// <summary>
-        /// Constructor to initialize fields.
+        /// Constructor to create type with parameters.
         /// </summary>
         /// <param name="filePath">Path of the file</param>
         /// <exception cref="FileNotFoundException"></exception>
