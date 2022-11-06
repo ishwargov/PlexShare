@@ -37,7 +37,7 @@ namespace PlexShareNetwork
 			.Select(s => s[random.Next(s.Length)]).ToArray());
 		}
 
-        public static Packet[] GeneratePackets(int dataSize, string destination, string module, int count)
+        public static Packet[] GeneratePackets(int dataSize, string? destination, string module, int count)
         {
             Packet[] packets = new Packet[count];
             for (var i = 0; i < count; i++)
@@ -45,6 +45,24 @@ namespace PlexShareNetwork
                 packets[i] = new(RandomString(dataSize), destination, module);
             }
             return packets;
+        }
+
+        public static void SendPackets(Packet[] sendPackets, TcpClient socket, int count)
+        {
+            for (var i = 0; i < count; i++)
+            {
+                string sendString = SendString.PacketToSendString(sendPackets[i]);
+                byte[] bytes = Encoding.ASCII.GetBytes(sendString);
+                socket.Client.Send(bytes);
+            }
+        }
+
+        public static void SendPackets(Packet[] sendPackets, SendingQueue sendingQueue, int count)
+        {
+            for (var i = 0; i < count; i++)
+            {
+                sendingQueue.Enqueue(sendPackets[i]);
+            }
         }
 
         public static void PacketsReceiveAssert(Packet[] sendPackets, ReceivingQueue receivingQueue, int count)
@@ -60,40 +78,6 @@ namespace PlexShareNetwork
                 Packet receivedPacket = receivingQueue.Dequeue();
                 AssertPacketEquality(sendPackets[i], receivedPacket);
             }
-        }
-
-        public static void SendAndReceiveAssert(Packet[] sendPackets, TcpClient socket, ReceivingQueue receivingQueue, int count)
-        {
-            for (var i = 0; i < count; i++)
-            {
-                string sendString = SendString.PacketToSendString(sendPackets[i]);
-                byte[] bytes = Encoding.ASCII.GetBytes(sendString);
-                socket.Client.Send(bytes);
-            }
-            PacketsReceiveAssert(sendPackets, receivingQueue, count);
-        }
-
-        public static void SendAndReceiveAssert(Packet[] sendPackets, SendingQueue sendingQueue, ReceivingQueue receivingQueue, int count)
-        {
-            for (var i = 0; i < count; i++)
-            {
-                sendingQueue.Enqueue(sendPackets[i]);
-            }
-            PacketsReceiveAssert(sendPackets, receivingQueue, count);
-        }
-
-        public static void SendAndReceiveAssert(Packet[] sendPackets1, Packet[] sendPackets2, SendingQueue sendingQueue, ReceivingQueue receivingQueue1, ReceivingQueue receivingQueue2, int m, int n)
-        {
-            for (var i = 0; i < m; i++)
-            {
-                sendingQueue.Enqueue(sendPackets1[i]);
-            }
-            for (var i = 0; i < m; i++)
-            {
-                sendingQueue.Enqueue(sendPackets2[i]);
-            }
-            PacketsReceiveAssert(sendPackets1, receivingQueue1, m);
-            PacketsReceiveAssert(sendPackets2, receivingQueue2, n);
         }
 
         public static void AssertPacketEquality(Packet packet1, Packet packet2)

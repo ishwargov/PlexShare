@@ -22,9 +22,10 @@ namespace PlexShareNetwork.Sockets.Tests
         private TcpClient _serverSocket;
 		private readonly SocketListener _socketListener;
         private readonly ICommunicator _communicatorServer = CommunicationFactory.GetCommunicator(false);
-        private readonly int _multiplePacktesCount = 10;
-        private readonly int _smallPacketSize = 10;
-        private readonly int _largePacketSize = 1000;
+        private readonly int _multiplePacketsCount = 10;
+        private readonly int _smallPacketSize = 100;
+        private readonly int _largePacketSize = 10000;
+        private readonly int _veryLargePacketSize = 10000000; // adding one more 0 to it will hang you laptop
         private readonly string _destination = "Test Destination";
         private readonly string _module = "Test Module";
 
@@ -47,7 +48,8 @@ namespace PlexShareNetwork.Sockets.Tests
         private void PacketsReceiveTest(int size, int count)
         {
             Packet[] sendPackets = NetworkTestGlobals.GeneratePackets(size, _destination, _module, count);
-            NetworkTestGlobals.SendAndReceiveAssert(sendPackets, _clientSocket, _receivingQueue, count);
+            NetworkTestGlobals.SendPackets(sendPackets, _clientSocket, count);
+            NetworkTestGlobals.PacketsReceiveAssert(sendPackets, _receivingQueue, count);
         }
 
 		[Fact]
@@ -56,22 +58,28 @@ namespace PlexShareNetwork.Sockets.Tests
             PacketsReceiveTest(_smallPacketSize, 1);
 		}
 
-		[Fact]
-		public void LargePacketReceiveTest()
-		{
+        [Fact]
+        public void LargePacketReceiveTest()
+        {
             PacketsReceiveTest(_largePacketSize, 1);
         }
 
-		[Fact]
-		public void MultipleSmallPacketsReceiveTest()
-		{
-            PacketsReceiveTest(_smallPacketSize, _multiplePacktesCount);
+        [Fact]
+        public void VeryLargePacketReceiveTest()
+        {
+            PacketsReceiveTest(_veryLargePacketSize, 1);
+        }
+
+        [Fact]
+        public void MultipleSmallPacketsReceiveTest()
+        {
+            PacketsReceiveTest(_smallPacketSize, _multiplePacketsCount);
         }
 
         [Fact]
         public void MultipleLargePacketsReceiveTest()
         {
-            PacketsReceiveTest(_largePacketSize, _multiplePacktesCount);
+            PacketsReceiveTest(_largePacketSize, _multiplePacketsCount);
         }
     }
 }

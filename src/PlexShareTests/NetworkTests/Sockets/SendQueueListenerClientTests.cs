@@ -24,9 +24,10 @@ namespace PlexShareNetwork.Sockets.Tests
 		private readonly SocketListener _socketListener;
 		private TcpClient _serverSocket;
 		private readonly TcpClient _clientSocket = new();
-        private readonly int _multiplePacktesCount = 10;
-        private readonly int _smallPacketSize = 10;
-        private readonly int _largePacketSize = 1000;
+        private readonly int _multiplePacketsCount = 10;
+        private readonly int _smallPacketSize = 100;
+        private readonly int _largePacketSize = 10000;
+        private readonly int _veryLargePacketSize = 10000000; // adding one more 0 to it will hang you laptop
         private readonly string _destination = "Test Destination";
         private readonly string _module = "Test Module";
 
@@ -52,7 +53,8 @@ namespace PlexShareNetwork.Sockets.Tests
         private void PacketsSendTest(int size, int count)
         {
             Packet[] sendPackets = NetworkTestGlobals.GeneratePackets(size, _destination, _module, count);
-            NetworkTestGlobals.SendAndReceiveAssert(sendPackets, _sendingQueue, _receivingQueue, count);
+            NetworkTestGlobals.SendPackets(sendPackets, _sendingQueue, count);
+            NetworkTestGlobals.PacketsReceiveAssert(sendPackets, _receivingQueue, count);
         }
 
         [Fact]
@@ -68,15 +70,21 @@ namespace PlexShareNetwork.Sockets.Tests
         }
 
         [Fact]
+        public void VeryLargePacketSendTest()
+        {
+            PacketsSendTest(_veryLargePacketSize, 1);
+        }
+
+        [Fact]
 		public void MultipleSmallPacketsSendTest()
 		{
-            PacketsSendTest(_smallPacketSize, _multiplePacktesCount);
+            PacketsSendTest(_smallPacketSize, _multiplePacketsCount);
         }
 
         [Fact]
         public void MultipleLargePacketsSendTest()
         {
-            PacketsSendTest(_largePacketSize, _multiplePacktesCount);
+            PacketsSendTest(_largePacketSize, _multiplePacketsCount);
         }
     }
 }
