@@ -210,12 +210,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             TimeStampsList = new ObservableCollection<string>();
 
 
-            ////initialising UserCountVsTimeStamps
-            //UserCountVsTimeStamps = new ObservableCollection<UserCountVsTimeStamp>();
-            //UserCountVsTimeStamps.Add(new UserCountVsTimeStamp(10, 15));
-            //UserCountVsTimeStamps.Add(new UserCountVsTimeStamp(20, 20));
-            //UserCountVsTimeStamps.Add(new UserCountVsTimeStamp(30, 25));
-            //UserCountVsTimeStamps.Add(new UserCountVsTimeStamp(40, 30));
+            
             //UserCountList.Add(10);
             //UserCountList.Add(20);
             //UserCountList.Add(30);
@@ -308,8 +303,41 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
             //########################################################
 
-            
 
+
+            //FOR TESTING PURPOSE 
+            User user1 = new User(1, "Rupesh Kumar", "Presenting");
+            User user2 = new User(2, "Shubham Raj", "Presenting");
+            User user3 = new User(3, "Hrishi Raaj", "Presenting");
+            User user4 = new User(4, "Saurabh kumar", "Not Presenting");
+            User user5 = new User(5, "Aditya Agarwal", "Not Presenting");
+
+            ParticipantsList.Add(user1);
+            ParticipantsList.Add(user2);
+            ParticipantsList.Add(user3);
+            ParticipantsList.Add(user4);
+            ParticipantsList.Add(user5);
+
+            UserCountList.Add(10);
+            UserCountList.Add(20);
+            UserCountList.Add(30);
+            UserCountList.Add(40);
+
+            TimeStampsList.Add("15");
+            TimeStampsList.Add("20");
+            TimeStampsList.Add("25");
+            TimeStampsList.Add("35");
+
+
+            ChatCountList.Add(10);
+            ChatCountList.Add(12);
+            ChatCountList.Add(13);
+            ChatCountList.Add(4);
+
+            UserIdList.Add("1");
+            UserIdList.Add("2");
+            UserIdList.Add("3");
+            UserIdList.Add("4");
             //UserIdVsChatCounts.Add(new UserIdVsChatCount(5, 16));
 
             //adding the new stuff into the usercount list and the participant list 
