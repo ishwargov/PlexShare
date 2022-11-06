@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using PlexShareNetwork.Communication;
 using PlexShareNetwork.Queues;
 using Xunit;
 
@@ -17,7 +18,7 @@ namespace PlexShareNetwork.Sockets.Tests
 	{
 		private readonly SendingQueue _sendingQueue = new();
 		private readonly ReceivingQueue _receivingQueue = new();
-		private readonly Machine _server = new FakeServer();
+        private readonly ICommunicator _serverCommunicator = CommunicationFactory.GetCommunicator(false);
 		private readonly SendQueueListenerClient _sendQueueListenerClient;
 		private readonly SocketListener _socketListener;
 		private TcpClient _serverSocket;
@@ -25,8 +26,8 @@ namespace PlexShareNetwork.Sockets.Tests
 
 		public SendQueueListenerClientTest()
 		{
-			var IPAndPort = _server.Communicator.Start().Split(":");
-            _server.Communicator.Stop();
+			var IPAndPort = _serverCommunicator.Start().Split(":");
+            _serverCommunicator.Stop();
             IPAddress IP = IPAddress.Parse(IPAndPort[0]);
 			int port = int.Parse(IPAndPort[1]);
             TcpListener serverSocket = new(IP, port);
@@ -48,15 +49,15 @@ namespace PlexShareNetwork.Sockets.Tests
 		{
             Packet sendPacket = new("Test string", "To Server", "Test Module1");
             _sendingQueue.Enqueue(sendPacket);
-            NetworkingGlobals.AssertSinglePacketReceive(sendPacket, _receivingQueue);
+            NetworkTestGlobals.AssertSinglePacketReceive(sendPacket, _receivingQueue);
         }
 
 		[Fact]
 		public void LargePacketSendTest()
 		{
-            Packet sendPacket = new(NetworkingGlobals.RandomString(1000), "To Server", "Test Module1");
+            Packet sendPacket = new(NetworkTestGlobals.RandomString(1000), "To Server", "Test Module1");
             _sendingQueue.Enqueue(sendPacket);
-            NetworkingGlobals.AssertSinglePacketReceive(sendPacket, _receivingQueue);
+            NetworkTestGlobals.AssertSinglePacketReceive(sendPacket, _receivingQueue);
         }
 
 		[Fact]
@@ -68,7 +69,7 @@ namespace PlexShareNetwork.Sockets.Tests
                 sendPackets[i] = new Packet("Test string" + i, "To Server", "Test Module1");
                 _sendingQueue.Enqueue(sendPackets[i]);
 			}
-            NetworkingGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue);
+            NetworkTestGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue);
         }
 
         [Fact]
@@ -81,7 +82,7 @@ namespace PlexShareNetwork.Sockets.Tests
                 sendPackets[i] = new Packet("Test string" + i, "To Server", "Test Module" + (i%2+1));
                 _sendingQueue.Enqueue(sendPackets[i]);
             }
-            NetworkingGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue);
+            NetworkTestGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue);
         }
 
         [Fact]
@@ -90,10 +91,10 @@ namespace PlexShareNetwork.Sockets.Tests
             Packet[] sendPackets = new Packet[10];
             for (var i = 0; i < 10; i++)
             {
-                sendPackets[i] = new Packet(NetworkingGlobals.RandomString(1000), "To Server", "Test Module1");
+                sendPackets[i] = new Packet(NetworkTestGlobals.RandomString(1000), "To Server", "Test Module1");
                 _sendingQueue.Enqueue(sendPackets[i]);
             }
-            NetworkingGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue);
+            NetworkTestGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue);
         }
 
         [Fact]

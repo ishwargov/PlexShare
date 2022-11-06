@@ -14,16 +14,16 @@ namespace PlexShareNetwork.Communication.Test
 		public void ClientAndServerStartAndStopTest()
 		{
 			// Creating and starting a server
-			ICommunicator server = CommunicationFactory.GetCommunicator(false, true);
+			ICommunicator server = CommunicationFactory.GetCommunicator(false);
 			string serverIPAndPort = server.Start();
 			string[] IPAndPort = serverIPAndPort.Split(":");
 
 			// Starting client1
-			ICommunicator client1 = CommunicationFactory.GetCommunicator(true, true);
+			ICommunicator client1 = CommunicationFactory.GetCommunicator(true);
 			string client1Return = client1.Start(IPAndPort[0], IPAndPort[1]);
 
 			// Starting client2
-			ICommunicator client2 = CommunicationFactory.GetCommunicator(true, true);
+			ICommunicator client2 = CommunicationFactory.GetCommunicator(true);
 			string client2Return = client2.Start(IPAndPort[0], IPAndPort[1]);
 
 			// Checking whether both clients have successfully started

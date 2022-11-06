@@ -9,6 +9,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using PlexShareNetwork.Communication;
 using PlexShareNetwork.Queues;
 using Xunit;
 
@@ -19,7 +20,7 @@ namespace PlexShareNetwork.Sockets.Tests
 		private readonly SendingQueue _sendingQueue = new();
         private readonly ReceivingQueue _receivingQueue1 = new();
         private readonly ReceivingQueue _receivingQueue2 = new();
-		private readonly Machine _server = new FakeServer();
+        private readonly ICommunicator _serverCommunicator = CommunicationFactory.GetCommunicator(false);
 		private readonly SendQueueListenerServer _sendQueueListenerServer;
         private readonly SocketListener _socketListener1;
         private readonly SocketListener _socketListener2;
@@ -34,17 +35,17 @@ namespace PlexShareNetwork.Sockets.Tests
 
 		public SendQueueListenerServerTest()
 		{
-			var IPAndPort = _server.Communicator.Start().Split(":");
-            _server.Communicator.Stop();
+			var IPAndPort = _serverCommunicator.Start().Split(":");
+            _serverCommunicator.Stop();
             _IP = IPAddress.Parse(IPAndPort[0]);
 			_port = int.Parse(IPAndPort[1]);
 			_serverListener = new TcpListener(_IP, _port);
 			_serverListener.Start();
 
             _sendingQueue.RegisterModule("Test Module1", true);
-            _subscribedModules["Test Module1"] = new FakeNotificationHandler();
+            _subscribedModules["Test Module1"] = new TestNotificationHandler();
             _sendingQueue.RegisterModule("Test Module2", true);
-            _subscribedModules["Test Module2"] = new FakeNotificationHandler();
+            _subscribedModules["Test Module2"] = new TestNotificationHandler();
 
             _sendQueueListenerServer = new SendQueueListenerServer(_sendingQueue, _clientIdToSocket, _subscribedModules);
             _sendQueueListenerServer.Start();
@@ -74,15 +75,15 @@ namespace PlexShareNetwork.Sockets.Tests
 		{
             Packet sendPacket = new("Test string", "Client1 ID", "Test Module1");
             _sendingQueue.Enqueue(sendPacket);
-            NetworkingGlobals.AssertSinglePacketReceive(sendPacket, _receivingQueue1);
+            NetworkTestGlobals.AssertSinglePacketReceive(sendPacket, _receivingQueue1);
         }
 
 		[Fact]
 		public void LargePacketUnicastTest()
 		{
-            Packet sendPacket = new(NetworkingGlobals.RandomString(1000), "Client1 ID", "Test Module1");
+            Packet sendPacket = new(NetworkTestGlobals.RandomString(1000), "Client1 ID", "Test Module1");
             _sendingQueue.Enqueue(sendPacket);
-            NetworkingGlobals.AssertSinglePacketReceive(sendPacket, _receivingQueue1);
+            NetworkTestGlobals.AssertSinglePacketReceive(sendPacket, _receivingQueue1);
         }
 
         [Fact]
@@ -94,7 +95,7 @@ namespace PlexShareNetwork.Sockets.Tests
                 sendPackets[i] = new("Test string" + i, "Client1 ID", "Test Module1");
                 _sendingQueue.Enqueue(sendPackets[i]);
             }
-            NetworkingGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue1);
+            NetworkTestGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue1);
         }
 
         [Fact]
@@ -107,7 +108,7 @@ namespace PlexShareNetwork.Sockets.Tests
                 sendPackets[i] = new("Test string" + i, "Client1 ID", "Test Module" + (i%2+1));
                 _sendingQueue.Enqueue(sendPackets[i]);
             }
-            NetworkingGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue1);
+            NetworkTestGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue1);
         }
 
         [Fact]
@@ -116,10 +117,10 @@ namespace PlexShareNetwork.Sockets.Tests
             Packet[] sendPackets = new Packet[10];
             for (var i = 0; i < 10; i++)
             {
-                sendPackets[i] = new(NetworkingGlobals.RandomString(1000), "Client1 ID", "Test Module1");
+                sendPackets[i] = new(NetworkTestGlobals.RandomString(1000), "Client1 ID", "Test Module1");
                 _sendingQueue.Enqueue(sendPackets[i]);
             }
-            NetworkingGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue1);
+            NetworkTestGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue1);
         }
 
         [Fact]
@@ -127,17 +128,17 @@ namespace PlexShareNetwork.Sockets.Tests
         {
             Packet sendPacket = new("Test string", null, "Test Module1");
             _sendingQueue.Enqueue(sendPacket);
-            NetworkingGlobals.AssertSinglePacketReceive(sendPacket, _receivingQueue1);
-            NetworkingGlobals.AssertSinglePacketReceive(sendPacket, _receivingQueue2);
+            NetworkTestGlobals.AssertSinglePacketReceive(sendPacket, _receivingQueue1);
+            NetworkTestGlobals.AssertSinglePacketReceive(sendPacket, _receivingQueue2);
         }
 
         [Fact]
         public void LargePacketBroadcastTest()
         {
-            Packet sendPacket = new(NetworkingGlobals.RandomString(1000), null, "Test Module1");
+            Packet sendPacket = new(NetworkTestGlobals.RandomString(1000), null, "Test Module1");
             _sendingQueue.Enqueue(sendPacket);
-            NetworkingGlobals.AssertSinglePacketReceive(sendPacket, _receivingQueue1);
-            NetworkingGlobals.AssertSinglePacketReceive(sendPacket, _receivingQueue2);
+            NetworkTestGlobals.AssertSinglePacketReceive(sendPacket, _receivingQueue1);
+            NetworkTestGlobals.AssertSinglePacketReceive(sendPacket, _receivingQueue2);
         }
 
         [Fact]
@@ -149,8 +150,8 @@ namespace PlexShareNetwork.Sockets.Tests
                 sendPackets[i] = new("Test string" + i, null, "Test Module1");
                 _sendingQueue.Enqueue(sendPackets[i]);
             }
-            NetworkingGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue1);
-            NetworkingGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue2);
+            NetworkTestGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue1);
+            NetworkTestGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue2);
         }
 
         [Fact]
@@ -162,8 +163,8 @@ namespace PlexShareNetwork.Sockets.Tests
                 sendPackets[i] = new("Test string" + i, null, "Test Module" + (i%2+1));
                 _sendingQueue.Enqueue(sendPackets[i]);
             }
-            NetworkingGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue1);
-            NetworkingGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue2);
+            NetworkTestGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue1);
+            NetworkTestGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue2);
         }
 
         [Fact]
@@ -172,11 +173,11 @@ namespace PlexShareNetwork.Sockets.Tests
             Packet[] sendPackets = new Packet[10];
             for (var i = 0; i < 10; i++)
             {
-                sendPackets[i] = new(NetworkingGlobals.RandomString(1000), null, "Test Module1");
+                sendPackets[i] = new(NetworkTestGlobals.RandomString(1000), null, "Test Module1");
                 _sendingQueue.Enqueue(sendPackets[i]);
             }
-            NetworkingGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue1);
-            NetworkingGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue2);
+            NetworkTestGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue1);
+            NetworkTestGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue2);
         }
 
         [Fact]
@@ -186,9 +187,10 @@ namespace PlexShareNetwork.Sockets.Tests
 			_clientSocket1.Dispose();
             Packet sendPacket = new("Test string", null, "Test Module1");
             _sendingQueue.Enqueue(sendPacket);
-            FakeNotificationHandler notificationHandler = (FakeNotificationHandler) _subscribedModules["Test Module1"];
-            notificationHandler.Wait();
-			Assert.Equal(NotificationEvents.OnClientLeft, notificationHandler.Event);
-		}
-	}
+            TestNotificationHandler testNotificationHandler = (TestNotificationHandler) _subscribedModules["Test Module1"];
+            testNotificationHandler.Wait();
+			Assert.Equal("OnClientLeft", testNotificationHandler.Event);
+            Assert.Equal("Client1 ID", testNotificationHandler.ClientID);
+        }
+    }
 }
