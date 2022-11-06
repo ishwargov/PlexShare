@@ -29,13 +29,13 @@ namespace PlexShareTests.DashboardTests.Telemetry
 
             Assert.Equal(telemetryInstance1, telemetryInstance2);
             //Assert.True(telemetryInstance1.Equals(telemetryInstance2));
-        
+
         }
 
         [Fact]
         //writing the first test to checking the function CalculateUserCountVsTimeStamp 
         public void CalculateUserCountVsTimeStamp_ShouldGiveUserCountAtTimeStamp_Simple_Test()
-        { 
+        {
             //Arrange 
             //first we have to arrange or do the setup 
             UserData user1 = new UserData("Rupesh", 1);
@@ -112,8 +112,8 @@ namespace PlexShareTests.DashboardTests.Telemetry
 
             telemetryInstance.CalculateUserCountVsTimeStamp(sessionData, currDateTime3);
             int result3 = telemetryInstance.userCountVsEachTimeStamp[currDateTime3];
-            
-            
+
+
             bool check1 = false;
             bool check2 = false;
             bool check3 = false;
@@ -311,7 +311,7 @@ namespace PlexShareTests.DashboardTests.Telemetry
             sessionData1.AddUser(user1);
             DateTime currTime1 = new DateTime(2021, 11, 23, 1, 0, 0);
 
-           
+
 
             //updating the enter and exit time for this 
             var telemetryInstance = TelemetryFactory.GetTelemetryInstance();
@@ -319,7 +319,7 @@ namespace PlexShareTests.DashboardTests.Telemetry
             telemetryInstance.eachUserEnterTimeInMeeting.Clear();
             telemetryInstance.eachUserExitTime.Clear();
 
-           
+
             telemetryInstance.CalculateArrivalExitTimeOfUser(sessionData1, currTime1);
 
             //let user1 exits and user2 joins and hence the user1 will be insincere member 
@@ -381,6 +381,58 @@ namespace PlexShareTests.DashboardTests.Telemetry
 
             //say everything went fine 
             return;
+
+        }
+
+        [Fact]
+        //fucntion to check the onAnalytics function 
+        public void OnAnalyticsChanged_Test()
+        {
+            UserData user1 = new UserData("Rupesh Kumar", 1);
+            UserData user2 = new UserData("Hrishi Raaj Singh Chauhan", 2);
+            UserData user3 = new UserData("Shubham Raj", 3);
+
+
+            SessionData sessionData1 = new SessionData();
+            sessionData1.AddUser(user1);
+            sessionData1.AddUser(user2);
+            DateTime currTime1 = new DateTime(2021, 11, 23, 1, 0, 0);
+
+
+
+            //updating the enter and exit time for this 
+            var telemetryInstance = TelemetryFactory.GetTelemetryInstance();
+            //first we have to clear all the lists 
+            telemetryInstance.eachUserEnterTimeInMeeting.Clear();
+            telemetryInstance.eachUserExitTime.Clear();
+
+            //whenever the session data changes then we have to call the onanalytics changed function 
+            telemetryInstance.OnAnalyticsChanged(sessionData1);
+
+            //storing the results of the onanlytics changed 
+            DateTime user1DateTime = telemetryInstance.eachUserEnterTimeInMeeting[user1];
+            DateTime user2DateTime = telemetryInstance.eachUserEnterTimeInMeeting[user2];
+            int sizeOfEachUserExitTime = telemetryInstance.eachUserExitTime.Count();
+            int sizeOfEachUserEntryTime = telemetryInstance.eachUserEnterTimeInMeeting.Count();
+            int sizeOfListOfInSincereMembers = telemetryInstance.listOfInSincereMembers.Count();
+
+
+            //again changing the session by deleting the user2 and at the same time adding the new user user3 
+            DateTime currDateTime2 = new DateTime(2021, 11, 23, 1, 15, 0);
+            SessionData sessionData2 = new SessionData();
+
+            //check for userCountVstimeStamp 
+            bool check1 = false;
+            //check for calculation of arrival time 
+            bool check2 = false;
+            //check for calculation of exit times 
+            bool check3 = false;
+            //check for calculation of list of insincere members 
+            bool check4 = false;
+
+            //say everything went fine 
+            return;
+
 
         }
     }
