@@ -30,7 +30,7 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
         private readonly List<IClientSessionNotifications> _clients;
         private readonly ICommunicator _communicator;
        //  private readonly IContentClient _contentClient;
-        private readonly ISerializer _serializer;
+        private readonly IDashboardSerializer _serializer;
         // private readonly IClientBoardStateManager clientBoardStateManager;
         private readonly string moduleIdentifier;
 
@@ -56,7 +56,7 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
             //  clientBoardStateManager.Start();
 
             if (_clients == null) _clients = new List<IClientSessionNotifications>();
-            _clientSessionData = null;
+            _clientSessionData = new SessionData();
             _user = null;
             _chatSummary = null;
 
@@ -68,9 +68,9 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
         {
            
             moduleIdentifier = "Dashboard";
-         /*   _serializer = new Serializer();
+            _serializer = new DashboardSerializer();
             _communicator = communicator;
-            _communicator.Subscribe(moduleIdentifier, this);  */
+            _communicator.Subscribe(moduleIdentifier, this);  
            // _screenShareClient = ScreenShareFactory.GetScreenShareClient();
            /*
             if (whiteboardInstance != null)
@@ -312,7 +312,11 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
         //for testing we will add set session data
         public void SetSessionUsers(List<UserData> users)
         {
-            _clientSessionData.users = users;
+           // _clientSessionData.users = users;
+            for(int i=0;i<users.Count; ++i)
+            {
+                _clientSessionData.AddUser(users[i]);
+            }
 
         }
 

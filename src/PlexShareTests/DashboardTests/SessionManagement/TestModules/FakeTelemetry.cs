@@ -20,12 +20,12 @@ namespace PlexShareTests.DashboardTests.SessionManagement.TestModules
             sessionAnalytics = new SessionAnalytics();
         }
 
-        public void SaveAnalytics(String allMessages)
+        public void SaveAnalytics(ChatThread[] allMessages)
         {
 
         }
 
-        public SessionAnalytics GetTelemetryAnalytics(String allMessages)
+        public SessionAnalytics GetTelemetryAnalytics(ChatThread[] allMessages)
         {
             return sessionAnalytics;
         }
