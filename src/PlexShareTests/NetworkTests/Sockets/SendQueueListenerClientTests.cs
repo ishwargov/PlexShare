@@ -24,8 +24,13 @@ namespace PlexShareNetwork.Sockets.Tests
 		private readonly SocketListener _socketListener;
 		private TcpClient _serverSocket;
 		private readonly TcpClient _clientSocket = new();
+        private readonly int _multiplePacktesCount = 10;
+        private readonly int _smallPacketSize = 10;
+        private readonly int _largePacketSize = 1000;
+        private readonly string _destination = "Test Destination";
+        private readonly string _module = "Test Module";
 
-		public SendQueueListenerClientTests()
+        public SendQueueListenerClientTests()
 		{
 			string[] IPAndPort = _communicatorServer.Start().Split(":");
             _communicatorServer.Stop();
@@ -37,64 +42,41 @@ namespace PlexShareNetwork.Sockets.Tests
 			Task t1 = Task.Run(() => { _clientSocket.Connect(IP, port); });
             Task t2 = Task.Run(() => { _serverSocket = serverSocket.AcceptTcpClient(); });
 			Task.WaitAll(t1, t2);
-            _sendingQueue.RegisterModule("Test Module1", true);
-            _sendingQueue.RegisterModule("Test Module2", true);
+            _sendingQueue.RegisterModule(_module, true);
             _sendQueueListenerClient = new(_sendingQueue, _clientSocket);
 			_sendQueueListenerClient.Start();
 			_socketListener = new(_receivingQueue, _serverSocket);
 			_socketListener.Start();
 		}
 
-		[Fact]
-		public void SinglePacketSendTest()
+        private void PacketsSendTest(int size, int count)
+        {
+            Packet[] sendPackets = NetworkTestGlobals.GeneratePackets(size, _destination, _module, count);
+            NetworkTestGlobals.SendAndReceiveAssert(sendPackets, _sendingQueue, _receivingQueue, count);
+        }
+
+        [Fact]
+		public void SmallPacketSendTest()
 		{
-            Packet sendPacket = new("Test string", "To Server", "Test Module1");
-            _sendingQueue.Enqueue(sendPacket);
-            NetworkTestGlobals.AssertSinglePacketReceive(sendPacket, _receivingQueue);
+            PacketsSendTest(_smallPacketSize, 1);
         }
 
 		[Fact]
 		public void LargePacketSendTest()
 		{
-            Packet sendPacket = new(NetworkTestGlobals.RandomString(1000), "To Server", "Test Module1");
-            _sendingQueue.Enqueue(sendPacket);
-            NetworkTestGlobals.AssertSinglePacketReceive(sendPacket, _receivingQueue);
-        }
-
-		[Fact]
-		public void MultiplePacketsFromSameModuleSendTest()
-		{
-            Packet[] sendPackets = new Packet[10];
-            for (var i = 0; i < 10; i++)
-			{
-                sendPackets[i] = new Packet("Test string" + i, "To Server", "Test Module1");
-                _sendingQueue.Enqueue(sendPackets[i]);
-			}
-            NetworkTestGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue);
+            PacketsSendTest(_largePacketSize, 1);
         }
 
         [Fact]
-        public void MultiplePacketsFromDifferentModulesSendTest()
-        {
-            Packet[] sendPackets = new Packet[10];
-            for (var i = 0; i < 10; i++)
-            {
-                sendPackets[i] = new Packet("Test string" + i, "To Server", "Test Module" + (i%2+1));
-                _sendingQueue.Enqueue(sendPackets[i]);
-            }
-            NetworkTestGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue);
+		public void MultipleSmallPacketsSendTest()
+		{
+            PacketsSendTest(_smallPacketSize, _multiplePacktesCount);
         }
 
         [Fact]
         public void MultipleLargePacketsSendTest()
         {
-            Packet[] sendPackets = new Packet[10];
-            for (var i = 0; i < 10; i++)
-            {
-                sendPackets[i] = new Packet(NetworkTestGlobals.RandomString(1000), "To Server", "Test Module1");
-                _sendingQueue.Enqueue(sendPackets[i]);
-            }
-            NetworkTestGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue);
+            PacketsSendTest(_largePacketSize, _multiplePacktesCount);
         }
     }
 }

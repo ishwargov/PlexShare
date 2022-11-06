@@ -78,7 +78,7 @@ namespace PlexShareNetwork.Sockets
 			{
                 _sendingQueue.WaitForPacket();
 				Packet packet = _sendingQueue.Dequeue();
-                string sendString = "BEGIN" + _serializer.Serialize(packet).Replace("END", "NOTEND") + "END";
+                string sendString = SendString.PacketToSendString(packet);
                 try
 				{
                     _clientSocket.Client.Send(Encoding.ASCII.GetBytes(sendString));

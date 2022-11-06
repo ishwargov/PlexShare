@@ -119,20 +119,19 @@ namespace PlexShareNetwork.Sockets
             Trace.WriteLine("[Networking] SocketListener.ProcessReceivedString() function called.");
             while (true)
             {
-                int packetBeginIndex = receivedString.IndexOf("BEGIN", StringComparison.Ordinal) + 5;
-                int packetEndIndex = receivedString.IndexOf("END", StringComparison.Ordinal);
-                while (packetEndIndex != -1 && receivedString[(packetEndIndex - 3)..(packetEndIndex + 3)] == "NOTEND")
+                int packetBegin = receivedString.IndexOf("BEGIN", StringComparison.Ordinal) + 5;
+                int packetEnd = receivedString.IndexOf("END", StringComparison.Ordinal);
+                while (packetEnd != -1 && receivedString[(packetEnd - 3)..(packetEnd + 3)] == "NOTEND")
                 {
-                    packetEndIndex = receivedString.IndexOf("END", packetEndIndex + 3, StringComparison.Ordinal);
+                    packetEnd = receivedString.IndexOf("END", packetEnd + 3, StringComparison.Ordinal);
                 }
-                if (packetBeginIndex == -1 || packetEndIndex == -1)
+                if (packetBegin == -1 || packetEnd == -1)
                 {
                     break;
                 }
-                string serializedPacket = receivedString[packetBeginIndex..packetEndIndex].Replace("NOTEND", "END");
-                Packet packet = _serializer.Deserialize<Packet>(serializedPacket);
+                Packet packet = SendString.SendStringToPacket(receivedString[packetBegin..packetEnd]);
                 _receivingQueue.Enqueue(packet);
-                receivedString = receivedString[(packetEndIndex + 3)..]; // remove the first packet from the string
+                receivedString = receivedString[(packetEnd + 3)..]; // remove the first packet from the string
                 Trace.WriteLine($"[Networking] Received data from module: {packet.moduleOfPacket}.");
             }
 			return receivedString; // return the remaining string
