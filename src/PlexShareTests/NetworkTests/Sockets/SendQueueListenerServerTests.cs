@@ -15,7 +15,7 @@ using Xunit;
 
 namespace PlexShareNetwork.Sockets.Tests
 {
-	public class SendQueueListenerServerTest
+	public class SendQueueListenerServerTests
 	{
 		private readonly SendingQueue _sendingQueue = new();
         private readonly ReceivingQueue _receivingQueue1 = new();
@@ -33,9 +33,9 @@ namespace PlexShareNetwork.Sockets.Tests
 		private readonly int _port;
 		private readonly IPAddress _IP;
 
-		public SendQueueListenerServerTest()
+		public SendQueueListenerServerTests()
 		{
-			var IPAndPort = _serverCommunicator.Start().Split(":");
+			string[] IPAndPort = _serverCommunicator.Start().Split(":");
             _serverCommunicator.Stop();
             _IP = IPAddress.Parse(IPAndPort[0]);
 			_port = int.Parse(IPAndPort[1]);
@@ -87,6 +87,32 @@ namespace PlexShareNetwork.Sockets.Tests
         }
 
         [Fact]
+        public void FromSameModuleToDifferentClientsUnicastTest()
+        {
+            Packet sendPacket1 = new("Test string1", "Client1 ID", "Test Module1");
+            _sendingQueue.Enqueue(sendPacket1);
+            
+            Packet sendPacket2 = new("Test string2", "Client2 ID", "Test Module1");
+            _sendingQueue.Enqueue(sendPacket2);
+
+            NetworkTestGlobals.AssertSinglePacketReceive(sendPacket1, _receivingQueue1);
+            NetworkTestGlobals.AssertSinglePacketReceive(sendPacket2, _receivingQueue2);
+        }
+
+        [Fact]
+        public void FromDifferentModuleToDifferentClientsUnicastTest()
+        {
+            Packet sendPacket1 = new("Test string1", "Client1 ID", "Test Module1");
+            _sendingQueue.Enqueue(sendPacket1);
+
+            Packet sendPacket2 = new("Test string2", "Client2 ID", "Test Module2");
+            _sendingQueue.Enqueue(sendPacket2);
+
+            NetworkTestGlobals.AssertSinglePacketReceive(sendPacket1, _receivingQueue1);
+            NetworkTestGlobals.AssertSinglePacketReceive(sendPacket2, _receivingQueue2);
+        }
+
+        [Fact]
         public void MultiplePacketsFromSameModuleUnicastTest()
         {
             Packet[] sendPackets = new Packet[10];
@@ -104,7 +130,6 @@ namespace PlexShareNetwork.Sockets.Tests
             Packet[] sendPackets = new Packet[10];
             for (var i = 0; i < 10; i++)
             {
-                // alternately send packet from "Test Module1" and "Test Module2"
                 sendPackets[i] = new("Test string" + i, "Client1 ID", "Test Module" + (i%2+1));
                 _sendingQueue.Enqueue(sendPackets[i]);
             }

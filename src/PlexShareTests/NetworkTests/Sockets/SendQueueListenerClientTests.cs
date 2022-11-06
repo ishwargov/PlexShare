@@ -6,6 +6,7 @@
 
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using PlexShareNetwork.Communication;
@@ -14,7 +15,7 @@ using Xunit;
 
 namespace PlexShareNetwork.Sockets.Tests
 {
-	public class SendQueueListenerClientTest
+	public class SendQueueListenerClientTests
 	{
 		private readonly SendingQueue _sendingQueue = new();
 		private readonly ReceivingQueue _receivingQueue = new();
@@ -24,9 +25,9 @@ namespace PlexShareNetwork.Sockets.Tests
 		private TcpClient _serverSocket;
 		private readonly TcpClient _clientSocket = new();
 
-		public SendQueueListenerClientTest()
+		public SendQueueListenerClientTests()
 		{
-			var IPAndPort = _serverCommunicator.Start().Split(":");
+			string[] IPAndPort = _serverCommunicator.Start().Split(":");
             _serverCommunicator.Stop();
             IPAddress IP = IPAddress.Parse(IPAndPort[0]);
 			int port = int.Parse(IPAndPort[1]);
@@ -78,7 +79,6 @@ namespace PlexShareNetwork.Sockets.Tests
             Packet[] sendPackets = new Packet[10];
             for (var i = 0; i < 10; i++)
             {
-                // alternately send packet from "Test Module1" and "Test Module2"
                 sendPackets[i] = new Packet("Test string" + i, "To Server", "Test Module" + (i%2+1));
                 _sendingQueue.Enqueue(sendPackets[i]);
             }
@@ -95,17 +95,6 @@ namespace PlexShareNetwork.Sockets.Tests
                 _sendingQueue.Enqueue(sendPackets[i]);
             }
             NetworkTestGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue);
-        }
-
-        [Fact]
-        public void PacketFromUnregisteredModuleSendTest()
-        {
-            // packet from an unregistered module should not be sent because
-            // SendingQueue only enqueues packets that are registered
-            Packet sendPacket = new("Test string", "To Server", "Unregistered Module");
-            _sendingQueue.Enqueue(sendPacket);
-            Thread.Sleep(5000);
-            Assert.True(_receivingQueue.Size() == 0);
         }
     }
 }

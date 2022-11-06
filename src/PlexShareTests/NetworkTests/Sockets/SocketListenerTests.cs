@@ -15,7 +15,7 @@ using Xunit;
 
 namespace PlexShareNetwork.Sockets.Tests
 {
-	public class SocketListenerTest
+	public class SocketListenerTests
 	{
 		private readonly ReceivingQueue _receivingQueue = new();
         private readonly TcpClient _clientSocket = new();
@@ -23,9 +23,9 @@ namespace PlexShareNetwork.Sockets.Tests
 		private readonly SocketListener _socketListener;
         private readonly ICommunicator _serverCommunicator = CommunicationFactory.GetCommunicator(false);
 
-        public SocketListenerTest()
+        public SocketListenerTests()
 		{
-            var IPAndPort = _serverCommunicator.Start().Split(":");
+            string[] IPAndPort = _serverCommunicator.Start().Split(":");
             _serverCommunicator.Stop();
             IPAddress IP = IPAddress.Parse(IPAndPort[0]);
 			int port = int.Parse(IPAndPort[1]);
