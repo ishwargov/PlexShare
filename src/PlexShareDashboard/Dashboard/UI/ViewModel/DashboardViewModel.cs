@@ -202,13 +202,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             ParticipantsList.Add(user3);
             ParticipantsList.Add(user4);
             ParticipantsList.Add(user5);
-            for (int i = 6;i < 100;i++)
-            { 
-            //User user5 = new User(5, "Aditya Agarwal", "Not Presenting");
-                User user = new User(i, "Aditya Agarwal", "Not Presenting");
-                ParticipantsList.Add(user);
-
-            }
+            
 
 
 
@@ -352,6 +346,15 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             return;
 
         }
+
+
+
+        //function to access the private members 
+        public ClientSessionManager GetClientSessionManager()
+        {
+            return clientSessionManager;
+        }
+
 
 
         //function to update the button content 
