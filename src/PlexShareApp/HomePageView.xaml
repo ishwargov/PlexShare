@@ -18,7 +18,7 @@
             <Setter Property="FontSize" Value="24"/>
             <Setter Property="FontFamily" Value="Yu Gothic UI Semibold"/>
             <Setter Property="Padding" Value="13,5,0,0"/>
-            <Setter Property="Background" Value="#ffe2dcc8"/>
+            <Setter Property="Background" Value="{DynamicResource Color7Bg}"/>
             <!--<Setter Property="Background" Value="Transparent"/>-->
         </Style>
         <Style TargetType="TextBlock" x:Key="Round_textblock">
@@ -28,13 +28,13 @@
             <Setter Property="Width" Value="NaN"/>
             <Setter Property="FontSize" Value="24"/>
             <Setter Property="FontFamily" Value="Yu Gothic UI Semibold"/>
-            <Setter Property="Foreground" Value="#FF6B6767"/>
+            <Setter Property="Foreground" Value="{DynamicResource Color8Bg}"/>
             <Setter Property="Padding" Value="15,5,0,0"/>
         </Style>
         <Style TargetType="Border" x:Key="Round_Border_16">
             <Setter Property="CornerRadius" Value="16"/>
         </Style>
-        <Style TargetType="{x:Type ToggleButton}" x:Name="Theme_button">
+        <Style TargetType="{x:Type ToggleButton}"  >
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ToggleButton}">
@@ -91,7 +91,7 @@
         </Style>
     </Window.Resources>
 
-    <Grid Background="#E2DCC8" Margin="0,0,0,-6">
+    <Grid Background="{DynamicResource Color2Bg}" Margin="0,0,0,-6">
         <Grid.RowDefinitions>
             <RowDefinition Height="20"/>
             <RowDefinition Height="93*"/>
@@ -112,10 +112,6 @@
             <ColumnDefinition Width="136*"/>
             <ColumnDefinition Width="30*"/>
         </Grid.ColumnDefinitions>
-        <!--<Rectangle RadiusX="10" Grid.Row="4" RadiusY="10" Fill="#FF0F3D3E" Grid.Column="1" Margin="0,0,0,0"  />
-        <Grid Grid.Column="1" HorizontalAlignment="Center" Grid.Row="4">
-            <Image Source="/Resources/[removal.ai]_tmp-635051040cac5.png" Stretch="Fill" HorizontalAlignment="Center" Margin="85,24,85,24"/>
-        </Grid>-->
         <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="10" Background="#272537" MouseDown="TitleBarDrag"/>
         <TextBlock Grid.Row="0" Grid.Column="0" FontFamily="Cascadia Mono" FontSize="15" Foreground="#FFB0ADAD"> PlexShare</TextBlock>
 
@@ -153,24 +149,24 @@
         </StackPanel>
         <Grid Grid.Column="5" Grid.Row="3" Grid.RowSpan="4" Grid.ColumnSpan="2" Margin="0,0,135,0">
             <Grid.RowDefinitions>
-                <RowDefinition Height="39*"/>
-                <RowDefinition Height="165*"/>
-                <RowDefinition Height="53*"/>
-                <RowDefinition Height="83*"/>
-                <RowDefinition Height="83*"/>
-                <RowDefinition Height="83*"/>
-                <RowDefinition Height="83*"/>
-                <RowDefinition Height="27*"/>
+                <RowDefinition Height="37*"/>
+                <RowDefinition Height="170*"/>
+                <RowDefinition Height="36*"/>
+                <RowDefinition Height="78*"/>
+                <RowDefinition Height="78*"/>
+                <RowDefinition Height="78*"/>
+                <RowDefinition Height="78*"/>
+                <RowDefinition Height="25*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="83*"/>
-                <ColumnDefinition Width="95*"/>
-                <ColumnDefinition Width="158*"/>
-                <ColumnDefinition Width="93*"/>
-                <ColumnDefinition Width="84*"/>
+                <ColumnDefinition Width="80*"/>
+                <ColumnDefinition Width="91*"/>
+                <ColumnDefinition Width="172*"/>
+                <ColumnDefinition Width="73*"/>
+                <ColumnDefinition Width="81*"/>
             </Grid.ColumnDefinitions>
             <!--Profile Details-->
-            <Rectangle Fill="#FF0F3D3E" RadiusX="16" RadiusY="16" Grid.ColumnSpan="5" Grid.RowSpan="8"/>
+            <Rectangle Fill="{DynamicResource Color1Bg}" RadiusX="16" RadiusY="16" Grid.ColumnSpan="5" Grid.RowSpan="8"/>
             <!--Profile Image-->
 
             <!--<Image Name="pro_pic" Source="C:\Users\LENOVO\source\repos\Homescreen_wpf\Homescreen_wpf\Image1.png" Grid.Column="2" Grid.Row="1" Stretch="Uniform">
@@ -178,14 +174,14 @@
                     <EllipseGeometry Center="80,80" RadiusX="70" RadiusY="70"/>
                 </Image.Clip>
             </Image>-->
-            <Border CornerRadius="100,100,100,100" Grid.Column="1" BorderBrush="White" BorderThickness="7" Grid.RowSpan="2" Grid.ColumnSpan="3" Margin="99,39,97,0">
+            <Border CornerRadius="100,100,100,100" Grid.Column="2" BorderBrush="White" BorderThickness="8"  Grid.Row="1">
                 <Border.Background>
                     <ImageBrush x:Name="profile_picture" ImageSource="{Binding ReceivedImage}" Stretch="UniformToFill"/>
                 </Border.Background>
                 <TextBlock HorizontalAlignment="Left" Height="9" Margin="51,131,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Width="16"/>
             </Border>
             <!--Name-->
-            <Border BorderThickness="1" CornerRadius="16" Grid.Column="1"  Grid.ColumnSpan="3" Grid.Row="3" Margin="0,15,0,15" >
+            <Border BorderThickness="1" CornerRadius="16"  Grid.ColumnSpan="4" Grid.Row="3" Margin="80,15,0,15" >
                 <TextBox Name="Name_box" Text="" Style="{StaticResource Round_textbox}">
                     <TextBox.Resources>
                         <Style TargetType="{x:Type Border}">
@@ -194,7 +190,7 @@
                     </TextBox.Resources>
                 </TextBox>
             </Border>
-            <TextBlock Name="Name_block" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3"  IsHitTestVisible="False" Text="Name" VerticalAlignment="Center" >
+            <TextBlock Name="Name_block" Grid.Row="3" Grid.ColumnSpan="4"  IsHitTestVisible="False" Text="Name" Height="40" Margin="80,0,0,0" >
                 <TextBlock.Style>
                     <Style TargetType="{x:Type TextBlock}">
                         <Setter Property="Visibility" Value="Collapsed"/>
@@ -203,7 +199,7 @@
                         <Setter Property="Width" Value="NaN"/>
                         <Setter Property="FontSize" Value="24"/>
                         <Setter Property="FontFamily" Value="Yu Gothic UI Semibold"/>
-                        <Setter Property="Foreground" Value="#FF6B6767"/>
+                        <Setter Property="Foreground" Value="{DynamicResource Color8Bg}"/>
                         <Setter Property="Padding" Value="15,0,0,0"/>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding Text, ElementName=Name_box}" Value="">
@@ -215,7 +211,7 @@
                 </TextBlock.Style>
             </TextBlock>
             <!--Email Address-->
-            <Border BorderThickness="1" CornerRadius="16" Grid.Column="1"  Grid.ColumnSpan="3" Grid.Row="4" Margin="0,14,0,15" >
+            <Border BorderThickness="1" CornerRadius="16"  Grid.ColumnSpan="4" Grid.Row="4" Margin="80,14,0,15" >
                 <TextBox x:Name="Email_textbox" Text="Email" Style="{StaticResource Round_textbox}">
                     <TextBox.Resources>
                         <Style TargetType="{x:Type Border}">
@@ -225,7 +221,7 @@
                 </TextBox>
             </Border>
             <!--Server IP-->
-            <Border BorderThickness="1" CornerRadius="16" Grid.Column="1"  Grid.ColumnSpan="3" Grid.Row="5" Margin="0,14,0,15" >
+            <Border BorderThickness="1" CornerRadius="16"  Grid.ColumnSpan="4" Grid.Row="5" Margin="80,14,0,15" >
                 <TextBox x:Name="Server_IP" Style="{StaticResource Round_textbox}">
                     <TextBox.Resources>
                         <Style TargetType="{x:Type Border}">
@@ -235,7 +231,7 @@
                 </TextBox>
             </Border>
 
-            <TextBlock Name="Server_IP_textblock" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3"  IsHitTestVisible="False" Text="Server IP" VerticalAlignment="Center" >
+            <TextBlock Name="Server_IP_textblock" Grid.Row="5" Grid.ColumnSpan="4"  IsHitTestVisible="False" Text="Server IP" Height="40" Margin="80,0,0,0" >
                 <TextBlock.Style>
                     <Style TargetType="{x:Type TextBlock}">
                         <Setter Property="Visibility" Value="Collapsed"/>
@@ -244,7 +240,7 @@
                         <Setter Property="Width" Value="NaN"/>
                         <Setter Property="FontSize" Value="24"/>
                         <Setter Property="FontFamily" Value="Yu Gothic UI Semibold"/>
-                        <Setter Property="Foreground" Value="#FF6B6767"/>
+                        <Setter Property="Foreground" Value="{DynamicResource Color8Bg}"/>
                         <Setter Property="Padding" Value="15,0,0,0"/>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding Text, ElementName=Server_IP}" Value="">
@@ -257,7 +253,7 @@
             </TextBlock>
 
             <!--Server Port-->
-            <Border BorderThickness="1" CornerRadius="16" Grid.Column="1"  Grid.ColumnSpan="3" Grid.Row="6" Margin="0,14,0,15" >
+            <Border BorderThickness="1" CornerRadius="16"  Grid.ColumnSpan="4" Grid.Row="6" Margin="80,14,0,15" >
                 <TextBox Name="Server_PORT" Text="" Style="{StaticResource Round_textbox}">
                     <TextBox.Resources>
                         <Style TargetType="{x:Type Border}">
@@ -266,7 +262,7 @@
                     </TextBox.Resources>
                 </TextBox>
             </Border>
-            <TextBlock Name="Server_PORT_textblock" Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="3"  IsHitTestVisible="False" Text="Server PORT" VerticalAlignment="Center" >
+            <TextBlock Name="Server_PORT_textblock" Grid.Row="6" Grid.ColumnSpan="4"  IsHitTestVisible="False" Text="Server PORT" Height="40" Margin="80,0,0,0" >
                 <TextBlock.Style>
                     <Style TargetType="{x:Type TextBlock}">
                         <Setter Property="Visibility" Value="Collapsed"/>
@@ -275,7 +271,7 @@
                         <Setter Property="Width" Value="NaN"/>
                         <Setter Property="FontSize" Value="24"/>
                         <Setter Property="FontFamily" Value="Yu Gothic UI Semibold"/>
-                        <Setter Property="Foreground" Value="#FF6B6767"/>
+                        <Setter Property="Foreground" Value="{DynamicResource Color8Bg}"/>
                         <Setter Property="Padding" Value="15,0,0,0"/>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding Text, ElementName=Server_PORT}" Value="">
@@ -288,7 +284,7 @@
             </TextBlock>
         </Grid>
         <!--Join Button-->
-        <Button Name="Join_Meeting_Button" Click="Join_Meeting_Button_Click" Grid.Row="4"   Grid.Column="3" Background="#071E1E">
+        <Button Name="Join_Meeting_Button" Click="Join_Meeting_Button_Click" Grid.Row="4"   Grid.Column="3" Background="{DynamicResource Color4Bg}">
             <Grid Grid.Column="3" HorizontalAlignment="Center" Grid.Row="4">
                 <Image Name="Join_Meeting_image" Source="/Resources/[removal.ai]_tmp-6350549d077ef.png" Stretch="Fill" Margin="55,12,55,12"/>
             </Grid>
@@ -299,7 +295,7 @@
             </Button.Resources>
         </Button>
         <!--New Meeting-->
-        <Button Name="New_Meeting_Button" Click="New_Meeting_Button_Click"  Grid.Row="4"   Grid.Column="1" Background="#071E1E">
+        <Button Name="New_Meeting_Button" Click="New_Meeting_Button_Click"  Grid.Row="4"   Grid.Column="1" Background="{DynamicResource Color4Bg}">
             <Grid Grid.Column="1" HorizontalAlignment="Center" Grid.Row="4">
                 <Image Name="New_Meeting_image" Source="/Resources/[removal.ai]_tmp-635051040cac5.png" Stretch="Fill" Margin="85,25,65,22"/>
             </Grid>
@@ -332,17 +328,17 @@
                 <TextBlock HorizontalAlignment="Left" Height="9" Margin="51,131,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Width="16"/>
             </Border>
             <!--Time Real Time Update-->
-            <TextBlock Name="Time" Text="10:32 AM" Foreground="White" Grid.Row="1" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="40" FontFamily="Yu Gothic UI Semibold" FontWeight="Bold" Grid.Column="1"/>
+            <TextBlock Name="Time" Foreground="White" Text="10:32 AM"  Grid.Row="1" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="40" FontFamily="Yu Gothic UI Semibold" FontWeight="Bold" Grid.Column="1"/>
             <TextBlock Name="Date" Text="Monday, August 24, 2022" Foreground="White" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" FontSize="26" FontFamily="Yu Gothic UI Semibold" FontWeight="Bold" TextWrapping="Wrap" />
         </Grid>
         <!--PlexShare Title-->
-        <TextBlock Grid.ColumnSpan="2" Grid.RowSpan="2" HorizontalAlignment="Left" FontSize="48" FontStyle="Normal" FontFamily="Cascadia Code SemiBold" Grid.Row="2" Grid.Column="1" TextWrapping="Wrap" Text="PlexShare" Width="300"/>
+        <TextBlock Foreground="{DynamicResource Color5Bg}" Grid.ColumnSpan="2" Grid.RowSpan="2" HorizontalAlignment="Left" FontSize="48" FontStyle="Normal" FontFamily="Cascadia Code SemiBold" Grid.Row="2" Grid.Column="1" TextWrapping="Wrap" Text="PlexShare" Width="300"/>
         <!--New Meeting Textbox-->
-        <TextBlock Name="New_Meeting1" Grid.Column="1" Grid.Row="5" FontFamily="Cascadia Code SemiBold" TextWrapping="Wrap" Text="New Meeting" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="28"/>
+        <TextBlock Foreground="{DynamicResource Color5Bg}" Name="New_Meeting1" Grid.Column="1" Grid.Row="5" FontFamily="Cascadia Code SemiBold" TextWrapping="Wrap" Text="New Meeting" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="28"/>
         <!--Join Meeting Textbox-->
-        <TextBlock Name="Join_Meeting" Grid.Column="3" Grid.Row="5" FontFamily="Cascadia Code SemiBold" TextWrapping="Wrap" Text="Join Meeting" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="28"/>
+        <TextBlock Foreground="{DynamicResource Color5Bg}" Name="Join_Meeting" Grid.Column="3" Grid.Row="5" FontFamily="Cascadia Code SemiBold" TextWrapping="Wrap" Text="Join Meeting" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="28"/>
         <!--Session button-->
-        <Button Grid.Column="6" FontSize="18" Background="#FF0F3D3E" Foreground="White" FontWeight="DemiBold" Margin="0,5,0,0" Padding="0,0,0,5" Content="Session"  VerticalAlignment="Top"  Grid.Row="1">
+        <Button Grid.Column="6" FontSize="18" Background="{DynamicResource Color1Bg}" Foreground="White" FontWeight="DemiBold" Margin="0,5,0,0" Padding="0,0,0,5" Content="Session"  VerticalAlignment="Top"  Grid.Row="1">
             <Button.Resources>
                 <Style TargetType="Border">
                     <Setter Property="CornerRadius" Value="16"/>
@@ -350,7 +346,7 @@
             </Button.Resources>
         </Button>
         <!--Logout button-->
-        <Button Grid.Column="6" FontSize="18" Background="#FF0F3D3E" Foreground="White" FontWeight="DemiBold" Padding="0,0,0,5" Content="Logout"  VerticalAlignment="Bottom"  Grid.Row="1">
+        <Button Name="Logout_button" Click="Logout_button_Click" Grid.Column="6" FontSize="18" Background="{DynamicResource Color1Bg}" Foreground="White" FontWeight="DemiBold" Padding="0,0,0,5" Content="Logout"  VerticalAlignment="Bottom"  Grid.Row="1">
             <Button.Resources>
                 <Style TargetType="Border">
                     <Setter Property="CornerRadius" Value="16"/>
@@ -359,8 +355,8 @@
         </Button>
         <!--Theme Toggle Button-->
         <DockPanel Grid.Column="6" Grid.Row="7" Grid.ColumnSpan="2">
-            <ToggleButton HorizontalAlignment="Left" Height="22" VerticalAlignment="Center" Width="44"  Cursor="Hand" />
-            <TextBlock Text="Theme" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="24" FontFamily="Cascadia Code SemiBold"/>
+            <ToggleButton Name="Theme_toggle_button" Click="Theme_toggle_button_Click"  HorizontalAlignment="Left" Height="26" VerticalAlignment="Center" Width="44"  Cursor="Hand" />
+            <TextBlock Foreground="{DynamicResource Color5Bg}" Text="Theme" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="24" FontFamily="Cascadia Code SemiBold"/>
         </DockPanel>
 
     </Grid>

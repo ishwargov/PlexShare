@@ -95,13 +95,29 @@ namespace PlexShareApp
             this.Close();
         }
 
+        private void Logout_button_Click(object sender, RoutedEventArgs e)
+        {
+            AuthenticationView authenticationView = new AuthenticationView();
+            authenticationView.Show();
+            this.Close();
+        }
+
         string DownloadImage(string url)
         {
-            string imageName = "UserProfilePicture.png";
-            string localFileName = "./" + imageName;
-            Debug.WriteLine("LOCAL FILE NAME: " + localFileName + " " + ImageLocation);
+            string imageName = "";
+            int len_email = Email.Length;
+            for(int i=0;i<len_email;i++)
+            {
+                if(Email[i] == '@')
+                    break;
+                imageName+=Email[i];
+            }
             string dir = Environment.GetEnvironmentVariable("temp", EnvironmentVariableTarget.User);
             string absolute_path = System.IO.Path.Combine(dir, imageName);
+            if(File.Exists(absolute_path))
+            {
+                File.Delete(absolute_path);
+            }
             using (WebClient webClient = new())
             { 
                 webClient.DownloadFile(ImageLocation, absolute_path);
@@ -151,6 +167,21 @@ namespace PlexShareApp
                 this.BorderThickness = new System.Windows.Thickness(0);
             }
         }
-
+        private void Theme_toggle_button_Click(object sender, RoutedEventArgs e)
+        {
+            var dict = new ResourceDictionary();
+            if (Theme_toggle_button.IsChecked != true)
+            {
+                dict.Source = new Uri("Theme1.xaml", UriKind.Relative);
+                Application.Current.Resources.MergedDictionaries.Clear();
+                Application.Current.Resources.MergedDictionaries.Add(dict);
+            }
+            else
+            {
+                dict.Source = new Uri("Theme2.xaml", UriKind.Relative);
+                Application.Current.Resources.MergedDictionaries.Clear();
+                Application.Current.Resources.MergedDictionaries.Add(dict);
+            }
+        }
     }
 }
