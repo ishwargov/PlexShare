@@ -127,7 +127,8 @@ namespace PlexShareNetwork.Sockets
                 packetBeginIndex = receivedString.IndexOf("BEGIN", StringComparison.Ordinal) + 5;
                 packetEndIndex = receivedString.IndexOf("END", StringComparison.Ordinal);
             }
-			return receivedString; // return the remaining string
+            Trace.WriteLine("[Networking] SocketListener.ProcessReceivedString() function exited.");
+            return receivedString; // return the remaining string
 		}
 	}
 }

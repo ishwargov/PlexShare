@@ -10,6 +10,8 @@ using System.Dynamic;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
+using Xunit;
 
 namespace PlexShareNetwork
 {
@@ -56,13 +58,13 @@ namespace PlexShareNetwork
 
         public static void AssertTenPacketsReceive(Packet[] sendPackets, ReceivingQueue receivingQueue)
         {
-            while (receivingQueue.Size() < 10)
+            while (receivingQueue.Size() < 100)
             {
                 Thread.Sleep(100);
             }
-            Assert.True(receivingQueue.Size() == 10);
+            Assert.True(receivingQueue.Size() == 100);
 
-            for (var i = 0; i < 10; i++)
+            for (var i = 0; i < 100; i++)
             {
                 Packet receivedPacket = receivingQueue.Dequeue();
                 AssertPacketEquality(sendPackets[i], receivedPacket);

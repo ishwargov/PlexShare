@@ -16,5 +16,10 @@ namespace PlexShareNetwork.Serialization
         /// Given a serialized string, the method converts it into the original object and returns it
         /// </summary>
         public T Deserialize<T> (string serializedString);
+
+        /// <summary>
+        /// Given a serialized string, the method returns the type of the generic object which was serialized
+        /// </summary>
+        public string GetObjectType<T>(string serializedString);
     }
 }

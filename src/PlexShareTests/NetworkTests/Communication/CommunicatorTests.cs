@@ -36,7 +36,7 @@ namespace PlexShareNetwork.Communication.Test
         }
 
         [Fact]
-        public void ClientSendToServerTest()
+        public void SendClientToServerAndServerToClientTest()
         {
             _testNotificationHandlerServer.Reset();
 
@@ -45,11 +45,7 @@ namespace PlexShareNetwork.Communication.Test
             _testNotificationHandlerServer.WaitForEvent();
             Assert.Equal("OnDataReceived", _testNotificationHandlerServer.Event);
             Assert.Equal("Hello from client to server", _testNotificationHandlerServer.Data);
-        }
 
-        [Fact]
-        public void ServerSendToClientTest()
-        {
             _testNotificationHandlerClient.Reset();
             _communicatorServer.Send("Hello from server to client1", "Test Module", "Client1 ID");
 
@@ -57,12 +53,12 @@ namespace PlexShareNetwork.Communication.Test
             Assert.Equal("OnDataReceived", _testNotificationHandlerClient.Event);
             Assert.Equal("Hello from server to client1", _testNotificationHandlerClient.Data);
 
-            //_testNotificationHandlerClient.Reset();
-            //_communicatorServer.Send("Hello from server to all clients", "Test Module", null);
+            _testNotificationHandlerClient.Reset();
+            _communicatorServer.Send("Hello from server to all clients", "Test Module", null);
 
-            //_testNotificationHandlerClient.WaitForEvent();
-            //Assert.Equal("OnDataReceived", _testNotificationHandlerClient.Event);
-            //Assert.Equal("Hello from server to client1", _testNotificationHandlerClient.Data);
+            _testNotificationHandlerClient.WaitForEvent();
+            Assert.Equal("OnDataReceived", _testNotificationHandlerClient.Event);
+            Assert.Equal("Hello from server to all clients", _testNotificationHandlerClient.Data);
         }
     }
 }

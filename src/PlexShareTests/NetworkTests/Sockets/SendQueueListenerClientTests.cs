@@ -88,8 +88,8 @@ namespace PlexShareNetwork.Sockets.Tests
         [Fact]
         public void MultipleLargePacketsSendTest()
         {
-            Packet[] sendPackets = new Packet[10];
-            for (var i = 0; i < 10; i++)
+            Packet[] sendPackets = new Packet[100];
+            for (var i = 0; i < 100; i++)
             {
                 sendPackets[i] = new Packet(NetworkTestGlobals.RandomString(1000), "To Server", "Test Module1");
                 _sendingQueue.Enqueue(sendPackets[i]);
