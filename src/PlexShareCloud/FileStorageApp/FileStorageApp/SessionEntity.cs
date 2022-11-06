@@ -1,4 +1,4 @@
-using Azure;
+﻿using Azure;
 using System;
 using System.Text.Json.Serialization;
 using ITableEntity = Azure.Data.Tables.ITableEntity;
