@@ -355,7 +355,10 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             return clientSessionManager;
         }
 
-
+        public SessionAnalytics GetSessionAnalytics()
+        {
+            return sessionAnalytics;
+        }
 
         //function to update the button content 
         private void UpdateButtonContent(UserData currUser)
