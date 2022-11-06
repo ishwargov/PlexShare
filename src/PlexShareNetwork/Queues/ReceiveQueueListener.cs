@@ -31,6 +31,7 @@ namespace PlexShareNetwork.Queues
         /// </summary>
         public bool RegisterModule(string moduleName, INotificationHandler notificationHandler)
         {
+            Trace.WriteLine("[Networking] ReceiveQueueListener.RegisterModule() function called.");
             bool isSuccessful = true;
 
             // Adding the priority of the module into the dictionary
@@ -51,6 +52,7 @@ namespace PlexShareNetwork.Queues
         /// </summary>
         public void Start()
         {
+            Trace.WriteLine("[Networking] ReceiveQueueListener.Start() function called.");
             ThreadStart listeningThreadRef = new ThreadStart(ListenOnQueue);
 
             // Creating a thread
@@ -68,6 +70,7 @@ namespace PlexShareNetwork.Queues
         /// </summary>
         private void ListenOnQueue()
         {
+            Trace.WriteLine("[Networking] ReceiveQueueListener.ListenOnQueue() function called.");
             // Keep listening on the queue until the Communicator asks to stop
             while (_isRunning)
             {
@@ -97,6 +100,7 @@ namespace PlexShareNetwork.Queues
         /// </summary>
         public void Stop()
         {
+            Trace.WriteLine("[Networking] ReceiveQueueListener.Stop() function called.");
             // Stating to the thread to stop running
             _isRunning = false;
         }

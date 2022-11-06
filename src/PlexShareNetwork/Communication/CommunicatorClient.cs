@@ -36,7 +36,7 @@ namespace PlexShareNetwork.Communication
 		private SocketListener _socketListener;
 
 		// map to store the handlers of subscribed modules
-		private readonly Dictionary<string, INotificationHandler> _moduleNameToNotificationHanderMap = new();
+		private readonly Dictionary<string, INotificationHandler> _moduleToNotificationHanderMap = new();
 
 		/// <summary>
 		/// This function connects the client to the server. And initializes queues and sockets.
@@ -65,7 +65,7 @@ namespace PlexShareNetwork.Communication
 				_sendQueueListener.Start();
 
                 // start receive queue listener to notify modules on data receive
-				_receiveQueueListener = new ReceiveQueueListener(_moduleNameToNotificationHanderMap, _receivingQueue);
+				_receiveQueueListener = new ReceiveQueueListener(_moduleToNotificationHanderMap, _receivingQueue);
 				_receiveQueueListener.Start();
 
                 Trace.WriteLine("[Networking] CommunicatorClient started.");
@@ -170,11 +170,8 @@ namespace PlexShareNetwork.Communication
         public void Subscribe(string moduleName, INotificationHandler notificationHandler, bool isHighPriority)
 		{
             Trace.WriteLine("[Networking] CommunicatorClient.Subscribe() function called.");
-            _moduleNameToNotificationHanderMap.Add(moduleName, notificationHandler);
-            // sending queue has to know the priority of the module
+            _moduleToNotificationHanderMap.Add(moduleName, notificationHandler);
 			_sendingQueue.RegisterModule(moduleName, isHighPriority);
-            // receive queue listener needs notification handler to notify the module when data comes in the receiving queue
-            _receiveQueueListener.RegisterModule(moduleName, notificationHandler);
             Trace.WriteLine($"[Networking] Module: {moduleName} subscribed with priority is high: {isHighPriority}");
 		}
 	}

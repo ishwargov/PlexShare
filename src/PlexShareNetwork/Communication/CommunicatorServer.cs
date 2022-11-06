@@ -262,11 +262,8 @@ namespace PlexShareNetwork.Communication
 		{
             Trace.WriteLine("[Networking] CommunicatorServer.Subscribe() function called.");
             _moduleToNotificationHanderMap.Add(moduleName, notificationHandler);
-            // sending queue has to know the priority of the module
             _sendingQueue.RegisterModule(moduleName, isHighPriority);
-            // receive queue listener needs notification handler to notify the module when data comes in the receiving queue
-            _receiveQueueListener.RegisterModule(moduleName, notificationHandler);
-			Trace.WriteLine($"[Networking] Module: {moduleName} registered with priority is high: {isHighPriority}");
+			Trace.WriteLine($"[Networking] Module: {moduleName} subscribed with priority is high: {isHighPriority}");
 		}
 	}
 }
