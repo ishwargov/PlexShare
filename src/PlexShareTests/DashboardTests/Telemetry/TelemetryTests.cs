@@ -514,6 +514,52 @@ namespace PlexShareTests.DashboardTests.Telemetry
         public void  GetUserIdVsChatCount_Test()
         {
 
+            ReceiveContentData message1 = new ReceiveContentData();
+            message1.Data = "Hello from user 1";
+            message1.SenderID = 1;
+
+
+            ReceiveContentData message2 = new ReceiveContentData();
+            message2.Data = "Another Hello from user 1";
+            message2.SenderID = 1;
+
+
+            ReceiveContentData message3 = new ReceiveContentData();
+            message3.Data = "Hello from user 2";
+            message3.SenderID = 2;
+
+
+
+
+            var msgList1 = new List<ReceiveContentData>();
+            msgList1.Add(message1);
+            msgList1.Add(message2);
+
+            var msgList2 = new List<ReceiveContentData>();
+            msgList2.Add(message3);
+
+            var allMessages = new ChatThread[2];
+            var chat1 = new ChatThread();
+            chat1.MessageList = msgList1;
+
+
+            var chat2 = new ChatThread();
+            //chat2.CreationTime = new DateTime(2021, 11, 23, 4, 20, 0);
+            chat2.MessageList = msgList2;
+
+            allMessages[0] = chat1;
+            allMessages[1] = chat2;
+
+
+            //now calling the telemetry function to get the useridvschat  count 
+            var telemetryInstance = TelemetryFactory.GetTelemetryInstance();
+            telemetryInstance.GetUserIdVsChatCount(allMessages);
+
+
+            Assert.Equal(2, telemetryInstance.userIdVsChatCount[1]);
+            Assert.Equal(1, telemetryInstance.userIdVsChatCount[2]);
+
+
             //say everything went fine 
             return;
        
