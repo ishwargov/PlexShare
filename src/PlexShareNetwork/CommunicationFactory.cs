@@ -14,20 +14,14 @@ namespace PlexShareNetwork
 		private static readonly CommunicatorClient _clientCommunicator = new();
 		private static readonly CommunicatorServer _serverCommunicator = new();
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public static ICommunicator GetCommunicator(bool isClient = true, bool isTesting = false)
+        /// <summary>
+        /// Factory function to get the communicator.
+        /// </summary>
+        /// <param name="isClientSide"> Boolean telling is it client side or server side. </param>
+        /// <returns> The communicator singleton instance. </returns>
+        public static ICommunicator GetCommunicator(bool isClientSide = true)
 		{
-			if (isTesting)
-			{
-				if (isClient)
-				{
-					return new CommunicatorClient();
-				}
-				return new CommunicatorServer();
-			}
-			if (isClient)
+			if (isClientSide)
 			{
 				return _clientCommunicator;
 			}

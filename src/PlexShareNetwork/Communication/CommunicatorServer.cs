@@ -112,9 +112,9 @@ namespace PlexShareNetwork.Communication
         }
 
 		/// <summary>
-		/// This function finds IP4 address of machine which does not end with 1
+		/// This function finds IP4 address of machine which does not ends with 1
 		/// </summary>
-		/// <returns> String IP address </returns>
+		/// <returns> IP address as string </returns>
 		private static string FindIpAddress()
 		{
             Trace.WriteLine("[Networking] CommunicatorServer.FindIpAddress() function called.");
