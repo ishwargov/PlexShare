@@ -27,7 +27,7 @@ namespace PlexShareContent.Client
         /// Module identifier for communicator
         /// </summary>
         private readonly string _moduleIdentifier = "Content";
-        private readonly ISerializer _serializer;
+        private readonly IContentSerializer _serializer;
         private ICommunicator _communicator;
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace PlexShareContent.Client
         public FileClient(ICommunicator communicator)
         {
             _communicator = communicator;
-            _serializer = new Serializer();
+            _serializer = new ContentSerializer();
         }
 
         /// <summary>

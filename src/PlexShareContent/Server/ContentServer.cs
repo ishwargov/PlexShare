@@ -21,7 +21,7 @@ namespace PlexShareContent.Server
         private ICommunicator comm;
         private ContentDB contentDB;
         private FileServer fileServer;
-        private ISerializer serializer;
+        private IContentSerializer serializer;
         private List<IContentListener> subs;
 
         public ContentServer()
@@ -32,7 +32,7 @@ namespace PlexShareContent.Server
             notifHandler = new ContentServerNotificationHandler(this);
             fileServer = new FileServer(contentDB);
             chatServer = new ChatServer(contentDB);
-            serializer = new Serializer();
+            serializer = new ContentSerializer();
             comm.Subscribe("Content", notifHandler);
         }
 
@@ -159,13 +159,13 @@ namespace PlexShareContent.Server
             foreach (var subscriber in subs) _ = Task.Run(() => { subscriber.OnMessageReceived(receivedMsg); });
         }
 
-        internal void Reset()
+        public void Reset()
         {
             subs = new List<IContentListener>();
             contentDB = new ContentDB();
             fileServer = new FileServer(contentDB);
             chatServer = new ChatServer(contentDB);
-            serializer = new Serializer();
+            serializer = new ContentSerializer();
         }
     }
 }

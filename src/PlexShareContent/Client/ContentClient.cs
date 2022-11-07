@@ -25,7 +25,7 @@ namespace PlexShareContent.Client
     {
         private INotificationHandler _notificationHandler;
         private ICommunicator _communicator;
-        private ISerializer _serializer;
+        private IContentSerializer _serializer;
 
         private readonly ChatClient _chatHandler;
         private readonly FileClient _fileHandler;

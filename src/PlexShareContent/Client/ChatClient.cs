@@ -26,7 +26,7 @@ namespace PlexShareContent.Client
         /// Module identifier for communicator
         /// </summary>
         private readonly string _moduleIdentifier = "Content";
-        private readonly ISerializer _serializer;
+        private readonly IContentSerializer _serializer;
         private ICommunicator _communicator;
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace PlexShareContent.Client
         public ChatClient(ICommunicator communicator)
         {
             _communicator = communicator;
-            _serializer = new Serializer();
+            _serializer = new ContentSerializer();
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace PlexShareContent.Client
         /// <returns>True if empty, false otherwise</returns>
         private bool IsEmptyMessage(string message)
         {
-            if(message == null || message == "")
+            if (message == null || message == "")
             {
                 return true;
             }
@@ -114,7 +114,7 @@ namespace PlexShareContent.Client
         /// <exception cref="ArgumentException"></exception>
         public void NewChat(SendContentData sendContent)
         {
-            if(IsEmptyMessage(sendContent.Data))
+            if (IsEmptyMessage(sendContent.Data))
             {
                 throw new ArgumentException("Invalid message string.");
             }
@@ -132,7 +132,7 @@ namespace PlexShareContent.Client
         /// <exception cref="ArgumentException"></exception>
         public void EditChat(int messageID, string newMessage, int replyThreadID)
         {
-            if(IsEmptyMessage(newMessage))
+            if (IsEmptyMessage(newMessage))
             {
                 throw new ArgumentException("Invalid message string.");
             }
