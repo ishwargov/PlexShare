@@ -11,19 +11,12 @@ namespace PlexShareNetwork.Communication.Test
 {
     public class CommunicatorTests
     {
-        private ICommunicator _communicatorClient;
-        private ICommunicator _communicatorServer;
+        private CommunicatorClient _communicatorClient = new();
+        private CommunicatorServer _communicatorServer = new();
         private readonly TestNotificationHandler _testNotificationHandlerClient = new();
         private readonly TestNotificationHandler _testNotificationHandlerServer = new();
         private readonly string _module = "Test Module";
         private readonly string _clientID = "Test Client ID";
-
-
-        private void CommunicationFactoryTest()
-        {
-            _communicatorClient = CommunicationFactory.GetCommunicator(true);
-            _communicatorServer = CommunicationFactory.GetCommunicator(false);
-        }
 
         private void ServerAndClientStartTest()
         {
@@ -79,7 +72,6 @@ namespace PlexShareNetwork.Communication.Test
         [Fact]
         public void RunAllTests()
         {
-            CommunicationFactoryTest();
             ServerAndClientStartTest();
             ClientSendToServerTest();
             ServerUnicastToClientTest();

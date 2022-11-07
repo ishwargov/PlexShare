@@ -27,7 +27,7 @@ namespace PlexShareNetwork.Communication
 		private readonly ReceiveQueueListener _receiveQueueListener;
 
         // tcp listener to listen on server for client connect requests
-        private readonly TcpListener _clientConnectRequestsListener;
+        private readonly TcpListener _clientConnectRequestListener;
 
 		// map to store the sockets of the clients to send data to clients
 		private readonly Dictionary<string, TcpClient> _clientIdToClientSocket = new();
@@ -54,7 +54,7 @@ namespace PlexShareNetwork.Communication
         {
             ip = IPAddress.Parse(FindIpAddress());
             port = FindFreePort(ip);
-            _clientConnectRequestsListener = new TcpListener(IPAddress.Any, port);
+            _clientConnectRequestListener = new TcpListener(IPAddress.Any, port);
             // initialize all threads
             _sendQueueListener = new SendQueueListenerServer(_sendingQueue, _clientIdToClientSocket, _moduleToNotificationHanderMap);
             _receiveQueueListener = new ReceiveQueueListener(_moduleToNotificationHanderMap, _receivingQueue);
@@ -76,7 +76,7 @@ namespace PlexShareNetwork.Communication
             Trace.WriteLine("[Networking] CommunicatorServer.Start() function called.");
 
             // start all threads
-			_clientConnectRequestsListener.Start();
+			_clientConnectRequestListener.Start();
 			_sendQueueListener.Start();
 			_receiveQueueListener.Start();
 
@@ -106,7 +106,7 @@ namespace PlexShareNetwork.Communication
 			}
 
             // stop all running threads
-            _clientConnectRequestsListener.Stop();
+            _clientConnectRequestListener.Stop();
             _sendQueueListener.Stop();
             _receiveQueueListener.Stop();
 
@@ -166,7 +166,7 @@ namespace PlexShareNetwork.Communication
 			{
 				try
 				{
-					var clientSocket = _clientConnectRequestsListener.AcceptTcpClient();
+					var clientSocket = _clientConnectRequestListener.AcceptTcpClient();
 
                     foreach (var moduleToNotificationHandler in _moduleToNotificationHanderMap)
                     {
