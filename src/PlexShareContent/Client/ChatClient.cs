@@ -20,7 +20,7 @@ using System.Diagnostics;
 
 namespace PlexShareContent.Client
 {
-    internal class ChatClient
+    public class ChatClient
     {
         /// <summary>
         /// Module identifier for communicator
