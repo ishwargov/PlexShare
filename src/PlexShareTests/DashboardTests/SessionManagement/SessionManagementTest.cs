@@ -45,8 +45,7 @@ namespace PlexShareTests.DashboardTests.SessionManagement
             IUXClientSessionManager clientSessionManager1 = SessionManagerFactory.GetClientSessionManager();
             IUXClientSessionManager clientSessionManager2 = SessionManagerFactory.GetClientSessionManager();
 
-            //Assert(ReferenceEquals(clientSessionManager1, clientSessionManager2));
-            //Assert.Equal(clientSessionManager1, clientSessionManager2);
+            
             Assert.True(clientSessionManager2.Equals(clientSessionManager1));
         }
 
@@ -140,15 +139,12 @@ namespace PlexShareTests.DashboardTests.SessionManagement
         public void ClientArrivalProcedure_ClientArrives_BroadcastsNewUser(string ipAddress, int port, string username)
         {
             Setup();
-          //  ClientSessionManager clientSessionManager = SessionManagerFactory.GetClientSessionManager(_fakeCommunicator);
-           // ServerSessionManager serverSessionManager = SessionManagerFactory.GetServerSessionManager(_fakeCommunicator);
            
             Console.WriteLine("Session Before\n\t" + _clientSessionManager.GetSessionData());
             var clientAdded = _clientSessionManager.AddClient(ipAddress, port, username);
             
             _serverSessionManager.OnClientJoined<TcpClient>(null);
-//            Assert.NotNull(_fakeCommunicator.transferredData);
-
+ 
             ServerToClientData serverToClientData = _serializer.Deserialize<ServerToClientData>(_fakeCommunicator.transferredData);
             int userID = serverToClientData._user.userID;
             string userName = serverToClientData._user.username;
@@ -163,13 +159,14 @@ namespace PlexShareTests.DashboardTests.SessionManagement
             Console.WriteLine("Session After\n\t" + _clientSessionManager.GetSessionData());
             UserData updatedUser = _clientSessionManager.GetUser();
             Assert.Equal(updatedUser.username, username);
-            //Assert.NotNull(updatedUser.userID);
+            Assert.NotNull(updatedUser.userID);
           
           
         }
 
         [Theory]
         [InlineData("Jake")]
+        [InlineData (null)]
         public void AddClientProcedureServerSide_ClientArrives_NewClientAddedToServer(string username)
         {
             ServerSessionManager serverSessionManager = SessionManagerFactory.GetServerSessionManager(_fakeCommunicator);
@@ -179,17 +176,21 @@ namespace PlexShareTests.DashboardTests.SessionManagement
          
             serverSessionManager.OnClientJoined<TcpClient>(null);
 
-           serverSessionManager.OnDataReceived(serializedData);
-            var serverToClientData = _serializer.Deserialize<ServerToClientData>(_fakeCommunicator.transferredData);
-            var receiveduser = serverToClientData.GetUser();
+            try
+            {
+                serverSessionManager.OnDataReceived(serializedData);
+                var serverToClientData = _serializer.Deserialize<ServerToClientData>(_fakeCommunicator.transferredData);
+                var receiveduser = serverToClientData.GetUser();
 
-           // serverSessionManager.FakeClientArrivalProcedure(clientToServerData);
-            Assert.Equal(serverToClientData.eventType, "addClient");
-            Assert.Equal(receiveduser.username, username);
-            Assert.NotNull(receiveduser.userID);
-         
-           
-         
+                // serverSessionManager.FakeClientArrivalProcedure(clientToServerData);
+                Assert.Equal(serverToClientData.eventType, "addClient");
+                Assert.Equal(receiveduser.username, username);
+                Assert.NotNull(receiveduser.userID);
+            }
+            catch(Exception e)
+            {
+                Assert.Equal(e.Message, "Value cannot be null.");
+            }        
         }
 
         [Fact]
@@ -268,7 +269,6 @@ namespace PlexShareTests.DashboardTests.SessionManagement
             Assert.NotNull(_clientSessionManagerNew.GetUser());
             Assert.NotNull(_clientSessionManagerLast.GetSessionData());
             Assert.NotNull(_clientSessionManagerNew.GetSessionData());
-          //  Assert.Equal(_clientSessionManagerLast.GetSessionData(), _clientSessionManagerNew.GetSessionData());
             SessionData sessionDataNew = _clientSessionManagerNew.GetSessionData();
             SessionData sessionDataLast = _clientSessionManagerLast.GetSessionData();
             for(int i = 0; i < sessionDataNew.users.Count; i++)
@@ -278,7 +278,7 @@ namespace PlexShareTests.DashboardTests.SessionManagement
             }
            
 
-            //Assert.Equal(serverSession.users.Count,_clientSessionManagerLast.GetSessionData().users.Count );
+            Assert.Equal(serverSession.users.Count,_clientSessionManagerLast.GetSessionData().users.Count );
         }
 
         [Fact]

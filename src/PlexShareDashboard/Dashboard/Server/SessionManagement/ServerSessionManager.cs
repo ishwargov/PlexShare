@@ -138,7 +138,7 @@ namespace Dashboard.Server.SessionManagement
             // If a null object or username is received, return without further processing.
             if (deserializedObj == null || deserializedObj.username == null)
             {
-                return;
+                throw new ArgumentNullException();
             }
 
             switch (deserializedObj.eventType)
