@@ -3,11 +3,8 @@ using System;
 using System.Text.Json.Serialization;
 using ITableEntity = Azure.Data.Tables.ITableEntity;
 
-namespace FileStorageApp
+namespace PlexShareCloud
 {
-    /// <summary>
-    /// Custom Azure Table SubmissionEntity.
-    /// </summary>
     public class SubmissionEntity : ITableEntity
     {
         public const string PartitionKeyName = "SubmissionEntityPartitionKey";

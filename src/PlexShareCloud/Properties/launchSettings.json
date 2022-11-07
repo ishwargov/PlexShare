@@ -1,8 +1,8 @@
 {
   "profiles": {
-    "FileStorageApp": {
+    "PlexShareCloud": {
       "commandName": "Project",
-      "commandLineArgs": "--port 7101",
+      "commandLineArgs": "--port 7213",
       "launchBrowser": false
     }
   }

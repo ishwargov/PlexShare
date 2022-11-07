@@ -3,11 +3,8 @@ using System;
 using System.Text.Json.Serialization;
 using ITableEntity = Azure.Data.Tables.ITableEntity;
 
-namespace FileStorageApp
+namespace PlexShareCloud
 {
-    /// <summary>
-    /// Custom Azure Session Table Entity.
-    /// </summary>
     public class SessionEntity : ITableEntity
     {
         public const string PartitionKeyName = "SessionEntityPartitionKey";
