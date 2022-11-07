@@ -24,9 +24,9 @@ namespace PlexShareCloud
         /// <summary>
         /// This function returns all the files that are submitted by user with the given username. 
         /// </summary>
-        /// <param name="req"></param>
-        /// <param name="tableClient"></param>
-        /// <param name="username"></param>
+        /// <param name="req">req is HttpRequest which we are not using here.</param>
+        /// <param name="tableClient">Submission Table which contains files.</param>
+        /// <param name="username">Username of the user details we are searching for</param>
         /// <returns></returns>
         [FunctionName("GetFilesbyUsername")]
         public static async Task<IActionResult> GetFilesByUser(
@@ -37,15 +37,15 @@ namespace PlexShareCloud
             //log.LogInformation($"Getting entities by {username}");
             //Trace log need to be implemented. 
 
-            var page = await tableClient.QueryAsync<SubmissionEntity>(filter: $"UserName:{username}").AsPages().FirstAsync();
+            var page = await tableClient.QueryAsync<SubmissionEntity>(filter: $"UserName eq '{username}'").AsPages().FirstAsync();
             return new OkObjectResult(page.Values);
         }
 
         /// <summary>
         /// This function returns all files for a given sessionId. 
         /// </summary>
-        /// <param name="req"></param>
-        /// <param name="tableClient"></param>
+        /// <param name="req">req is HttpRequest which we are not using here.</param>
+        /// <param name="tableClient">Submission Table which contains files.</param>
         /// <param name="sessionid"></param>
         /// <returns></returns>
         [FunctionName("GetFilesbySessionId")]
@@ -57,16 +57,16 @@ namespace PlexShareCloud
             //log.LogInformation($"Getting entity {sessionid}");
             //Trace log need to be implemented. 
             
-            var page = await tableClient.QueryAsync<SubmissionEntity>(filter: $"SessionId:{sessionid}").AsPages().FirstAsync();
+            var page = await tableClient.QueryAsync<SubmissionEntity>(filter: $"SessionId eq '{sessionid}'").AsPages().FirstAsync();
             return new OkObjectResult(page.Values);
         }
 
         /// <summary>
         /// For a given username it will return all session rows which are created by the username. 
         /// </summary>
-        /// <param name="req"></param>
-        /// <param name="tableClient"></param>
-        /// <param name="username"></param>
+        /// <param name="req">req is HttpRequest which we are not using here.</param>
+        /// <param name="tableClient">Session Table</param>
+        /// <param name="username">Username of the user details we are searching for</param>
         /// <returns></returns>
         [FunctionName("GetSessionsbyUsername")]
         public static async Task<IActionResult> GetSessionsByUser(
@@ -77,7 +77,7 @@ namespace PlexShareCloud
             //log.LogInformation($"Getting entity {username}");
             //Trace log need to implemented. 
 
-            var page = await tableClient.QueryAsync<SessionEntity>(filter: $"UserName:{username}").AsPages().FirstAsync();
+            var page = await tableClient.QueryAsync<SessionEntity>(filter: $"UserName eq '{username}'").AsPages().FirstAsync();
             //added the filter for user name. 
 
             return new OkObjectResult(page.Values);

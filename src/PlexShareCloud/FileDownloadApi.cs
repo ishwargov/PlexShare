@@ -19,8 +19,8 @@ namespace PlexShareCloud
         /// <summary>
         /// Creates an instance of the RestClient class.
         /// </summary>
-        /// <param name="sessionUrl"></param>
-        /// <param name="submissionUrl"></param>
+        /// <param name="sessionUrl">Head Url for the session request</param>
+        /// <param name="submissionUrl">Head Url for the submission request</param>
         public FileDownloadApi(string sessionUrl, string submissionUrl)
         {
             _entityClient = new();
@@ -31,7 +31,7 @@ namespace PlexShareCloud
         /// <summary>
         /// Makes a "GET" call to our Azure function APIs to get all files for given username.
         /// </summary>
-        /// <param name="username"></param>
+        /// <param name="username">Username of the user details we are searching for</param>
         /// <returns></returns>
         public async Task<IReadOnlyList<SubmissionEntity>> GetFilesByUserAsync(string username)
         {
@@ -52,7 +52,7 @@ namespace PlexShareCloud
         /// <summary>
         /// Makes a "GET" call to our Azure function APIs to get all files for given sessionid. 
         /// </summary>
-        /// <param name="sessionId"></param>
+        /// <param name="sessionId">The unqiue id for the given session</param>
         /// <returns></returns>
         public async Task<IReadOnlyList<SubmissionEntity>> GetFilesBySessionIdAsync(string sessionId)
         {
@@ -73,7 +73,7 @@ namespace PlexShareCloud
         /// <summary>
         /// Makes a "GET" call to our Azure function APIs to get all sessions for given username.
         /// </summary>
-        /// <param name="hostUsername"></param>
+        /// <param name="hostUsername">Username of the user details we are searching for who conducted sessions</param>
         /// <returns></returns>
         public async Task<IReadOnlyList<SessionEntity>> GetSessionsByUserAsync(string hostUsername)
         {
