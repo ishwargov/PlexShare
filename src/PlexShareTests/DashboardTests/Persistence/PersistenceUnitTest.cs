@@ -7,17 +7,17 @@ namespace PlexShareTests.DashboardTests.Persistence
 {
     public class PersistenceUnitTest
     {
-        //[Fact]
-        //public void SaveSummaryNullPathExceptions()
-        //{
-        //    var summary = "Unit Testing";
-        //    var summaryPersister = PersistenceFactory.GetSummaryPersistenceInstance();
-        //    summaryPersister.SummaryPath = null;
+        [Fact]
+        public void SaveSummaryNullPathExceptions()
+        {
+           var summary = "Unit Testing";
+           var summaryPersister = PersistenceFactory.GetSummaryPersistenceInstance();
+           summaryPersister.SummaryPath = null;
 
-        //    var response = summaryPersister.SaveSummary(summary);
-        //    summaryPersister.SummaryPath = "../../../Persistence/PersistenceDownloads/SummaryDownloads/";
-        //    Assert.False(response);
-        //}
+           var response = summaryPersister.SaveSummary(summary);
+           summaryPersister.SummaryPath = "../../../Persistence/PersistenceDownloads/SummaryDownloads/";
+           Assert.False(response);
+        }
         [Fact]
         public void SaveSummaryTestOne()
         {
