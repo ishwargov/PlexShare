@@ -37,10 +37,13 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
         //event for notifying summary creation
         public event NotifySummaryCreated SummaryCreated;
 
-        //event for notifying the creation of analytics to the client UX
+        //event for notifying the end of meeting to the client UX
         public event NotifyEndMeet MeetingEnded;
 
         //event for notyfying the creation of analytics to the client UX
         public event NotifyAnalyticsCreated AnalyticsCreated;
+
+        //event for notifying the change of session mode to the client UX
+        public event NotifySessionModeChanged SessionModeChanged;
     }
 }

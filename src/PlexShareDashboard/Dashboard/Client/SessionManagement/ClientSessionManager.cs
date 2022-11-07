@@ -22,6 +22,8 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
 
     public delegate void NotifySummaryCreated(string summary);
 
+    public delegate void NotifySessionModeChanged(string sessionMode);
+
     //     ClientSessionManager class is used to maintain the client side
     //     session data and requests from the user. It communicates to the server session manager
     //     to update the current session or to fetch summary and analytics.
@@ -249,6 +251,7 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
         public event NotifyEndMeet MeetingEnded;
         public event NotifySummaryCreated SummaryCreated;
         public event NotifyAnalyticsCreated AnalyticsCreated;
+        public event NotifySessionModeChanged SessionModeChanged;
 
         //     Used to fetch the sessionData for the client. Helpful for testing and debugging.
         public SessionData GetSessionData()
@@ -363,8 +366,8 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
             {
                 _clientSessionData = receivedSessionData;
             }
-
-            NotifyUXSession();
+            SessionModeChanged?.Invoke(_clientSessionData.sessionMode);
+          //  NotifyUXSession();
         }
 
 
