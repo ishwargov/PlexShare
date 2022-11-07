@@ -5,22 +5,22 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace ServerlessFuncUnitTesting
+namespace PlexShareCloud
 {
     /// <summary>
     /// Helper class for calling our REST APIs.
     /// </summary>
-    internal class RestClient
+    public class FileUploadApi
     {
         private readonly HttpClient _entityClient;
         private readonly string _sessionUrl;
         private readonly string _submissionUrl;
 
         /// <summary>
-        /// Creates an instance of the RestClient class.
+        /// Creates an instance of the FileUploadApi class.
         /// </summary>
         /// <param name="url">The base URL of the http client.</param>
-        public RestClient(string sessionUrl, string submissionUrl)
+        public FileUploadApi(string sessionUrl, string submissionUrl)
         {
             _entityClient = new();
             _sessionUrl = sessionUrl;

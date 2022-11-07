@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -23,54 +24,60 @@ namespace FileStorageApp
         private const string SessionRoute = "session";
 
         [FunctionName("GetFilesbyUsername")]
-        public static IActionResult GetFilesByUser(
+        public static async Task<IActionResult> GetFilesByUser(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = SubmissionRoute + "/{username}")] HttpRequest req,
-        [Table(SubmissionTableName, SubmissionEntity.PartitionKeyName, "{username}", Connection = ConnectionName)] SubmissionEntity entity,
+        [Table(SubmissionTableName, SubmissionEntity.PartitionKeyName, "{username}", Connection = ConnectionName)] TableClient tableClient,
         ILogger log,
         string username)
         {
-            log.LogInformation($"Getting entity {username}");
-            if (entity == null)
+            log.LogInformation($"Getting entities by {username}");
+            /*if (entity == null)
             {
                 log.LogInformation($"Entity {username} not found");
                 return new NotFoundResult();
             }
 
-            return new OkObjectResult(entity);
+            return new OkObjectResult(entity);*/
+            var page = await tableClient.QueryAsync<SubmissionEntity>().AsPages().FirstAsync();
+            return new OkObjectResult(page.Values);
         }
 
         [FunctionName("GetFilesbySessionId")]
-        public static IActionResult GetFilesBySessionId(
+        public static async Task<IActionResult> GetFilesBySessionId(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = SubmissionRoute + "/{sessionid}")] HttpRequest req,
-        [Table(SubmissionTableName, SubmissionEntity.PartitionKeyName, "{sessionid}", Connection = ConnectionName)] SubmissionEntity entity,
+        [Table(SubmissionTableName, SubmissionEntity.PartitionKeyName, "{sessionid}", Connection = ConnectionName)] TableClient tableClient,
         ILogger log,
         string sessionid)
         {
             log.LogInformation($"Getting entity {sessionid}");
-            if (entity == null)
+            /*if (entity == null)
             {
                 log.LogInformation($"Entity {sessionid} not found");
                 return new NotFoundResult();
             }
 
-            return new OkObjectResult(entity);
+            return new OkObjectResult(entity);*/
+            var page = await tableClient.QueryAsync<SubmissionEntity>().AsPages().FirstAsync();
+            return new OkObjectResult(page.Values);
         }
 
         [FunctionName("GetSessionsbyUsername")]
-        public static IActionResult GetSessionsByUser(
+        public static async Task<IActionResult> GetSessionsByUser(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = SessionRoute + "/{username}")] HttpRequest req,
-        [Table(SessionTableName, SubmissionEntity.PartitionKeyName, "{username}", Connection = ConnectionName)] SubmissionEntity entity,
+        [Table(SessionTableName, SubmissionEntity.PartitionKeyName, "{username}", Connection = ConnectionName)] TableClient tableClient,
         ILogger log,
         string username)
         {
             log.LogInformation($"Getting entity {username}");
-            if (entity == null)
+            /*if (entity == null)
             {
                 log.LogInformation($"Entity {username} not found");
                 return new NotFoundResult();
             }
 
-            return new OkObjectResult(entity);
+            return new OkObjectResult(entity);*/
+            var page = await tableClient.QueryAsync<SessionEntity>().AsPages().FirstAsync();
+            return new OkObjectResult(page.Values);
         }
 
 
