@@ -90,5 +90,17 @@ namespace PlexShareCloud
             //Trace to be added. 
             return entities;
         }
+
+        public async Task DeleteAllFilesAsync()
+        {
+            using HttpResponseMessage response = await _entityClient.DeleteAsync(_submissionUrl);
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task DeleteAllSessionsAsync()
+        {
+            using HttpResponseMessage response = await _entityClient.DeleteAsync(_sessionUrl);
+            response.EnsureSuccessStatusCode();
+        }
     }
 }
