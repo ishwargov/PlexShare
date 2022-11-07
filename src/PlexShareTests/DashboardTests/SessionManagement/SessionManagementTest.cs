@@ -347,6 +347,7 @@ namespace PlexShareTests.DashboardTests.SessionManagement
 
             _clientSessionManager.SetUser(user.username, user.userID);
             _clientSessionManager.SetSessionUsers(new List<UserData> { user });
+            Assert.Equal(fakeClientUX.sessionMode, "LabMode");
             Assert.Equal(_serverSessionManager.GetSessionData().sessionMode, "LabMode");
             Assert.Equal(_clientSessionManager.GetSessionData().sessionMode, "LabMode");
             _clientSessionManager.ToggleSessionMode();
@@ -354,7 +355,7 @@ namespace PlexShareTests.DashboardTests.SessionManagement
             _clientSessionManager.OnDataReceived(_fakeCommunicator.transferredData);
             Assert.Equal(_serverSessionManager.GetSessionData().sessionMode, "ExamMode");
             Assert.Equal(_clientSessionManager.GetSessionData().sessionMode, _serverSessionManager.GetSessionData().sessionMode);
-            Assert.Equal(fakeClientUX.sessionData.sessionMode, "ExamMode");
+            Assert.Equal(fakeClientUX.sessionMode, "ExamMode");
 
         }
 

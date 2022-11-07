@@ -17,13 +17,16 @@ namespace PlexShareTests.DashboardTests.SessionManagement.TestModules
             public SessionAnalytics sessionAnalytics;
             public SessionData sessionData;
             public string sessionSummary;
-
+            public string sessionMode;
+            
         public FakeClientUX(IUXClientSessionManager sessionManager)
         {
             meetingEnded = false;
+            sessionMode = "LabMode";
             sessionManager.MeetingEnded += () => OnMeetingEnded();
             sessionManager.AnalyticsCreated += sessionAnalytics => OnAnalyticsChanged(sessionAnalytics);
             sessionManager.SummaryCreated += summary => OnSummaryCreated(summary);
+            sessionManager.SessionModeChanged += Mode => OnSessionModeChanged(Mode);
             sessionManager.SubscribeSession(this);
             sessionData = null;
         }
@@ -47,6 +50,11 @@ namespace PlexShareTests.DashboardTests.SessionManagement.TestModules
         public void OnSummaryCreated(string summary)
         {
             sessionSummary = summary;
+        }
+
+        public void OnSessionModeChanged(string Mode)
+        {
+            this.sessionMode = Mode;
         }
     }
 }
