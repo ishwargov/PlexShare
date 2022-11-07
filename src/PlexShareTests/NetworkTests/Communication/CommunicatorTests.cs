@@ -4,61 +4,79 @@
 /// This file contains unit tests for the class SocketListener
 /// </summary>
 
+using System.Net.Sockets;
 using Xunit;
 
 namespace PlexShareNetwork.Communication.Test
 {
     public class CommunicatorTests
     {
-        private readonly ICommunicator _communicatorClient;
-        private readonly ICommunicator _communicatorServer;
+        private CommunicatorClient _communicatorClient = new();
+        private CommunicatorServer _communicatorServer = new();
         private readonly TestNotificationHandler _testNotificationHandlerClient = new();
         private readonly TestNotificationHandler _testNotificationHandlerServer = new();
+        private readonly string _module = "Test Module";
+        private readonly string _clientID = "Test Client ID";
 
-        public CommunicatorTests()
+        private void ServerAndClientStartTest()
         {
-            _communicatorClient = CommunicationFactory.GetCommunicator(true);
-            _communicatorServer = CommunicationFactory.GetCommunicator(false);
             string serverIPAndPort = _communicatorServer.Start();
+            string[] IPAndPort = serverIPAndPort.Split(":");
 
             // first subscribe the module on the server so that it can be notified with the socket object when client joins
-            _communicatorServer.Subscribe("Test Module", _testNotificationHandlerServer, true);
+            _communicatorServer.Subscribe(_module, _testNotificationHandlerServer, true);
 
-            string[] IPAndPort = serverIPAndPort.Split(":");
             string communicatorClientReturn = _communicatorClient.Start(IPAndPort[0], IPAndPort[1]);
             Assert.Equal("success", communicatorClientReturn);
-            _communicatorClient.Subscribe("Test Module", _testNotificationHandlerClient, true);
+            _communicatorClient.Subscribe(_module, _testNotificationHandlerClient, true);
 
             _testNotificationHandlerServer.WaitForEvent();
-            Assert.Equal("OnClientJoined", _testNotificationHandlerServer.Event);
-            Assert.True(_testNotificationHandlerServer.Socket != null);
-            _communicatorServer.AddClient("Client1 ID", _testNotificationHandlerServer.Socket);
+            Assert.Equal("OnClientJoined", _testNotificationHandlerServer.GetLastEvent());
+            Assert.True(_testNotificationHandlerServer.GetLastEventSocket().Connected);
+            _communicatorServer.AddClient(_clientID, _testNotificationHandlerServer.GetLastEventSocket());
         }
 
-        [Fact]
-        public void SendClientToServerAndServerToClientTest()
+        private void ServerAndClientStopTest()
         {
-            _testNotificationHandlerServer.Reset();
+            _communicatorClient.Stop();
+            _communicatorServer.Stop();
+        }
 
+        private void ClientSendToServerTest()
+        {
             _communicatorClient.Send("Hello from client to server", "Test Module", null);
 
             _testNotificationHandlerServer.WaitForEvent();
-            Assert.Equal("OnDataReceived", _testNotificationHandlerServer.Event);
-            Assert.Equal("Hello from client to server", _testNotificationHandlerServer.Data);
+            Assert.Equal("OnDataReceived", _testNotificationHandlerServer.GetLastEvent());
+            Assert.Equal("Hello from client to server", _testNotificationHandlerServer.GetLastEventData());
+        }
 
-            _testNotificationHandlerClient.Reset();
-            _communicatorServer.Send("Hello from server to client1", "Test Module", "Client1 ID");
+        private void ServerUnicastToClientTest()
+        {
+            _communicatorServer.Send("Hello from server to client", "Test Module", _clientID);
 
             _testNotificationHandlerClient.WaitForEvent();
-            Assert.Equal("OnDataReceived", _testNotificationHandlerClient.Event);
-            Assert.Equal("Hello from server to client1", _testNotificationHandlerClient.Data);
+            Assert.Equal("OnDataReceived", _testNotificationHandlerClient.GetLastEvent());
+            Assert.Equal("Hello from server to client", _testNotificationHandlerClient.GetLastEventData());
+        }
 
-            _testNotificationHandlerClient.Reset();
+        private void ServerBroadcastToClientTest()
+        {
             _communicatorServer.Send("Hello from server to all clients", "Test Module", null);
 
             _testNotificationHandlerClient.WaitForEvent();
-            Assert.Equal("OnDataReceived", _testNotificationHandlerClient.Event);
-            Assert.Equal("Hello from server to all clients", _testNotificationHandlerClient.Data);
+            Assert.Equal("OnDataReceived", _testNotificationHandlerClient.GetLastEvent());
+            Assert.Equal("Hello from server to all clients", _testNotificationHandlerClient.GetLastEventData());
+        }
+
+        [Fact]
+        public void RunAllTests()
+        {
+            ServerAndClientStartTest();
+            ClientSendToServerTest();
+            ServerUnicastToClientTest();
+            ServerBroadcastToClientTest();
+            ServerAndClientStopTest();
         }
     }
 }

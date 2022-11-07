@@ -24,13 +24,10 @@ namespace PlexShareNetwork.Sockets
 		// object to store the the received message, StringBuilder type is mutable while string type is not
 		private readonly StringBuilder _receivedString = new();
 
-        // serializer object to deserialize the received string
-        readonly Serializer _serializer = new();
-
         // the thread which will be running
-        public Thread _thread;
+        private readonly Thread _thread;
 		// boolean to tell whether the thread is running or stopped
-		public volatile bool _threadRun;
+		private bool _threadRun;
 
 		// variable to store the receive queue
 		private readonly ReceivingQueue _receivingQueue;
@@ -47,6 +44,7 @@ namespace PlexShareNetwork.Sockets
 		{
             _receivingQueue = receivingQueue;
 			_socket = socket.Client;
+            _thread = new Thread(() => _socket.BeginReceive(buffer, 0, bufferSize, 0, ReceiveCallback, null));
 		}
 
         /// <summary>
@@ -58,7 +56,6 @@ namespace PlexShareNetwork.Sockets
             Trace.WriteLine("[Networking] SocketListener.Start() function called.");
             try
             {
-                _thread = new Thread(() => _socket.BeginReceive(buffer, 0, bufferSize, 0, ReceiveCallback, null));
                 _threadRun = true;
                 _thread.Start();
                 Trace.WriteLine("[Networking] SocketListener thread started.");
