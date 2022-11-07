@@ -94,7 +94,8 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
         {
             if (serializedData == null)  //if recieved string is null
             {
-                return;
+                throw new ArgumentNullException("Null SerializedObject as Argument");
+               // return;
             }
             // Deserialize the data when it arrives
             var deserializedObject = _serializer.Deserialize<ServerToClientData>(serializedData);
