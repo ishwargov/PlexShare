@@ -1,0 +1,17 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+    <!--Colours for various User Control objects-->
+    <SolidColorBrush x:Key="DynamicTextClr" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="DynamicButtonFore" Color="ForestGreen" />
+    <SolidColorBrush x:Key="DynamicChatBackGrd" Color="#E2DCC8" />
+    <SolidColorBrush x:Key="DynamicReplyBox" Color="#071e1e" />
+    <SolidColorBrush x:Key="DynamicSentMsg" Color="#0f3d3e" />
+    <SolidColorBrush x:Key="DynamicSentFile" Color="SandyBrown" />
+    <SolidColorBrush x:Key="DynamicRecvMsg" Color="LightGreen" />
+    <SolidColorBrush x:Key="DynamicRecvFile" Color="RosyBrown" />
+    <SolidColorBrush x:Key="DynamicSendBox" Color="MediumPurple" />
+    <SolidColorBrush x:Key="DynamicHeader" Color="Black" />
+    <SolidColorBrush x:Key="DynamicButtonBack" Color="Blue" />
+    <SolidColorBrush x:Key="DynamicSentReplyMsg" Color="YellowGreen" />
+</ResourceDictionary>
