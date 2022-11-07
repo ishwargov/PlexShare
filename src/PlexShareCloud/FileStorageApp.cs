@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using Azure.Data.Tables;
 using Azure;
 using System;
+using Microsoft.AspNetCore.Routing;
 
 namespace PlexShareCloud
 {
@@ -83,6 +84,60 @@ namespace PlexShareCloud
             return new OkObjectResult(page.Values);
         }
 
+        [FunctionName("CreateSession")]
+        public static async Task<IActionResult> CreateSession(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = SessionRoute + "/{hostUserName}")] HttpRequest req,
+        [Table(SessionTableName, Connection = ConnectionName)] IAsyncCollector<SessionEntity> entityTable,
+        string hostUserName)
+        {
+            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            string sessionId = JsonConvert.DeserializeObject<string>(requestBody);
+            SessionEntity value = new(hostUserName, sessionId);
+            await entityTable.AddAsync(value);
+            //log.LogInformation($"New entity created Id = {value.SessionId}, Name = {value.HostUserName}.");
+            return new OkObjectResult(value);
+        }
+        //create and update submission
+        [FunctionName("CreateSubmission")]
+        public static async Task<IActionResult> CreateSubmission(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = SubmissionRoute + "/{sessionId}/{username}")] HttpRequest req,
+        [Table(SubmissionTableName, Connection = ConnectionName)] IAsyncCollector<SubmissionEntity> entityTable,
+        string username, string sessionId)
+        {
+            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            byte[] pdf = JsonConvert.DeserializeObject<byte[]>(requestBody);
+
+            SubmissionEntity value = new(sessionId, username, pdf);
+            await entityTable.AddAsync(value);
+            //log.LogInformation($"New entity created Id = {value.SessionId}, Name = {value.UserName}.");
+            return new OkObjectResult(value);
+        }
+
+        [FunctionName("UpdateSubmission")]
+        public static async Task<IActionResult> UpdateSubmission(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = SubmissionRoute + "/{sessionId}/{username}")] HttpRequest req,
+        [Table(SubmissionTableName, Connection = ConnectionName)] TableClient tableClient,
+        string userName,
+        string sessionId)
+        {
+            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            var updatedName = JsonConvert.DeserializeObject<string>(requestBody);
+            //log.LogInformation($"Updating item with sessionId = {sessionId}");
+            SubmissionEntity existingRow;
+            try
+            {
+                var findResult = await tableClient.GetEntityAsync<SubmissionEntity>(SubmissionEntity.PartitionKeyName, sessionId);
+                existingRow = findResult.Value;
+            }
+            catch (RequestFailedException e) when (e.Status == 404)
+            {
+                return new NotFoundResult();
+            }
+            existingRow.UserName = updatedName;
+            await tableClient.UpdateEntityAsync(existingRow, existingRow.ETag, TableUpdateMode.Replace);
+            return new OkObjectResult(existingRow);
+
+        }
 
     }
 }
