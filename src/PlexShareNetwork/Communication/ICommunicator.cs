@@ -21,7 +21,7 @@ namespace PlexShareNetwork.Communication
 		///  Client side: string "success" if success, "failure" if failure
 		/// Server side: Address of the server as a string in format "IP:Port"
 		/// </returns>
-		public string Start(string serverIP = null, string serverPort = null);
+		public string Start(string? serverIP = null, string? serverPort = null);
 
 
 		/// <summary>

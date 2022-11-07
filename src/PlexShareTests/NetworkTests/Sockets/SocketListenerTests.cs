@@ -17,11 +17,6 @@ namespace PlexShareNetwork.Sockets.Tests
 {
 	public class SocketListenerTests
 	{
-		private readonly ReceivingQueue _receivingQueue = new();
-        private readonly TcpClient _clientSocket = new();
-        private TcpClient _serverSocket;
-		private readonly SocketListener _socketListener;
-        private readonly ICommunicator _communicatorServer = CommunicationFactory.GetCommunicator(false);
         private readonly int _multiplePacketsCount = 10;
         private readonly int _smallPacketSize = 100;
         private readonly int _largePacketSize = 10000;
@@ -29,24 +24,27 @@ namespace PlexShareNetwork.Sockets.Tests
         private readonly string _destination = "Test Destination";
         private readonly string _module = "Test Module";
 
-        public SocketListenerTests()
-		{
+        private void PacketsReceiveTest(int size, int count)
+        {
+            ReceivingQueue _receivingQueue = new();
+            TcpClient _clientSocket = new();
+            TcpClient _serverSocket = new();
+            SocketListener _socketListener;
+            CommunicatorServer _communicatorServer = new();
+
             string[] IPAndPort = _communicatorServer.Start().Split(":");
             _communicatorServer.Stop();
             IPAddress IP = IPAddress.Parse(IPAndPort[0]);
-			int port = int.Parse(IPAndPort[1]);
+            int port = int.Parse(IPAndPort[1]);
             TcpListener serverSocket = new(IP, port);
-			serverSocket.Start();
+            serverSocket.Start();
             _clientSocket.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, true);
-			Task t1 = Task.Run(() => { _clientSocket.Connect(IP, port); });
+            Task t1 = Task.Run(() => { _clientSocket.Connect(IP, port); });
             Task t2 = Task.Run(() => { _serverSocket = serverSocket.AcceptTcpClient(); });
-			Task.WaitAll(t1, t2);
-			_socketListener = new(_receivingQueue, _serverSocket);
-			_socketListener.Start();
-        }
+            Task.WaitAll(t1, t2);
+            _socketListener = new(_receivingQueue, _serverSocket);
+            _socketListener.Start();
 
-        private void PacketsReceiveTest(int size, int count)
-        {
             Packet[] sendPackets = NetworkTestGlobals.GeneratePackets(size, _destination, _module, count);
             NetworkTestGlobals.SendPackets(sendPackets, _clientSocket, count);
             NetworkTestGlobals.PacketsReceiveAssert(sendPackets, _receivingQueue, count);

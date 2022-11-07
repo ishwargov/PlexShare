@@ -22,29 +22,44 @@ namespace PlexShareNetwork.Communication
 		private readonly SendingQueue _sendingQueue = new();
 		private readonly ReceivingQueue _receivingQueue = new();
 
-		// declate the variable of SendQueueListenerClient class
-		private SendQueueListenerServer _sendQueueListener;
+        // declare all the threads
+		private readonly SendQueueListenerServer _sendQueueListener;
+		private readonly ReceiveQueueListener _receiveQueueListener;
 
-		// declate the variable of ReceiveQueueListener class
-		private ReceiveQueueListener _receiveQueueListener;
+        // tcp listener to listen on server for client connect requests
+        private readonly TcpListener _clientConnectRequestsListener;
 
-		// declare the server socket variable
-		private TcpListener _socketListener;
-
-		// map to store the sockets of the clients to be able to send data to a speicific client
+		// map to store the sockets of the clients to send data to clients
 		private readonly Dictionary<string, TcpClient> _clientIdToClientSocket = new();
 
 		// this map will store the socket listeners, one socket listener listening to one client
-		private readonly Dictionary<string, SocketListener> _clientIdToClientListener = new();
+		private readonly Dictionary<string, SocketListener> _clientIdToSocketListener = new();
 
-		// map to store the handlers of subscribed modules
+		// map to store the notification handlers of subscribed modules
 		private readonly Dictionary<string, INotificationHandler> _moduleToNotificationHanderMap = new();
 
 		// this thread will be used to accept client requests
-		private Thread _thread;
+		private readonly Thread _thread;
 
 		// boolean to tell whether thread is running or stopped
-		private volatile bool _threadRun;
+		private bool _threadRun;
+
+        private readonly IPAddress ip;
+        private readonly int port;
+
+        /// <summary>
+        /// Constructor initializes all threads.
+        /// </summary>
+        public CommunicatorServer()
+        {
+            ip = IPAddress.Parse(FindIpAddress());
+            port = FindFreePort(ip);
+            _clientConnectRequestsListener = new TcpListener(IPAddress.Any, port);
+            // initialize all threads
+            _sendQueueListener = new SendQueueListenerServer(_sendingQueue, _clientIdToClientSocket, _moduleToNotificationHanderMap);
+            _receiveQueueListener = new ReceiveQueueListener(_moduleToNotificationHanderMap, _receivingQueue);
+            _thread = new Thread(AcceptClientConnectRequests);
+        }
 
         /// <summary>
         /// This function finds IP and port of the machine and start listening on it.
@@ -56,26 +71,17 @@ namespace PlexShareNetwork.Communication
         /// <returns>
         ///  Address of the server as a string of "IP:Port"
         /// </returns>
-        public string Start(string serverIP = null, string serverPort = null)
+        public string Start(string? serverIP = null, string? serverPort = null)
 		{
             Trace.WriteLine("[Networking] CommunicatorServer.Start() function called.");
 
-            IPAddress ip = IPAddress.Parse(FindIpAddress());
-			int port = FindFreePort(ip);
-			_socketListener = new TcpListener(IPAddress.Any, port);
-			_socketListener.Start(); // start listening on this IP address and port
-
-            // start send queue listener to send data from sending queue
-            _sendQueueListener = new SendQueueListenerServer(_sendingQueue, _clientIdToClientSocket, _moduleToNotificationHanderMap);
+            // start all threads
+			_clientConnectRequestsListener.Start();
 			_sendQueueListener.Start();
-
-            // start receive queue listener to notify modules on data receive
-            _receiveQueueListener = new ReceiveQueueListener(_moduleToNotificationHanderMap, _receivingQueue);
 			_receiveQueueListener.Start();
 
-            // start the thread to accept client connect requests
+            // start the thread
 			_threadRun = true;
-			_thread = new Thread(AcceptClientConnectRequests);
 			_thread.Start();
 
 			Trace.WriteLine("[Networking] CommunicatorServer started on IP: " + ip + " Port: " + port);
@@ -94,13 +100,13 @@ namespace PlexShareNetwork.Communication
             _threadRun = false;
 
             // stop listening to the clients
-            foreach (var clientListener in _clientIdToClientListener.Values)
+            foreach (var clientListener in _clientIdToSocketListener.Values)
 			{
 				clientListener.Stop();
 			}
 
             // stop all running threads
-            _socketListener.Stop();
+            _clientConnectRequestsListener.Stop();
             _sendQueueListener.Stop();
             _receiveQueueListener.Stop();
 
@@ -160,7 +166,7 @@ namespace PlexShareNetwork.Communication
 			{
 				try
 				{
-					var clientSocket = _socketListener.AcceptTcpClient();
+					var clientSocket = _clientConnectRequestsListener.AcceptTcpClient();
 
                     foreach (var moduleToNotificationHandler in _moduleToNotificationHanderMap)
                     {
@@ -201,7 +207,7 @@ namespace PlexShareNetwork.Communication
             {
                 _clientIdToClientSocket[clientId] = socket;
                 SocketListener clientListener = new(_receivingQueue, socket);
-                _clientIdToClientListener[clientId] = clientListener;
+                _clientIdToSocketListener[clientId] = clientListener;
                 clientListener.Start();
             }
             catch (Exception e)
@@ -222,9 +228,9 @@ namespace PlexShareNetwork.Communication
             Trace.WriteLine("[Networking] CommunicatorServer.RemoveClient() function called.");
 
             // stop listening to this client and remove the client listener from the map
-            SocketListener socketListener = _clientIdToClientListener[clientId];
+            SocketListener socketListener = _clientIdToSocketListener[clientId];
 			socketListener.Stop();
-			_clientIdToClientListener.Remove(clientId);
+			_clientIdToSocketListener.Remove(clientId);
 
             // close the connection to the client and remove the client socket from the map
 			TcpClient socket = _clientIdToClientSocket[clientId];
