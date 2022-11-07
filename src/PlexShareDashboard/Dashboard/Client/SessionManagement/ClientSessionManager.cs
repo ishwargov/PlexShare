@@ -367,7 +367,7 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
                 _clientSessionData = receivedSessionData;
             }
             SessionModeChanged?.Invoke(_clientSessionData.sessionMode);
-          //  NotifyUXSession();
+            NotifyUXSession();
         }
 
 
