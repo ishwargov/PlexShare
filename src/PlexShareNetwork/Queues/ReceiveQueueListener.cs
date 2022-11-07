@@ -58,11 +58,11 @@ namespace PlexShareNetwork.Queues
             // Creating a thread
             Thread listeningThread = new Thread(listeningThreadRef);
 
+            _isRunning = true;
             // Starting the thread
             listeningThread.Start();
 
             // Declaring that the queue is running
-            _isRunning = true;
         }
 
         /// <summary>

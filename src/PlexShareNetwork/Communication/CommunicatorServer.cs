@@ -197,11 +197,17 @@ namespace PlexShareNetwork.Communication
         public void AddClient(string clientId, TcpClient socket)
 		{
             Trace.WriteLine("[Networking] CommunicatorServer.AddClient() function called.");
-            _clientIdToClientSocket[clientId] = socket;
-
-            SocketListener clientListener = new(_receivingQueue, socket);
-			_clientIdToClientListener[clientId] = clientListener;
-            clientListener.Start();
+            try
+            {
+                _clientIdToClientSocket[clientId] = socket;
+                SocketListener clientListener = new(_receivingQueue, socket);
+                _clientIdToClientListener[clientId] = clientListener;
+                clientListener.Start();
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine($"[Networking] Error in AddClient(): {e.Message}");
+            }
             Trace.WriteLine($"[Networking] Client added with clientID: {clientId}");
         }
 
@@ -243,7 +249,7 @@ namespace PlexShareNetwork.Communication
             {
                 if (!_clientIdToClientSocket.ContainsKey(destination))
                 {
-                    throw new Exception($"[Networking] Sending Falied. Client with ID: {destination} does not exist in the room!");
+                    Trace.WriteLine($"[Networking] Sending Falied. Client with ID: {destination} does not exist in the room!");
                 }
             }
             Packet packet = new(serializedData, destination, moduleName);

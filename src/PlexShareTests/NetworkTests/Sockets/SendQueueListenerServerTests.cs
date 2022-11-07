@@ -200,7 +200,6 @@ namespace PlexShareNetwork.Sockets.Tests
             // client1 got disconnected, modules should be notified about client1 and
             // client2 should still receive the sent data as it is being broadcasted
             TestNotificationHandler testNotificationHandler = (TestNotificationHandler) _subscribedModules["Test Module"];
-            testNotificationHandler.Reset();
 			_clientSocket1.Close();
 			_clientSocket1.Dispose();
             Packet[] sendPackets = { new("Test string", null, _module) };
@@ -208,8 +207,8 @@ namespace PlexShareNetwork.Sockets.Tests
 
             testNotificationHandler.WaitForEvent();
             // assert module is notified, client1 did not receive, and client2 received
-			Assert.Equal("OnClientLeft", testNotificationHandler.Event);
-            Assert.Equal("Client1 ID", testNotificationHandler.ClientID);
+			Assert.Equal("OnClientLeft", testNotificationHandler.GetLastEvent());
+            Assert.Equal("Client1 ID", testNotificationHandler.GetLastEventClientId());
             Assert.True(_receivingQueue1.IsEmpty());
             NetworkTestGlobals.PacketsReceiveAssert(sendPackets, _receivingQueue2, 1);
         }

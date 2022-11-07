@@ -112,7 +112,7 @@ namespace PlexShareNetwork.Communication
 		/// <returns>
 		///  The IP Address
 		/// </returns>
-		public static IPAddress ParseIP(string IPstring)
+		private static IPAddress ParseIP(string IPstring)
 		{
             Trace.WriteLine("[Networking] CommunicatorClient.ParseIP() function called.");
             try

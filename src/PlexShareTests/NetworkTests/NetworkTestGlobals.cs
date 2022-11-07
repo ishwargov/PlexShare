@@ -13,6 +13,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using System.Windows.Markup;
 using Xunit;
 
 namespace PlexShareNetwork
@@ -88,50 +89,59 @@ namespace PlexShareNetwork
             Assert.Equal(packet1.destination, packet2.destination);
             Assert.Equal(packet1.moduleOfPacket, packet2.moduleOfPacket);
         }
-	}
+    }
 
 	/// <summary>
 	/// An implementation of the notification handler.
 	/// </summary>
 	public class TestNotificationHandler : INotificationHandler
 	{
-		public string? Data = null;
-		public string? Event = null;
-        public string? ClientID = null;
-        public TcpClient? Socket = null;
+        public List<Tuple<string, string?, TcpClient?>> eventAndEventArgument = new();
+        public Dictionary<string, Tuple<string?, TcpClient?>> eventToEventArgumentMap = new();
+        public int lastEventCount = 0;
 
-		public void OnDataReceived(string data)
+        public void OnDataReceived(string data)
 		{
-			Event = "OnDataReceived";
-			Data = data;
-		}
+            eventAndEventArgument.Add(new("OnDataReceived", data, null));
+        }
 
-		public void OnClientJoined(TcpClient socket)
-		{
-			Event = "OnClientJoined";
-			Socket = socket;
-		}
+        public void OnClientJoined(TcpClient socket)
+        {
+            eventAndEventArgument.Add(new("OnClientJoined", null, socket));
+        }
 
-		public void OnClientLeft(string clientId)
+        public void OnClientLeft(string clientId)
 		{
-			Event = "OnClientLeft";
-			ClientID = clientId;
+            eventAndEventArgument.Add(new("OnClientLeft", clientId, null));
 		}
 
 		public void WaitForEvent()
 		{
-            while (Event == null)
+            while (eventAndEventArgument.Count == lastEventCount)
             {
                 Thread.Sleep(100);
             }
+            lastEventCount = eventAndEventArgument.Count;
         }
 
-		public void Reset()
-		{
-			Event = null;
-			Data = null;
-            Socket = null;
-            ClientID = null;
-		}
-	}
+        public string GetLastEvent()
+        {
+            return eventAndEventArgument.Last().Item1;
+        }
+
+        public string? GetLastEventData()
+        {
+            return eventAndEventArgument.Last().Item2;
+        }
+
+        public TcpClient? GetLastEventSocket()
+        {
+            return eventAndEventArgument.Last().Item3;
+        }
+
+        public string? GetLastEventClientId()
+        {
+            return eventAndEventArgument.Last().Item2;
+        }
+    }
 }
