@@ -20,6 +20,11 @@ namespace PlexShareContent.DataModels
         /// </summary>
         public SendFileData FileData;
 
+        public ContentData()
+        {
+
+        }
+
         /// <summary>
         /// Empty constructor to create type without parameters.
         /// </summary>
