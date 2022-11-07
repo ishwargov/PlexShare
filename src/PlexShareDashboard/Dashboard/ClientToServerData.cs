@@ -8,6 +8,7 @@ namespace PlexShare.Dashboard
 {
     public class ClientToServerData
     {
+        
         public string eventType;
         public int userID;
         public string username;
@@ -26,4 +27,5 @@ namespace PlexShare.Dashboard
 
         }
     }
+       
 }

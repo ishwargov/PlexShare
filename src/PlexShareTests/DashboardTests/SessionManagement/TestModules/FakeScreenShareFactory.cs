@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PlexShareTests.DashboardTests.SessionManagement.TestModules
 {
-    internal class FakeScreenShareFactory
+    public class FakeScreenShareFactory
     {
     }
 }
