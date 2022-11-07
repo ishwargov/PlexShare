@@ -36,5 +36,18 @@ namespace PlexShareTests.ContentTests.Client
 
             Assert.Same(ref1, ref2);
         }
+        [Fact]
+        public void SetUser_MultipleInstances_ReturnsSingleUserID()
+        {
+            var ref1 = ContentClientFactory.GetInstance();
+            var ref2 = ContentClientFactory.GetInstance();
+
+            Assert.Same(ref1, ref2);
+
+            var userID1 = ref1.GetUserID();
+            var userID2 = ref2.GetUserID();
+
+            Assert.Equal(userID1, userID2);
+        }
     }
 }

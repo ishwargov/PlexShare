@@ -39,5 +39,7 @@ namespace PlexShareContent.Client
             instance.UserID = userID;
             instance.RequestMessageHistory();
         }
+
+            
     }
 }
