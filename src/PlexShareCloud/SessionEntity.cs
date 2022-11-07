@@ -5,9 +5,6 @@ using ITableEntity = Azure.Data.Tables.ITableEntity;
 
 namespace PlexShareCloud
 {
-    /// <summary>
-    /// Custom Azure Session Table Entity.
-    /// </summary>
     public class SessionEntity : ITableEntity
     {
         public const string PartitionKeyName = "SessionEntityPartitionKey";

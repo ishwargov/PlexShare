@@ -5,9 +5,6 @@ using ITableEntity = Azure.Data.Tables.ITableEntity;
 
 namespace PlexShareCloud
 {
-    /// <summary>
-    /// Custom Azure Table SubmissionEntity.
-    /// </summary>
     public class SubmissionEntity : ITableEntity
     {
         public const string PartitionKeyName = "SubmissionEntityPartitionKey";
