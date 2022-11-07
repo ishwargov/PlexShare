@@ -134,7 +134,8 @@ namespace PlexShareNetwork.Sockets
                 receivedString = receivedString[(packetEnd + 3)..]; // remove the first packet from the string
                 Trace.WriteLine($"[Networking] Received data from module: {packet.moduleOfPacket}.");
             }
-			return receivedString; // return the remaining string
+            Trace.WriteLine("[Networking] SocketListener.ProcessReceivedString() function exited.");
+            return receivedString; // return the remaining string
 		}
 	}
 }
