@@ -127,6 +127,7 @@ namespace Dashboard.Server.SessionManagement
         {
             if (serializedObject == null)
             {
+                throw new ArgumentNullException("Null serializedObject Exception");
                 return;
             }
 
@@ -150,7 +151,7 @@ namespace Dashboard.Server.SessionManagement
                     ClientArrivalProcedure(deserializedObj);
                     return;
 
-                    /*
+                    
                 case "getSummary":
                     GetSummaryProcedure(deserializedObj);
                     return;
@@ -160,7 +161,7 @@ namespace Dashboard.Server.SessionManagement
                     GetAnalyticsProcedure(deserializedObj);
                     return;
                     
-                    */
+                    
 
                 case "removeClient":
                     RemoveClientProcedure(deserializedObj);
@@ -280,19 +281,26 @@ namespace Dashboard.Server.SessionManagement
         }
 
 
-/*
+
         //     Used to create a summary by fetching all the chats from the
         //     content moudule and then calling the summary module to create a summary
         private SummaryData CreateSummary()
         {
+
+            if(testmode == true)
+            {
+                _sessionSummary = "This is the summary of the chats that happened in the session";
+                return new SummaryData(_sessionSummary);
+            }
+
             try
             {
                 // fetching all the chats from the content module.
-                ChatContext[] allChatsTillNow;
-                allChatsTillNow = _contentServer.SGetAllMessages().ToArray();
+                ChatThread[] allChatsTillNow;
+               // allChatsTillNow = _contentServer.SGetAllMessages().ToArray();
 
                 // creating the summary from the chats
-                _sessionSummary = _summarizer.GetSummary(allChatsTillNow);
+             //   _sessionSummary = _summarizer.GetSummary(allChatsTillNow);
 
                 // returning the summary
                 return new SummaryData(_sessionSummary);
@@ -303,7 +311,7 @@ namespace Dashboard.Server.SessionManagement
             }
         }
      
-*/
+
 
 
 
@@ -319,11 +327,16 @@ namespace Dashboard.Server.SessionManagement
                 while (tries > 0 && summarySaved == false)
                 {
                     // Fetching all the chats from the content module
-                //    var allChats = _contentServer.SGetAllMessages().ToArray();
+                    //    var allChats = _contentServer.SGetAllMessages().ToArray();
 
-                //    summarySaved = _summarizer.SaveSummary(allChats);
-               //     _telemetry.SaveAnalytics(allChats);
-
+                    //    summarySaved = _summarizer.SaveSummary(allChats);
+                    //     _telemetry.SaveAnalytics(allChats);
+                    
+                    if(testmode == true)
+                    {
+                        summarySaved = true;
+                    }
+             
                     tries--;
                 }
 
@@ -343,17 +356,26 @@ namespace Dashboard.Server.SessionManagement
         }
 
 
-/*        
+        
         //     Fetches the chats from the content moudle and then asks telemetry to generate analytics on it.
         //     The analytics created are then sent to the client side again.
         private void GetAnalyticsProcedure(ClientToServerData receivedObject)
         {
             UserData user = new(receivedObject.username, receivedObject.userID);
+
+            if(testmode == true)
+            {
+
+                _sessionAnalytics = new SessionAnalytics();
+                SendDataToClient("getAnalytics", null, null, _sessionAnalytics, user);
+                return;
+            }
+
             try
             {
                 // Fetching the chats and creating analytics on them
             //    var allChats = _contentServer.SGetAllMessages().ToArray();
-                _sessionAnalytics = _telemetry.GetTelemetryAnalytics(allChats);
+           //     _sessionAnalytics = _telemetry.GetTelemetryAnalytics(allChats);
                 SendDataToClient("getAnalytics", null, null, _sessionAnalytics, user);
             }
             catch (Exception e)
@@ -362,19 +384,14 @@ namespace Dashboard.Server.SessionManagement
                 SendDataToClient("getAnalytics", null, null, null, user);
             }
         }
-*/
+
         //     A getter function to fetch the summary stored in the server side. returns summary in form of string.
         public string GetStoredSummary()
         {
             return _sessionSummary;
         }
 
-        //GetLocalStoredSummary is just for unit testing purpose
-        public string GetLocalStoredSummary()
-        {
-            return "this is locally generated summary for unit testing";
-        }
-        
+       
         
 
         //this function is just for testing 
@@ -386,7 +403,7 @@ namespace Dashboard.Server.SessionManagement
 
 
 
-        /*
+        
         //     This method is called when a request for getting summary reaches the server side.
         //     A summary is created along with a user object (with the ID and the name of the user who requested the summary)
         //     This data is then sent back to the client side.
@@ -396,7 +413,7 @@ namespace Dashboard.Server.SessionManagement
             UserData user = new(receivedObject.username, receivedObject.userID);
             SendDataToClient("getSummary", null, summaryData, null, user);
         }
-        */
+        
 
        
 
@@ -475,11 +492,7 @@ namespace Dashboard.Server.SessionManagement
                     new ServerToClientData(eventName, sessionData, summaryData, sessionAnalytics, user);
                 // Sending data to the client
                 string serializedSessionData = _serializer.Serialize(serverToClientData);
-                if(testmode == true)
-                {
-                    _communicator.Send(serializedSessionData, moduleIdentifier);
-                    return;
-                }
+               
                 if (userId == -1)
                     _communicator.Send(serializedSessionData, moduleIdentifier);
                 else

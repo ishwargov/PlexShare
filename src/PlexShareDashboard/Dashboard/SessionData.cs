@@ -31,8 +31,8 @@ namespace Dashboard
         {
             Random rnd = new Random();
             if (users == null) users = new List<UserData>();
-            if (users == null) sessionMode = "LabMode";
-            if (users == null) sessionId = rnd.Next();
+             sessionMode = "LabMode";
+             sessionId = rnd.Next();
         }
 
         ///     Adds a user to the list of users in the session

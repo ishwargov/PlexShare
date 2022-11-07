@@ -33,7 +33,7 @@ namespace PlexShareTests.DashboardTests.SessionManagement.TestModules
 
         public void RemoveClient(string clientId)
         {
-
+            userCount--;
         }
 
         public void Send(string data, string identifier)
@@ -44,7 +44,7 @@ namespace PlexShareTests.DashboardTests.SessionManagement.TestModules
 
         public void Send(string data, string identifier, string destination)
         {
-            throw new NotImplementedException();
+            transferredData = data;
             
         }
 
@@ -60,6 +60,7 @@ namespace PlexShareTests.DashboardTests.SessionManagement.TestModules
 
         public void Stop()
         {
+            userCount = 0;
         }
 
        /* public void Subscribe(string identifier, INotificationHandler handler, int priority)
