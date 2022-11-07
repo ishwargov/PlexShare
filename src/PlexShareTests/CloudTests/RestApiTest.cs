@@ -1,5 +1,4 @@
-﻿using FileStorageApp;
-using PlexShareCloud;
+﻿using PlexShareCloud;
 using System.Text;
 
 namespace PlexShareTests.CloudTests
