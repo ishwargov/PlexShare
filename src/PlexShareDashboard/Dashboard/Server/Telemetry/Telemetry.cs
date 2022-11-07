@@ -64,9 +64,12 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             currSessionAnalytics.chatCountForEachUser = userIdVsChatCount;
             currSessionAnalytics.listOfInSincereMembers = listOfInSincereMembers;
             currSessionAnalytics.userCountVsTimeStamp = userCountVsEachTimeStamp;
-            currSessionAnalytics.sessionSummary.chatCount = currTotalChatCount;
-            currSessionAnalytics.sessionSummary.userCount = currTotalUser;
-            currSessionAnalytics.sessionSummary.score = currTotalUser * currTotalChatCount;
+            SessionSummary sessionSummary = new SessionSummary();
+            sessionSummary.userCount = currTotalUser;
+            sessionSummary.chatCount = currTotalChatCount;
+            sessionSummary.score = currTotalChatCount * currTotalUser;
+            
+            currSessionAnalytics.sessionSummary = sessionSummary;
 
             return currSessionAnalytics;
         }
