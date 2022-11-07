@@ -7,8 +7,10 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xaml;
 using PlexShareNetwork.Communication;
 using PlexShareNetwork.Queues;
 using Xunit;
@@ -32,8 +34,14 @@ namespace PlexShareNetwork.Sockets.Tests
 		private readonly Dictionary<string, INotificationHandler> _subscribedModules = new();
 		private readonly int _port;
 		private readonly IPAddress _IP;
+        private readonly int _multiplePacketsCount = 10;
+        private readonly int _smallPacketSize = 100;
+        private readonly int _largePacketSize = 10000;
+        private readonly int _veryLargePacketSize = 10000000; // adding one more 0 to it will hang you laptop
+        private readonly string[] _destinations = { "Client1 ID", "Client2 ID" };
+        private readonly string _module = "Test Module";
 
-		public SendQueueListenerServerTests()
+        public SendQueueListenerServerTests()
 		{
 			string[] IPAndPort = _communicatorServer.Start().Split(":");
             _communicatorServer.Stop();
@@ -42,10 +50,8 @@ namespace PlexShareNetwork.Sockets.Tests
 			_serverListener = new TcpListener(_IP, _port);
 			_serverListener.Start();
 
-            _sendingQueue.RegisterModule("Test Module1", true);
-            _subscribedModules["Test Module1"] = new TestNotificationHandler();
-            _sendingQueue.RegisterModule("Test Module2", true);
-            _subscribedModules["Test Module2"] = new TestNotificationHandler();
+            _sendingQueue.RegisterModule("Test Module", true);
+            _subscribedModules["Test Module"] = new TestNotificationHandler();
 
             _sendQueueListenerServer = new SendQueueListenerServer(_sendingQueue, _clientIdToSocket, _subscribedModules);
             _sendQueueListenerServer.Start();
@@ -70,159 +76,142 @@ namespace PlexShareNetwork.Sockets.Tests
             _socketListener2.Start();
         }
 
-		[Fact]
-		public void SinglePacketUnicastTest()
+        private void PacketsUnicastTest(int size, string destination, int count)
+        {
+            Packet[] sendPackets = NetworkTestGlobals.GeneratePackets(size, destination, _module, count);
+            NetworkTestGlobals.SendPackets(sendPackets, _sendingQueue, count);
+            NetworkTestGlobals.PacketsReceiveAssert(sendPackets, _receivingQueue1, count);
+        }
+
+        private void PacketsBroadcastTest(int size, int count)
+        {
+            Packet[] sendPackets = NetworkTestGlobals.GeneratePackets(size, null, _module, count);
+            NetworkTestGlobals.SendPackets(sendPackets, _sendingQueue, count);
+            NetworkTestGlobals.PacketsReceiveAssert(sendPackets, _receivingQueue1, count);
+            NetworkTestGlobals.PacketsReceiveAssert(sendPackets, _receivingQueue2, count);
+        }
+
+        private void PacketsMulticastTest(int size, int count)
+        {
+            Packet[] sendPackets1 = NetworkTestGlobals.GeneratePackets(size, _destinations[0], _module, count);
+            Packet[] sendPackets2 = NetworkTestGlobals.GeneratePackets(size, _destinations[1], _module, count);
+            for (var i = 0; i < count; i++)
+            {
+                Packet[] sendPackets = { sendPackets1[i], sendPackets2[i] };
+                NetworkTestGlobals.SendPackets(sendPackets, _sendingQueue, 2);
+            }
+            NetworkTestGlobals.PacketsReceiveAssert(sendPackets1, _receivingQueue1, count);
+            NetworkTestGlobals.PacketsReceiveAssert(sendPackets2, _receivingQueue2, count);
+        }
+
+        [Fact]
+		public void SmallPacketUnicastTest()
 		{
-            Packet sendPacket = new("Test string", "Client1 ID", "Test Module1");
-            _sendingQueue.Enqueue(sendPacket);
-            NetworkTestGlobals.AssertSinglePacketReceive(sendPacket, _receivingQueue1);
+            PacketsUnicastTest(_smallPacketSize, _destinations[0], 1);
         }
 
 		[Fact]
 		public void LargePacketUnicastTest()
 		{
-            Packet sendPacket = new(NetworkTestGlobals.RandomString(1000), "Client1 ID", "Test Module1");
-            _sendingQueue.Enqueue(sendPacket);
-            NetworkTestGlobals.AssertSinglePacketReceive(sendPacket, _receivingQueue1);
+            PacketsUnicastTest(_largePacketSize, _destinations[0], 1);
         }
 
         [Fact]
-        public void FromSameModuleToDifferentClientsUnicastTest()
+        public void VeryLargePacketUnicastTest()
         {
-            Packet sendPacket1 = new("Test string1", "Client1 ID", "Test Module1");
-            _sendingQueue.Enqueue(sendPacket1);
-            
-            Packet sendPacket2 = new("Test string2", "Client2 ID", "Test Module1");
-            _sendingQueue.Enqueue(sendPacket2);
-
-            NetworkTestGlobals.AssertSinglePacketReceive(sendPacket1, _receivingQueue1);
-            NetworkTestGlobals.AssertSinglePacketReceive(sendPacket2, _receivingQueue2);
+            PacketsUnicastTest(_veryLargePacketSize, _destinations[0], 1);
         }
 
         [Fact]
-        public void FromDifferentModuleToDifferentClientsUnicastTest()
+        public void MultipleSmallPacketsUnicastTest()
         {
-            Packet sendPacket1 = new("Test string1", "Client1 ID", "Test Module1");
-            _sendingQueue.Enqueue(sendPacket1);
-
-            Packet sendPacket2 = new("Test string2", "Client2 ID", "Test Module2");
-            _sendingQueue.Enqueue(sendPacket2);
-
-            NetworkTestGlobals.AssertSinglePacketReceive(sendPacket1, _receivingQueue1);
-            NetworkTestGlobals.AssertSinglePacketReceive(sendPacket2, _receivingQueue2);
-        }
-
-        [Fact]
-        public void MultiplePacketsFromSameModuleUnicastTest()
-        {
-            Packet[] sendPackets = new Packet[10];
-            for (var i = 0; i < 10; i++)
-            {
-                sendPackets[i] = new("Test string" + i, "Client1 ID", "Test Module1");
-                _sendingQueue.Enqueue(sendPackets[i]);
-            }
-            NetworkTestGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue1);
-        }
-
-        [Fact]
-        public void MultiplePacketsFromDifferentModulesUnicastTest()
-        {
-            Packet[] sendPackets = new Packet[10];
-            for (var i = 0; i < 10; i++)
-            {
-                sendPackets[i] = new("Test string" + i, "Client1 ID", "Test Module" + (i%2+1));
-                _sendingQueue.Enqueue(sendPackets[i]);
-            }
-            NetworkTestGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue1);
+            PacketsUnicastTest(_smallPacketSize, _destinations[0], _multiplePacketsCount);
         }
 
         [Fact]
         public void MultipleLargePacketsUnicastTest()
         {
-            Packet[] sendPackets = new Packet[10];
-            for (var i = 0; i < 10; i++)
-            {
-                sendPackets[i] = new(NetworkTestGlobals.RandomString(1000), "Client1 ID", "Test Module1");
-                _sendingQueue.Enqueue(sendPackets[i]);
-            }
-            NetworkTestGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue1);
+            PacketsUnicastTest(_largePacketSize, _destinations[0], _multiplePacketsCount);
         }
 
         [Fact]
-        public void SinglePacketBroadcastTest()
+        public void SmallPacketBroadcastTest()
         {
-            Packet sendPacket = new("Test string", null, "Test Module1");
-            _sendingQueue.Enqueue(sendPacket);
-            NetworkTestGlobals.AssertSinglePacketReceive(sendPacket, _receivingQueue1);
-            NetworkTestGlobals.AssertSinglePacketReceive(sendPacket, _receivingQueue2);
+            PacketsBroadcastTest(_smallPacketSize, 1);
         }
 
         [Fact]
         public void LargePacketBroadcastTest()
         {
-            Packet sendPacket = new(NetworkTestGlobals.RandomString(1000), null, "Test Module1");
-            _sendingQueue.Enqueue(sendPacket);
-            NetworkTestGlobals.AssertSinglePacketReceive(sendPacket, _receivingQueue1);
-            NetworkTestGlobals.AssertSinglePacketReceive(sendPacket, _receivingQueue2);
+            PacketsBroadcastTest(_largePacketSize, 1);
         }
 
         [Fact]
-        public void MultiplePacketsFromSameModuleBroadcastTest()
+        public void VeryLargePacketBroadcastTest()
         {
-            Packet[] sendPackets = new Packet[10];
-            for (var i = 0; i < 10; i++)
-            {
-                sendPackets[i] = new("Test string" + i, null, "Test Module1");
-                _sendingQueue.Enqueue(sendPackets[i]);
-            }
-            NetworkTestGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue1);
-            NetworkTestGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue2);
+            PacketsBroadcastTest(_veryLargePacketSize, 1);
         }
 
         [Fact]
-        public void MultiplePacketsFromDifferentModulesBroadcastTest()
+        public void MultipleSmallPacketsBroadcastTest()
         {
-            Packet[] sendPackets = new Packet[10];
-            for (var i = 0; i < 10; i++)
-            {
-                sendPackets[i] = new("Test string" + i, null, "Test Module" + (i%2+1));
-                _sendingQueue.Enqueue(sendPackets[i]);
-            }
-            NetworkTestGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue1);
-            NetworkTestGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue2);
+            PacketsBroadcastTest(_smallPacketSize, _multiplePacketsCount);
         }
 
         [Fact]
         public void MultipleLargePacketsBroadcastTest()
         {
-            Packet[] sendPackets = new Packet[10];
-            for (var i = 0; i < 10; i++)
-            {
-                sendPackets[i] = new(NetworkTestGlobals.RandomString(1000), null, "Test Module1");
-                _sendingQueue.Enqueue(sendPackets[i]);
-            }
-            NetworkTestGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue1);
-            NetworkTestGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue2);
+            PacketsBroadcastTest(_largePacketSize, _multiplePacketsCount);
+        }
+
+        [Fact]
+        public void SmallPacketMulticastTest()
+        {
+            PacketsMulticastTest(_smallPacketSize, 1);
+        }
+
+        [Fact]
+        public void LargePacketMulticastTest()
+        {
+            PacketsMulticastTest(_largePacketSize, 1);
+        }
+
+        [Fact]
+        public void VeryLargePacketMulticastTest()
+        {
+            PacketsMulticastTest(_veryLargePacketSize, 1);
+        }
+
+        [Fact]
+        public void MultipleSmallPacketsMulticastTest()
+        {
+            PacketsMulticastTest(_smallPacketSize, _multiplePacketsCount);
+        }
+
+        [Fact]
+        public void MultipleLargePacketsMulticastTest()
+        {
+            PacketsMulticastTest(_largePacketSize, _multiplePacketsCount);
         }
 
         [Fact]
 		public void ClientGotDisconnectedTest()
 		{
-            // client1 got disconnected, other modules should be notified about client1 and
+            // client1 got disconnected, modules should be notified about client1 and
             // client2 should still receive the sent data as it is being broadcasted
-            TestNotificationHandler testNotificationHandler = (TestNotificationHandler) _subscribedModules["Test Module1"];
+            TestNotificationHandler testNotificationHandler = (TestNotificationHandler) _subscribedModules["Test Module"];
             testNotificationHandler.Reset();
 			_clientSocket1.Close();
 			_clientSocket1.Dispose();
-            Packet sendPacket = new("Test string", null, "Test Module1");
-            _sendingQueue.Enqueue(sendPacket);
-            testNotificationHandler.WaitForEvent();
+            Packet[] sendPackets = { new("Test string", null, _module) };
+            _sendingQueue.Enqueue(sendPackets[0]);
 
+            testNotificationHandler.WaitForEvent();
             // assert module is notified, client1 did not receive, and client2 received
 			Assert.Equal("OnClientLeft", testNotificationHandler.Event);
             Assert.Equal("Client1 ID", testNotificationHandler.ClientID);
             Assert.True(_receivingQueue1.IsEmpty());
-            NetworkTestGlobals.AssertSinglePacketReceive(sendPacket, _receivingQueue2);
+            NetworkTestGlobals.PacketsReceiveAssert(sendPackets, _receivingQueue2, 1);
         }
     }
 }

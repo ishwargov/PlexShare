@@ -5,7 +5,9 @@
 
 using PlexShareNetwork.Queues;
 using PlexShareNetwork.Serialization;
+using PlexShareNetwork.Sockets;
 using System;
+using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
 using System.Net.Sockets;
@@ -37,34 +39,43 @@ namespace PlexShareNetwork
 			.Select(s => s[random.Next(s.Length)]).ToArray());
 		}
 
-        public static void SendPacket(Packet packet, TcpClient socket)
+        public static Packet[] GeneratePackets(int dataSize, string? destination, string module, int count)
         {
-            string sendString = "BEGIN" + _serializer.Serialize(packet) + "END";
-            byte[] bytes = Encoding.ASCII.GetBytes(sendString);
-            socket.Client.Send(bytes);
+            Packet[] packets = new Packet[count];
+            for (var i = 0; i < count; i++)
+            {
+                packets[i] = new(RandomString(dataSize), destination, module);
+            }
+            return packets;
         }
 
-        public static void AssertSinglePacketReceive(Packet sendPacket, ReceivingQueue receivingQueue)
+        public static void SendPackets(Packet[] sendPackets, TcpClient socket, int count)
         {
-            while (receivingQueue.Size() < 1)
+            for (var i = 0; i < count; i++)
+            {
+                string sendString = SendString.PacketToSendString(sendPackets[i]);
+                byte[] bytes = Encoding.ASCII.GetBytes(sendString);
+                socket.Client.Send(bytes);
+            }
+        }
+
+        public static void SendPackets(Packet[] sendPackets, SendingQueue sendingQueue, int count)
+        {
+            for (var i = 0; i < count; i++)
+            {
+                sendingQueue.Enqueue(sendPackets[i]);
+            }
+        }
+
+        public static void PacketsReceiveAssert(Packet[] sendPackets, ReceivingQueue receivingQueue, int count)
+        {
+            while (receivingQueue.Size() < count)
             {
                 Thread.Sleep(100);
             }
-            Assert.True(receivingQueue.Size() == 1);
+            Assert.True(receivingQueue.Size() == count);
 
-            Packet receivedPacket = receivingQueue.Dequeue();
-            AssertPacketEquality(sendPacket, receivedPacket);
-        }
-
-        public static void AssertTenPacketsReceive(Packet[] sendPackets, ReceivingQueue receivingQueue)
-        {
-            while (receivingQueue.Size() < 100)
-            {
-                Thread.Sleep(100);
-            }
-            Assert.True(receivingQueue.Size() == 100);
-
-            for (var i = 0; i < 100; i++)
+            for (var i = 0; i < count; i++)
             {
                 Packet receivedPacket = receivingQueue.Dequeue();
                 AssertPacketEquality(sendPackets[i], receivedPacket);

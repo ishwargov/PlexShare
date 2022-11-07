@@ -9,6 +9,7 @@ using PlexShareNetwork.Serialization;
 using System;
 using System.Diagnostics;
 using System.Net.Sockets;
+using System.Printing;
 using System.Text;
 using System.Threading;
 
@@ -47,7 +48,6 @@ namespace PlexShareNetwork.Sockets
 		{
             _receivingQueue = receivingQueue;
 			_socket = socket.Client;
-			_thread = new Thread(() => _socket.BeginReceive(buffer, 0, bufferSize, 0, ReceiveCallback, null));
 		}
 
         /// <summary>
@@ -59,6 +59,7 @@ namespace PlexShareNetwork.Sockets
             Trace.WriteLine("[Networking] SocketListener.Start() function called.");
             try
             {
+                _thread = new Thread(() => _socket.BeginReceive(buffer, 0, bufferSize, 0, ReceiveCallback, null));
                 _threadRun = true;
                 _thread.Start();
                 Trace.WriteLine("[Networking] SocketListener thread started.");
@@ -116,16 +117,22 @@ namespace PlexShareNetwork.Sockets
         private string ProcessReceivedString(string receivedString)
 		{
             Trace.WriteLine("[Networking] SocketListener.ProcessReceivedString() function called.");
-            int packetBeginIndex = receivedString.IndexOf("BEGIN", StringComparison.Ordinal) + 5;
-            int packetEndIndex = receivedString.IndexOf("END", StringComparison.Ordinal);
-            while (packetBeginIndex != -1 && packetEndIndex != -1)
+            while (true)
             {
-                Packet packet = _serializer.Deserialize<Packet>(receivedString[packetBeginIndex..packetEndIndex]);
+                int packetBegin = receivedString.IndexOf("BEGIN", StringComparison.Ordinal) + 5;
+                int packetEnd = receivedString.IndexOf("END", StringComparison.Ordinal);
+                while (packetEnd != -1 && receivedString[(packetEnd - 3)..(packetEnd + 3)] == "NOTEND")
+                {
+                    packetEnd = receivedString.IndexOf("END", packetEnd + 3, StringComparison.Ordinal);
+                }
+                if (packetBegin == -1 || packetEnd == -1)
+                {
+                    break;
+                }
+                Packet packet = SendString.SendStringToPacket(receivedString[packetBegin..packetEnd]);
                 _receivingQueue.Enqueue(packet);
-                receivedString = receivedString[(packetEndIndex + 3)..]; // remove the first packet from the string
+                receivedString = receivedString[(packetEnd + 3)..]; // remove the first packet from the string
                 Trace.WriteLine($"[Networking] Received data from module: {packet.moduleOfPacket}.");
-                packetBeginIndex = receivedString.IndexOf("BEGIN", StringComparison.Ordinal) + 5;
-                packetEndIndex = receivedString.IndexOf("END", StringComparison.Ordinal);
             }
             Trace.WriteLine("[Networking] SocketListener.ProcessReceivedString() function exited.");
             return receivedString; // return the remaining string
