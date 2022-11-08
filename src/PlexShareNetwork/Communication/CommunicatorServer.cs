@@ -265,7 +265,7 @@ namespace PlexShareNetwork.Communication
             // sending queue has to know the priority of the module
             _sendingQueue.RegisterModule(moduleName, isHighPriority);
             // receive queue listener needs notification handler to notify the module when data comes in the receiving queue
-            _receiveQueueListener.RegisterModule(moduleName, notificationHandler);
+            //_receiveQueueListener.RegisterModule(moduleName, notificationHandler);
 			Trace.WriteLine($"[Networking] Module: {moduleName} registered with priority is high: {isHighPriority}");
 		}
 	}

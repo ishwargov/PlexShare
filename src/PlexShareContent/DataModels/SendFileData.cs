@@ -45,10 +45,10 @@ namespace PlexShareContent.DataModels
                 Name = Path.GetFileName(filePath);
                 Size = Data.Length;
             }
-            else
-            {
-                throw new FileNotFoundException($"File {filePath} not found");
-            }
+            //else
+            //{
+            //    throw new FileNotFoundException($"File {filePath} not found");
+            //}
         }
     }
 }
