@@ -1,54 +1,63 @@
-﻿using PlexShareContent.Client;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PlexShareContent;
+﻿/******************************************************************************
+ * Filename    = FakeContentListener.cs
+ *
+ * Author      = Narvik Nandan
+ *
+ * Product     = PlexShare
+ * 
+ * Project     = PlexShareContent
+ *
+ * Description = Class that mocks the content listener
+ *****************************************************************************/
+
+using PlexShareContent.Client;
 using PlexShareContent.DataModels;
 
 namespace PlexShareTests.ContentTests
 {
     public class FakeContentListener : IContentListener
     {
-        private List<ChatThread> _chatContextList;
-        private ReceiveContentData _rcvMsgData;
+        // content listener parameters
+        private ReceiveContentData _receivedMessage;
+        private List<ChatThread> _allMessages;
 
+        /// <summary>
+        /// Constructor to create content listener
+        /// </summary>
         public FakeContentListener()
         {
-            _rcvMsgData = new ReceiveContentData();
-            _chatContextList = new List<ChatThread>();
+            _receivedMessage = new ReceiveContentData();
+            _allMessages = new List<ChatThread>();
         }
 
-        /// <summary>
-        ///     Handler for messages received by the Content module.
-        /// </summary>
-        /// <param name="messageData">Received message</param>
+        ///<inheritdoc/>
         public void OnMessageReceived(ReceiveContentData messageData)
         {
-            _rcvMsgData = messageData;
+            _receivedMessage = messageData;
+        }
+
+        ///<inheritdoc/>
+        public void OnAllMessagesReceived(List<ChatThread> allMessages)
+        {
+            _allMessages = allMessages;
         }
 
         /// <summary>
-        ///     Handler for the event of all messages sent to/from client being received at once
-        ///     The Dashboard module may simply throw an excpetion in the body of
-        ///     this function because it doesn't expect to receive list of all messages
-        ///     as it is running on the server, not on the clients.
+        /// Gets the received message
         /// </summary>
-        /// <param name="allMessages">list of Thread objects containing all messages</param>
-        public void OnAllMessages(List<ChatThread> allMessages)
+        /// <returns>Received message</returns>
+        public ReceiveContentData GetReceivedMessage()
         {
-            _chatContextList = allMessages;
+            return _receivedMessage;
         }
 
-        public ReceiveContentData GetOnMessageData()
+        /// <summary>
+        /// Gets the list of threads containing all messages
+        /// </summary>
+        /// <returns>List of threads containing all messages</returns>
+        public List<ChatThread> GetAllMessages()
         {
-            return _rcvMsgData;
-        }
-
-        public List<ChatThread> GetOnAllMessagesData()
-        {
-            return _chatContextList;
+            return _allMessages;
         }
     }
 }
