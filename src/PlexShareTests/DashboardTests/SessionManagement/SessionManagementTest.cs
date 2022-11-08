@@ -19,7 +19,7 @@ namespace PlexShareTests.DashboardTests.SessionManagement
 {
     public class SessionManagementTest
     {
-        private  FakeCommunicator _fakeCommunicator = new FakeCommunicator();
+        private FakeCommunicator _fakeCommunicator = new FakeCommunicator();
         private IDashboardSerializer _serializer = new DashboardSerializer();
         private ClientSessionManager _clientSessionManager; 
         private ClientSessionManager _clientSessionManagerLast;
@@ -133,13 +133,16 @@ namespace PlexShareTests.DashboardTests.SessionManagement
 
 
         [Fact]
-        public void SerializeStringTest()
+        public void Serializing_Deserializing()
         {
             Setup();
             ClientToServerData clientToServerData1 = new ClientToServerData("addClient", "Saurabh", 2);
             var serialized = _serializer.Serialize(clientToServerData1);
             ClientToServerData clienToServerData2 = _serializer.Deserialize<ClientToServerData>(serialized);
-            Assert.True(clientToServerData1==clienToServerData2);
+            Assert.True(clientToServerData1.eventType==clienToServerData2.eventType);
+            Assert.True(clientToServerData1.userID == clienToServerData2.userID);
+            Assert.True(clientToServerData1.username == clienToServerData2.username);
+
         }
 
 
@@ -233,16 +236,15 @@ namespace PlexShareTests.DashboardTests.SessionManagement
         [InlineData (null)]
         public void AddClientProcedureServerSide_ClientArrives_NewClientAddedToServer(string username)
         {
-            ServerSessionManager serverSessionManager = SessionManagerFactory.GetServerSessionManager(_fakeCommunicator);
-            ClientSessionManager clientSessionManager = SessionManagerFactory.GetClientSessionManager(_fakeCommunicator);
+            Setup();
             ClientToServerData clientToServerData = new("addClient", username);
             string serializedData = _serializer.Serialize(clientToServerData);
          
-            serverSessionManager.OnClientJoined(null);
+            _serverSessionManager.OnClientJoined(null);
 
             try
             {
-                serverSessionManager.OnDataReceived(serializedData);
+                _serverSessionManager.OnDataReceived(serializedData);
                 var serverToClientData = _serializer.Deserialize<ServerToClientData>(_fakeCommunicator.transferredData);
                 var receiveduser = serverToClientData.GetUser();
 
@@ -259,23 +261,22 @@ namespace PlexShareTests.DashboardTests.SessionManagement
         [Fact]
         public void AddClientProcedureServerSide_MultipleClientsArrives_UsersAddedToServerSession()
         {
+            Setup();
             // Clients that arrives are added to the server side
             var users = Utils.GetUsers();
-            ServerSessionManager serverSessionManager = SessionManagerFactory.GetServerSessionManager(_fakeCommunicator);
-
             for (int i = 0; i < users.Count; i++)
             {
                 ClientToServerData clientToServerData = new("addClient", users[i].username, users[i].userID);
                 var serializedData = _serializer.Serialize(clientToServerData);
 
-                serverSessionManager.OnClientJoined(null);
-                serverSessionManager.FakeClientArrivalProcedure(clientToServerData);
+                _serverSessionManager.OnClientJoined(null);
+                _serverSessionManager.FakeClientArrivalProcedure(clientToServerData);
             }
 
             // The updated session data which includes new users is now sent from server to the client side
             // the deserializedData.sessionData is the updated session received from the server 
            // var deserializedData = _serializer.Deserialize<ServerToClientData>(_fakeCommunicator.transferredData);
-            var returnedSessionData = serverSessionManager.GetSessionData();
+            var returnedSessionData = _serverSessionManager.GetSessionData();
 
             // The recieved session must not be null and have the same users that were added
             Assert.NotNull(returnedSessionData);
@@ -348,27 +349,26 @@ namespace PlexShareTests.DashboardTests.SessionManagement
         public void GetSummary_RequestSummary_ReturnsSummary()
         {
 
-            ClientSessionManager clientSessionManager = SessionManagerFactory.GetClientSessionManager(_fakeCommunicator);
-            ServerSessionManager serverSessionManager = SessionManagerFactory.GetServerSessionManager(_fakeCommunicator);
-            FakeClientUX fakeClientUX = new(clientSessionManager);
+            Setup();
+            FakeClientUX fakeClientUX = new(_clientSessionManager);
             fakeClientUX.sessionSummary = null;
 
             UserData user = new("Jake Vickers", 1);
 
-            clientSessionManager.SetUser(user.username, user.userID);
-            clientSessionManager.SetSessionUsers(new List<UserData> { user });
+            _clientSessionManager.SetUser(user.username, user.userID);
+            _clientSessionManager.SetSessionUsers(new List<UserData> { user });
          
             ClientToServerData clientToServerData = new("addClient", user.username);
             var serializedData = _serializer.Serialize(clientToServerData);
-            serverSessionManager.OnClientJoined(null);
-            serverSessionManager.OnDataReceived(serializedData);
+            _serverSessionManager.OnClientJoined(null);
+            _serverSessionManager.OnDataReceived(serializedData);
             Assert.NotNull(_fakeCommunicator.transferredData);
-            clientSessionManager.GetSummary();
-            serverSessionManager.OnDataReceived(_fakeCommunicator.transferredData);
-            clientSessionManager.OnDataReceived(_fakeCommunicator.transferredData);
+            _clientSessionManager.GetSummary();
+            _serverSessionManager.OnDataReceived(_fakeCommunicator.transferredData);
+            _clientSessionManager.OnDataReceived(_fakeCommunicator.transferredData);
         
-            var clientSummary = clientSessionManager.GetStoredSummary();
-            var serverSummary = serverSessionManager.GetStoredSummary();
+            var clientSummary = _clientSessionManager.GetStoredSummary();
+            var serverSummary = _serverSessionManager.GetStoredSummary();
             
             Assert.NotNull(clientSummary);
             Assert.NotNull(serverSummary);
