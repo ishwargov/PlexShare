@@ -6,6 +6,7 @@ using System.Linq;
 using PlexShareContent;
 using PlexShareDashboard;
 using Dashboard;
+using System.Net.Sockets;
 //using PlexShareDashboard.Dashboard.Server.Summary;
 using PlexShareDashboard.Dashboard.Server.Telemetry;
 using PlexShare.Dashboard;
@@ -99,7 +100,7 @@ namespace Dashboard.Server.SessionManagement
 
         // This function is called by the networking module when a user joins the meeting.
         // The  SocketObject received from the networking module is then passed again but with a unique ID to identify object uniquely.
-        public void OnClientJoined<T>(T socketObject)
+        public void OnClientJoined(TcpClient socketObject)
         {  
             lock (this)
             {
@@ -494,7 +495,7 @@ namespace Dashboard.Server.SessionManagement
                 string serializedSessionData = _serializer.Serialize(serverToClientData);
                
                 if (userId == -1)
-                    _communicator.Send(serializedSessionData, moduleIdentifier);
+                    _communicator.Send(serializedSessionData, moduleIdentifier,null);
                 else
                     _communicator.Send(serializedSessionData, moduleIdentifier, userId.ToString());
             }

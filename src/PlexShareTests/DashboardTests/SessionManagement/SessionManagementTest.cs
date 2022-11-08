@@ -143,7 +143,7 @@ namespace PlexShareTests.DashboardTests.SessionManagement
             Console.WriteLine("Session Before\n\t" + _clientSessionManager.GetSessionData());
             var clientAdded = _clientSessionManager.AddClient(ipAddress, port, username);
             
-            _serverSessionManager.OnClientJoined<TcpClient>(null);
+            _serverSessionManager.OnClientJoined(null);
  
             ServerToClientData serverToClientData = _serializer.Deserialize<ServerToClientData>(_fakeCommunicator.transferredData);
             int userID = serverToClientData._user.userID;
@@ -174,7 +174,7 @@ namespace PlexShareTests.DashboardTests.SessionManagement
             ClientToServerData clientToServerData = new("addClient", username);
             string serializedData = _serializer.Serialize(clientToServerData);
          
-            serverSessionManager.OnClientJoined<TcpClient>(null);
+            serverSessionManager.OnClientJoined(null);
 
             try
             {
@@ -205,7 +205,7 @@ namespace PlexShareTests.DashboardTests.SessionManagement
                 ClientToServerData clientToServerData = new("addClient", users[i].username, users[i].userID);
                 var serializedData = _serializer.Serialize(clientToServerData);
 
-                serverSessionManager.OnClientJoined<TcpClient>(null);
+                serverSessionManager.OnClientJoined(null);
                 serverSessionManager.FakeClientArrivalProcedure(clientToServerData);
             }
 
@@ -298,7 +298,7 @@ namespace PlexShareTests.DashboardTests.SessionManagement
             ClientToServerData clientToServerData = new("addClient", user.username);
             var serializedData = _serializer.Serialize(clientToServerData);
           //  Assert.NotNull(serializedData);
-            serverSessionManager.OnClientJoined<TcpClient>(null);
+            serverSessionManager.OnClientJoined(null);
             serverSessionManager.OnDataReceived(serializedData);
             Assert.NotNull(_fakeCommunicator.transferredData);
             //_fakeCommunicator.Send("Hello", "Dashboard");
@@ -370,7 +370,7 @@ namespace PlexShareTests.DashboardTests.SessionManagement
                 ClientToServerData clientToServerData = new("addClient", users[i].username, users[i].userID);
                 var serializedData = _serializer.Serialize(clientToServerData);
 
-                _serverSessionManager.OnClientJoined<TcpClient>(null);
+                _serverSessionManager.OnClientJoined(null);
                 _serverSessionManager.FakeClientArrivalProcedure(clientToServerData);
             }
 
@@ -405,7 +405,7 @@ namespace PlexShareTests.DashboardTests.SessionManagement
                 ClientToServerData clientToServerData = new("addClient", users[i].username);
                 var serializedData = _serializer.Serialize(clientToServerData);
 
-                _serverSessionManager.OnClientJoined<TcpClient>(null);
+                _serverSessionManager.OnClientJoined(null);
                 _serverSessionManager.OnDataReceived(serializedData);
             }
 
@@ -463,7 +463,7 @@ namespace PlexShareTests.DashboardTests.SessionManagement
                 ClientToServerData clientToServerData = new("addClient", users[i].username, users[i].userID);
                 var serializedData = _serializer.Serialize(clientToServerData);
 
-                _serverSessionManager.OnClientJoined<TcpClient>(null);
+                _serverSessionManager.OnClientJoined(null);
                 _serverSessionManager.FakeClientArrivalProcedure(clientToServerData);
             }
 
@@ -504,7 +504,7 @@ namespace PlexShareTests.DashboardTests.SessionManagement
                 ClientToServerData _clientToServerData = new("addClient", users[i].username, users[i].userID);
                 var serializedData = _serializer.Serialize(_clientToServerData);
 
-                _serverSessionManager.OnClientJoined<TcpClient>(null);
+                _serverSessionManager.OnClientJoined(null);
                 _serverSessionManager.OnDataReceived(serializedData);
             }
 

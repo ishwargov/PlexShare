@@ -153,7 +153,7 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
             {
                 clientToServerData = new ClientToServerData(eventName, username, userID);
                 var serializedData = _serializer.Serialize(clientToServerData);
-                _communicator.Send(serializedData, moduleIdentifier);
+                _communicator.Send(serializedData, moduleIdentifier,null);
             }
         }
 
