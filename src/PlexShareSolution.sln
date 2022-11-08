@@ -28,9 +28,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlexShareTests", "PlexShareTests\PlexShareTests.csproj", "{198328E5-02FF-49A9-B718-77AAE74D9026}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexShareCloud", "PlexShareCloud\PlexShareCloud.csproj", "{F8BC617D-3C6D-4267-9747-C2CBEE776F36}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlexShareCloud", "PlexShareCloud\PlexShareCloud.csproj", "{F8BC617D-3C6D-4267-9747-C2CBEE776F36}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexShareCloudUX", "PlexShareCloudUX\PlexShareCloudUX.csproj", "{F68C8B58-78A7-4785-8EC2-8B1D5D67395E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlexShareCloudUX", "PlexShareCloudUX\PlexShareCloudUX.csproj", "{8617AF05-8903-4DED-8B2F-A0E1C5B96083}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -70,10 +70,10 @@ Global
 		{F8BC617D-3C6D-4267-9747-C2CBEE776F36}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8BC617D-3C6D-4267-9747-C2CBEE776F36}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8BC617D-3C6D-4267-9747-C2CBEE776F36}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F68C8B58-78A7-4785-8EC2-8B1D5D67395E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F68C8B58-78A7-4785-8EC2-8B1D5D67395E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F68C8B58-78A7-4785-8EC2-8B1D5D67395E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F68C8B58-78A7-4785-8EC2-8B1D5D67395E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8617AF05-8903-4DED-8B2F-A0E1C5B96083}.Debug|Any CPU.ActiveCfg = Release|Any CPU
+		{8617AF05-8903-4DED-8B2F-A0E1C5B96083}.Debug|Any CPU.Build.0 = Release|Any CPU
+		{8617AF05-8903-4DED-8B2F-A0E1C5B96083}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8617AF05-8903-4DED-8B2F-A0E1C5B96083}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
