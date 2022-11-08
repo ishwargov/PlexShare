@@ -1,14 +1,8 @@
-﻿using Networking.Serialization;
-using Networking;
-using PlexShareContent.DataModels;
+﻿using PlexShareContent.DataModels;
 using PlexShareContent.Enums;
 using PlexShareContent.Server;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using PlexShareContent;
+using PlexShareNetwork;
 
 namespace PlexShareTests.ContentTests.Server
 {
@@ -18,18 +12,18 @@ namespace PlexShareTests.ContentTests.Server
         private ContentServer contentServer;
         private FakeContentListener listener;
         private INotificationHandler notificationHandler;
-        private ISerializer serializer;
+        private IContentSerializer serializer;
 
         private int sleeptime;
-        private Utils utils;
+        private Utility utils;
 
         public void Setup()
         {
-            utils = new Utils();
+            utils = new Utility();
             contentServer = ContentServerFactory.GetInstance() as ContentServer;
             contentServer.Reset();
             notificationHandler = new ContentServerNotificationHandler(contentServer);
-            serializer = new Serializer();
+            serializer = new ContentSerializer();
             listener = new FakeContentListener();
             communicator = new FakeCommunicator();
             contentServer.Communicator = communicator;
@@ -41,7 +35,7 @@ namespace PlexShareTests.ContentTests.Server
         public void OnDataReceived_ChatDataIsReceived_CallReceiveMethodOfContentDatabase()
         {
             Setup();
-            var messageData = utils.GenerateNewMessageData("Hello");
+            var messageData = utils.GenerateContentData(data: "Hello");
 
             var serializedMessage = serializer.Serialize(messageData);
 
@@ -49,7 +43,7 @@ namespace PlexShareTests.ContentTests.Server
 
             Thread.Sleep(sleeptime);
 
-            var notifiedMessage = listener.GetOnMessageData();
+            var notifiedMessage = listener.GetReceivedMessage();
 
             Assert.Equal("Hello", notifiedMessage.Data);
             Assert.Equal(messageData.Type, notifiedMessage.Type);
@@ -68,7 +62,7 @@ namespace PlexShareTests.ContentTests.Server
             Assert.Equal(messageData.SenderID, deserializesSentMessage.SenderID);
             Assert.Equal(messageData.Starred, deserializesSentMessage.Starred);
             Assert.Equal(messageData.ReceiverIDs, deserializesSentMessage.ReceiverIDs);
-            Assert.True(communicator.GetIsBroadcast());
+            Assert.True(communicator.IsBroadcast());
         }
 
         [Fact]
@@ -96,7 +90,7 @@ namespace PlexShareTests.ContentTests.Server
 
             Thread.Sleep(sleeptime);
 
-            var notifiedMessage = listener.GetOnMessageData();
+            var notifiedMessage = listener.GetReceivedMessage();
             Assert.Equal("Test_File.pdf", notifiedMessage.Data);
             Assert.Equal(file.Type, notifiedMessage.Type);
             Assert.Equal(file.Event, notifiedMessage.Event);
@@ -114,14 +108,14 @@ namespace PlexShareTests.ContentTests.Server
             Assert.Equal(file.SenderID, deserializesSentMessage.SenderID);
             Assert.Equal(file.Starred, deserializesSentMessage.Starred);
             Assert.Equal(file.ReceiverIDs, deserializesSentMessage.ReceiverIDs);
-            Assert.True(communicator.GetIsBroadcast());
+            Assert.True(communicator.IsBroadcast());
         }
 
         [Fact]
         public void OnDataReceived_InvalidDataIsReceived_CallReceiveMethodOfContentDatabase()
         {
             Setup();
-            var previousMessageToSubsribers = listener.GetOnMessageData();
+            var previousMessageToSubsribers = listener.GetReceivedMessage();
             var previousMessageToCommunicator = communicator.GetSentData();
 
             var garbageData = " adfasfasfsadf";
@@ -129,7 +123,7 @@ namespace PlexShareTests.ContentTests.Server
 
             Thread.Sleep(sleeptime);
 
-            var currentMessageToSubscribers = listener.GetOnMessageData();
+            var currentMessageToSubscribers = listener.GetReceivedMessage();
 
             Assert.Equal(currentMessageToSubscribers, previousMessageToSubsribers);
             Assert.Equal(communicator.GetSentData(), previousMessageToCommunicator);

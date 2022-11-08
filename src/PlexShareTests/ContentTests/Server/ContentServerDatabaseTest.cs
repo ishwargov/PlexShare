@@ -12,7 +12,7 @@ namespace PlexShareTests.ContentTests.Server
 {
     public class ContentServerDatabaseTest
     {
-        private Utils _utils = new Utils();
+        private Utility _utils = new Utility();
         private ContentDB MessageDatabase = new ContentDB();
 
         [Fact]
@@ -103,7 +103,7 @@ namespace PlexShareTests.ContentTests.Server
             var path = CurrentDirectory.Split(new[] { "\\PlexShareTests" }, StringSplitOptions.None);
             var pathA = path[0] + "\\PlexShareTests\\ContentTests\\Test_File.pdf";
 
-            var pathB = path[0] + "\\PlexShareTests\\ContentTests\\Utils.cs";
+            var pathB = path[0] + "\\PlexShareTests\\ContentTests\\Utility.cs";
 
             var file1 = new ContentData
             {
@@ -121,7 +121,7 @@ namespace PlexShareTests.ContentTests.Server
 
             var file2 = new ContentData
             {
-                Data = "Utils.cs",
+                Data = "Utility.cs",
                 Type = MessageType.File,
                 FileData = new SendFileData(pathB),
                 SenderID = 1,
@@ -163,7 +163,7 @@ namespace PlexShareTests.ContentTests.Server
         [Fact]
         public void MessageStore_StoringASingleMessage_MessageShouldBeStored()
         {
-            var message1 = _utils.GenerateNewMessageData("Hello", SenderID: 1);
+            var message1 = _utils.GenerateContentData(data:"Hello", senderID: 1);
 
             var recv = MessageDatabase.MessageStore(message1);
 
@@ -174,7 +174,7 @@ namespace PlexShareTests.ContentTests.Server
         [Fact]
         public void GetMessage_StoringAndFetchingAMessage_ShouldBeAbleToFetchStoredMessage()
         {
-            var message1 = _utils.GenerateNewMessageData("Hello", SenderID: 1);
+            var message1 = _utils.GenerateContentData(data: "Hello", senderID: 1);
 
             var recv = MessageDatabase.MessageStore(message1);
 
@@ -195,9 +195,9 @@ namespace PlexShareTests.ContentTests.Server
         [Fact]
         public void GetMessage_FetchingAnInvalidMessage_NullShouldBeReturned()
         {
-            var message1 = _utils.GenerateNewMessageData("Hello", SenderID: 1);
+            var message1 = _utils.GenerateContentData(data: "Hello", senderID: 1);
 
-            var message2 = _utils.GenerateNewMessageData("Hello2", SenderID: 1);
+            var message2 = _utils.GenerateContentData(data: "Hello2", senderID: 1);
 
             var recv = MessageDatabase.MessageStore(message1);
 
@@ -207,7 +207,7 @@ namespace PlexShareTests.ContentTests.Server
 
             Assert.Same(message2.Data, recv.Data);
 
-            var message3 = _utils.GenerateNewMessageData("Hello3", SenderID: 1, ReplyThreadID: message1.ReplyThreadID);
+            var message3 = _utils.GenerateContentData(data: "Hello3", senderID: 1, replyThreadID: message1.ReplyThreadID);
 
             recv = MessageDatabase.MessageStore(message3);
 
@@ -217,19 +217,19 @@ namespace PlexShareTests.ContentTests.Server
         [Fact]
         public void MessageStore_StoringMultipleMessages_ShouldBeAbleToStoreAndFetchMultipleMessages()
         {
-            var message1 = _utils.GenerateNewMessageData("Hello", SenderID: 1);
+            var message1 = _utils.GenerateContentData(data: "Hello", senderID: 1);
 
             var recv = MessageDatabase.MessageStore(message1);
 
             Assert.Same(message1.Data, recv.Data);
 
-            var message2 = _utils.GenerateNewMessageData("Hello2", SenderID: 1, ReplyThreadID: message1.ReplyThreadID);
+            var message2 = _utils.GenerateContentData(data: "Hello2", senderID: 1, replyThreadID: message1.ReplyThreadID);
 
             recv = MessageDatabase.MessageStore(message2);
 
             Assert.Same(message2.Data, recv.Data);
 
-            var message3 = _utils.GenerateNewMessageData("Hello3", SenderID: 1);
+            var message3 = _utils.GenerateContentData(data: "Hello3", senderID: 1);
 
             recv = MessageDatabase.MessageStore(message3);
 

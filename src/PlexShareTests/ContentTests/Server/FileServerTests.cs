@@ -187,7 +187,7 @@ namespace PlexShareTests.ContentTests.Server
             var CurrentDirectory = Directory.GetCurrentDirectory();
             var path = CurrentDirectory.Split(new[] { "\\PlexShareTests" }, StringSplitOptions.None);
             var pathA = path[0] + "\\PlexShareTests\\ContentTests\\Test_File.pdf";
-            var pathB = path[0] + "\\PlexShareTests\\ContentTests\\Utils.cs";
+            var pathB = path[0] + "\\PlexShareTests\\ContentTests\\Utility.cs";
 
             var file1 = new ContentData
             {
@@ -209,7 +209,7 @@ namespace PlexShareTests.ContentTests.Server
 
             var file2 = new ContentData
             {
-                Data = "Utils.cs",
+                Data = "Utility.cs",
                 Type = MessageType.File,
                 FileData = new SendFileData(pathB),
                 SenderID = 1,

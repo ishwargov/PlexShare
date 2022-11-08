@@ -1,3 +1,15 @@
+/******************************************************************************
+ * Filename    = ChatServer.cs
+ *
+ * Author      = Anurag Jha
+ *
+ * Product     = PlexShare
+ * 
+ * Project     = PlexShareContent
+ *
+ * Description = This file handles the chat messges and various functionlaities associted with chat.
+ *****************************************************************************/
+
 using PlexShareContent.DataModels;
 using PlexShareContent.Enums;
 using System;
@@ -8,13 +20,29 @@ namespace PlexShareContent.Server
 {
     public class ChatServer
     {
-        private readonly ContentDB _contentDB;
+        private ContentDB _contentDB;
 
+        /// <summary>
+        ///     Constructor to initializes the content Database.
+        /// </summary>
         public ChatServer(ContentDB db)
         {
             _contentDB = db;
         }
 
+        /// <summary>
+        ///     This function returns all the messages stored.
+        /// </summary>
+        public List<ChatThread> GetMessages()
+        {
+            return _contentDB.GetChatContexts();
+        }
+
+        /// <summary>
+        ///     This event is used to preocess the chat based on the type of event occured.
+        /// </summary>
+        /// <param name="messageData"></param>
+        /// <returns>Returns the new message</returns>
         public ContentData Receive(ContentData msg)
         {
             ReceiveContentData receivedMsg;
@@ -35,6 +63,11 @@ namespace PlexShareContent.Server
                 receivedMsg = UpdateMessage(msg.ReplyThreadID, msg.MessageID,
                     msg.Data);
             }
+            else if (msg.Event == MessageEvent.Delete)
+            {
+                Trace.WriteLine("[ChatServer] Event is Update, Updating message in existing Thread");
+                receivedMsg = DeleteMessage(msg.ReplyThreadID, msg.MessageID);
+            }
             else
             {
                 Trace.WriteLine($"[ChatServer] invalid event");
@@ -44,26 +77,44 @@ namespace PlexShareContent.Server
             {
                 return null;
             }
-
+            //Create a MessageData object and return this notify object.
             var notifyMsgData = new ContentData(receivedMsg)
             {
                 Event = msg.Event
             };
             return notifyMsgData;
         }
-        public List<ChatThread> GetMessages()
+
+        /// <summary>
+        ///     This function is used to update a message with a new updated message.
+        /// </summary>
+        private ReceiveContentData UpdateMessage(int replyId, int _msgId, string updatedMsg)
         {
-            return _contentDB.GetChatContexts();
+            var message = _contentDB.GetMessage(replyId, _msgId);
+
+            //message doesn't exists in database, return null
+            if (message == null)
+            {
+                Trace.WriteLine($"[ChatServer] Message not found replyThreadID: {replyId}, messageId: {_msgId}.");
+                return null;
+            }
+
+            // Update the message and return the updated message
+            message.Data = updatedMsg;
+            return message;
         }
 
-        public ReceiveContentData StarMessage(int replyId, int msgId)
+        /// <summary>
+        ///     This function is used to star a message.
+        /// </summary>
+        public ReceiveContentData StarMessage(int replyId, int _msgId)
         {
-            var msg = _contentDB.GetMessage(replyId, msgId);
+            var msg = _contentDB.GetMessage(replyId, _msgId);
 
-            // If ContentDatabase returns null that means the message doesn't exists, return null
+            //message doesn't exists in database, return null
             if (msg == null)
             {
-                Trace.WriteLine($"[ChatServer] Message not found replyThreadID: {replyId}, messageId: {msgId}.");
+                Trace.WriteLine($"[ChatServer] Message not found replyThreadID: {replyId}, messageId: {_msgId}.");
                 return null;
             }
 
@@ -72,19 +123,22 @@ namespace PlexShareContent.Server
             return msg;
         }
 
-        private ReceiveContentData UpdateMessage(int replyId, int msgId, string updatedMsg)
+        /// <summary>
+        ///     This function is used to Delete a message.
+        /// </summary>
+        private ReceiveContentData DeleteMessage(int replyId, int _msgId)
         {
-            var message = _contentDB.GetMessage(replyId, msgId);
+            var message = _contentDB.GetMessage(replyId, _msgId);
 
-            // If ContentDatabase returns null that means the message doesn't exists, return null
+            // Message doesn't exists in database, return null
             if (message == null)
             {
-                Trace.WriteLine($"[ChatServer] Message not found replyThreadID: {replyId}, messageId: {msgId}.");
+                Trace.WriteLine($"[ChatServer] Message not found replyThreadID: {replyId}, messageId: {_msgId}.");
                 return null;
             }
 
-            // Update the message and return the updated message
-            message.Data = updatedMsg;
+            // The data of message now becomes "Message Deleted.".
+            message.Data = "Message Deleted.";
             return message;
         }
 

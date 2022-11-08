@@ -1,4 +1,16 @@
-﻿using PlexShareContent.Client;
+﻿/******************************************************************************
+ * Filename    = ContentServerFactory.cs
+ *
+ * Author      = Anurag Jha
+ *
+ * Product     = PlexShare
+ * 
+ * Project     = PlexShareContent
+ *
+ * Description = Class to implement Factory design Pattern for ContentServer.
+ *****************************************************************************/
+
+using PlexShareContent.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -12,7 +12,7 @@ namespace PlexShareTests.ContentTests.Server
 {
     public class ChatServerTests
     {
-        private Utils _utils;
+        private Utility _utils;
         private ContentDB database;
         private ChatServer ChatServer;
 
@@ -20,14 +20,14 @@ namespace PlexShareTests.ContentTests.Server
         {
             database = new ContentDB();
             ChatServer = new ChatServer(database);
-            _utils = new Utils();
+            _utils = new Utility();
         }
 
         [Fact]
         public void Receive_HandlingNewMessage_StoreTheNewMessageAndReturnTheStoredMessage()
         {
             Setup();
-            var message1 = _utils.GenerateNewMessageData("Hello", SenderID: 1);
+            var message1 = _utils.GenerateContentData(data: "Hello", senderID: 1);
 
             ReceiveContentData recv = ChatServer.Receive(message1);
 
@@ -38,7 +38,7 @@ namespace PlexShareTests.ContentTests.Server
         public void Receive_StarringAStoredMessage_MessageIsStarredAndReturnsTheStarredMessage()
         {
             Setup();
-            var message1 = _utils.GenerateNewMessageData("Hello", SenderID: 1);
+            var message1 = _utils.GenerateContentData(data: "Hello", senderID: 1);
 
             ReceiveContentData recv = ChatServer.Receive(message1);
 
@@ -62,7 +62,7 @@ namespace PlexShareTests.ContentTests.Server
         public void Receive_StarringAMessageThatDoesNotExist_NullIsReturned()
         {
             Setup();
-            var message1 = _utils.GenerateNewMessageData("Hello", SenderID: 1);
+            var message1 = _utils.GenerateContentData(data: "Hello", senderID: 1);
 
             ReceiveContentData recv = ChatServer.Receive(message1);
 
@@ -92,7 +92,7 @@ namespace PlexShareTests.ContentTests.Server
         public void Receive_UpdatingAStoredMessage_MessageIsUpdatedAndReturnsTheUpdatedMessage()
         {
             Setup();
-            var message1 = _utils.GenerateNewMessageData("Hello", SenderID: 1);
+            var message1 = _utils.GenerateContentData(data: "Hello", senderID: 1);
 
             ReceiveContentData recv = ChatServer.Receive(message1);
 
@@ -117,7 +117,7 @@ namespace PlexShareTests.ContentTests.Server
         public void Receive_UpdatingAMessageThatDoesNotExist_NullIsReturned()
         {
             Setup();
-            var message1 = _utils.GenerateNewMessageData("Hello", SenderID: 1);
+            var message1 = _utils.GenerateContentData(data: "Hello", senderID: 1);
 
             ReceiveContentData recv = ChatServer.Receive(message1);
 
@@ -149,7 +149,7 @@ namespace PlexShareTests.ContentTests.Server
         public void Receive_ProvidingInvalidEventForChatType_NullIsReturned()
         {
             Setup();
-            var message1 = _utils.GenerateNewMessageData("Hello", SenderID: 1);
+            var message1 = _utils.GenerateContentData(data: "Hello", senderID: 1);
 
             message1.Event = MessageEvent.Download;
 
@@ -162,20 +162,20 @@ namespace PlexShareTests.ContentTests.Server
         public void Receive_StoringMultipleMessages_AllMessagesAreStoredAndReturned()
         {
             Setup();
-            var message1 = _utils.GenerateNewMessageData("Hello", SenderID: 1);
+            var message1 = _utils.GenerateContentData(data: "Hello", senderID: 1);
 
             ReceiveContentData recv = ChatServer.Receive(message1);
 
             Assert.Equal(message1.Data, recv.Data);
 
-            var message2 = _utils.GenerateNewMessageData("Hello2", SenderID: 1, ReplyThreadID: message1.ReplyThreadID);
+            var message2 = _utils.GenerateContentData(data: "Hello2", senderID: 1, replyThreadID: message1.ReplyThreadID);
 
             recv = ChatServer.Receive(message2);
 
             Assert.Equal(message2.Data, recv.Data);
             Assert.NotEqual(message2.MessageID, message1.MessageID);
 
-            var message3 = _utils.GenerateNewMessageData("Hello3", SenderID: 1);
+            var message3 = _utils.GenerateContentData(data: "Hello3", senderID: 1);
 
             recv = ChatServer.Receive(message3);
 
