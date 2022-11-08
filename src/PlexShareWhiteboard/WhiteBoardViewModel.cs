@@ -22,6 +22,8 @@ namespace PlexShareWhiteboard
         int currentIdVal = 0;
         int userId = 0;
         int currentZIndex = 0;
+        string text = "";
+        Point textBoxPoint = new (100, 100);
 
         Brush fillBrush = Brushes.Azure;
         Brush strokeBrush = Brushes.Black;

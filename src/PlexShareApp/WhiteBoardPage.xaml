@@ -505,7 +505,8 @@
                                     </ToggleButton>
                                 </Grid>
                                 <Grid Grid.Row="2">
-                                    <Button  HorizontalAlignment="Center" ToolTip="Line" VerticalAlignment="Center" Click="EllipseCreateMode" Cursor="Hand" Style="{StaticResource ToolBarStyle}" >
+
+                                    <Button  HorizontalAlignment="Center" ToolTip="Line" VerticalAlignment="Center" Click="LineMode" Cursor="Hand" Style="{StaticResource ToolBarStyle}" >
                                         <Image Source="Assets/LineTool.png" ></Image>
                                     </Button>
                                 </Grid>

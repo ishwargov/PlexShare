@@ -73,7 +73,7 @@ namespace PlexShareApp
         }
         private void CanvasMouseEnter(object sender, MouseEventArgs e)
         {
-            Debug.WriteLine(this.currentTool + " Got it \n");
+            //Debug.WriteLine(this.currentTool + " Got it \n");
             if (this.currentTool != "Select")
                 viewModel.UnHighLightIt();
             switch (this.currentTool)
@@ -101,7 +101,7 @@ namespace PlexShareApp
 
         private void CanvasMouseLeave(object sender, MouseEventArgs e)
         {
-            Debug.WriteLine(this.currentTool + " Leave Got it \n");
+            //Debug.WriteLine(this.currentTool + " Leave Got it \n");
             if (this.currentTool != "Select")
                 viewModel.UnHighLightIt();
             Cursor = Cursors.Arrow;
@@ -225,12 +225,19 @@ namespace PlexShareApp
 
         }
 
+        private void LineMode(object sender, RoutedEventArgs e)
+        {
+            viewModel.UnHighLightIt();
+            if (this.ShapeToolBar.Visibility == Visibility.Visible)
+                this.ShapeToolBar.Visibility = Visibility.Collapsed;
+            viewModel.ChangeMode("create_line");
+        }
+
         private void UndoMode(object sender, RoutedEventArgs e)
         {
             viewModel.UnHighLightIt();
             if (this.ShapeToolBar.Visibility == Visibility.Visible)
                 this.ShapeToolBar.Visibility = Visibility.Collapsed;
-
             viewModel.CallUndo();
             Debug.WriteLine("Undo called xaml");
         }
@@ -243,12 +250,5 @@ namespace PlexShareApp
 
             viewModel.CallRedo();
         }
-
-
-
-
-
-
-
     }
 }
