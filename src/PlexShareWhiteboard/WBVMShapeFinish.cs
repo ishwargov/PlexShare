@@ -15,7 +15,7 @@ namespace PlexShareWhiteboard
         // this is mouse up -> typically mouse release
         public void ShapeFinished(Point _)
         {
-            Debug.WriteLine("Entering Shape Finished..............\n");
+            //Debug.WriteLine("Entering Shape Finished..............\n");
             if (mode == "create_rectangle" || mode == "create_ellipse" || mode == "create_freehand")
             {
                 stackElement = new UndoStackElement(lastShape, lastShape, Operation.Creation);
@@ -51,9 +51,10 @@ namespace PlexShareWhiteboard
                 undoredo.OnShapeReceiveFromVM(lastShape,lastShape, Operation.Deletion);*/
             /*if (mode == "transform_mode" || mode == "translate_mode")*/
 
-            lastShape = null;
+            if (mode != "create_textbox")
+                lastShape = null;
 
-            Debug.WriteLine("Exiting Shape Finished........");
+            //Debug.WriteLine("Exiting Shape Finished........");
         }
     }
 }
