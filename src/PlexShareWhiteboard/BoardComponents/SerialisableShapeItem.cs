@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows;
 
-namespace PlexShareWhiteboard
+namespace PlexShareWhiteboard.BoardComponents
 {
     public class SerialisableShapeItem
     {
-        public String GeometryString { get; set; }
-        public String TextString { get; set; }
+        public string GeometryString { get; set; }
+        public string TextString { get; set; }
         public List<Point> PointList { get; set; }
         public Point Start { get; set; }
         public Point End { get; set; }
