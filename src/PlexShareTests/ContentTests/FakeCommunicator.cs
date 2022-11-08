@@ -1,19 +1,32 @@
-﻿using Networking;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/******************************************************************************
+ * Filename    = FakeCommunicator.cs
+ *
+ * Author      = Narvik Nandan
+ *
+ * Product     = PlexShare
+ * 
+ * Project     = PlexShareContent
+ *
+ * Description = Class that mocks the network communicator
+ *****************************************************************************/
+
+using PlexShareNetwork;
+using PlexShareNetwork.Communication;
+using System.Net.Sockets;
 
 namespace PlexShareTests.ContentTests
 {
     public class FakeCommunicator : ICommunicator
     {
+        // communicator parameters
         private bool _isBroadcast;
         private List<string> _receiverIds;
         private string _sendSerializedStr;
         private readonly List<INotificationHandler> _subscribers;
 
+        /// <summary>
+        /// Constructor to create communicator
+        /// </summary>
         public FakeCommunicator()
         {
             _sendSerializedStr = "";
@@ -22,101 +35,104 @@ namespace PlexShareTests.ContentTests
             _subscribers = new List<INotificationHandler>();
         }
 
+        ///<inheritdoc/>
         public string Start(string serverIp = null, string serverPort = null)
         {
             throw new NotImplementedException();
         }
 
+        ///<inheritdoc/>
         public void Stop()
         {
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        ///     Indicates the joining of a new client to concerned modules.
-        /// </summary>
-        /// <typeparam name="T">socketObject.</typeparam>
-        /// <param name="clientId">Unique ID of thr Client.</param>
-        /// <param name="socketObject">socket object associated with the client.</param>
-        public void AddClient<T>(string clientId, T socketObject)
+        ///<inheritdoc/>
+        public void AddClient(string clientId, TcpClient socketObject)
         {
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        ///     Notifies all concerned modules regarding the removal of the client.
-        /// </summary>
-        /// <param name="clientId">Unique ID of the client.</param>
+        ///<inheritdoc/>
         public void RemoveClient(string clientId)
         {
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        ///     Sends data to the server[Client-Side].
-        ///     Broadcasts data to all connected clients[Server-Side].
-        /// </summary>
-        /// <param name="data">Data to be sent over the network.</param>
-        /// <param name="identifier">Module Identifier.</param>
-        public void Send(string data, string identifier)
-        {
-            _sendSerializedStr = "";
-            _sendSerializedStr = data;
-            _isBroadcast = true;
-            _receiverIds = new List<string>();
-        }
-
-        /// <summary>
-        ///     Sends the data to one client[Server-Side].
-        /// </summary>
-        /// <param name="data">Data to be sent over the network.</param>
-        /// <param name="identifier">Module Identifier.</param>
-        /// <param name="destination">Client ID of the receiver.</param>
+        ///<inheritdoc/>
         public void Send(string data, string identifier, string destination)
         {
-            _sendSerializedStr = "";
-            _receiverIds.Add(destination);
-            _isBroadcast = false;
-            _sendSerializedStr = data;
+            // if destination is null, message is a broadcast message
+            if(destination == null)
+            {
+                _sendSerializedStr = data;
+                _receiverIds = new List<string>();
+                _isBroadcast = true;
+            }
+            else
+            {
+                _sendSerializedStr = data;
+                _receiverIds.Add(destination);
+                _isBroadcast = false;
+            }
         }
 
-        /// <summary>
-        ///     Provides a subscription to the modules for listening for the data over the network.
-        /// </summary>
-        /// <param name="identifier">Module Identifier.</param>
-        /// <param name="handler">Module implementation of handler; called to notify about an incoming message.</param>
-        /// <param name="priority">Priority Number indicating the weight in queue to be given to the module.</param>
+        ///<inheritdoc/>
         public void Subscribe(string identifier, INotificationHandler handler, bool isHighPriority = false)
         {
             _subscribers.Add(handler);
         }
 
+        /// <summary>
+        /// Resets communicator parameters
+        /// </summary>
         public void Reset()
         {
             _isBroadcast = false;
             _receiverIds = new List<string>();
         }
 
+        // other function for testing
+
+        /// <summary>
+        /// Gets sent string data
+        /// </summary>
+        /// <returns>Serializes string data</returns>
         public string GetSentData()
         {
             return _sendSerializedStr;
         }
-
-        public List<string> GetRcvIds()
+        
+        /// <summary>
+        /// Gets receiver ID list
+        /// </summary>
+        /// <returns>List of receiver IDs</returns>
+        public List<string> GetReceiverIDs()
         {
             return _receiverIds;
         }
 
-        public bool GetIsBroadcast()
+        /// <summary>
+        /// Checks if a message is broadcast or not
+        /// </summary>
+        /// <returns>True if broadcast, false otherwise</returns>
+        public bool IsBroadcast()
         {
             var flag = _isBroadcast;
             Reset();
             return flag;
         }
 
+        /// <summary>
+        /// Notifies the subscribers on data received
+        /// </summary>
+        /// <param name="data">Message string</param>
         public void Notify(string data)
         {
-            foreach (var subscriber in _subscribers) subscriber.OnDataReceived(data);
+            foreach (var subscriber in _subscribers)
+            {
+                subscriber.OnDataReceived(data);
+            }
         }
     }
 }
