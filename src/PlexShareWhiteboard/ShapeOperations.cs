@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows;
 using System.Windows.Shapes;
+using PlexShareWhiteboard.BoardComponents;
 
 namespace PlexShareWhiteboard
 {
@@ -111,12 +112,13 @@ namespace PlexShareWhiteboard
             else
                 newYLen = Math.Abs(newXLen / ratio) * signY;
 
-            double newX = select.InitialSelectionPoint.X + newXLen;
-            double newY = select.InitialSelectionPoint.Y + newYLen;
+            double newX = select.initialSelectionPoint.X + newXLen;
+            double newY = select.initialSelectionPoint.Y + newYLen;
             Point p1 = new (boundingBox.X, boundingBox.Y);
             Point p2 = new (boundingBox.X + boundingBox.Width, boundingBox.Y + boundingBox.Height);
 
-            int boxNumber = select.SelectBox;
+            int boxNumber = select.selectBox;
+                
             if (boxNumber == 1 && signX * signY > 0)
             {
                 p1 = new Point(newX, newY);
@@ -150,7 +152,7 @@ namespace PlexShareWhiteboard
             Rect boundingBox = shape.Geometry.Bounds;
             Point p1 = new(boundingBox.X, boundingBox.Y);
             Point p2 = new(boundingBox.X + boundingBox.Width, boundingBox.Y + boundingBox.Height);
-            int boxNumber = select.SelectBox;
+            int boxNumber = select.selectBox;
 
             if (boxNumber == 5)
             {

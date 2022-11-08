@@ -16,9 +16,9 @@ namespace PlexShareWhiteboard
                 Debug.WriteLine("In transform mode\n");
                 UnHighLightIt();
 
-                double newXLen = a.X - select.InitialSelectionPoint.X;
-                double newYLen = a.Y - select.InitialSelectionPoint.Y;
-                ShapeItem shape = select.SelectedObject;
+                double newXLen = a.X - select.initialSelectionPoint.X;
+                double newYLen = a.Y - select.initialSelectionPoint.Y;
+                ShapeItem shape = select.selectedObject;
                 int signX = 1, signY = 1;
 
                 if (newXLen < 0)
@@ -44,7 +44,7 @@ namespace PlexShareWhiteboard
                 Debug.WriteLine("In dimension changing mode\n");
                 UnHighLightIt();
 
-                ShapeItem shape = select.SelectedObject;
+                ShapeItem shape = select.selectedObject;
 
                 if (shape.Geometry.GetType().Name == "PathGeometry")
                 {
@@ -65,10 +65,10 @@ namespace PlexShareWhiteboard
                 Debug.WriteLine("In translate mode\n");
                 UnHighLightIt();
 
-                ShapeItem shape = select.SelectedObject;
+                ShapeItem shape = select.selectedObject;
                 Rect boundingBox = shape.Geometry.Bounds;
-                double bx = shape.AnchorPoint.X + (a.X - select.InitialSelectionPoint.X);
-                double by = shape.AnchorPoint.Y + (a.Y - select.InitialSelectionPoint.Y);
+                double bx = shape.AnchorPoint.X + (a.X - select.initialSelectionPoint.X);
+                double by = shape.AnchorPoint.Y + (a.Y - select.initialSelectionPoint.Y);
                 double width = boundingBox.Width;
                 double height = boundingBox.Height;
                 Point p1 = new (bx, by);

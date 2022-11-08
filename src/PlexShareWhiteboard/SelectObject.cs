@@ -2,23 +2,24 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
+using PlexShareWhiteboard.BoardComponents;
 
 namespace PlexShareWhiteboard
 {
     public class SelectObject
     {
-        public bool IfSelected;
-        public ShapeItem SelectedObject;
-        public Point InitialSelectionPoint;
-        public int SelectBox;
-        public List<Point> FinalPointList;
+        public bool ifSelected;
+        public ShapeItem selectedObject;
+        public Point initialSelectionPoint;
+        public int selectBox;
+        public List<Point> finalPointList;
 
         public SelectObject()
         {
-            IfSelected = false;
-            SelectedObject = null;
-            SelectBox = -1;
-            FinalPointList = new List<Point>();
+            ifSelected = false;
+            selectedObject = null;
+            selectBox = -1;
+            finalPointList = new List<Point>();
         }
     }
 
@@ -93,33 +94,33 @@ namespace PlexShareWhiteboard
 
                 if (HelperSelect(boundingBox, a, blobSize / 2))
                 {
-                    select.IfSelected = true;
-                    select.SelectedObject = ShapeItems[i];
-                    select.InitialSelectionPoint = a;
+                    select.ifSelected = true;
+                    select.selectedObject = ShapeItems[i];
+                    select.initialSelectionPoint = a;
                     tempZIndex = ShapeItems[i].ZIndex;
-                    select.SelectBox = 0;
+                    select.selectBox = 0;
                 }
             }
 
-            if (select.IfSelected == true)
+            if (select.ifSelected == true)
             {
                 Debug.WriteLine("object selected\n");
-                HighLightIt(select.SelectedObject.Geometry.Bounds);
+                HighLightIt(select.selectedObject.Geometry.Bounds);
                 int boxNumber = PointInsideHighlightBox(boundingBox, a, blobSize / 2);
 
                 if (boxNumber > 4)
                 {
                     Debug.WriteLine("Going to enter dimensionChange_mode \n");
                     mode = "dimensionChange_mode";
-                    select.SelectBox = boxNumber;
+                    select.selectBox = boxNumber;
                 }
                 else if (boxNumber > 0)
                 {
                     Debug.WriteLine("Going to enter transform mode \n");
                     mode = "transform_mode";
-                    select.SelectBox = boxNumber;
+                    select.selectBox = boxNumber;
                 }
-                else if (select.SelectBox == 0)
+                else if (select.selectBox == 0)
                 {
                     Debug.Write("Going to enter translate_mode \n");
                     mode = "translate_mode";
