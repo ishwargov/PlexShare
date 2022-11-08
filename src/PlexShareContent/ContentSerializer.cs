@@ -12,7 +12,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Xml;
 using Newtonsoft.Json;
 using Formatting = Newtonsoft.Json.Formatting;
 

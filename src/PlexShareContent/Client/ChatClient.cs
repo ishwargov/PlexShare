@@ -96,9 +96,9 @@ namespace PlexShareContent.Client
         {
             try
             {
-                var xml = _serializer.Serialize(contentData);
+                var json = _serializer.Serialize(contentData);
                 Trace.WriteLine($"[Chat Client] Setting event as '{eventType}' and sending object to server.");
-                _communicator.Send(xml, _moduleIdentifier, null);
+                _communicator.Send(json, _moduleIdentifier, null);
             }
             catch (Exception e)
             {
