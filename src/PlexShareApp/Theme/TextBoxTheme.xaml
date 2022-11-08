@@ -18,6 +18,7 @@
                                      Background="Transparent"
                                      VerticalContentAlignment="Center"
                                      Padding="5"
+                                     TextWrapping="Wrap"
                                      Foreground="#CFCFCF"
                                      x:Name="ChatBox"
                                      AcceptsReturn="True"/>

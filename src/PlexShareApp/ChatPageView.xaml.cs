@@ -48,5 +48,10 @@ namespace PlexShareApp
             // TODO: Binding all the messages
             
         }
+
+        private void UploadButtonClick(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
