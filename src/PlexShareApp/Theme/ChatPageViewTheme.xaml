@@ -30,7 +30,7 @@
                 <Setter Property="Cursor" Value="Arrow" />
             </Trigger>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Cursor" Value="Pen" />
+                <Setter Property="Cursor" Value="IBeam" />
                 <Setter Property="CaretBrush">
                     <Setter.Value>
                         <SolidColorBrush Color="White" />

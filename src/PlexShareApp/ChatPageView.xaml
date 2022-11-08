@@ -14,55 +14,52 @@
                 <ResourceDictionary Source="Theme/ChatPageViewTheme.xaml"/>
                 <ResourceDictionary Source="Theme/TextBoxTheme.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            
+
             <local:ChatBubbleConstructor x:Key="ChatBubbleTemplateConstructor"
                                          SentMsgBubble="{StaticResource ResourceKey=SentMsgTemplate}"
                                          RecvMsgBubble="{StaticResource ResourceKey=RecvMsgTemplate}"
                                          SentFileBubble="{StaticResource ResourceKey=SentFileTemplate}"
                                          RecvFileBubble="{StaticResource ResourceKey=RecvFileTemplate}"/>
         </ResourceDictionary>
-        
-        
     </UserControl.Resources>
 
 
-    <Border CornerRadius="200">
-        <!--Grid layout for chat window-->
-        <Grid Background="#E2DCC8">
-            <!--Dividing the page into 3 sections-->
-            <Grid.RowDefinitions>
-                <RowDefinition Height="50" x:Name="Footer"/>
-                <RowDefinition Height="1*" x:Name="ChatBox"/>
-                <RowDefinition Height="100" x:Name="SendBox"/>
-            </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center">Welcome to Chat Page</TextBlock>
-            <Button Grid.Row="2" Height="50" HorizontalAlignment="Right" Width="40" Margin="0,0,5,0" >Send</Button>
-            <TextBox Grid.Row="2" HorizontalAlignment="Left" Width="290" AcceptsReturn="True" Style="{StaticResource ModernTextbox}"></TextBox>
+    
+    <!--Grid layout for chat window-->
+    <Grid Background="#E2DCC8">
+        
+        <!--Dividing the page into 3 sections-->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.4*" x:Name="Footer"/>
+            <RowDefinition Height="6*" x:Name="ChatBox"/>
+            <RowDefinition Height="1*" x:Name="SendBox"/>
+        </Grid.RowDefinitions>
+        <Button Grid.Row="2" Height="50" HorizontalAlignment="Right" Width="40" Margin="0,0,5,0" >Send</Button>
 
-            
-            <Grid Grid.Row="1">
-                <Border CornerRadius="10" Background="{StaticResource StaticChatBackGrd}">
-                    <Border.Effect>
-                        <DropShadowEffect ShadowDepth="0" Opacity="0.2" />
-                    </Border.Effect>
-                </Border>
-                <StackPanel>
-                    <!--TODO: ADD a TEXTBLOCK for descibring the chat page-->
-
-                    <!--Grid layout for listbox and textbox-->
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="700" />
-                                <RowDefinition Height="100" />
-                        </Grid.RowDefinitions>
-
-                        <!--TODO: Implement a ListBox for displaying chat bubbles and add our TextBox here-->
-                        
-                        
-                    </Grid>
-                </StackPanel>
-            </Grid>
-
+        <Grid Grid.Row="0">
+            <Border CornerRadius="10" Background="{StaticResource StaticChatBackGrd}">
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="0" Opacity="0.2" />
+                </Border.Effect>
+            </Border>
+            <StackPanel>
+                <!--TODO: ADD a TEXTBLOCK for descibring the chat page-->
+                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,15,0,0">Welcome to Chat Page</TextBlock>
+            </StackPanel>
         </Grid>
-    </Border>
+
+        <!--Grid layout for listbox and textbox-->
+        <Grid Grid.Row="2">
+            <!--<Grid.RowDefinitions>
+                <RowDefinition Height="700" />
+                <RowDefinition Height="100" />
+            </Grid.RowDefinitions>-->
+            <TextBox Grid.Row="2" HorizontalAlignment="Left" Width="290" AcceptsReturn="True" Style="{StaticResource ModernTextbox}"></TextBox>
+        </Grid>
+        
+        <Grid Grid.Row="1">
+            <!--TODO: Implement a ListBox for displaying chat bubbles -->
+        </Grid>
+    </Grid>
+    
 </UserControl>
