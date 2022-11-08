@@ -1,4 +1,16 @@
-﻿using PlexShareContent.DataModels;
+﻿/******************************************************************************
+ * Filename    = FileServer.cs
+ *
+ * Author      = Anurag Jha
+ *
+ * Product     = PlexShare
+ * 
+ * Project     = PlexShareContent
+ *
+ * Description = This file handles the file messges and various functionlaities associted with file.
+ *****************************************************************************/
+
+using PlexShareContent.DataModels;
 using PlexShareContent.Enums;
 using System;
 using System.Collections.Generic;
@@ -11,13 +23,21 @@ namespace PlexShareContent.Server
 {
     public class FileServer
     {
-        private readonly ContentDB _db;
+        private ContentDB _db;
 
+        /// <summary>
+        ///     Constructor to initializes the content Database.
+        /// </summary>
         public FileServer(ContentDB contentDB)
         {
             _db = contentDB;
         }
 
+        /// <summary>
+        ///     This function is used to preocess the file based on the type of event occured.
+        /// </summary>
+        /// <param name="messageData"></param>
+        /// <returns>Returns the new message</returns>
         public ContentData Receive(ContentData msg)
         {
             Trace.WriteLine("[FileServer] Received message from ContentServer");
@@ -38,6 +58,9 @@ namespace PlexShareContent.Server
             }
         }
 
+        /// <summary>
+        ///     This function is used to save file to send information to client.
+        /// </summary>
         public ContentData StoreFile(ContentData msg)
         {
             msg = _db.FileStore(msg).Copy();
@@ -48,11 +71,14 @@ namespace PlexShareContent.Server
             return msg;
         }
 
+        /// <summary>
+        ///     This function is used to download the file on download event.
+        /// </summary>
         public ContentData FileDownload(ContentData msg)
         {
             var receivedMsg = _db.FilesFetch(msg.MessageID);
 
-            // If null is returned by contentDatabase that means it doesn't exist, return null
+            // Doesn't exist on database, return null
             if (receivedMsg == null)
             {
                 Trace.WriteLine($"[FileServer] File not found messageId: {msg.MessageID}.");

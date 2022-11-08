@@ -30,8 +30,8 @@ namespace PlexShareContent.Client
         /// Network related parameters
         /// </summary>
         private readonly INotificationHandler _notificationHandler;
-        private readonly IContentSerializer _serializer;
         private ICommunicator _communicator;
+        private IContentSerializer _serializer;
 
         /// <summary>
         /// List of subscribers

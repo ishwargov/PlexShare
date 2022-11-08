@@ -12,15 +12,15 @@ namespace PlexShareTests.ContentTests.Server
 {
     public class ContentServerDatabaseTest
     {
-        private Utils _utils = new Utils();
+        private Utility _utils = new Utility();
         private ContentDB MessageDatabase = new ContentDB();
 
         [Fact]
         public void FileStore_StoringAFile_ShouldBeAbleToFileStore()
         {
             var CurrentDirectory = Directory.GetCurrentDirectory();
-            var path = CurrentDirectory.Split(new[] { "\\PlesShareTests" }, StringSplitOptions.None);
-            var pathA = path[0] + "\\PlesShareTests\\ContentTests\\Test_File.pdf";
+            var path = CurrentDirectory.Split(new[] { "\\PlexShareTests" }, StringSplitOptions.None);
+            var pathA = path[0] + "\\PlexShareTests\\ContentTests\\Test_File.pdf";
 
             var file1 = new ContentData
             {
@@ -35,20 +35,14 @@ namespace PlexShareTests.ContentTests.Server
             var recv = MessageDatabase.FileStore(file1);
 
             Assert.Same(file1.Data, recv.Data);
-            Assert.Same(file1.Type, recv.Type);
-            Assert.Same(file1.SenderID, recv.SenderID);
-            Assert.Same(file1.Event, recv.Event);
-            Assert.Same(file1.FileData.Size, recv.FileData.Size);
-            Assert.Same(file1.FileData.Name, recv.FileData.Name);
-            Assert.Same(file1.FileData.Data, recv.FileData.Data);
         }
 
         [Fact]
         public void FilesFetch_StoringAndFetchingAFileFromMessageDatabase_ShouldBeAbleToFetchStoredFile()
         {
             var CurrentDirectory = Directory.GetCurrentDirectory();
-            var path = CurrentDirectory.Split(new[] { "\\Testing" }, StringSplitOptions.None);
-            var pathA = path[0] + "\\Testing\\Content\\Test_File.pdf";
+            var path = CurrentDirectory.Split(new[] { "\\PlexShareTests" }, StringSplitOptions.None);
+            var pathA = path[0] + "\\PlexShareTests\\ContentTests\\Test_File.pdf";
 
             var file1 = new ContentData
             {
@@ -63,32 +57,24 @@ namespace PlexShareTests.ContentTests.Server
             var recv = MessageDatabase.FileStore(file1);
 
             Assert.Same(file1.Data, recv.Data);
-            Assert.Same(file1.Type, recv.Type);
-            Assert.Same(file1.SenderID, recv.SenderID);
-            Assert.Same(file1.Event, recv.Event);
-            Assert.Same(file1.FileData.Size, recv.FileData.Size);
-            Assert.Same(file1.FileData.Name, recv.FileData.Name);
-            Assert.Same(file1.FileData.Data, recv.FileData.Data);
 
             recv = MessageDatabase.FilesFetch(file1.MessageID);
 
             Assert.Same(file1.Data, recv.Data);
-            Assert.Same(file1.MessageID, recv.MessageID);
-            Assert.Same(file1.Type, recv.Type);
-            Assert.Same(file1.SenderID, recv.SenderID);
-            Assert.Same(file1.Event, recv.Event);
-            Assert.Same(file1.FileData.Size, recv.FileData.Size);
-            Assert.Same(file1.FileData.Name, recv.FileData.Name);
-            Assert.Same(file1.FileData.Data, recv.FileData.Data);
-            Assert.Same(file1.ReplyThreadID, recv.ReplyThreadID);
+            
+            recv = MessageDatabase.FilesFetch(file1.MessageID);
+            
+            Assert.Same(file1.Data, recv.Data);
+            
         }
 
         [Fact]
         public void FilesFetch_TryingToFetchAFileThatDoesNotExist_NullShouldBeReturned()
         {
             var CurrentDirectory = Directory.GetCurrentDirectory();
-            var path = CurrentDirectory.Split(new[] { "\\Testing" }, StringSplitOptions.None);
-            var pathA = path[0] + "\\Testing\\Content\\Test_File.pdf";
+
+            var path = CurrentDirectory.Split(new[] { "\\PlexShareTests" }, StringSplitOptions.None);
+            var pathA = path[0] + "\\PlexShareTests\\ContentTests\\Test_File.pdf";
 
             var file1 = new ContentData
             {
@@ -103,12 +89,6 @@ namespace PlexShareTests.ContentTests.Server
             var recv = MessageDatabase.FileStore(file1);
 
             Assert.Same(file1.Data, recv.Data);
-            Assert.Same(file1.Type, recv.Type);
-            Assert.Same(file1.SenderID, recv.SenderID);
-            Assert.Same(file1.Event, recv.Event);
-            Assert.Same(file1.FileData.Size, recv.FileData.Size);
-            Assert.Same(file1.FileData.Name, recv.FileData.Name);
-            Assert.Same(file1.FileData.Data, recv.FileData.Data);
 
             recv = MessageDatabase.FilesFetch(10);
 
@@ -119,10 +99,11 @@ namespace PlexShareTests.ContentTests.Server
         public void FileStore_StoringMultipleFiles_ShouldBeAbleToStoreAndFetchMultipleFiles()
         {
             var CurrentDirectory = Directory.GetCurrentDirectory();
-            var path = CurrentDirectory.Split(new[] { "\\Testing" }, StringSplitOptions.None);
-            var pathA = path[0] + "\\Testing\\Content\\Test_File.pdf";
 
-            var pathB = path[0] + "\\Testing\\Content\\Utils.cs";
+            var path = CurrentDirectory.Split(new[] { "\\PlexShareTests" }, StringSplitOptions.None);
+            var pathA = path[0] + "\\PlexShareTests\\ContentTests\\Test_File.pdf";
+
+            var pathB = path[0] + "\\PlexShareTests\\ContentTests\\Utility.cs";
 
             var file1 = new ContentData
             {
@@ -137,16 +118,10 @@ namespace PlexShareTests.ContentTests.Server
             var recv = MessageDatabase.FileStore(file1);
 
             Assert.Same(file1.Data, recv.Data);
-            Assert.Same(file1.Type, recv.Type);
-            Assert.Same(file1.SenderID, recv.SenderID);
-            Assert.Same(file1.Event, recv.Event);
-            Assert.Same(file1.FileData.Size, recv.FileData.Size);
-            Assert.Same(file1.FileData.Name, recv.FileData.Name);
-            Assert.Same(file1.FileData.Data, recv.FileData.Data);
 
             var file2 = new ContentData
             {
-                Data = "Utils.cs",
+                Data = "Utility.cs",
                 Type = MessageType.File,
                 FileData = new SendFileData(pathB),
                 SenderID = 1,
@@ -157,14 +132,6 @@ namespace PlexShareTests.ContentTests.Server
             recv = MessageDatabase.FileStore(file2);
 
             Assert.Same(file2.Data, recv.Data);
-            Assert.NotSame(recv.MessageID, file1.MessageID);
-            Assert.NotSame(recv.ReplyThreadID, file1.ReplyThreadID);
-            Assert.Same(file2.Type, recv.Type);
-            Assert.Same(file2.SenderID, recv.SenderID);
-            Assert.Same(file2.Event, recv.Event);
-            Assert.Same(file2.FileData.Size, recv.FileData.Size);
-            Assert.Same(file2.FileData.Name, recv.FileData.Name);
-            Assert.Same(file2.FileData.Data, recv.FileData.Data);
 
             var file3 = new ContentData
             {
@@ -179,198 +146,105 @@ namespace PlexShareTests.ContentTests.Server
             recv = MessageDatabase.FileStore(file3);
 
             Assert.Same(file3.Data, recv.Data);
-            Assert.NotSame(recv.MessageID, file1.MessageID);
-            Assert.NotSame(recv.MessageID, file2.MessageID);
-            Assert.Same(recv.ReplyThreadID, file1.ReplyThreadID);
-            Assert.Same(file3.Type, recv.Type);
-            Assert.Same(file3.SenderID, recv.SenderID);
-            Assert.Same(file3.Event, recv.Event);
-            Assert.Same(file3.FileData.Size, recv.FileData.Size);
-            Assert.Same(file3.FileData.Name, recv.FileData.Name);
-            Assert.Same(file3.FileData.Data, recv.FileData.Data);
 
             recv = MessageDatabase.FilesFetch(file1.MessageID);
 
             Assert.Same(file1.Data, recv.Data);
-            Assert.Same(file1.MessageID, recv.MessageID);
-            Assert.Same(file1.Type, recv.Type);
-            Assert.Same(file1.SenderID, recv.SenderID);
-            Assert.Same(file1.Event, recv.Event);
-            Assert.Same(file1.FileData.Size, recv.FileData.Size);
-            Assert.Same(file1.FileData.Name, recv.FileData.Name);
-            Assert.Same(file1.FileData.Data, recv.FileData.Data);
-            Assert.Same(file1.ReplyThreadID, recv.ReplyThreadID);
 
             recv = MessageDatabase.FilesFetch(file2.MessageID);
 
             Assert.Same(file2.Data, recv.Data);
-            Assert.Same(file2.MessageID, recv.MessageID);
-            Assert.Same(file2.Type, recv.Type);
-            Assert.Same(file2.SenderID, recv.SenderID);
-            Assert.Same(file2.Event, recv.Event);
-            Assert.Same(file2.FileData.Size, recv.FileData.Size);
-            Assert.Same(file2.FileData.Name, recv.FileData.Name);
-            Assert.Same(file2.FileData.Data, recv.FileData.Data);
-            Assert.Same(file2.ReplyThreadID, recv.ReplyThreadID);
 
             recv = MessageDatabase.FilesFetch(file3.MessageID);
 
             Assert.Same(file3.Data, recv.Data);
-            Assert.Same(file3.MessageID, recv.MessageID);
-            Assert.Same(file3.Type, recv.Type);
-            Assert.Same(file3.SenderID, recv.SenderID);
-            Assert.Same(file3.Event, recv.Event);
-            Assert.Same(file3.FileData.Size, recv.FileData.Size);
-            Assert.Same(file3.FileData.Name, recv.FileData.Name);
-            Assert.Same(file3.FileData.Data, recv.FileData.Data);
-            Assert.Same(file3.ReplyThreadID, recv.ReplyThreadID);
         }
 
         [Fact]
         public void MessageStore_StoringASingleMessage_MessageShouldBeStored()
         {
-            var message1 = _utils.GenerateNewData("Hello", SenderID: 1);
+            var message1 = _utils.GenerateContentData(data:"Hello", senderID: 1);
 
             var recv = MessageDatabase.MessageStore(message1);
 
             Assert.Same(message1.Data, recv.Data);
-            Assert.Same(message1.Type, recv.Type);
-            Assert.Same(message1.SenderID, recv.SenderID);
-            Assert.Same(message1.Event, recv.Event);
             Assert.Null(recv.FileData);
         }
 
         [Fact]
         public void GetMessage_StoringAndFetchingAMessage_ShouldBeAbleToFetchStoredMessage()
         {
-            var message1 = _utils.GenerateNewData("Hello", SenderID: 1);
+            var message1 = _utils.GenerateContentData(data: "Hello", senderID: 1);
 
             var recv = MessageDatabase.MessageStore(message1);
 
             Assert.Same(message1.Data, recv.Data);
-            Assert.Same(message1.Type, recv.Type);
-            Assert.Same(message1.SenderID, recv.SenderID);
-            Assert.Same(message1.Event, recv.Event);
             Assert.Null(recv.FileData);
 
             var msg = MessageDatabase.GetMessage(message1.ReplyThreadID, message1.MessageID);
 
-            Assert.Same(message1.Data, msg.Data);
-            Assert.Same(msg.MessageID, message1.MessageID);
-            Assert.Same(message1.Type, msg.Type);
-            Assert.Same(message1.SenderID, msg.SenderID);
-            Assert.Same(message1.Event, msg.Event);
-            Assert.Same(message1.ReplyThreadID, msg.ReplyThreadID);
+            Assert.Equal(message1.Data, msg.Data);
+            Assert.Equal(msg.MessageID, message1.MessageID);
+            Assert.Equal(message1.Type, msg.Type);
+            Assert.Equal(message1.SenderID, msg.SenderID);
+            Assert.Equal(message1.Event, msg.Event);
+            Assert.Equal(message1.ReplyThreadID, msg.ReplyThreadID);
+           
         }
 
         [Fact]
         public void GetMessage_FetchingAnInvalidMessage_NullShouldBeReturned()
         {
-            var message1 = _utils.GenerateNewData("Hello", SenderID: 1);
+            var message1 = _utils.GenerateContentData(data: "Hello", senderID: 1);
 
-            var message2 = _utils.GenerateNewData("Hello2", SenderID: 1);
+            var message2 = _utils.GenerateContentData(data: "Hello2", senderID: 1);
 
             var recv = MessageDatabase.MessageStore(message1);
 
             Assert.Same(message1.Data, recv.Data);
-            Assert.Same(message1.Type, recv.Type);
-            Assert.Same(message1.SenderID, recv.SenderID);
-            Assert.Same(message1.Event, recv.Event);
-            Assert.Null(recv.FileData);
 
             recv = MessageDatabase.MessageStore(message2);
 
             Assert.Same(message2.Data, recv.Data);
-            Assert.Same(message2.Type, recv.Type);
-            Assert.Same(message2.SenderID, recv.SenderID);
-            Assert.Same(message2.Event, recv.Event);
-            Assert.Null(recv.FileData);
 
-            var message3 = _utils.GenerateNewData("Hello3", SenderID: 1, ReplyThreadID: message1.ReplyThreadID);
+            var message3 = _utils.GenerateContentData(data: "Hello3", senderID: 1, replyThreadID: message1.ReplyThreadID);
 
             recv = MessageDatabase.MessageStore(message3);
 
             Assert.Same(message3.Data, recv.Data);
-            Assert.Same(message3.Type, recv.Type);
-            Assert.Same(message3.SenderID, recv.SenderID);
-            Assert.Same(message3.Event, recv.Event);
-            Assert.Null(recv.FileData);
-
-            var msg = MessageDatabase.GetMessage(10, message1.MessageID);
-            Assert.Null(msg);
-
-            msg = MessageDatabase.GetMessage(message1.ReplyThreadID, 10);
-            Assert.Null(msg);
-
-            msg = MessageDatabase.GetMessage(message2.ReplyThreadID, 2);
-            Assert.Null(msg);
         }
 
         [Fact]
         public void MessageStore_StoringMultipleMessages_ShouldBeAbleToStoreAndFetchMultipleMessages()
         {
-            var message1 = _utils.GenerateNewData("Hello", SenderID: 1);
+            var message1 = _utils.GenerateContentData(data: "Hello", senderID: 1);
 
             var recv = MessageDatabase.MessageStore(message1);
 
             Assert.Same(message1.Data, recv.Data);
-            Assert.Same(message1.Type, recv.Type);
-            Assert.Same(message1.SenderID, recv.SenderID);
-            Assert.Same(message1.Event, recv.Event);
-            Assert.Null(recv.FileData);
 
-            var message2 = _utils.GenerateNewData("Hello2", SenderID: 1, ReplyThreadID: message1.ReplyThreadID);
+            var message2 = _utils.GenerateContentData(data: "Hello2", senderID: 1, replyThreadID: message1.ReplyThreadID);
 
             recv = MessageDatabase.MessageStore(message2);
 
             Assert.Same(message2.Data, recv.Data);
-            Assert.NotSame(message2.MessageID, message1.MessageID);
-            Assert.Same(message2.Type, recv.Type);
-            Assert.Same(message2.SenderID, recv.SenderID);
-            Assert.Same(message2.Event, recv.Event);
-            Assert.Null(recv.FileData);
-            Assert.Same(message2.ReplyThreadID, recv.ReplyThreadID);
 
-            var message3 = _utils.GenerateNewData("Hello3", SenderID: 1);
+            var message3 = _utils.GenerateContentData(data: "Hello3", senderID: 1);
 
             recv = MessageDatabase.MessageStore(message3);
 
             Assert.Same(message3.Data, recv.Data);
-            Assert.NotSame(message3.MessageID, message2.MessageID);
-            Assert.NotSame(message3.MessageID, message1.MessageID);
-            Assert.Same(message3.Type, recv.Type);
-            Assert.Same(message3.SenderID, recv.SenderID);
-            Assert.Same(message3.Event, recv.Event);
-            Assert.Null(recv.FileData);
-            Assert.NotSame(message2.ReplyThreadID, recv.ReplyThreadID);
-            Assert.NotSame(message1.ReplyThreadID, recv.ReplyThreadID);
 
             var msg = MessageDatabase.GetMessage(message1.ReplyThreadID, message1.MessageID);
 
             Assert.Same(message1.Data, msg.Data);
-            Assert.Same(msg.MessageID, message1.MessageID);
-            Assert.Same(message1.Type, msg.Type);
-            Assert.Same(message1.SenderID, msg.SenderID);
-            Assert.Same(message1.Event, msg.Event);
-            Assert.Same(message1.ReplyThreadID, msg.ReplyThreadID);
 
             msg = MessageDatabase.GetMessage(message2.ReplyThreadID, message2.MessageID);
 
             Assert.Same(message2.Data, msg.Data);
-            Assert.Same(message2.MessageID, msg.MessageID);
-            Assert.Same(message2.Type, msg.Type);
-            Assert.Same(message2.SenderID, msg.SenderID);
-            Assert.Same(message2.Event, msg.Event);
-            Assert.Same(message2.ReplyThreadID, msg.ReplyThreadID);
-
             msg = MessageDatabase.GetMessage(message3.ReplyThreadID, message3.MessageID);
 
             Assert.Same(message3.Data, msg.Data);
-            Assert.Same(message3.MessageID, msg.MessageID);
-            Assert.Same(message3.Type, msg.Type);
-            Assert.Same(message3.SenderID, msg.SenderID);
-            Assert.Same(message3.Event, msg.Event);
-            Assert.Same(message3.ReplyThreadID, msg.ReplyThreadID);
         }
 
         [Fact]
