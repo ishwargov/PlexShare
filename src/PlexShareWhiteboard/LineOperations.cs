@@ -70,11 +70,11 @@ namespace PlexShareWhiteboard
 
                 )
             {
-                Debug.WriteLine("TYpe 1111111111111111111111111111111");
+                    ;
             }
             else
             {
-                Debug.WriteLine("TYpe 22222222222222222222222222222222222");
+                ;
                 double x1 = p1.X + width;
                 double y1 = p1.Y;
                 double x2 = p1.X;
