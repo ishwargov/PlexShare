@@ -16,12 +16,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\PlexShareWhiteboard\PlexShareWhiteboard.csproj" />
 	  <PackageReference Include="LiveCharts" Version="0.9.7" />
 	  <PackageReference Include="LiveCharts.Wpf" Version="0.9.7" />
 	  <PackageReference Include="Syncfusion.SfChart.WPF" Version="20.3.0.50" />
-	</ItemGroup>
-
-	<ItemGroup>
 	  <ProjectReference Include="..\PlexShareDashboard\PlexShareDashboard.csproj" />
 	</ItemGroup>
 </Project>
