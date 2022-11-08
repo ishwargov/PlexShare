@@ -48,6 +48,8 @@ namespace PlexShareWhiteboard
         public void ClearAllShapes()
         {
             ShapeItems.Clear();
+            undoStack.Clear();
+            redoStack.Clear();
         }
     }
 }

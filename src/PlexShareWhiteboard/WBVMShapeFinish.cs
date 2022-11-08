@@ -28,7 +28,7 @@ namespace PlexShareWhiteboard
             }
             else if (mode == "translate_mode" || mode == "transform_mode" || mode == "dimensionChange_mode")
             {
-                stackElement = new UndoStackElement(select.initialSelectionObject, lastShape, Operation.ModifyShape);
+                stackElement = new UndoStackElement(select.initialSelectionObject, select.selectedObject, Operation.ModifyShape);
                 InsertIntoStack(stackElement);
             }
             else;

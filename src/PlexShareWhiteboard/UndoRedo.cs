@@ -18,6 +18,7 @@ namespace PlexShareWhiteboard
         /// </summary>
         public void CallUndo()
         {
+            Debug.WriteLine("Undocall Entered");
             UndoStackElement shapeToSend = Undo();
             if (shapeToSend != null)
                 Client.OnShapeReceived(shapeToSend.PrvShape, shapeToSend.Op);
@@ -57,12 +58,14 @@ namespace PlexShareWhiteboard
         /// <returns>UndoStackElement containing the shape and the operation to be broadcasted</returns>
         public UndoStackElement Undo()
         {
+            Debug.WriteLine("Undo Entered");
             if (undoStack.Count == 0)   // Undo Stack Empty Case
                 return null;
 
             UndoStackElement topOfStack = undoStack.Pop();
             UndoStackElement modifiedObject = new UndoStackElement(topOfStack.PrvShape, topOfStack.NewShape, topOfStack.Op);
-
+            if (topOfStack.PrvShape == null)
+                return null;
             Debug.WriteLine("\n" + topOfStack.Op + "\n");
 
             /* Depending on the operation, perform the inverse opreation 
@@ -101,6 +104,8 @@ namespace PlexShareWhiteboard
             if (redoStack.Count == 0)
                 return null;
             UndoStackElement topOfStack = redoStack.Pop();
+            if (topOfStack.NewShape == null)
+                return null;
             switch (topOfStack.Op)
             {
                 case Operation.Creation:

@@ -222,7 +222,33 @@ namespace PlexShareApp
             if (this.ShapeToolBar.Visibility == Visibility.Visible)
                 this.ShapeToolBar.Visibility = Visibility.Collapsed;
             viewModel.ClearAllShapes();
+
         }
+
+        private void UndoMode(object sender, RoutedEventArgs e)
+        {
+            viewModel.UnHighLightIt();
+            if (this.ShapeToolBar.Visibility == Visibility.Visible)
+                this.ShapeToolBar.Visibility = Visibility.Collapsed;
+
+            viewModel.CallUndo();
+            Debug.WriteLine("Undo called xaml");
+        }
+
+        private void RedoMode(object sender, RoutedEventArgs e)
+        {
+            viewModel.UnHighLightIt();
+            if (this.ShapeToolBar.Visibility == Visibility.Visible)
+                this.ShapeToolBar.Visibility = Visibility.Collapsed;
+
+            viewModel.CallRedo();
+        }
+
+
+
+
+
+
 
     }
 }

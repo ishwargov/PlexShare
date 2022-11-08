@@ -257,14 +257,14 @@
 
                             <Grid Grid.Column="0">
                                 <ToggleButton Name ="Fill" Style="{StaticResource TopBarStyle}" ToolTip="Fill" >
-                                    <Image Source="C:\Users\parva\OneDrive\Desktop\PlexShare\src\PlexShareWhiteboard\Assets\FillTool.png"></Image>
+                                    <Image Source="Assets/FillTool.png"></Image>
                                 </ToggleButton>
                             </Grid>
 
                             <Grid Grid.Column="1">
                                 <ToggleButton
 								Name ="ShapeStroke" Style="{StaticResource TopBarStyle}" ToolTip="Border Color" >
-                                    <Image Source="C:\Users\parva\OneDrive\Desktop\PlexShare\src\PlexShareWhiteboard\Assets\crayon.png"></Image>
+                                    <Image Source="Assets/crayon.png"></Image>
                                 </ToggleButton>
                             </Grid>
                         </Grid>
@@ -383,7 +383,7 @@
                                 <!--Select Button-->
                                 <Grid Grid.Row="0">
                                     <Button Name="Select" HorizontalAlignment="Center" ToolTip="Select" VerticalAlignment="Center" Click="SelectMode" Cursor="Hand" Style="{StaticResource ToolBarStyle}">
-                                        <Image Source="C:\Users\parva\OneDrive\Desktop\PlexShare\src\PlexShareWhiteboard\Assets\SelectTool.png"></Image>
+                                        <Image Source="Assets/SelectTool.png"></Image>
                                     </Button>
                                 </Grid>
 
@@ -479,7 +479,7 @@
                                         </Grid>
                                     </Popup>
                                     <ToggleButton Name="brush" ToolTip="Pen" HorizontalAlignment="Center" VerticalAlignment="Center" Click="FreehandCreateMode" Cursor="Hand" >
-                                        <Image Source="C:\Users\parva\OneDrive\Desktop\PlexShare\src\PlexShareWhiteboard\Assets\brush.png" ></Image>
+                                        <Image Source="Assets/brush.png" ></Image>
                                         <ToggleButton.Style>
                                             <Style TargetType="ToggleButton">
                                                 <Setter Property="Background" Value="WhiteSmoke"/>
@@ -506,43 +506,43 @@
                                 </Grid>
                                 <Grid Grid.Row="2">
                                     <Button  HorizontalAlignment="Center" ToolTip="Line" VerticalAlignment="Center" Click="EllipseCreateMode" Cursor="Hand" Style="{StaticResource ToolBarStyle}" >
-                                        <Image Source="C:\Users\parva\OneDrive\Desktop\PlexShare\src\PlexShareWhiteboard\Assets\LineTool.png" ></Image>
+                                        <Image Source="Assets/LineTool.png" ></Image>
                                     </Button>
                                 </Grid>
                                 <Grid Grid.Row="3">
                                     <Button Name="TextBox" ToolTip="Add Text" HorizontalAlignment="Center" VerticalAlignment="Center" Click="RectangleCreateMode" Cursor="Hand" Style="{StaticResource ToolBarStyle}">
-                                        <Image Source="C:\Users\parva\OneDrive\Desktop\PlexShare\src\PlexShareWhiteboard\Assets\Text.png"></Image>
+                                        <Image Source="Assets/Text.png"></Image>
                                     </Button>
 
                                 </Grid>
                                 <Grid Grid.Row="4">
                                     <Button Name="Rectangle" ToolTip="Rectangle" HorizontalAlignment="Center" VerticalAlignment="Center" Click="RectangleCreateMode" Cursor="Hand" Style="{StaticResource ToolBarStyle}">
-                                        <Image Source="C:\Users\parva\OneDrive\Desktop\PlexShare\src\PlexShareWhiteboard\Assets\RectangleTool.png"></Image>
+                                        <Image Source="Assets/RectangleTool.png"></Image>
                                     </Button>
 
                                 </Grid>
                                 <Grid Grid.Row="5">
                                     <Button x:Name="Ellipse" ToolTip="Ellipse" HorizontalAlignment="Center" VerticalAlignment="Center" Click="EllipseCreateMode" Cursor="Hand" Style="{StaticResource ToolBarStyle}">
-                                        <Image Source="C:\Users\parva\OneDrive\Desktop\PlexShare\src\PlexShareWhiteboard\Assets\EllipseTool.png" ></Image>
+                                        <Image Source="Assets/EllipseTool.png" ></Image>
                                     </Button>
                                 </Grid>
 
                                 <Grid Grid.Row="6">
                                     <Button HorizontalAlignment="Center" ToolTip="Delete" VerticalAlignment="Center" Click="DeleteMode" Cursor="Hand" Style="{StaticResource ToolBarStyle}">
-                                        <Image Source="C:\Users\parva\OneDrive\Desktop\PlexShare\src\PlexShareWhiteboard\Assets\EraserTool.png" ></Image>
+                                        <Image Source="Assets/EraserTool.png" ></Image>
                                     </Button>
                                 </Grid>
 
                                 <Separator Grid.Row="7"  />
 
                                 <Grid Grid.Row="8">
-                                    <Button Name="Undo" HorizontalAlignment="Center" ToolTip="Undo" VerticalAlignment="Center" Click="DeleteMode" Cursor="Hand" Style="{StaticResource ToolBarStyle}">
-                                        <Image Source="C:\Users\parva\OneDrive\Desktop\PlexShare\src\PlexShareWhiteboard\Assets\UndoTool.png" ></Image>
+                                    <Button Name="Undo" HorizontalAlignment="Center" ToolTip="Undo" VerticalAlignment="Center" Click="UndoMode" Cursor="Hand" Style="{StaticResource ToolBarStyle}">
+                                        <Image Source="Assets/UndoTool.png" ></Image>
                                     </Button>
                                 </Grid>
                                 <Grid Grid.Row="9">
-                                    <Button Name="Redo" HorizontalAlignment="Center" ToolTip="Redo" VerticalAlignment="Center" Click="DeleteMode" Cursor="Hand" Style="{StaticResource ToolBarStyle}">
-                                        <Image Source="C:\Users\parva\OneDrive\Desktop\PlexShare\src\PlexShareWhiteboard\Assets\RedoTool.png" ></Image>
+                                    <Button Name="Redo" HorizontalAlignment="Center" ToolTip="Redo" VerticalAlignment="Center" Click="RedoMode" Cursor="Hand" Style="{StaticResource ToolBarStyle}">
+                                        <Image Source="Assets/RedoTool.png" ></Image>
                                     </Button>
                                 </Grid>
 
@@ -550,13 +550,13 @@
 
                                 <Grid Grid.Row="11">
                                     <Button Name="Save" HorizontalAlignment="Center" ToolTip="Save Snapshot" VerticalAlignment="Center" Click="DeleteMode" Cursor="Hand" Style="{StaticResource ToolBarStyle}">
-                                        <Image Source="C:\Users\parva\OneDrive\Desktop\PlexShare\src\PlexShareWhiteboard\Assets\SaveTool.png" ></Image>
+                                        <Image Source="Assets/SaveTool.png" ></Image>
                                     </Button>
                                 </Grid>
 
                                 <Grid Grid.Row="12">
                                     <Button Name="Restore" HorizontalAlignment="Center" ToolTip="Restore" VerticalAlignment="Center" Click="DeleteMode" Cursor="Hand" Style="{StaticResource ToolBarStyle}">
-                                        <Image Source="C:\Users\parva\OneDrive\Desktop\PlexShare\src\PlexShareWhiteboard\Assets\RestoreTool.png" ></Image>
+                                        <Image Source="Assets/RestoreTool.png" ></Image>
                                     </Button>
                                 </Grid>
 
@@ -564,7 +564,7 @@
 
                                 <Grid Grid.Row="14">
                                     <Button Name="Clear" HorizontalAlignment="Center" ToolTip="Clear the Canvas" VerticalAlignment="Center" Click="ClearMode" Cursor="Hand">
-                                        <Image Source="C:\Users\parva\OneDrive\Desktop\PlexShare\src\PlexShareWhiteboard\Assets\ClearTool.png" ></Image>
+                                        <Image Source="Assets/ClearTool.png" ></Image>
                                         <Button.Style>
                                             <Style TargetType="Button">
                                                 <Setter Property="Background" Value="WhiteSmoke"/>
