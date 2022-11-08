@@ -7,13 +7,14 @@ using System.Windows.Media;
 using System.Windows;
 using System.Windows.Shapes;
 using PlexShareWhiteboard.BoardComponents;
+using System.Globalization;
 
 namespace PlexShareWhiteboard
 {
     public partial class WhiteBoardViewModel
     {
         // this is not for creation but for updating a created shape as we are using lastid.
-        public ShapeItem UpdateShape(Point start, Point end, string name, ShapeItem oldShape)
+        public ShapeItem UpdateShape(Point start, Point end, string name, ShapeItem oldShape, string textDataOpt = "")
         {
             Rect boundingBox = new (start, end);
             Geometry geometry;
@@ -21,15 +22,36 @@ namespace PlexShareWhiteboard
 
             if (name == "EllipseGeometry")
                 geometry = new EllipseGeometry(boundingBox);
+            else if (name == "LineGeometry")
+                geometry = new LineGeometry(start, end);
+            else if (name == "GeometryGroup")
+            {
+                // Create the formatted text based on the properties set.
+                FormattedText formattedText = new(
+                  textDataOpt,
+                  CultureInfo.GetCultureInfo("en-us"),
+                  FlowDirection.LeftToRight,
+                  new Typeface("Tahoma"),
+                  32,
+                  Brushes.Black);
 
-            ShapeItem newShape = new()
+
+                // Build the geometry object that represents the text.
+                geometry = formattedText.BuildGeometry(start);
+
+            }
+          
+            ShapeItem newShape = new ShapeItem
             {
                 Geometry = geometry,
                 Fill = oldShape.Fill,
                 Stroke = oldShape.Stroke,
                 ZIndex = oldShape.ZIndex,
-                AnchorPoint = start,
-                Id = oldShape.Id
+                AnchorPoint = name == "LineGeometry" ? new Point(geometry.Bounds.X, geometry.Bounds.Y) : start,
+                Id = oldShape.Id,
+                TextString = textDataOpt,
+                Start = start,
+                End = end
             };
 
             for (int i = 0; i < ShapeItems.Count; i++)
@@ -43,7 +65,7 @@ namespace PlexShareWhiteboard
 
             return newShape;
         }
-        public ShapeItem CreateShape(Point start, Point end, string name, String id)
+        public ShapeItem CreateShape(Point start, Point end, string name, String id, string textDataOpt = "")
         {
             Rect boundingBox = new (start, end);
             Geometry geometry;
@@ -51,17 +73,39 @@ namespace PlexShareWhiteboard
 
             if (name == "EllipseGeometry")
                 geometry = new EllipseGeometry(boundingBox);
+            else if (name == "LineGeometry")
+            {
+                geometry = new LineGeometry(start, end);
+            }
+            else if (name == "GeometryGroup")
+            {
+                // Create the formatted text based on the properties set.
+                FormattedText formattedText = new FormattedText(
+                  textDataOpt,
+                  CultureInfo.GetCultureInfo("en-us"),
+                  FlowDirection.LeftToRight,
+                  new Typeface("Tahoma"),
+                  32,
+                  Brushes.Black);
 
-            ShapeItem newShape = new()
+
+                // Build the geometry object that represents the text.
+                geometry = formattedText.BuildGeometry(start);
+
+            }
+            ShapeItem newShape = new ShapeItem
             {
                 Geometry = geometry,
+                Start = start,
+                End = end,
                 Fill = fillBrush,
                 Stroke = strokeBrush,
                 ZIndex = currentZIndex,
-                AnchorPoint = start,
-                Id = id
+                AnchorPoint = name == "LineGeometry" ? new Point(geometry.Bounds.X, geometry.Bounds.Y) : start,
+                Id = id,
+                TextString = textDataOpt
             };
-
+           
             for (int i = 0; i < ShapeItems.Count; i++)
             {
 

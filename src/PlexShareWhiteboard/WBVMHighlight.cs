@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows;
 using PlexShareWhiteboard.BoardComponents;
+using System.Diagnostics;
+using System.Windows.Shapes;
 
 namespace PlexShareWhiteboard
 {
@@ -64,9 +66,34 @@ namespace PlexShareWhiteboard
             foreach (ShapeItem si in highlightShapes)
                 ShapeItems.Add(si);
         }
+        //deon
+        public void HighLightIt(Line line)
+        {
+            double x1 = line.X1;
+            double y1 = line.Y1;
+            double x2 = line.X2;
+            double y2 = line.Y2;
+
+            Debug.WriteLine("Entering line hightlighting with " + x1 + "  " + y1 + " " + x2 + " " + y2);
+
+            ShapeItem hsBody = GenerateLine(x1, y1, x2, y2, null, Brushes.DodgerBlue, "hsBody", currentZIndex);
+            highlightShapes.Add(hsBody);
+
+            ShapeItem hsTop = GenerateRectangleXYWidthHeight(x1 - blobSize / 2, y1 - blobSize / 2, blobSize, blobSize, Brushes.DodgerBlue, Brushes.DodgerBlue, "hsTop", currentZIndex);
+            highlightShapes.Add(hsTop);
+
+            ShapeItem hsBottom = GenerateRectangleXYWidthHeight(x2 - blobSize / 2, y2 - blobSize / 2, blobSize, blobSize, Brushes.DodgerBlue, Brushes.DodgerBlue, "hsBottom", currentZIndex);
+            highlightShapes.Add(hsBottom);
+
+            // just adds to shapeitems
+            foreach (ShapeItem si in highlightShapes)
+                ShapeItems.Add(si);
+        }
+
+        
         public void HighLightIt(Point a, Point b)
         {
-            Rect rect = new Rect(a, b);
+            Rect rect = new (a, b);
             HighLightIt(rect);
         }
 
