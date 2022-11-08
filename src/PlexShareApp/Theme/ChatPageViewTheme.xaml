@@ -19,12 +19,12 @@
     <SolidColorBrush x:Key="StaticSentReplyMsg" Color="YellowGreen" />
 
     <!--Custom style for scrollbar-->
-    <Style TargetType="ScrollBar">
+    <Style x:Name="ChatScrollBar" TargetType="ScrollBar">
         <Setter Property="Background" Value="Transparent" />
     </Style>
 
     <!--Custom style for the textbox-->
-    <Style TargetType="TextBox">
+    <Style x:Name="ChatTextBox" TargetType="TextBox">
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="False">
                 <Setter Property="Cursor" Value="Arrow" />
@@ -41,7 +41,7 @@
     </Style>
 
     <!--Custom style the Button with our custom style template-->
-    <Style TargetType="{x:Type Button}">
+    <Style x:Name="ChatSendButton" TargetType="{x:Type Button}">
         <Setter Property="Background" Value="{DynamicResource StaticButtonBack}" />
         <Setter Property="BorderBrush" Value="{DynamicResource StaticButtonBack}" />
         <Setter Property="Foreground" Value="{DynamicResource StaticButtonFore}" />

@@ -4,11 +4,6 @@
              xmlns:local="clr-namespace:PlexShareApp"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Theme/TextBoxTheme.xaml"/>
-                <!--<ResourceDictionary Source="Theme/ChatPageViewTheme.xaml"/>-->
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
+        
     </Application.Resources>
 </Application>

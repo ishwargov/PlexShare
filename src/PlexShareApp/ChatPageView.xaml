@@ -8,9 +8,23 @@
       d:DesignHeight="850" d:DesignWidth="330" >
 
     <UserControl.Resources>
-        <ResourceDictionary Source="Theme/ChatPageViewTheme.xaml"/>
+        <!--Adding our Themes and Constructing the template for a chat bubble-->
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Theme/ChatPageViewTheme.xaml"/>
+                <ResourceDictionary Source="Theme/TextBoxTheme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            
+            <local:ChatBubbleConstructor x:Key="ChatBubbleTemplateConstructor"
+                                         SentMsgBubble="{StaticResource ResourceKey=SentMsgTemplate}"
+                                         RecvMsgBubble="{StaticResource ResourceKey=RecvMsgTemplate}"
+                                         SentFileBubble="{StaticResource ResourceKey=SentFileTemplate}"
+                                         RecvFileBubble="{StaticResource ResourceKey=RecvFileTemplate}"/>
+        </ResourceDictionary>
+        
+        
     </UserControl.Resources>
-    <!--TODO: Construct the template for a chat bubble-->
+
 
     <Border CornerRadius="200">
         <!--Grid layout for chat window-->
