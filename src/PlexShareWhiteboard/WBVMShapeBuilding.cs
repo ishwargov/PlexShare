@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
+﻿using System.Diagnostics;
 using System.Windows;
 using PlexShareWhiteboard.BoardComponents;
 
@@ -14,116 +8,125 @@ namespace PlexShareWhiteboard
     {
         public void ShapeBuilding(Point a)
         {
-            //Debug.WriteLine("Shape Building ");
+            Debug.WriteLine("Entering Shape Building......\n");
 
-            if (mode == "view_mode")
+            if (mode == "transform_mode")
             {
-                ;
-            }
 
-            else if (mode == "delete_mode")
-            {
-                ;
-            }
-            else if (mode == "scale_mode")
-            {
-                ;
+                Debug.WriteLine("In transform mode\n");
+                UnHighLightIt();
+
+                double newXLen = a.X - select.InitialSelectionPoint.X;
+                double newYLen = a.Y - select.InitialSelectionPoint.Y;
+                ShapeItem shape = select.SelectedObject;
+                int signX = 1, signY = 1;
+
+                if (newXLen < 0)
+                    signX = -1;
+                if (newYLen < 0)
+                    signY = -1;
+                
+                if (shape.Geometry.GetType().Name == "PathGeometry")
+                {
+
+                    Debug.WriteLine("Transforming curve\n");
+                    TransformCurve(a, shape);
+                }
+                else
+                {
+
+                    Debug.WriteLine("Transforming shape\n");
+                    TransformShape(shape, newXLen, newYLen, signX, signY);
+                }
             }
             else if (mode == "dimensionChange_mode")
             {
-                ;
+                Debug.WriteLine("In dimension changing mode\n");
+                UnHighLightIt();
+
+                ShapeItem shape = select.SelectedObject;
+
+                if (shape.Geometry.GetType().Name == "PathGeometry")
+                {
+
+                    Debug.WriteLine("Changing dimenstion of curve\n");
+                    DimensionChangeCurve(a, shape);
+                }
+                else
+                {
+
+                    Debug.WriteLine("Changing dimenstion of shape\n");
+                    DimensionChangingShape(a, shape);
+                }
             }
             else if (mode == "translate_mode")
             {
 
+                Debug.WriteLine("In translate mode\n");
                 UnHighLightIt();
-                ShapeItem shape = select.selectedObject;
+
+                ShapeItem shape = select.SelectedObject;
                 Rect boundingBox = shape.Geometry.Bounds;
-                double bx = select.selectedObject.AnchorPoint.X + (a.X - select.InitialSelectionPoint.X);
-                double by = select.selectedObject.AnchorPoint.Y + (a.Y - select.InitialSelectionPoint.Y);
+                double bx = shape.AnchorPoint.X + (a.X - select.InitialSelectionPoint.X);
+                double by = shape.AnchorPoint.Y + (a.Y - select.InitialSelectionPoint.Y);
                 double width = boundingBox.Width;
                 double height = boundingBox.Height;
-                Point p1 = new Point(bx, by);
-                Point p2 = new Point(bx + width, by + height);
+                Point p1 = new (bx, by);
+                Point p2 = new (bx + width, by + height);
 
-                if (select.selectedObject.Geometry.GetType() == (new RectangleGeometry()).GetType())
-                    CreateShape(p1, p2, "rectangle", select.selectedObject.Id);
-                else if (select.selectedObject.Geometry.GetType() == (new EllipseGeometry()).GetType())
-                    CreateShape(p1, p2, "ellipse", select.selectedObject.Id);
-                else if (select.selectedObject.Geometry.GetType() == (new PathGeometry()).GetType())
+                if (shape.Geometry.GetType().Name == "PathGeometry")
                 {
-                    Debug.WriteLine("translating geomteries " + ShapeItems.Count);
-                    Geometry g = select.selectedObject.Geometry;
-                    g.Transform = new TranslateTransform(100, 100);
-                    ShapeItem newShape22 = new ShapeItem
-                    {
-                        Geometry = g,
-                        Fill = fillBrush,
-                        Stroke = strokeBrush,
-                        ZIndex = curZIndex,
-                        Id = select.selectedObject.Id
-                    };
 
-                    for (int i = 0; i < ShapeItems.Count; i++)
-                    {
-                        if (ShapeItems[i].Id == select.selectedObject.Id)
-                            ShapeItems[i] = newShape22;
-                    }
-                    Debug.WriteLine(" Post      translating geomteries " + ShapeItems.Count);
-
-
+                    Debug.WriteLine("Translating curve\n");
+                    TranslatingCurve(shape, bx, by, p1);
                 }
-                HighLightIt(p1, p2);
+                else
+                {
+
+                    Debug.WriteLine("Translating curve\n");
+                    TranslatingShape(shape, p1, p2);
+                }
             }
             else if (mode == "create_rectangle")
             {
 
+                Debug.WriteLine("In create rectangle mode\n");
+
                 if (lastShape != null)
                 {
-                    Point _anchorPoint = lastShape.AnchorPoint;
-                    CreateShape(_anchorPoint, a, "rectangle", lastShape.Id);
+                    Point _AnchorPoint = lastShape.AnchorPoint;
+                    lastShape = UpdateShape(_AnchorPoint, a, "RectangleGeometry", lastShape);
                 }
             }
             else if (mode == "create_ellipse")
             {
+
+                Debug.WriteLine("In create ellipse mode\n");
+
                 if (lastShape != null)
                 {
-                    Point _anchorPoint = lastShape.AnchorPoint;
-                    CreateShape(_anchorPoint, a, "ellipse", lastShape.Id);
+
+                    Point _AnchorPoint = lastShape.AnchorPoint;
+                    lastShape = UpdateShape(_AnchorPoint, a, "EllipseGeometry", lastShape);
                 }
             }
             else if (mode == "create_freehand")
             {
+                Debug.WriteLine("In create curve mode\n");
+
                 if (lastShape != null)
                 {
 
                     Point _anchorPoint = lastShape.AnchorPoint;
-                    PathGeometry g1 = (PathGeometry)lastShape.Geometry;
-
-                    var line = new LineGeometry(a, _anchorPoint);
-                    g1.AddGeometry(line);
-
-                    ShapeItem newShape = new ShapeItem
-                    {
-                        Geometry = g1,
-                        Fill = fillBrush,
-                        Stroke = strokeBrush,
-                        ZIndex = curZIndex,
-                        AnchorPoint = a,
-                        Id = lastShape.Id,
-                        StrokeThickness = 5,
-                    };
-                    lastShape = newShape;
-
-
-                    for (int i = 0; i < ShapeItems.Count; i++)
-                    {
-                        if (ShapeItems[i].Id == lastShape.Id)
-                            ShapeItems[i] = newShape;
-                    }
+                    lastShape = UpdateCurve(a, _anchorPoint);
                 }
             }
-        }
+            else
+            {
+                Debug.WriteLine("In unknown mode\n");
+            }
 
+            Debug.WriteLine("Exiting Shape Building......\n");
+        }
     }
 }
