@@ -29,7 +29,7 @@ namespace PlexShareWhiteboard.Client
             List<ShapeItem> newShapes = new List<ShapeItem>();
             newShapes.Add(boardShape);
             WBServerShape wbShape = new WBServerShape(newShapes, op, boardShape.User);
-            _communicator.SendToServer(wbShape);
+            //_communicator.SendToServer(wbShape);
         }
 
         public void OnNewUserJoinMessage(string message, string ipAddress)
