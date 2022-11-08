@@ -24,7 +24,7 @@ namespace PlexShareContent.DataModels
         /// Empty constructor to create type without parameters.
         /// </summary>
         public ContentData()
-        { 
+        {
         }
 
         /// <summary>
