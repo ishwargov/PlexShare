@@ -1,4 +1,5 @@
 ﻿using PlexShareWhiteboard.BoardComponents;
+using PlexShareWhiteboard.Client;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,7 +9,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
-using PlexShareWhiteboard.BoardComponents;
  
 namespace PlexShareWhiteboard
 {
@@ -29,9 +29,11 @@ namespace PlexShareWhiteboard
         ShapeItem currentShape = null;
         ShapeItem lastShape = null;
         int blobSize = 12;
-
+        ClientSide Client;
+        UndoStackElement stackElement;
         public WhiteBoardViewModel()
         {
+            Client = new ClientSide();
             ShapeItems = new ObservableCollection<ShapeItem>();
             highlightShapes = new List<ShapeItem>();
         }
