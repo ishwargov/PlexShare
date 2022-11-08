@@ -11,10 +11,10 @@
  *               to other modules and deals with various user functions.   
  *****************************************************************************/
 
-using Networking;
-using Networking.Serialization;
 using PlexShareContent.DataModels;
 using PlexShareContent.Enums;
+using PlexShareNetwork;
+using PlexShareNetwork.Communication;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -30,7 +30,7 @@ namespace PlexShareContent.Client
         /// Network related parameters
         /// </summary>
         private readonly INotificationHandler _notificationHandler;
-        private readonly ISerializer _serializer;
+        private readonly IContentSerializer _serializer;
         private ICommunicator _communicator;
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace PlexShareContent.Client
             // instantiate requried network parameters
             _notificationHandler = new ContentClientNotificationHandler(this);
             _communicator = CommunicationFactory.GetCommunicator();
-            _serializer = new Serializer();
+            _serializer = new ContentSerializer();
             // subscribe to network module
             try
             {
@@ -706,7 +706,7 @@ namespace PlexShareContent.Client
                 // serialize message and send to server via network
                 var serializedMessage = _serializer.Serialize(message);
                 Trace.WriteLine($"[ContentClient] Sending request for message history to server for user ID = {UserID}");
-                _communicator.Send(serializedMessage, "Content");
+                _communicator.Send(serializedMessage, "Content", null);
             }
             catch(Exception e)
             {
