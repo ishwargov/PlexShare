@@ -5,9 +5,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 
-namespace Networking.Queues
+namespace PlexShareNetwork.Queues
 {
     public class Queue : IQueue
     {
@@ -51,7 +52,7 @@ namespace Networking.Queues
                 catch(InvalidOperationException e)
                 {
                     // Arises if the queue is empty
-                    Console.WriteLine(e.StackTrace);
+                    Trace.WriteLine($"{e.StackTrace}");
                     packet = null;
                 }
             }
@@ -75,7 +76,7 @@ namespace Networking.Queues
                 catch(InvalidOperationException e)
                 {
                     // Arises if the queue is empty
-                    Console.WriteLine(e.StackTrace);
+                    Trace.WriteLine($"{e.StackTrace}");
                     start = null;
                 }
             }

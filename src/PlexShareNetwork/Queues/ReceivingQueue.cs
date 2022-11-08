@@ -3,7 +3,7 @@
 /// This file contains the class definition of the receiving queue
 /// </summary>
 
-namespace Networking.Queues
+namespace PlexShareNetwork.Queues
 {
     public class ReceivingQueue
     {

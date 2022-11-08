@@ -9,106 +9,86 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Networking.Queues;
+using PlexShareNetwork.Communication;
+using PlexShareNetwork.Queues;
 using Xunit;
 
-namespace Networking.Sockets.Tests
+namespace PlexShareNetwork.Sockets.Tests
 {
-	public class SocketListenerTest
+	public class SocketListenerTests
 	{
-		private ReceivingQueue _queue;
-		private Machine _server;
-		private TcpClient _serverSocket;
-		private TcpClient _clientSocket;
-		private SocketListener _socketListener;
-		
-		public SocketListenerTest()
+		private readonly ReceivingQueue _receivingQueue = new();
+        private readonly TcpClient _clientSocket = new();
+        private TcpClient _serverSocket;
+		private readonly SocketListener _socketListener;
+        private readonly ICommunicator _serverCommunicator = CommunicationFactory.GetCommunicator(false);
+
+        public SocketListenerTests()
 		{
-			_server = new FakeServer();
-			var IPAndPort = _server.Communicator.Start().Split(":");
-			var IP = IPAddress.Parse(IPAndPort[0]);
-			var port = int.Parse(IPAndPort[1]);
-			_server.Communicator.Stop();
-			var serverSocket = new TcpListener(IP, port);
+            string[] IPAndPort = _serverCommunicator.Start().Split(":");
+            _serverCommunicator.Stop();
+            IPAddress IP = IPAddress.Parse(IPAndPort[0]);
+			int port = int.Parse(IPAndPort[1]);
+            TcpListener serverSocket = new(IP, port);
 			serverSocket.Start();
-			_clientSocket = new TcpClient();
-			_clientSocket.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, true);
-			var t1 = Task.Run(() => { _clientSocket.Connect(IP, port); });
-			var t2 = Task.Run(() => { _serverSocket = serverSocket.AcceptTcpClient(); });
+            _clientSocket.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, true);
+			Task t1 = Task.Run(() => { _clientSocket.Connect(IP, port); });
+            Task t2 = Task.Run(() => { _serverSocket = serverSocket.AcceptTcpClient(); });
 			Task.WaitAll(t1, t2);
-			_queue = new ReceivingQueue();
-			_socketListener = new SocketListener(_queue, _serverSocket);
+			_socketListener = new(_receivingQueue, _serverSocket);
 			_socketListener.Start();
-		}
+        }
 
 		[Fact]
 		public void SinglePacketReceiveTest()
 		{
-			const string data = "Test string";
-			var sendPacket = new Packet (data, null, NetworkingGlobals.whiteboardName);
-			var pkt = sendPacket.getModuleOfPacket() + ":" + sendPacket.getSerializedData();
-			pkt = pkt.Replace("[ESC]", "[ESC][ESC]");
-			pkt = pkt.Replace("[FLAG]", "[ESC][FLAG]");
-			pkt = "[FLAG]" + pkt + "[FLAG]";
-
-			var stream = _clientSocket.GetStream();
-			stream.Write(Encoding.ASCII.GetBytes(pkt), 0, pkt.Length);
-			stream.Flush();
-			while (_queue.IsEmpty())
-			{
-			}
-			var receivedPacket = _queue.Dequeue();
-			Assert.Equal(sendPacket.getSerializedData(), receivedPacket.getSerializedData());
-			Assert.Equal(sendPacket.getModuleOfPacket(), receivedPacket.getModuleOfPacket());
+			Packet sendPacket = new("Test string", "Test Destination", "Test Module");
+            NetworkTestGlobals.SendPacket(sendPacket, _clientSocket);
+            NetworkTestGlobals.AssertSinglePacketReceive(sendPacket, _receivingQueue);
 		}
 
 		[Fact]
-		public void LargeSizePacketReceiveTest()
+		public void LargePacketReceiveTest()
 		{
-			var data = NetworkingGlobals.RandomString(4000);
-			var sendPacket = new Packet (data, null, NetworkingGlobals.whiteboardName);
-			var pkt = sendPacket.getModuleOfPacket() + ":" + sendPacket.getSerializedData();
-			pkt = pkt.Replace("[ESC]", "[ESC][ESC]");
-			pkt = pkt.Replace("[FLAG]", "[ESC][FLAG]");
-			pkt = "[FLAG]" + pkt + "[FLAG]";
-
-			var stream = _clientSocket.GetStream();
-			stream.Write(Encoding.ASCII.GetBytes(pkt), 0, pkt.Length);
-			stream.Flush();
-			while (_queue.IsEmpty())
-			{
-			}
-			var receivedPacket = _queue.Dequeue();
-			Assert.Equal(sendPacket.getSerializedData(), receivedPacket.getSerializedData());
-			Assert.Equal(sendPacket.getModuleOfPacket(), receivedPacket.getModuleOfPacket());
-		}
+			Packet sendPacket = new(NetworkTestGlobals.RandomString(1000), "Test Destination", "Test Module");
+            NetworkTestGlobals.SendPacket(sendPacket, _clientSocket);
+            NetworkTestGlobals.AssertSinglePacketReceive(sendPacket, _receivingQueue);
+        }
 
 		[Fact]
-		public void MultiplePacketReceiveTest()
+		public void MultiplePacketsFromSameModuleReceiveTest()
 		{
-			for (var i = 1; i <= 10; i++)
+            Packet[] sendPackets = new Packet[10];
+            for (var i = 0; i < 10; i++)
 			{
-				var data = "Test string" + i;
-				var sendPacket = new Packet(data, null, NetworkingGlobals.whiteboardName);
-				var pkt = sendPacket.getModuleOfPacket() + ":" + sendPacket.getSerializedData();
-				pkt = pkt.Replace("[ESC]", "[ESC][ESC]");
-				pkt = pkt.Replace("[FLAG]", "[ESC][FLAG]");
-				pkt = "[FLAG]" + pkt + "[FLAG]";
-				_clientSocket.Client.Send(Encoding.ASCII.GetBytes(pkt));
-			}
+                sendPackets[i] = new("Test string" + i, "Test Destination", "Test Module");
+                NetworkTestGlobals.SendPacket(sendPackets[i], _clientSocket);
+            }
+            NetworkTestGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue);
+        }
 
-			while (_queue.Size() < 10)
-			{
-				Thread.Sleep(1000);
-			}
+        [Fact]
+        public void MultiplePacketsFromDifferentModulesReceiveTest()
+        {
+            Packet[] sendPackets = new Packet[10];
+            for (var i = 0; i < 10; i++)
+            {
+                sendPackets[i] = new("Test string" + i, "Test Destination", "Test Module" + i);
+                NetworkTestGlobals.SendPacket(sendPackets[i], _clientSocket);
+            }
+            NetworkTestGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue);
+        }
 
-			for (var i = 1; i <= 10; i++)
-			{
-				var packet = _queue.Dequeue();
-				var data = "Test string" + i;
-				Assert.Equal(data, packet.getSerializedData());
-			}
-
-		}
-	}
+        [Fact]
+        public void MultipleLargePacketsReceiveTest()
+        {
+            Packet[] sendPackets = new Packet[10];
+            for (var i = 0; i < 10; i++)
+            {
+                sendPackets[i] = new(NetworkTestGlobals.RandomString(1000), "Test Destination", "Test Module");
+                NetworkTestGlobals.SendPacket(sendPackets[i], _clientSocket);
+            }
+            NetworkTestGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue);
+        }
+    }
 }

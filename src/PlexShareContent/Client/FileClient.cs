@@ -21,7 +21,7 @@ using PlexShareContent.Enums;
 
 namespace PlexShareContent.Client
 {
-    internal class FileClient
+    public class FileClient
     {
         /// <summary>
         /// Module identifier for communicator

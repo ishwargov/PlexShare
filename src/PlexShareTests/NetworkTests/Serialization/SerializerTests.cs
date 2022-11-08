@@ -3,10 +3,11 @@
 /// This file contains all the tests written for the Serializer module
 /// </summary>
 
+using PlexShareNetwork.Queues;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Networking.Serialization.Tests
+namespace PlexShareNetwork.Serialization.Tests
 {
     public class SerializerTests
     {
@@ -164,6 +165,19 @@ namespace Networking.Serialization.Tests
             // Removing an element from the end and making checks
             testObjectList.Remove(testObjectList[testObjectList.Count / 2]);
             Assert.NotEqual(decodedList, testObjectList);
+        }
+
+        [Fact]
+        public void SerializePacketTest()
+        {
+            Packet packet = new Packet("data", "destination", "module");
+
+            string encodedString = serializer.Serialize(packet);
+
+            Packet decodedPacket = serializer.Deserialize<Packet>(encodedString);
+            Assert.Equal(packet.serializedData, decodedPacket.serializedData);
+            Assert.Equal(packet.destination, decodedPacket.destination);
+            Assert.Equal(packet.moduleOfPacket, decodedPacket.moduleOfPacket);
         }
     }
     

@@ -4,13 +4,13 @@
 /// queue
 /// </summary>
 
-using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 
-namespace Networking.Queues
+namespace PlexShareNetwork.Queues
 {
-    public class SendingQueues
+    public class SendingQueue
     {
         private readonly IQueue _highPriorityQueue = new Queue();
         private readonly IQueue _lowPriorityQueue = new Queue();
@@ -56,7 +56,7 @@ namespace Networking.Queues
         /// </summary>
         public bool Enqueue(Packet packet)
         {
-            string moduleName = packet.getModuleOfPacket();
+            string moduleName = packet.moduleOfPacket;
             bool isHighPriority, containsKey;
 
             // Finding out if the module is registered in the first place
@@ -68,7 +68,7 @@ namespace Networking.Queues
             // If the module is not registered at all
             if (!containsKey)
             {
-                Console.WriteLine("Module %s is not registered.\n", moduleName);
+                Trace.WriteLine($"Module {moduleName} is not registered.\n");
 
                 // Returning that the enqueueing failed
                 return false;
