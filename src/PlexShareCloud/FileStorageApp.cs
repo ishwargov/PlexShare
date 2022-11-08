@@ -84,7 +84,14 @@ namespace PlexShareCloud
 
             return new OkObjectResult(page.Values);
         }
-
+        
+        /// <summary>
+        /// Adds the session entry to the session entity under the name of the specified User.
+        /// </summary>
+        /// <param name="req"></param>
+        /// <param name="entityTable">Table that stores details of all the Sessions.</param>
+        /// <param name="hostUserName">The Name of the user who is organising the session.</param>
+        /// <returns>Confirmation status code upon successful addition of Session details to the SessionEntity Table.</returns>
         [FunctionName("CreateSession")]
         public static async Task<IActionResult> CreateSession(
         [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = SessionRoute + "/{hostUserName}")] HttpRequest req,
@@ -99,7 +106,14 @@ namespace PlexShareCloud
             return new OkObjectResult(value);
         }
 
-        //create and update submission
+        /// <summary>
+        /// For a specified session and user, the submitted file is added to the Submission Table.
+        /// </summary>
+        /// <param name="req"></param>
+        /// <param name="entityTable">Table containing the details of all the submissions by the client.</param>
+        /// <param name="username"> User submitting the files.</param>
+        /// <param name="sessionId"> Unique ID of the session where the user is submitting the files.</param>
+        /// <returns>Confirmation status code upon successful submission of the file by the user(Added to Submission Table)</returns>
         [FunctionName("CreateSubmission")]
         public static async Task<IActionResult> CreateSubmission(
         [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = SubmissionRoute + "/{sessionId}/{username}")] HttpRequest req,
@@ -115,6 +129,14 @@ namespace PlexShareCloud
             return new OkObjectResult(value);
         }
 
+        /// <summary>
+        /// Update the submission which already exists for a user for a particular session.
+        /// </summary>
+        /// <param name="req"></param>
+        /// <param name="tableClient"></param>
+        /// <param name="username"> Name of the user who wishes to submit the file. </param>
+        /// <param name="sessionId"> ID of the session where we are trying to update the submissions. </param>
+        /// <returns> Confirmation status code that the submission details are updated succesfully.</returns>
         [FunctionName("UpdateSubmission")]
         public static async Task<IActionResult> UpdateSubmission(
         [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = SubmissionRoute + "/{sessionId}/{username}")] HttpRequest req,
