@@ -23,7 +23,7 @@ using PlexShareApp.ViewModel;
 
 namespace PlexShareApp
 {
-    public partial class ChatPage : Page
+    public partial class ChatPageView : UserControl
     {
 
         /// <summary>
@@ -34,9 +34,9 @@ namespace PlexShareApp
         /// <summary>
         /// Creating an instance of our ChatPageView
         /// </summary>
-        public ChatPage()
+        public ChatPageView()
         {
-            InitializeComponent();
+            //InitializeComponent();
 
             var viewModel = new ChatPageViewModel();
 

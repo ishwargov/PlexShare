@@ -5,8 +5,6 @@
 ///     is a chat or file
 /// </summary>
 
-using System;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -19,7 +17,7 @@ namespace PlexShareApp
         {
             var message = item as Message;
 
-            if (!message.ToFrom)
+            if (message!=null && message.ToFrom)
             {
                 return message.Type ? SentMsgBubble : SentFileBubble;
             }
