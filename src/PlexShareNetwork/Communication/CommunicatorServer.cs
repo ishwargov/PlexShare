@@ -16,35 +16,50 @@ using System.Threading;
 
 namespace PlexShareNetwork.Communication
 {
-	public class CommunicatorServer : ICommunicator
-	{
-		// initialize the send queue and receive queue
-		private readonly SendingQueue _sendingQueue = new();
-		private readonly ReceivingQueue _receivingQueue = new();
+    public class CommunicatorServer : ICommunicator
+    {
+        // initialize the send queue and receive queue
+        private readonly SendingQueue _sendingQueue = new();
+        private readonly ReceivingQueue _receivingQueue = new();
 
-		// declate the variable of SendQueueListenerClient class
-		private SendQueueListenerServer _sendQueueListener;
+        // declare all the threads
+        private readonly SendQueueListenerServer _sendQueueListener;
+        private readonly ReceiveQueueListener _receiveQueueListener;
 
-		// declate the variable of ReceiveQueueListener class
-		private ReceiveQueueListener _receiveQueueListener;
+        // tcp listener to listen on server for client connect requests
+        private readonly TcpListener _clientConnectRequestListener;
 
-		// declare the server socket variable
-		private TcpListener _socketListener;
+        // map to store the sockets of the clients to send data to clients
+        private readonly Dictionary<string, TcpClient> _clientIdToClientSocket = new();
 
-		// map to store the sockets of the clients to be able to send data to a speicific client
-		private readonly Dictionary<string, TcpClient> _clientIdToClientSocket = new();
+        // this map will store the socket listeners, one socket listener listening to one client
+        private readonly Dictionary<string, SocketListener> _clientIdToSocketListener = new();
 
-		// this map will store the socket listeners, one socket listener listening to one client
-		private readonly Dictionary<string, SocketListener> _clientIdToClientListener = new();
+        // map to store the notification handlers of subscribed modules
+        private readonly Dictionary<string, INotificationHandler> _moduleToNotificationHanderMap = new();
 
-		// map to store the handlers of subscribed modules
-		private readonly Dictionary<string, INotificationHandler> _moduleToNotificationHanderMap = new();
+        // this thread will be used to accept client requests
+        private readonly Thread _thread;
 
-		// this thread will be used to accept client requests
-		private Thread _thread;
+        // boolean to tell whether thread is running or stopped
+        private bool _threadRun;
 
-		// boolean to tell whether thread is running or stopped
-		private volatile bool _threadRun;
+        private readonly IPAddress ip;
+        private readonly int port;
+
+        /// <summary>
+        /// Constructor initializes all threads.
+        /// </summary>
+        public CommunicatorServer()
+        {
+            ip = IPAddress.Parse(FindIpAddress());
+            port = FindFreePort(ip);
+            _clientConnectRequestListener = new TcpListener(IPAddress.Any, port);
+            // initialize all threads
+            _sendQueueListener = new SendQueueListenerServer(_sendingQueue, _clientIdToClientSocket, _moduleToNotificationHanderMap);
+            _receiveQueueListener = new ReceiveQueueListener(_moduleToNotificationHanderMap, _receivingQueue);
+            _thread = new Thread(AcceptClientConnectRequests);
+        }
 
         /// <summary>
         /// This function finds IP and port of the machine and start listening on it.
@@ -56,51 +71,42 @@ namespace PlexShareNetwork.Communication
         /// <returns>
         ///  Address of the server as a string of "IP:Port"
         /// </returns>
-        public string Start(string serverIP = null, string serverPort = null)
-		{
+        public string Start(string? serverIP = null, string? serverPort = null)
+        {
             Trace.WriteLine("[Networking] CommunicatorServer.Start() function called.");
 
-            IPAddress ip = IPAddress.Parse(FindIpAddress());
-			int port = FindFreePort(ip);
-			_socketListener = new TcpListener(IPAddress.Any, port);
-			_socketListener.Start(); // start listening on this IP address and port
+            // start all threads
+            _clientConnectRequestListener.Start();
+            _sendQueueListener.Start();
+            _receiveQueueListener.Start();
 
-            // start send queue listener to send data from sending queue
-            _sendQueueListener = new SendQueueListenerServer(_sendingQueue, _clientIdToClientSocket, _moduleToNotificationHanderMap);
-			_sendQueueListener.Start();
+            // start the thread
+            _threadRun = true;
+            _thread.Start();
 
-            // start receive queue listener to notify modules on data receive
-            _receiveQueueListener = new ReceiveQueueListener(_moduleToNotificationHanderMap, _receivingQueue);
-			_receiveQueueListener.Start();
+            Trace.WriteLine("[Networking] CommunicatorServer started on IP: " + ip + " Port: " + port);
+            return ip + ":" + port;
+        }
 
-            // start the thread to accept client connect requests
-			_threadRun = true;
-			_thread = new Thread(AcceptClientConnectRequests);
-			_thread.Start();
-
-			Trace.WriteLine("[Networking] CommunicatorServer started on IP: " + ip + " Port: " + port);
-			return ip + ":" + port;
-		}
-
-		/// <summary>
-		/// Stops listening and stops all running threads.
-		/// </summary>
-		/// <returns> void </returns>
-		public void Stop()
-		{
+        /// <summary>
+        /// Stops listening and stops all running threads.
+        /// </summary>
+        /// <returns> void </returns>
+        public void Stop()
+        {
             Trace.WriteLine("[Networking] CommunicatorServer.Stop() function called.");
 
             // stop the accept client connect requests thread
             _threadRun = false;
 
             // stop listening to the clients
-            foreach (var clientListener in _clientIdToClientListener.Values)
-			{
-				clientListener.Stop();
-			}
+            foreach (var clientListener in _clientIdToSocketListener.Values)
+            {
+                clientListener.Stop();
+            }
 
             // stop all running threads
-            _socketListener.Stop();
+            _clientConnectRequestListener.Stop();
             _sendQueueListener.Stop();
             _receiveQueueListener.Stop();
 
@@ -111,65 +117,65 @@ namespace PlexShareNetwork.Communication
             Trace.WriteLine("[Networking] CommunicatorServer stopped.");
         }
 
-		/// <summary>
-		/// This function finds IP4 address of machine which does not ends with 1
-		/// </summary>
-		/// <returns> IP address as string </returns>
-		private static string FindIpAddress()
-		{
+        /// <summary>
+        /// This function finds IP4 address of machine which does not ends with 1
+        /// </summary>
+        /// <returns> IP address as string </returns>
+        private static string FindIpAddress()
+        {
             Trace.WriteLine("[Networking] CommunicatorServer.FindIpAddress() function called.");
             IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
-			foreach (IPAddress IP in host.AddressList)
-			{
-				if (IP.AddressFamily == AddressFamily.InterNetwork)
-				{
-					string address = IP.ToString();
-					// return the IP address if it does not end with 1
-					if (address.Split(".")[3] != "1")
-					{
-						return IP.ToString();
-					}
-				}
-			}
-			throw new Exception("[Networking] Error in CommunicatorServer: IPv4 address not found on this machine!");
-		}
+            foreach (IPAddress IP in host.AddressList)
+            {
+                if (IP.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    string address = IP.ToString();
+                    // return the IP address if it does not end with 1
+                    if (address.Split(".")[3] != "1")
+                    {
+                        return IP.ToString();
+                    }
+                }
+            }
+            throw new Exception("[Networking] Error in CommunicatorServer: IPv4 address not found on this machine!");
+        }
 
-		/// <summary>
-		/// This function finds a free TCP port.
-		/// </summary>
-		/// <param name="IP"> IP address </param>
-		/// <returns> The port number </returns>
-		private static int FindFreePort(IPAddress IP)
-		{
+        /// <summary>
+        /// This function finds a free TCP port.
+        /// </summary>
+        /// <param name="IP"> IP address </param>
+        /// <returns> The port number </returns>
+        private static int FindFreePort(IPAddress IP)
+        {
             Trace.WriteLine("[Networking] CommunicatorServer.FindFreePort() function called.");
             TcpListener tcpListener = new(IP, 0);
-			tcpListener.Start();
-			var port = ((IPEndPoint) tcpListener.LocalEndpoint).Port;
-			tcpListener.Stop();
-			return port;
-		}
+            tcpListener.Start();
+            var port = ((IPEndPoint)tcpListener.LocalEndpoint).Port;
+            tcpListener.Stop();
+            return port;
+        }
 
-		/// <summary>
-		/// This functions accepts the connect requests from clients.
-		/// </summary>
-		/// <returns> void </returns>
-		private void AcceptClientConnectRequests()
-		{
+        /// <summary>
+        /// This functions accepts the connect requests from clients.
+        /// </summary>
+        /// <returns> void </returns>
+        private void AcceptClientConnectRequests()
+        {
             Trace.WriteLine("[Networking] CommunicatorServer.AcceptClientConnectRequests() function called.");
             while (_threadRun)
-			{
-				try
-				{
-					var clientSocket = _socketListener.AcceptTcpClient();
+            {
+                try
+                {
+                    var clientSocket = _clientConnectRequestListener.AcceptTcpClient();
 
                     foreach (var moduleToNotificationHandler in _moduleToNotificationHanderMap)
                     {
                         moduleToNotificationHandler.Value.OnClientJoined(clientSocket);
                         Trace.WriteLine($"[Networking] Notifed module:{moduleToNotificationHandler.Key} that new client has joined.");
                     }
-				}
-				catch (SocketException e)
-				{
+                }
+                catch (SocketException e)
+                {
                     if (e.SocketErrorCode == SocketError.Interrupted)
                     {
                         Trace.WriteLine("[Networking] Error in CommunicatorServer: Socket listener has been closed.");
@@ -178,13 +184,13 @@ namespace PlexShareNetwork.Communication
                     {
                         Trace.WriteLine($"[Networking] Error in CommunicatorServer: {e.Message}");
                     }
-				}
-				catch (Exception e)
-				{
-					Trace.WriteLine($"[Networking] Error in CommunicatorServer: {e.Message}");
-				}
-			}
-		}
+                }
+                catch (Exception e)
+                {
+                    Trace.WriteLine($"[Networking] Error in CommunicatorServer: {e.Message}");
+                }
+            }
+        }
 
         /// <summary>
         /// This function is to be called by the Dashboard module only on the server side when a new 
@@ -195,36 +201,42 @@ namespace PlexShareNetwork.Communication
         /// <param name="socket"> The socket object of the client. </param>
         /// <returns> void </returns>
         public void AddClient(string clientId, TcpClient socket)
-		{
+        {
             Trace.WriteLine("[Networking] CommunicatorServer.AddClient() function called.");
-            _clientIdToClientSocket[clientId] = socket;
-
-            SocketListener clientListener = new(_receivingQueue, socket);
-			_clientIdToClientListener[clientId] = clientListener;
-            clientListener.Start();
+            try
+            {
+                _clientIdToClientSocket[clientId] = socket;
+                SocketListener clientListener = new(_receivingQueue, socket);
+                _clientIdToSocketListener[clientId] = clientListener;
+                clientListener.Start();
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine($"[Networking] Error in AddClient(): {e.Message}");
+            }
             Trace.WriteLine($"[Networking] Client added with clientID: {clientId}");
         }
 
-		/// <summary>
-		/// This function is to be called by the Dashboard module only on the server when 
+        /// <summary>
+        /// This function is to be called by the Dashboard module only on the server when 
         /// a client is leaves. It removes the client from the map on the server.
-		/// </summary>
-		/// <param name="clientId"> The client Id. </param>
-		/// <returns> void </returns>
-		public void RemoveClient(string clientId)
-		{
+        /// </summary>
+        /// <param name="clientId"> The client Id. </param>
+        /// <returns> void </returns>
+        public void RemoveClient(string clientId)
+        {
             Trace.WriteLine("[Networking] CommunicatorServer.RemoveClient() function called.");
 
             // stop listening to this client and remove the client listener from the map
-            SocketListener socketListener = _clientIdToClientListener[clientId];
-			socketListener.Stop();
-			_clientIdToClientListener.Remove(clientId);
+            SocketListener socketListener = _clientIdToSocketListener[clientId];
+            socketListener.Stop();
+            _clientIdToSocketListener.Remove(clientId);
 
             // close the connection to the client and remove the client socket from the map
-			TcpClient socket = _clientIdToClientSocket[clientId];
-			socket.GetStream().Close();
-			socket.Close();
-			_clientIdToClientSocket.Remove(clientId);
+            TcpClient socket = _clientIdToClientSocket[clientId];
+            socket.GetStream().Close();
+            socket.Close();
+            _clientIdToClientSocket.Remove(clientId);
 
             Trace.WriteLine($"[Networking] Client removed with clientID: {clientId}");
         }
@@ -237,17 +249,17 @@ namespace PlexShareNetwork.Communication
         /// <param name="destination"> The client Id to which to send the data. To broadcast give null in detination. </param>
         /// <returns> void </returns>
         public void Send(string serializedData, string moduleName, string? destination)
-		{
+        {
             Trace.WriteLine("[Networking] CommunicatorServer.Send() function called.");
             if (destination != null)
             {
                 if (!_clientIdToClientSocket.ContainsKey(destination))
                 {
-                    throw new Exception($"[Networking] Sending Falied. Client with ID: {destination} does not exist in the room!");
+                    Trace.WriteLine($"[Networking] Sending Falied. Client with ID: {destination} does not exist in the room!");
                 }
             }
             Packet packet = new(serializedData, destination, moduleName);
-			_sendingQueue.Enqueue(packet);
+            _sendingQueue.Enqueue(packet);
             Trace.WriteLine($"[Networking] Enqueued packet in send queue of the module : {moduleName} for destination : {destination}");
         }
 
@@ -259,14 +271,11 @@ namespace PlexShareNetwork.Communication
         /// <param name="isHighPriority"> Boolean which tells whether data is high priority or low priority. </param>
         /// <returns> void </returns>
         public void Subscribe(string moduleName, INotificationHandler notificationHandler, bool isHighPriority)
-		{
+        {
             Trace.WriteLine("[Networking] CommunicatorServer.Subscribe() function called.");
             _moduleToNotificationHanderMap.Add(moduleName, notificationHandler);
-            // sending queue has to know the priority of the module
             _sendingQueue.RegisterModule(moduleName, isHighPriority);
-            // receive queue listener needs notification handler to notify the module when data comes in the receiving queue
-            _receiveQueueListener.RegisterModule(moduleName, notificationHandler);
-			Trace.WriteLine($"[Networking] Module: {moduleName} registered with priority is high: {isHighPriority}");
-		}
-	}
+            Trace.WriteLine($"[Networking] Module: {moduleName} subscribed with priority is high: {isHighPriority}");
+        }
+    }
 }
