@@ -38,9 +38,36 @@ namespace PlexShareTests.ContentTests
         }
 
         /// <summary>
-        /// Generates a content data object with message event set as 'New'
+        /// Generates an object of the SendContentData class 
         /// </summary>
-        /// <param name="message">Message string</param>
+        /// <param name="data">Message string</param>
+        /// <param name="receiverIDs">List of receiver IDs</param>
+        /// <param name="replyThreadID">ID of thread the message belongs to</param>
+        /// <param name="type">Type of message - Chat or File</param>
+        /// <returns></returns>
+        public SendContentData GenerateSendContentData(
+            MessageType type = MessageType.Chat,
+            string data = "Hello",
+            int[] receiverIDs = null,
+            int replyThreadID = -1
+        )
+        {
+            if(receiverIDs == null)
+            {
+                receiverIDs = new int[0];
+            }
+            var sendContentData = new SendContentData();
+            sendContentData.Data = data;
+            sendContentData.ReceiverIDs = receiverIDs;
+            sendContentData.ReplyThreadID = replyThreadID;
+            sendContentData.Type = type;
+            return sendContentData;
+        }
+
+        /// <summary>
+        /// Generates an object of the ReceiveContentData class 
+        /// </summary>
+        /// <param name="data">Message string</param>
         /// <param name="messageID">ID of the message</param>
         /// <param name="receiverIDs">List of receiver IDs</param>
         /// <param name="replyThreadID">ID of thread the message belongs to</param>
@@ -48,21 +75,61 @@ namespace PlexShareTests.ContentTests
         /// <param name="starred">Boolean for starred message</param>
         /// <param name="type">Type of message - Chat or File</param>
         /// <returns></returns>
-        public ContentData GenerateNewContentData(
-            string message, 
+        public ReceiveContentData GenerateReceiveContentData(
+            MessageType type = MessageType.Chat,
+            string data = "Hello",
+            int messageID = -1,
+            int[] receiverIDs = null,
+            int replyThreadID = -1,
+            int senderID = -1,
+            bool starred = false
+        )
+        {
+            if (receiverIDs == null)
+            {
+                receiverIDs = new int[0];
+            }
+            var receiveContentData = new ReceiveContentData();
+            receiveContentData.Event = MessageEvent.New;
+            receiveContentData.Data = data;
+            receiveContentData.MessageID = messageID;
+            receiveContentData.ReceiverIDs = receiverIDs;
+            receiveContentData.SenderID = senderID;
+            receiveContentData.ReplyThreadID = replyThreadID;
+            receiveContentData.Starred = starred;
+            receiveContentData.Type = type;
+            return receiveContentData;
+        }
+
+        /// <summary>
+        /// Generates an object of the ContentData class 
+        /// </summary>
+        /// <param name="data">Message string</param>
+        /// <param name="messageID">ID of the message</param>
+        /// <param name="receiverIDs">List of receiver IDs</param>
+        /// <param name="replyThreadID">ID of thread the message belongs to</param>
+        /// <param name="senderID">ID of the sender</param>
+        /// <param name="starred">Boolean for starred message</param>
+        /// <param name="type">Type of message - Chat or File</param>
+        /// <returns></returns>
+        public ContentData GenerateContentData(
+            MessageType type = MessageType.Chat,
+            string data = "Hello", 
             int messageID = 1, 
             int[] receiverIDs = null,
             int replyThreadID = -1, 
             int senderID = -1, 
-            bool starred = false, 
-            MessageType type = MessageType.Chat
+            bool starred = false
         )
         {
-            if (receiverIDs == null) receiverIDs = new int[0];
-            var msg = new ContentData
+            if (receiverIDs == null)
+            {
+                receiverIDs = new int[0];
+            }
+            var newContentData = new ContentData
             {
                 Event = MessageEvent.New,
-                Data = message,
+                Data = data,
                 MessageID = messageID,
                 ReceiverIDs = receiverIDs,
                 SenderID = senderID,
@@ -70,7 +137,7 @@ namespace PlexShareTests.ContentTests
                 Starred = starred,
                 Type = type
             };
-            return msg;
+            return newContentData;
         }
     }
 }
