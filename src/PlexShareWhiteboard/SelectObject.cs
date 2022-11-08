@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Shapes;
 using PlexShareWhiteboard.BoardComponents;
 
 namespace PlexShareWhiteboard
@@ -71,7 +72,32 @@ namespace PlexShareWhiteboard
          
             return -1;
         }
+        //deon
 
+        public int PointInsideHighlightBox(Line shape, Point click, double halfsize)
+        {
+            Rect top = new(shape.X1 - halfsize, shape.Y1 - halfsize, 2 * halfsize, 2 * halfsize);
+            Rect bottom = new(shape.X2 - halfsize, shape.Y2 - halfsize, 2 * halfsize, 2 * halfsize);
+
+            if (click.X > top.X && click.X < top.X + top.Width &&
+                click.Y > top.Y && click.Y < top.Y + top.Height)
+                return 0;
+
+            if (click.X > bottom.X && click.X < bottom.X + bottom.Width &&
+                click.Y > bottom.Y && click.Y < bottom.Y + bottom.Height)
+                return 1;
+            return -1;
+        }
+        //deon
+        public static int ClickInsideHighlightBox(Point point, Point click, double halfsize)
+        {
+
+            if (click.X > point.X - halfsize && click.X < point.X + halfsize &&
+                click.Y > point.Y - halfsize && click.Y < point.Y + halfsize)
+                return 1;
+
+            return 0;
+        }
         public static bool HelperSelect(Rect boundingBox, Point click, double halfSize)
         {
             if (PointInsideRect(boundingBox, click) || PointInsideHighlightBox(boundingBox, click, halfSize) > 0)
@@ -101,44 +127,80 @@ namespace PlexShareWhiteboard
                     tempZIndex = ShapeItems[i].ZIndex;
                     select.selectBox = 0;
                 }
+                else if (Child.FillContains(a) && Child.GetType().Name == "LineGeometry")
+                {
+
+                    HelperSelectLine(boundingBox, tempZIndex, i, a);
+                }
             }
 
             if (select.ifSelected == true)
             {
-                Debug.WriteLine("object selected\n");
-                HighLightIt(select.selectedObject.Geometry.Bounds);
-                int boxNumber = PointInsideHighlightBox(boundingBox, a, blobSize / 2);
-                ShapeItem newShape = new()
+                if (select.selectedObject.Geometry.GetType().Name == "LineGeometry")
                 {
-                    Geometry = select.selectedObject.Geometry.Clone(),
-                    GeometryString = select.selectedObject.GeometryString,
-                    Start = select.selectedObject.Start,
-                    End = select.selectedObject.End,
-                    Fill = select.selectedObject.Fill,
-                    Stroke = select.selectedObject.Stroke,
-                    ZIndex = select.selectedObject.ZIndex,
-                    AnchorPoint = select.selectedObject.AnchorPoint,
-                    Id = select.selectedObject.Id,
-                    StrokeThickness = select.selectedObject.StrokeThickness,
-                };
-                select.initialSelectionObject = newShape;
+                    //Debug.WriteLine("line selected\n");
 
-                if (boxNumber > 4)
-                {
-                    Debug.WriteLine("Going to enter dimensionChange_mode \n");
-                    mode = "dimensionChange_mode";
-                    select.selectBox = boxNumber;
+                    Line boundingLine = new ();
+                    //boundingLine.X1 = select.selectedObject.anchorPoint.X;
+                    //boundingLine.Y1 = select.selectedObject.anchorPoint.Y;
+                    boundingLine.X1 = select.selectedObject.Start.X;
+                    boundingLine.Y1 = select.selectedObject.Start.Y;
+                    boundingLine.X2 = select.selectedObject.End.X;
+                    boundingLine.Y2 = select.selectedObject.End.Y;
+                    Debug.WriteLine("selected boundingline x1 y1 x2 y2"+boundingLine.X1 + " " + boundingLine.Y1 + " " + boundingLine.X2 + " " + boundingLine.Y2);
+                    HighLightIt(boundingLine);
+                    int boxNumber = PointInsideHighlightBox(boundingLine, a, blobSize / 2);
+                    if (boxNumber >= 0)
+                    {
+                        //Debug.WriteLine("In transform mode ");
+                        mode = "transform_mode";
+                        select.selectBox = boxNumber;
+                    }
+                    else
+                    {
+                        //Debug.Write("In translate_mode ");
+                        mode = "translate_mode";
+                    }
                 }
-                else if (boxNumber > 0)
+                else
                 {
-                    Debug.WriteLine("Going to enter transform mode \n");
-                    mode = "transform_mode";
-                    select.selectBox = boxNumber;
-                }
-                else if (select.selectBox == 0)
-                {
-                    Debug.Write("Going to enter translate_mode \n");
-                    mode = "translate_mode";
+                    Debug.WriteLine("object selected\n");
+                    HighLightIt(select.selectedObject.Geometry.Bounds);
+                    int boxNumber = PointInsideHighlightBox(boundingBox, a, blobSize / 2);
+                    ShapeItem newShape = new()
+                    {
+                        Geometry = select.selectedObject.Geometry.Clone(),
+                        GeometryString = select.selectedObject.GeometryString,
+                        Start = select.selectedObject.Start,
+                        End = select.selectedObject.End,
+                        Fill = select.selectedObject.Fill,
+                        Stroke = select.selectedObject.Stroke,
+                        ZIndex = select.selectedObject.ZIndex,
+                        AnchorPoint = select.selectedObject.AnchorPoint,
+                        Id = select.selectedObject.Id,
+                        StrokeThickness = select.selectedObject.StrokeThickness,
+                    };
+                    select.initialSelectionObject = newShape;
+
+
+                    if (boxNumber > 4)
+                    {
+                        Debug.WriteLine("Going to enter dimensionChange_mode \n");
+                        mode = "dimensionChange_mode";
+                        select.selectBox = boxNumber;
+                    }
+                    else if (boxNumber > 0)
+                    {
+                        Debug.WriteLine("Going to enter transform mode \n");
+                        mode = "transform_mode";
+                        select.selectBox = boxNumber;
+                    }
+                    else if (select.selectBox == 0)
+                    {
+                        Debug.Write("Going to enter translate_mode \n");
+                        mode = "translate_mode";
+                    }
+
                 }
 
             }

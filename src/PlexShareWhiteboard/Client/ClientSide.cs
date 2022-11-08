@@ -30,9 +30,12 @@ namespace PlexShareWhiteboard.Client
         {
             List<ShapeItem> newShapes = new List<ShapeItem>();
             newShapes.Add(boardShape);
+
             var newSerializedShapes = _serializer.ConvertToSerializableShapeItem(newShapes);
             WBServerShape wbShape = new WBServerShape(newSerializedShapes, op, boardShape.User);
             _communicator.SendToServer(wbShape);
+
+
         }
 
         public void OnNewUserJoinMessage(string message, string ipAddress)

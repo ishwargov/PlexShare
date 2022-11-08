@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Windows;
 using PlexShareWhiteboard.BoardComponents;
 
@@ -8,7 +9,7 @@ namespace PlexShareWhiteboard
     {
         public void ShapeBuilding(Point a)
         {
-            Debug.WriteLine("Entering Shape Building......\n");
+            //Debug.WriteLine("Entering Shape Building......\n");
 
             if (mode == "transform_mode")
             {
@@ -31,6 +32,11 @@ namespace PlexShareWhiteboard
 
                     Debug.WriteLine("Transforming curve\n");
                     TransformCurve(a, shape);
+                }
+                else if (shape.Geometry.GetType().Name == "LineGeometry")
+                {
+                    Debug.WriteLine("Transforming line\n");
+                    TransformingLine(a, shape);
                 }
                 else
                 {
@@ -67,6 +73,7 @@ namespace PlexShareWhiteboard
 
                 ShapeItem shape = select.selectedObject;
                 Rect boundingBox = shape.Geometry.Bounds;
+                Debug.WriteLine(" tranlsating line " + shape.AnchorPoint.ToString() + "   start : " + shape.Start.ToString());
                 double bx = shape.AnchorPoint.X + (a.X - select.initialSelectionPoint.X);
                 double by = shape.AnchorPoint.Y + (a.Y - select.initialSelectionPoint.Y);
                 double width = boundingBox.Width;
@@ -79,6 +86,13 @@ namespace PlexShareWhiteboard
 
                     Debug.WriteLine("Translating curve\n");
                     TranslatingCurve(shape, bx, by, p1);
+                }
+                else if (shape.Geometry.GetType().Name == "LineGeometry")
+                {
+
+                    Debug.WriteLine("Translating line\n");
+                    TranslatingLine(boundingBox, shape, p1, p2, width, height);
+
                 }
                 else
                 {
@@ -121,12 +135,22 @@ namespace PlexShareWhiteboard
                     lastShape = UpdateCurve(a, _anchorPoint);
                 }
             }
+            else if (mode == "create_line")
+            {
+                if (lastShape != null)
+                {
+                    Point _anchorPoint = lastShape.AnchorPoint;
+                    //UpdateShape(_anchorPoint, a, "LineGeometry", lastShape);
+                    UpdateShape(lastShape.Start, a, "LineGeometry", lastShape);
+                }
+
+            }
             else
             {
-                Debug.WriteLine("In unknown mode\n");
+                //Debug.WriteLine("In unknown mode\n");
             }
 
-            Debug.WriteLine("Exiting Shape Building......\n");
+            //Debug.WriteLine("Exiting Shape Building......\n");
         }
     }
 }
