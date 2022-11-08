@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Net.Sockets;
 
 namespace PlexShareTests.DashboardTests.SessionManagement.TestModules
 {
@@ -26,7 +27,7 @@ namespace PlexShareTests.DashboardTests.SessionManagement.TestModules
                 meetAddress = address;
         }
 
-        public void AddClient<T>(string clientId, T socketObject)
+        public void AddClient(string clientId, TcpClient socketObject)
         {
             userCount++;
         }
