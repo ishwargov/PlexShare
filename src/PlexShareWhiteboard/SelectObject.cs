@@ -10,6 +10,7 @@ namespace PlexShareWhiteboard
     {
         public bool ifSelected;
         public ShapeItem selectedObject;
+        public ShapeItem initialSelectionObject;
         public Point initialSelectionPoint;
         public int selectBox;
         public List<Point> finalPointList;
@@ -107,6 +108,20 @@ namespace PlexShareWhiteboard
                 Debug.WriteLine("object selected\n");
                 HighLightIt(select.selectedObject.Geometry.Bounds);
                 int boxNumber = PointInsideHighlightBox(boundingBox, a, blobSize / 2);
+                ShapeItem newShape = new()
+                {
+                    Geometry = select.selectedObject.Geometry.Clone(),
+                    GeometryString = select.selectedObject.GeometryString,
+                    Start = select.selectedObject.Start,
+                    End = select.selectedObject.End,
+                    Fill = select.selectedObject.Fill,
+                    Stroke = select.selectedObject.Stroke,
+                    ZIndex = select.selectedObject.ZIndex,
+                    AnchorPoint = select.selectedObject.AnchorPoint,
+                    Id = select.selectedObject.Id,
+                    StrokeThickness = select.selectedObject.StrokeThickness,
+                };
+                select.initialSelectionObject = newShape;
 
                 if (boxNumber > 4)
                 {

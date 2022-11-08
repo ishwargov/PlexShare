@@ -151,6 +151,7 @@ namespace PlexShareWhiteboard
                     ShapeItems[i] = newShape;
                 }
             }
+            lastShape = newShape;
             //HighLightIt(shape.Geometry.Bounds);
         }
 
@@ -289,6 +290,7 @@ namespace PlexShareWhiteboard
                         ShapeItems[i] = newShape;
                     }
                 }
+                lastShape = newShape;
                 //HighLightIt(shape.Geometry.Bounds);
 
 
@@ -334,7 +336,7 @@ namespace PlexShareWhiteboard
                     ShapeItems[i] = newShape;
                 }
             }
-
+            lastShape = newShape;
             HighLightIt(newShape.Geometry.Bounds);
         }
 
