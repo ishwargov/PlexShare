@@ -10,9 +10,8 @@
  * Description = Notification handler that handles received data from server   
  *****************************************************************************/
 
-using Networking;
-using Networking.Serialization;
 using PlexShareContent.DataModels;
+using PlexShareNetwork;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -21,7 +20,7 @@ namespace PlexShareContent.Client
 {
     public class ContentClientNotificationHandler : INotificationHandler
     {
-        private readonly ISerializer _serialzer;
+        private readonly IContentSerializer _serialzer;
         private readonly ContentClient _contentHandler;
         protected ContentData _receivedMessage;
         protected List<ChatThread> _allMessages;
@@ -32,7 +31,7 @@ namespace PlexShareContent.Client
         /// <param name="contentHandler">Object that implements IContentClient interface</param>
         public ContentClientNotificationHandler(IContentClient contentHandler)
         {
-            _serialzer = new Serializer();
+            _serialzer = new ContentSerializer();
             _contentHandler = contentHandler as ContentClient;
         }
 

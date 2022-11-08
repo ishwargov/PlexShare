@@ -47,7 +47,7 @@ namespace PlexShareContent.DataModels
             }
             else
             {
-                throw new FileNotFoundException("File {0} not found.", filePath);
+                throw new FileNotFoundException($"File {filePath} not found");
             }
         }
     }
