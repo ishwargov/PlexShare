@@ -12,32 +12,36 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
-using PlexShareNetwork.Serialization;
 using NuGet.Frameworks;
+using Client.Models;
 
 namespace PlexShareTests.DashboardTests.SessionManagement
 {
     public class SessionManagementTest
     {
-       private  FakeCommunicator _fakeCommunicator = new FakeCommunicator();
-        private FakeContentServer _fakeContentServer = new FakeContentServer();
+        private  FakeCommunicator _fakeCommunicator = new FakeCommunicator();
         private IDashboardSerializer _serializer = new DashboardSerializer();
         private ClientSessionManager _clientSessionManager; 
         private ClientSessionManager _clientSessionManagerLast;
         private ClientSessionManager _clientSessionManagerNew;
+        private ServerSessionManager _serverSessionManager;
 
-       
-        private ServerSessionManager _serverSessionManager = SessionManagerFactory.GetServerSessionManager();
-
+        /// <summary>
+        /// Creating SetUp function which will be called while testing for instantiation
+        /// </summary>
 
         public void Setup()
         {
             _fakeCommunicator = new FakeCommunicator();
-            _fakeContentServer = new FakeContentServer();
             _serializer = new DashboardSerializer();
             _clientSessionManager = SessionManagerFactory.GetClientSessionManager(_fakeCommunicator);
             _serverSessionManager = SessionManagerFactory.GetServerSessionManager(_fakeCommunicator);
         }
+
+        /// <summary>
+        /// This test is for checking the sigleton functionality.
+        /// That is when trying to instantiate the same class it will return the same object which was already instantiated
+        /// </summary>
 
         [Fact]
         public void GetClientSessionManager_TwoInstancesCreated_MustHaveSameReference()
@@ -45,18 +49,27 @@ namespace PlexShareTests.DashboardTests.SessionManagement
             IUXClientSessionManager clientSessionManager1 = SessionManagerFactory.GetClientSessionManager();
             IUXClientSessionManager clientSessionManager2 = SessionManagerFactory.GetClientSessionManager();
 
-            
+            //Assert that both the instance have the same reference
             Assert.True(clientSessionManager2.Equals(clientSessionManager1));
         }
+
+        /// <summary>
+        /// This test is for checking the sigleton functionality.
+        /// That is when trying to instantiate the same class it will return the same object which was already instantiated
+        /// </summary>
 
         [Fact]
         public void GetServerSessionManager_TwoInstancesCreated_MustHaveSameReference()
         {
             IUXServerSessionManager serverSessionManager1 = SessionManagerFactory.GetServerSessionManager();
             IUXServerSessionManager serverSessionManager2 = SessionManagerFactory.GetServerSessionManager();
-
+            //Assert that both the instance have the same reference
             Assert.True(serverSessionManager1.Equals(serverSessionManager2));
         }
+
+        /// <summary>
+        /// This is test for checking if the the UX is getting notified when the sessionData gets changed
+        /// </summary>
 
         [Fact]
         public void NotifyUX_SessionDataChanges_UXShouldBeNotified()
@@ -65,14 +78,21 @@ namespace PlexShareTests.DashboardTests.SessionManagement
             FakeClientUX fakeClientUX = new(_clientSessionManager);
             fakeClientUX.sessionSummary = null;
 
+            //get one user from the util
             var users = Utils.GetUsers();
-           
+           //Add the user in the Session
             _clientSessionManager.SetSessionUsers(users);
-
+            //Notify the UX about the changes made in the client side
             _clientSessionManager.NotifyUXSession();
 
             Assert.Equal(users, fakeClientUX.sessionData.users);
         }
+
+        /// <summary>
+        /// This test is for the function GetPortsAndIPAddress() which will 
+        /// fetch ip and port of the server from the networking
+        /// </summary>
+        /// <param name="inputMeetAddress"></param>
 
         [Theory]
         [InlineData("192.168.1.1:8080")]
@@ -81,12 +101,21 @@ namespace PlexShareTests.DashboardTests.SessionManagement
         public void GetPortsAndIPAddress_ValidAddress_ReturnsTrue(string inputMeetAddress)
         {
             Setup();
+            //Assigning the meeting credential of server
             _fakeCommunicator.meetAddress = inputMeetAddress;
-            //IUXServerSessionManager serverSessionManager = SessionManagerFactory.GetServerSessionManager(_fakeCommunicator);
+            //calling the GetPortsAndIPAddress() function for fetching the meeting credential.
             var meetCreds = _serverSessionManager.GetPortsAndIPAddress();
             var returnedMeetAddress = meetCreds.ipAddress + ":" + meetCreds.port;
+
             Assert.Equal(_fakeCommunicator.meetAddress, returnedMeetAddress);
         }
+
+        /// <summary>
+        /// This is used for checking the functionality if the user has given the invalid meeting credential 
+        /// while joining.
+        /// </summary>
+        /// <param name="inputMeetAddress"></param>
+
         [Theory]
         [InlineData("")]
         [InlineData("256.0.1.3:8080")]
@@ -98,10 +127,30 @@ namespace PlexShareTests.DashboardTests.SessionManagement
         {
             Setup();
             _fakeCommunicator.meetAddress = inputMeetAddress;
-           // IUXServerSessionManager serverSessionManager = SessionManagerFactory.GetServerSessionManager(_fakeCommunicator);
             var meetCreds = _serverSessionManager.GetPortsAndIPAddress();
-            Assert.Equal(meetCreds,null);
+            Assert.Equal(null,meetCreds);
         }
+
+
+        [Fact]
+        public void SerializeStringTest()
+        {
+            Setup();
+            ClientToServerData clientToServerData1 = new ClientToServerData("addClient", "Saurabh", 2);
+            var serialized = _serializer.Serialize(clientToServerData1);
+            ClientToServerData clienToServerData2 = _serializer.Deserialize<ClientToServerData>(serialized);
+            Assert.True(clientToServerData1==clienToServerData2);
+        }
+
+
+        /// <summary>
+        /// This function checks if the client is added in the session
+        /// if it gives the correct meeting credentials
+        /// </summary>
+        /// <param name="meetAddress"></param>
+        /// <param name="ipAddress"></param>
+        /// <param name="port"></param>
+        /// <param name="username"></param>
 
         [Theory]
         [InlineData("192.168.20.1:8080", "192.168.20.1", 8080, "Jake Vickers")]
@@ -111,11 +160,18 @@ namespace PlexShareTests.DashboardTests.SessionManagement
         {
             Setup();
             _fakeCommunicator.meetAddress = meetAddress;
-           // IUXClientSessionManager clientSessionManager = SessionManagerFactory.GetClientSessionManager(_fakeCommunicator);
             var clientAdded = _clientSessionManager.AddClient(ipAddress, port, username);
             Assert.Equal(true, clientAdded);
         }
 
+        /// <summary>
+        /// This function checks if the client is added in the session
+        /// if it gives the correct meeting credentials
+        /// </summary>
+        /// <param name="meetAddress"></param>
+        /// <param name="ipAddress"></param>
+        /// <param name="port"></param>
+        /// <param name="username"></param>
         [Theory]
         [InlineData("", "", 51, "")]
         [InlineData(null, null, null, null)]
@@ -127,10 +183,16 @@ namespace PlexShareTests.DashboardTests.SessionManagement
         {
             Setup();
             _fakeCommunicator.meetAddress = meetAddress;
-          //  IUXClientSessionManager clientSessionManager = SessionManagerFactory.GetClientSessionManager(_fakeCommunicator);
             var clientAdded = _clientSessionManager.AddClient(ipAddress, port, username);
             Assert.Equal(false, clientAdded);
         }
+
+        /// <summary>
+        /// This test the working of the ClientArrivalProcedure() functionality
+        /// </summary>
+        /// <param name="ipAddress"></param>
+        /// <param name="port"></param>
+        /// <param name="username"></param>
 
         [Theory]
         [InlineData("192.168.1.1", 8080, "Jake")]
@@ -142,27 +204,29 @@ namespace PlexShareTests.DashboardTests.SessionManagement
            
             Console.WriteLine("Session Before\n\t" + _clientSessionManager.GetSessionData());
             var clientAdded = _clientSessionManager.AddClient(ipAddress, port, username);
-            
+            //Network would call the OnClientJoined() 
             _serverSessionManager.OnClientJoined(null);
- 
+     
             ServerToClientData serverToClientData = _serializer.Deserialize<ServerToClientData>(_fakeCommunicator.transferredData);
             int userID = serverToClientData._user.userID;
             string userName = serverToClientData._user.username;
             ClientToServerData clientToServerData = new ClientToServerData("addClient",userName, userID);
             var serialized = _serializer.Serialize(clientToServerData);
+
+            //serverSessionManager when recieves the data from network about addclient event,
+            //it will add the user into the session
+            //and then sendDataToClient to update Client Session data
             _serverSessionManager.OnDataReceived(serialized);
             var s1 = _fakeCommunicator.transferredData;
-
+            //client session Manager will update the client session data
             _clientSessionManager.OnDataReceived(_fakeCommunicator.transferredData);
-            Assert.Equal(s1, _fakeCommunicator.transferredData);
 
+            Assert.Equal(s1, _fakeCommunicator.transferredData);
             Console.WriteLine("Session After\n\t" + _clientSessionManager.GetSessionData());
             UserData updatedUser = _clientSessionManager.GetUser();
             Assert.Equal(updatedUser.username, username);
             Assert.NotNull(updatedUser.userID);
-          
-          
-        }
+         }
 
         [Theory]
         [InlineData("Jake")]
@@ -182,7 +246,6 @@ namespace PlexShareTests.DashboardTests.SessionManagement
                 var serverToClientData = _serializer.Deserialize<ServerToClientData>(_fakeCommunicator.transferredData);
                 var receiveduser = serverToClientData.GetUser();
 
-                // serverSessionManager.FakeClientArrivalProcedure(clientToServerData);
                 Assert.Equal(serverToClientData.eventType, "addClient");
                 Assert.Equal(receiveduser.username, username);
                 Assert.NotNull(receiveduser.userID);
@@ -297,16 +360,12 @@ namespace PlexShareTests.DashboardTests.SessionManagement
          
             ClientToServerData clientToServerData = new("addClient", user.username);
             var serializedData = _serializer.Serialize(clientToServerData);
-          //  Assert.NotNull(serializedData);
             serverSessionManager.OnClientJoined(null);
             serverSessionManager.OnDataReceived(serializedData);
             Assert.NotNull(_fakeCommunicator.transferredData);
-            //_fakeCommunicator.Send("Hello", "Dashboard");
-            //Assert.NotNull(_fakeCommunicator.transferredData);
             clientSessionManager.GetSummary();
             serverSessionManager.OnDataReceived(_fakeCommunicator.transferredData);
             clientSessionManager.OnDataReceived(_fakeCommunicator.transferredData);
-           // Assert.NotNull(_fakeCommunicator.transferredData);
         
             var clientSummary = clientSessionManager.GetStoredSummary();
             var serverSummary = serverSessionManager.GetStoredSummary();
@@ -411,7 +470,6 @@ namespace PlexShareTests.DashboardTests.SessionManagement
 
             _clientSessionManager.SetUser(users.Last().username, users.Last().userID);
             _clientSessionManager.SetSessionUsers(users);
-
             _clientSessionManager.EndMeet();
             _serverSessionManager.OnDataReceived(_fakeCommunicator.transferredData);
             _clientSessionManager.OnDataReceived(_fakeCommunicator.transferredData);
@@ -456,8 +514,6 @@ namespace PlexShareTests.DashboardTests.SessionManagement
             Setup();
             // Adding the users to the session and the client side
             var users = Utils.GetUsers();
-
-
             for (int i = 0; i < users.Count; i++)
             {
                 ClientToServerData clientToServerData = new("addClient", users[i].username, users[i].userID);
@@ -466,8 +522,6 @@ namespace PlexShareTests.DashboardTests.SessionManagement
                 _serverSessionManager.OnClientJoined(null);
                 _serverSessionManager.FakeClientArrivalProcedure(clientToServerData);
             }
-
-
             _clientSessionManager.SetUser(users.Last().username, users.Last().userID);
             _clientSessionManager.SetSessionUsers(users);
 
@@ -480,7 +534,6 @@ namespace PlexShareTests.DashboardTests.SessionManagement
             _clientSessionManager.OnDataReceived(_fakeCommunicator.transferredData);
 
             // Check if the session on the server side was updated and the user and session data on the client side are removed.
-//            Assert.Equal(users, _serverSessionManager.GetSessionData().users);
             Assert.Null(_clientSessionManager.GetSessionData());
             Assert.Null(_clientSessionManager.GetUser());
         }
@@ -495,20 +548,16 @@ namespace PlexShareTests.DashboardTests.SessionManagement
             fakeClientUx.meetingEnded = false;
             fakeServerUX.meetingEnded = false;
 
+            //Adding the users 
             List<UserData> users = new();
-            users.Add(new UserData("Justin", 1));
-
-            
+            users.Add(new UserData("Justin", 1));  
             for (int i = 0; i < users.Count; i++)
             {
                 ClientToServerData _clientToServerData = new("addClient", users[i].username, users[i].userID);
                 var serializedData = _serializer.Serialize(_clientToServerData);
-
                 _serverSessionManager.OnClientJoined(null);
                 _serverSessionManager.OnDataReceived(serializedData);
             }
-
-
 
             _clientSessionManager.SetSessionUsers(users);
             _clientSessionManager.SetUser(users[0].username, users[0].userID);
