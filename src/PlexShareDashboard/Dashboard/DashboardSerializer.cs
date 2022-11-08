@@ -1,9 +1,4 @@
-﻿/// <author>Abdullah Khan</author>
-/// <created>14/10/2021</created>
-/// <summary>
-/// This file contains the class definitions of the serializer submodule.
-/// </summary>
-
+﻿
 using System;
 using System.Diagnostics;
 using Newtonsoft.Json;
