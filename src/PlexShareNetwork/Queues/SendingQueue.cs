@@ -10,7 +10,7 @@ using System.Threading;
 
 namespace PlexShareNetwork.Queues
 {
-    public class SendingQueues
+    public class SendingQueue
     {
         private readonly IQueue _highPriorityQueue = new Queue();
         private readonly IQueue _lowPriorityQueue = new Queue();

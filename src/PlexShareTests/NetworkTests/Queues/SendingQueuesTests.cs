@@ -12,17 +12,17 @@ namespace PlexShareNetwork.Queues.Tests
 {
     public class SendingQueuesTests
     {
-        private SendingQueues _sendingQueues = new SendingQueues();
+        private SendingQueue _sendingQueues = new();
 
         [Fact]
         public void EnqueueOnePacketTest()
         {
             // Registering the dashboard module
-            _sendingQueues.RegisterModule(NetworkingGlobals.dashboardName, true);
+            _sendingQueues.RegisterModule(NetworkTestGlobals.dashboardName, true);
 
             // Creating a packet
-            Packet packet = new Packet(NetworkingGlobals.RandomString(10), NetworkingGlobals.dashboardName,
-                NetworkingGlobals.dashboardName);
+            Packet packet = new Packet(NetworkTestGlobals.RandomString(10), NetworkTestGlobals.dashboardName,
+                NetworkTestGlobals.dashboardName);
 
             // Enqueueing the packet
             _sendingQueues.Enqueue(packet);
@@ -52,13 +52,13 @@ namespace PlexShareNetwork.Queues.Tests
                 for (int i = 0; i < number_of_packets; ++i)
                 {
                     // Taking a random module name
-                    string moduleName = NetworkingGlobals.RandomString(10);
+                    string moduleName = NetworkTestGlobals.RandomString(10);
 
                     // Registering the module with a random priority
                     _sendingQueues.RegisterModule(moduleName, i % 2 == 0);
 
                     // Creating a packet of the above module
-                    Packet packet = new Packet(NetworkingGlobals.RandomString(10), NetworkingGlobals.RandomString(5), moduleName);
+                    Packet packet = new Packet(NetworkTestGlobals.RandomString(10), NetworkTestGlobals.RandomString(5), moduleName);
 
                     _sendingQueues.Enqueue(packet);
                 }
@@ -70,13 +70,13 @@ namespace PlexShareNetwork.Queues.Tests
                 for (int i = 0; i < number_of_packets; ++i)
                 {
                     // Taking a random module name
-                    string moduleName = NetworkingGlobals.RandomString(10);
+                    string moduleName = NetworkTestGlobals.RandomString(10);
 
                     // Registering the module with a random priority
                     _sendingQueues.RegisterModule(moduleName, i % 2 == 0);
 
                     // Creating a packet of the above module
-                    Packet packet = new Packet(NetworkingGlobals.RandomString(10), NetworkingGlobals.RandomString(5), moduleName);
+                    Packet packet = new Packet(NetworkTestGlobals.RandomString(10), NetworkTestGlobals.RandomString(5), moduleName);
 
                     _sendingQueues.Enqueue(packet);
                 }
@@ -97,13 +97,13 @@ namespace PlexShareNetwork.Queues.Tests
             for (int i = 0; i < number_of_packets; ++i)
             {
                 // Taking a random module name
-                string moduleName = NetworkingGlobals.RandomString(10);
+                string moduleName = NetworkTestGlobals.RandomString(10);
 
                 // Registering the module with a random priority
                 _sendingQueues.RegisterModule(moduleName, i % 2 == 0);
 
                 // Creating a packet of the above module
-                Packet packet = new Packet(NetworkingGlobals.RandomString(10), NetworkingGlobals.RandomString(5), moduleName);
+                Packet packet = new Packet(NetworkTestGlobals.RandomString(10), NetworkTestGlobals.RandomString(5), moduleName);
 
                 _sendingQueues.Enqueue(packet);
             }
@@ -146,8 +146,8 @@ namespace PlexShareNetwork.Queues.Tests
             int number_of_packets = 100;
             for (int i = 0; i < number_of_packets; ++i)
             {
-                string serializedData = NetworkingGlobals.RandomString(10);
-                string destinationModule = NetworkingGlobals.RandomString(5);
+                string serializedData = NetworkTestGlobals.RandomString(10);
+                string destinationModule = NetworkTestGlobals.RandomString(5);
 
                 Packet packet = new Packet(serializedData, destinationModule, moduleName);
 
@@ -187,8 +187,8 @@ namespace PlexShareNetwork.Queues.Tests
         [Fact]
         public void concurrentDequeueTest()
         {
-            string serializedData = NetworkingGlobals.RandomString(10);
-            string destinationModule = NetworkingGlobals.RandomString(5);
+            string serializedData = NetworkTestGlobals.RandomString(10);
+            string destinationModule = NetworkTestGlobals.RandomString(5);
             string moduleName = "Demo";
 
             _sendingQueues.RegisterModule(moduleName, true);
@@ -220,8 +220,8 @@ namespace PlexShareNetwork.Queues.Tests
         [Fact]
         public void WaitForPacketTest()
         {
-            string serializedData = NetworkingGlobals.RandomString(10);
-            string destinationModule = NetworkingGlobals.RandomString(5);
+            string serializedData = NetworkTestGlobals.RandomString(10);
+            string destinationModule = NetworkTestGlobals.RandomString(5);
             string moduleName = "Demo";
 
             _sendingQueues.RegisterModule(moduleName, false);
