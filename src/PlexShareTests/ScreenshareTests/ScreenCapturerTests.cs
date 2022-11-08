@@ -1,8 +1,12 @@
 ﻿using PlexShareScreenshare.Client;
+using System.Diagnostics;
 using System.Drawing;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace PlexShareTests.ScreenshareTests
 {
+    [Collection("Sequential")]
     public class ScreenCapturerTests
     {
         /// <summary>
@@ -11,11 +15,13 @@ namespace PlexShareTests.ScreenshareTests
         [Fact]
         public void Test1()
         {
-            ScreenCapturer screenCapturer = new ScreenCapturer();
+            Task<ScreenCapturer> task = Task.Run(() => { ScreenCapturer screenCapturer = new ScreenCapturer(); return screenCapturer; });
+            task.Wait();
+            var screenCapturer = task.Result;
             screenCapturer.StartCapture();
-            Thread.Sleep(500);
+            Thread.Sleep(1000);
             int count = 0;
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 50; i++)
             {
                 Bitmap frame = screenCapturer.GetImage();
                 if (frame != null)
@@ -23,7 +29,7 @@ namespace PlexShareTests.ScreenshareTests
             }
 
             screenCapturer.StopCapture();
-            Assert.Equal(10, count);
+            Assert.Equal(50, count);
         }
 
         /// <summary>
@@ -32,13 +38,16 @@ namespace PlexShareTests.ScreenshareTests
         [Fact]
         public void Test2()
         {
-            ScreenCapturer screenCapturer = new ScreenCapturer();
+            Task<ScreenCapturer> task = Task.Run(() => { ScreenCapturer screenCapturer = new ScreenCapturer(); return screenCapturer;  });
+            task.Wait();
+            var screenCapturer = task.Result;
             screenCapturer.StartCapture();
-
-            Thread.Sleep(500);
+            Console.WriteLine("Hello");
+            Thread.Sleep(1000);
             int framesCaptured = screenCapturer.GetCapturedFrameLength();
 
             screenCapturer.StopCapture();
+            Thread.Sleep(1);
             Assert.True(framesCaptured is > 0 and <= ScreenCapturer.MaxQueueLength);
         }
     }
