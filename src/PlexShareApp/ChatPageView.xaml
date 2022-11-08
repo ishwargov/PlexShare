@@ -59,6 +59,30 @@
         
         <Grid Grid.Row="1">
             <!--TODO: Implement a ListBox for displaying chat bubbles -->
+            <ListBox x:Name="MainChat" Background="{StaticResource StaticChatBackGrd}"
+                     BorderBrush="{StaticResource StaticChatBackGrd}"
+                     HorizontalAlignment="Stretch"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                     ItemTemplateSelector="{StaticResource ChatBubbleTemplateConstructor}">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                    <Border Background="{TemplateBinding Background}">
+                                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+                                        </ContentPresenter>
+                                        
+                                    </Border>
+                                    
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                
+            </ListBox>
         </Grid>
     </Grid>
     
