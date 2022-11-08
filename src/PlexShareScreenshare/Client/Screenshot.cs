@@ -3,14 +3,12 @@
 ///<reference> https://github.com/0x2E757/ScreenCapturer ///</reference>
 ///<reference> https://github.com/sharpdx/SharpDX-Samples/blob/master/Desktop/Direct3D11.1/ScreenCapture/Program.cs ///</reference>
 
-using System;
-using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Imaging;
 using SharpDX;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
-
+using System;
+using System.Drawing;
+using System.Drawing.Imaging;
 using Device = SharpDX.Direct3D11.Device;
 using MapFlags = SharpDX.Direct3D11.MapFlags;
 using Resource = SharpDX.DXGI.Resource;
@@ -21,8 +19,9 @@ namespace PlexShareScreenshare.Client
     /// <summary>
     /// Class contains the necessary functions for taking the screenshot of the current screen.
     /// </summary>
-    internal class Screenshot
+    public class Screenshot
     {
+        private static readonly object _lock = new();
         private static Screenshot? instance;
         public Boolean CaptureActive { get; private set; }
         private Factory1? Factory1;
@@ -49,11 +48,14 @@ namespace PlexShareScreenshare.Client
 
         public static Screenshot Instance()
         {
-            if(instance == null)
+            lock (_lock)
             {
-                instance = new Screenshot();
+                if (instance == null)
+                {
+                    instance = new Screenshot();
+                }
+                return instance;
             }
-            return instance;
         }
 
         /// <summary>
@@ -68,6 +70,7 @@ namespace PlexShareScreenshare.Client
             InitializeVariables(displayIndex, adapterIndex);
             Resource screenResource;
             OutputDuplication.TryAcquireNextFrame(maxTimeout, out _, out screenResource);
+            if (screenResource == null) return null;
             Texture2D screenTexture2D = screenResource.QueryInterface<Texture2D>();
             Device.ImmediateContext.CopyResource(screenTexture2D, Texture2D);
             DataBox dataBox = Device.ImmediateContext.MapSubresource(Texture2D, 0, MapMode.Read, MapFlags.None);
@@ -85,7 +88,8 @@ namespace PlexShareScreenshare.Client
             OutputDuplication.ReleaseFrame();
             screenTexture2D.Dispose();
             screenResource.Dispose();
-            return Bitmap;
+            Bitmap SmallBitmap = new Bitmap(Bitmap, 2 * Bitmap.Width / 3, 2 * Bitmap.Height / 3);
+            return SmallBitmap;
         }
 
         /// <summary>

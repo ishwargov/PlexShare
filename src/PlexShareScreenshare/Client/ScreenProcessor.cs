@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -40,17 +39,16 @@ namespace PlexShareScreenshare.Client
 
         // Old and the new resolutions 
         private Tuple<int, int> OldRes;
-        private Tuple<int, int> NewRes { get; set; }
+        public Tuple<int, int> NewRes { private get; set; }
 
         // Tokens added to be able to stop the thread execution
-        private CancellationTokenSource? tokenSource;
-        private CancellationToken token;
+        private bool _cancellationToken;
 
         // Storing the previous frame
         Bitmap prevImage;
 
         /// <summary>
-        /// Called by ScreenShareClient
+        /// Called by ScreenshareClient
         /// Initialize queue, oldRes, newRes,
         /// cancellation token and the previous image
         /// </summary>
@@ -147,7 +145,8 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         private void Processing()
         {
-            while (true)
+            _cancellationToken = false;
+            while (!_cancellationToken)
             {
                 Bitmap img = _capturer.GetImage();
                 img = Compress(img);
@@ -161,15 +160,13 @@ namespace PlexShareScreenshare.Client
         }
 
         /// <summary>
-        /// Called by ScreenShareClient when the client starts screen sharing
+        /// Called by ScreenshareClient when the client starts screen sharing
         /// Will have a lambda function - Process and pushes to the queue
         /// Create the task for the lambda function 
         /// </summary>
         public void StartProcessing()
         {
-            tokenSource = new CancellationTokenSource();
-            token = tokenSource.Token;
-            _processorTask = new Task(Processing, token);
+            _processorTask = new Task(Processing);
             _processorTask.Start();
         }
 
@@ -193,26 +190,45 @@ namespace PlexShareScreenshare.Client
         }
 
         /// <summary>
-        /// Called by ScreenShareClient when the client stops screen sharing
+        /// Called by ScreenshareClient when the client stops screen sharing
         /// kill the processor task and make the processor task variable null
         /// Empty the Queue
         /// </summary>
         public void StopProcessing()
         {
-            tokenSource?.Cancel();
-           _processedFrame.Clear();
+            _cancellationToken = true;
+            _processorTask?.Wait();
+            _processedFrame.Clear();
+        }
+
+        /// <summary>
+        /// Setting new resolution for sending the image 
+        /// </summary>
+        /// <param name="res"> New resolution values </param>
+        public void SetNewResolution(Tuple<int, int> res)
+        {
+            // taking lock since newres is shared variable as it is
+            // used even in Compress function
+            lock (NewRes)
+            {
+                NewRes = res;
+            }
         }
 
         /// <summary>
         /// Called by StartProcessing
-        /// run the compression algorithm and returns list of changes in pixels
+        /// if the image resolution has changed then set the 
+        /// new image resolution and inititalise prevImage variable
         /// </summary>
         public Bitmap Compress(Bitmap img)
         {
-            if (NewRes != OldRes)
+            lock (NewRes)
             {
-                prevImage = new Bitmap(NewRes.Item1, NewRes.Item2);
-                OldRes = NewRes;
+                if (NewRes != OldRes)
+                {
+                    prevImage = new Bitmap(NewRes.Item1, NewRes.Item2);
+                    OldRes = NewRes;
+                }
             }
             img = new Bitmap(img, NewRes.Item1, NewRes.Item2);
             return img;

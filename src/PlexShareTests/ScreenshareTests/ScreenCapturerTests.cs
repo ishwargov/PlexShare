@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PlexShareScreenshare.Client;
+using System.Diagnostics;
 using System.Drawing;
-
-using PlexShareScreenshare.Client;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace PlexShareTests.ScreenshareTests
 {
+    [Collection("Sequential")]
     public class ScreenCapturerTests
     {
         /// <summary>
@@ -17,19 +15,21 @@ namespace PlexShareTests.ScreenshareTests
         [Fact]
         public void Test1()
         {
-            ScreenCapturer screenCapturer = new ScreenCapturer();
+            Task<ScreenCapturer> task = Task.Run(() => { ScreenCapturer screenCapturer = new ScreenCapturer(); return screenCapturer; });
+            task.Wait();
+            var screenCapturer = task.Result;
             screenCapturer.StartCapture();
-            Thread.Sleep(500);
-            screenCapturer.StopCapture();
-
+            Thread.Sleep(1000);
             int count = 0;
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 50; i++)
             {
                 Bitmap frame = screenCapturer.GetImage();
                 if (frame != null)
                     count++;
             }
-            Assert.Equal(10, count);
+
+            screenCapturer.StopCapture();
+            Assert.Equal(50, count);
         }
 
         /// <summary>
@@ -38,12 +38,17 @@ namespace PlexShareTests.ScreenshareTests
         [Fact]
         public void Test2()
         {
-            ScreenCapturer screenCapturer = new ScreenCapturer();
+            Task<ScreenCapturer> task = Task.Run(() => { ScreenCapturer screenCapturer = new ScreenCapturer(); return screenCapturer;  });
+            task.Wait();
+            var screenCapturer = task.Result;
             screenCapturer.StartCapture();
-            Thread.Sleep(500);
-            screenCapturer.StopCapture();
+            Console.WriteLine("Hello");
+            Thread.Sleep(1000);
+            int framesCaptured = screenCapturer.GetCapturedFrameLength();
 
-            Assert.True(screenCapturer.GetCapturedFrameLength() is >= 0 and <= ScreenCapturer.MaxQueueLength);
+            screenCapturer.StopCapture();
+            Thread.Sleep(1);
+            Assert.True(framesCaptured is > 0 and <= ScreenCapturer.MaxQueueLength);
         }
     }
 }

@@ -11,7 +11,7 @@ namespace PlexShareNetwork.Queues
         public string serializedData;
 
         // Destination client ID of the packet
-        public string destination;
+        public string? destination;
 
         // Module which the packet belongs to
         public string moduleOfPacket;
@@ -21,7 +21,7 @@ namespace PlexShareNetwork.Queues
         {
         }
 
-        public Packet(string serializedData, string destination, string moduleOfPacket)
+        public Packet(string serializedData, string? destination, string moduleOfPacket)
         {
             this.serializedData = serializedData;
             this.destination = destination;
