@@ -11,13 +11,12 @@
  *               the type of file events - New (Upload) and Download.
  *****************************************************************************/
 
-using Networking.Serialization;
-using Networking;
 using PlexShareContent.DataModels;
 using System.Diagnostics;
 using System;
 using System.IO;
 using PlexShareContent.Enums;
+using PlexShareNetwork.Communication;
 
 namespace PlexShareContent.Client
 {
@@ -65,7 +64,7 @@ namespace PlexShareContent.Client
             {
                 var xml = _serializer.Serialize(contentData);
                 Trace.WriteLine($"[File Client] Setting event as '{eventType}' and sending object to server.");
-                _communicator.Send(xml, _moduleIdentifier);
+                _communicator.Send(xml, _moduleIdentifier, null);
             }
             catch (Exception e)
             {

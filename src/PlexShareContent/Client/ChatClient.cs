@@ -11,10 +11,9 @@
  *               the type of chat events - New, Edit, Delete, Star.    
  *****************************************************************************/
 
-using Networking;
-using Networking.Serialization;
 using PlexShareContent.DataModels;
 using PlexShareContent.Enums;
+using PlexShareNetwork.Communication;
 using System;
 using System.Diagnostics;
 
@@ -97,9 +96,9 @@ namespace PlexShareContent.Client
         {
             try
             {
-                var xml = _serializer.Serialize(contentData);
+                var json = _serializer.Serialize(contentData);
                 Trace.WriteLine($"[Chat Client] Setting event as '{eventType}' and sending object to server.");
-                _communicator.Send(xml, _moduleIdentifier);
+                _communicator.Send(json, _moduleIdentifier, null);
             }
             catch (Exception e)
             {
