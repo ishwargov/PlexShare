@@ -36,7 +36,7 @@ namespace PlexShareApp
         /// </summary>
         public ChatPageView()
         {
-            //InitializeComponent();
+            InitializeComponent();
 
             var viewModel = new ChatPageViewModel();
 

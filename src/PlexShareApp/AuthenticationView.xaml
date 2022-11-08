@@ -13,6 +13,6 @@
         <StackPanel>
             <Button Width="100" Click="Home_Click">Go To Home Page</Button>
         </StackPanel>
-        
+
     </Grid>
 </Window>
