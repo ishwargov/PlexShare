@@ -32,9 +32,9 @@ namespace PlexShareWhiteboard.BoardComponents
         public Point AnchorPoint { get; set; }
 
 
-        public SerialisableShapeItem ConvertToSerialisableShapeItem(ShapeItem x)
+        public SerializableShapeItem ConvertToSerialisableShapeItem(ShapeItem x)
         {
-            SerialisableShapeItem y = new SerialisableShapeItem
+            SerializableShapeItem y = new SerializableShapeItem
             {
                 FontSize = x.FontSize,
                 GeometryString = x.GeometryString,

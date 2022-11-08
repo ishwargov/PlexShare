@@ -11,6 +11,7 @@
         Clear,
         UndoClear,
         RestoreSnapshot,
-        CreateSnapshot
+        CreateSnapshot,
+        NewUser
     }
 }

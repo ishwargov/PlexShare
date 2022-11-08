@@ -12,9 +12,11 @@ namespace PlexShareWhiteboard.Client
     {
         // Instance of ClientCommunicator for sending to Server
         ClientCommunicator _communicator;
+        Serializer _serializer;
         public ClientSide()
         {
             _communicator = new ClientCommunicator();
+            _serializer = new Serializer();
         }
 
         /// <summary>
@@ -28,7 +30,8 @@ namespace PlexShareWhiteboard.Client
         {
             List<ShapeItem> newShapes = new List<ShapeItem>();
             newShapes.Add(boardShape);
-            WBServerShape wbShape = new WBServerShape(newShapes, op, boardShape.User);
+            var newSerializedShapes = _serializer.ConvertToSerializableShapeItem(newShapes);
+            WBServerShape wbShape = new WBServerShape(newSerializedShapes, op, boardShape.User);
             _communicator.SendToServer(wbShape);
         }
 
