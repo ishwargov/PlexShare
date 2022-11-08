@@ -2,6 +2,7 @@
 using System.Windows.Media;
 using System.Windows;
 using System.Diagnostics;
+using PlexShareWhiteboard.BoardComponents;
 
 namespace PlexShareWhiteboard
 {
@@ -61,24 +62,24 @@ namespace PlexShareWhiteboard
             ShapeItem x = shape;
             PathGeometry g1 = new();
 
-            select.FinalPointList.Clear();
+            select.finalPointList.Clear();
             // Y fixing
-            double extraY = a.Y - select.InitialSelectionPoint.Y;
-            double height = select.SelectedObject.Geometry.Bounds.Height;
+            double extraY = a.Y - select.initialSelectionPoint.Y;
+            double height = select.selectedObject.Geometry.Bounds.Height;
             double newHeight = height - extraY;
-            if (select.SelectBox == 3 || select.SelectBox == 4)
+            if (select.selectBox == 3 || select.selectBox == 4)
                 newHeight = height + extraY;
             double scaleY = newHeight / height;
-            double rectTopY = select.SelectedObject.Geometry.Bounds.Y;
-            double rectBottomY = select.SelectedObject.Geometry.Bounds.Y + select.SelectedObject.Geometry.Bounds.Height;
+            double rectTopY = select.selectedObject.Geometry.Bounds.Y;
+            double rectBottomY = select.selectedObject.Geometry.Bounds.Y + select.selectedObject.Geometry.Bounds.Height;
 
-            if (select.SelectBox == 3 || select.SelectBox == 4)
+            if (select.selectBox == 3 || select.selectBox == 4)
             {
                 for (int i = 0; i < x.PointList.Count; i++)
                 {
                     Point curPoint = x.PointList[i];
                     curPoint.Y = rectTopY + (curPoint.Y - rectTopY) * scaleY;
-                    select.FinalPointList.Add(curPoint);
+                    select.finalPointList.Add(curPoint);
                 }
 
             }
@@ -88,47 +89,47 @@ namespace PlexShareWhiteboard
                 {
                     Point curPoint = x.PointList[i];
                     curPoint.Y = rectBottomY + (curPoint.Y - rectBottomY) * scaleY;
-                    select.FinalPointList.Add(curPoint);
+                    select.finalPointList.Add(curPoint);
                 }
             }
 
-            double b1 = select.SelectedObject.Geometry.Bounds.Height;
-            double a1 = select.SelectedObject.Geometry.Bounds.Width;
+            double b1 = select.selectedObject.Geometry.Bounds.Height;
+            double a1 = select.selectedObject.Geometry.Bounds.Width;
             double newWidth = newHeight * (a1 / b1);
 
-            double extraX = a.X - select.InitialSelectionPoint.X;
-            double width = select.SelectedObject.Geometry.Bounds.Width;
+            double extraX = a.X - select.initialSelectionPoint.X;
+            double width = select.selectedObject.Geometry.Bounds.Width;
             
             double scaleX = newWidth / width;
-            double rectTopX = select.SelectedObject.Geometry.Bounds.X;
-            double rectBottomX = select.SelectedObject.Geometry.Bounds.X + select.SelectedObject.Geometry.Bounds.Width;
+            double rectTopX = select.selectedObject.Geometry.Bounds.X;
+            double rectBottomX = select.selectedObject.Geometry.Bounds.X + select.selectedObject.Geometry.Bounds.Width;
 
-            if (select.SelectBox == 2 || select.SelectBox == 4)
+            if (select.selectBox == 2 || select.selectBox == 4)
             {
-                for (int i = 0; i < select.FinalPointList.Count; i++)
+                for (int i = 0; i < select.finalPointList.Count; i++)
                 {
-                    Point curPoint = select.FinalPointList[i];
+                    Point curPoint = select.finalPointList[i];
                     curPoint.X = rectTopX + (curPoint.X - rectTopX) * scaleX;
-                    select.FinalPointList[i] = curPoint;
+                    select.finalPointList[i] = curPoint;
                 }
 
             }
             else
             {
-                for (int i = 0; i < select.FinalPointList.Count; i++)
+                for (int i = 0; i < select.finalPointList.Count; i++)
                 {
-                    Point curPoint = select.FinalPointList[i];
+                    Point curPoint = select.finalPointList[i];
                     curPoint.X = rectBottomX + (curPoint.X - rectBottomX) * scaleX;
-                    select.FinalPointList[i] = curPoint;
+                    select.finalPointList[i] = curPoint;
                 }
             }
 
 
             // adding to geometry
-            for (int i = 1; i < select.FinalPointList.Count; i++)
+            for (int i = 1; i < select.finalPointList.Count; i++)
             {
-                Point curPoint = select.FinalPointList[i];
-                Point prevPoint = select.FinalPointList[i - 1];
+                Point curPoint = select.finalPointList[i];
+                Point prevPoint = select.finalPointList[i - 1];
                 var line = new LineGeometry(curPoint, prevPoint);
                 g1.AddGeometry(line);
             }
@@ -155,51 +156,51 @@ namespace PlexShareWhiteboard
 
         public void DimensionChangeCurve(Point a, ShapeItem shape)
         {
-            Debug.WriteLine(select.SelectBox + " bounce bounce bounce yippe yipee ");
-            if (select.SelectBox == 6 || select.SelectBox == 7)
+            Debug.WriteLine(select.selectBox + " bounce bounce bounce yippe yipee ");
+            if (select.selectBox == 6 || select.selectBox == 7)
             {
                 // horitzontal
                 ShapeItem x = shape;
                 PathGeometry g1 = new();
 
-                select.FinalPointList.Clear();
+                select.finalPointList.Clear();
 
                 // X fixing
-                double extraX = a.X - select.InitialSelectionPoint.X;
-                double width = select.SelectedObject.Geometry.Bounds.Width;
+                double extraX = a.X - select.initialSelectionPoint.X;
+                double width = select.selectedObject.Geometry.Bounds.Width;
                 double newWidth = width + extraX;
-                if (select.SelectBox == 6)
+                if (select.selectBox == 6)
                     newWidth = width - extraX;
                 double scaleX = newWidth / width;
-                double rectTopX = select.SelectedObject.Geometry.Bounds.X;
-                double rectBottomX = select.SelectedObject.Geometry.Bounds.X + select.SelectedObject.Geometry.Bounds.Width;
+                double rectTopX = select.selectedObject.Geometry.Bounds.X;
+                double rectBottomX = select.selectedObject.Geometry.Bounds.X + select.selectedObject.Geometry.Bounds.Width;
 
-                if (select.SelectBox == 7)
+                if (select.selectBox == 7)
                 {
-                    for (int i = 0; i < select.SelectedObject.PointList.Count; i++)
+                    for (int i = 0; i < select.selectedObject.PointList.Count; i++)
                     {
-                        Point curPoint = select.SelectedObject.PointList[i];
+                        Point curPoint = select.selectedObject.PointList[i];
                         curPoint.X = rectTopX + (curPoint.X - rectTopX) * scaleX;
-                        select.FinalPointList.Add(curPoint);
+                        select.finalPointList.Add(curPoint);
                     }
 
                 }
                 else
                 {
-                    for (int i = 0; i < select.SelectedObject.PointList.Count; i++)
+                    for (int i = 0; i < select.selectedObject.PointList.Count; i++)
                     {
-                        Point curPoint = select.SelectedObject.PointList[i];
+                        Point curPoint = select.selectedObject.PointList[i];
                         curPoint.X = rectBottomX + (curPoint.X - rectBottomX) * scaleX;
-                        select.FinalPointList.Add(curPoint);
+                        select.finalPointList.Add(curPoint);
                     }
                 }
 
 
                 // adding to geometry
-                for (int i = 1; i < select.FinalPointList.Count; i++)
+                for (int i = 1; i < select.finalPointList.Count; i++)
                 {
-                    Point curPoint = select.FinalPointList[i];
-                    Point prevPoint = select.FinalPointList[i - 1];
+                    Point curPoint = select.finalPointList[i];
+                    Point prevPoint = select.finalPointList[i - 1];
                     var line = new LineGeometry(curPoint, prevPoint);
                     g1.AddGeometry(line);
                 }
@@ -223,31 +224,31 @@ namespace PlexShareWhiteboard
                 }
 
             }
-            else if (select.SelectBox == 5 || select.SelectBox == 8)
+            else if (select.selectBox == 5 || select.selectBox == 8)
             {
 
                 ShapeItem x = shape;
                 PathGeometry g1 = new PathGeometry();
 
-                select.FinalPointList.Clear();
+                select.finalPointList.Clear();
 
                 // Y fixing
-                double extraY = a.Y - select.InitialSelectionPoint.Y;
-                double height = select.SelectedObject.Geometry.Bounds.Height;
+                double extraY = a.Y - select.initialSelectionPoint.Y;
+                double height = select.selectedObject.Geometry.Bounds.Height;
                 double newHeight = height - extraY;
-                if (select.SelectBox == 8)
+                if (select.selectBox == 8)
                     newHeight = height + extraY;
                 double scaleY = newHeight / height;
-                double rectTopY = select.SelectedObject.Geometry.Bounds.Y;
-                double rectBottomY = select.SelectedObject.Geometry.Bounds.Y + select.SelectedObject.Geometry.Bounds.Height;
+                double rectTopY = select.selectedObject.Geometry.Bounds.Y;
+                double rectBottomY = select.selectedObject.Geometry.Bounds.Y + select.selectedObject.Geometry.Bounds.Height;
 
-                if (select.SelectBox == 8)
+                if (select.selectBox == 8)
                 {
                     for (int i = 0; i < x.PointList.Count; i++)
                     {
                         Point curPoint = x.PointList[i];
                         curPoint.Y = rectTopY + (curPoint.Y - rectTopY) * scaleY;
-                        select.FinalPointList.Add(curPoint);
+                        select.finalPointList.Add(curPoint);
                     }
 
                 }
@@ -257,16 +258,16 @@ namespace PlexShareWhiteboard
                     {
                         Point curPoint = x.PointList[i];
                         curPoint.Y = rectBottomY + (curPoint.Y - rectBottomY) * scaleY;
-                        select.FinalPointList.Add(curPoint);
+                        select.finalPointList.Add(curPoint);
                     }
                 }
 
 
                 // adding to geometry
-                for (int i = 1; i < select.FinalPointList.Count; i++)
+                for (int i = 1; i < select.finalPointList.Count; i++)
                 {
-                    Point curPoint = select.FinalPointList[i];
-                    Point prevPoint = select.FinalPointList[i - 1];
+                    Point curPoint = select.finalPointList[i];
+                    Point prevPoint = select.finalPointList[i - 1];
                     var line = new LineGeometry(curPoint, prevPoint);
                     g1.AddGeometry(line);
                 }
@@ -340,17 +341,17 @@ namespace PlexShareWhiteboard
         public void FinishingCurve()
         {
             PathGeometry g1 = new();
-            for (int i = 1; i < select.FinalPointList.Count; i++)
+            for (int i = 1; i < select.finalPointList.Count; i++)
             {
-                Point curPoint = select.FinalPointList[i];
-                Point prevPoint = select.FinalPointList[i - 1];
+                Point curPoint = select.finalPointList[i];
+                Point prevPoint = select.finalPointList[i - 1];
                 var line = new LineGeometry(curPoint, prevPoint);
                 g1.AddGeometry(line);
             }
 
             List<Point> newPointList = new();
 
-            foreach (Point p in select.FinalPointList)
+            foreach (Point p in select.finalPointList)
                 newPointList.Add(p);
 
             ShapeItem updatingShape = new()
@@ -359,14 +360,14 @@ namespace PlexShareWhiteboard
                 Fill = fillBrush,
                 Stroke = strokeBrush,
                 ZIndex = currentZIndex,
-                Id = select.SelectedObject.Id,
+                Id = select.selectedObject.Id,
                 PointList = newPointList
             };
 
 
             for (int i = 0; i < ShapeItems.Count; i++)
             {
-                if (ShapeItems[i].Id == select.SelectedObject.Id)
+                if (ShapeItems[i].Id == select.selectedObject.Id)
                 {
                     ShapeItems[i] = updatingShape;
                 }

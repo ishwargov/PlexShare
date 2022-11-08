@@ -2,6 +2,7 @@
 using System.Windows;
 using PlexShareWhiteboard.BoardComponents;
 using System.Xml.Linq;
+using PlexShareWhiteboard.BoardComponents;
 
 namespace PlexShareWhiteboard
 {
@@ -25,7 +26,7 @@ namespace PlexShareWhiteboard
 
                 Debug.WriteLine("In select mode\n");
 
-                select.IfSelected = false;
+                select.ifSelected = false;
                 ObjectSelection(a);
             }
             else if (mode == "create_rectangle")

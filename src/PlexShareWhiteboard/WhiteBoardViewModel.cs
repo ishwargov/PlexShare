@@ -8,7 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
-
+using PlexShareWhiteboard.BoardComponents;
+ 
 namespace PlexShareWhiteboard
 {
     public partial class WhiteBoardViewModel
@@ -48,6 +49,12 @@ namespace PlexShareWhiteboard
         {
             fillBrush = br;
         }
+        public void ChangeStrokeBrush(SolidColorBrush br)
+        {
+            strokeBrush = br;
+        }
+
+        //public void fillColour(SolidColorBrush br)
         public void IncreaseZIndex()
         {
             currentZIndex++;

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Diagnostics;
 using System.Windows;
+using PlexShareWhiteboard.BoardComponents;
 
 namespace PlexShareWhiteboard
 {
@@ -17,8 +18,8 @@ namespace PlexShareWhiteboard
             Debug.WriteLine("Entering Shape Finished..............\n");
 
             if ((mode == "transform_mode" || mode == "dimensionChange_mode") && 
-                select.SelectedObject != null && select.FinalPointList.Count > 0 && 
-                select.SelectedObject.Geometry.GetType().Name == "PathGeometry")
+                select.selectedObject != null && select.finalPointList.Count > 0 && 
+                select.selectedObject.Geometry.GetType().Name == "PathGeometry")
             {
                 FinishingCurve();
             }
