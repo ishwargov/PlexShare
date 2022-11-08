@@ -53,5 +53,10 @@ namespace PlexShareApp
         {
 
         }
+
+        private void SendButtonClick(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
