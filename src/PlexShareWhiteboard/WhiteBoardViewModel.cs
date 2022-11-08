@@ -13,17 +13,20 @@ namespace PlexShareWhiteboard
     public partial class WhiteBoardViewModel
     {
         public ObservableCollection<ShapeItem> ShapeItems { get; set; }
-        Brush fillBrush = Brushes.Azure;
-        String curId = "u0_f0";
-        int curIdVal = 0;
-        int userId = 0;
-        Brush strokeBrush = Brushes.Black;
-        string mode = "create_rectangle";
-        int curZIndex = 0;
-        ShapeItem currentShape = null;
-        ShapeItem lastShape;
-        SelectObject select = new SelectObject();
+        public SelectObject select = new();
         List<ShapeItem> highlightShapes;
+
+        String currentId = "u0_f0";
+        int currentIdVal = 0;
+        int userId = 0;
+        int currentZIndex = 0;
+
+        Brush fillBrush = Brushes.Azure;
+        Brush strokeBrush = Brushes.Black;
+        string mode = "select_object";
+        ShapeItem currentShape = null;
+        ShapeItem lastShape = null;
+        int blobSize = 12;
 
         public WhiteBoardViewModel()
         {
@@ -31,20 +34,10 @@ namespace PlexShareWhiteboard
             highlightShapes = new List<ShapeItem>();
         }
 
-
-        public void ShapeFinished(Point a)
-        {
-            Debug.Write("Shape Finished with Before mode: " + mode);
-            lastShape = null;
-            if (mode == "scale_mode" || mode == "dimensionChange_mode" || mode == "translate_mode")
-                mode = "select_mode";
-            Debug.WriteLine(" and After mode : " + mode);
-        }
-
         public void IncrementId()
         {
-            curIdVal++;
-            curId = "u" + userId + "_f" + curIdVal;
+            currentIdVal++;
+            currentId = "u" + userId + "_f" + currentIdVal;
         }
         public void ChangeMode(string new_mode)
         {
@@ -56,11 +49,13 @@ namespace PlexShareWhiteboard
         }
         public void IncreaseZIndex()
         {
-            curZIndex++;
+            currentZIndex++;
         }
+
         public void DecreaseZIndex()
         {
-            curZIndex--;
+            currentZIndex--;
         }
+        
     }
 }

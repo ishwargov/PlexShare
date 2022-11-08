@@ -10,9 +10,9 @@ namespace PlexShareWhiteboard
 {
     public partial class WhiteBoardViewModel
     {
-        public ShapeItem GenerateRectangleXYWidthHeight(double x, double y, double w, double h, Brush f1, Brush s1, String id, int zi)
+        public static ShapeItem GenerateRectangleXYWidthHeight(double x, double y, double w, double h, Brush f1, Brush s1, String id, int zi)
         {
-            ShapeItem shape = new ShapeItem
+            ShapeItem s = new ()
             {
                 Geometry = new RectangleGeometry(new Rect(x, y, w, h)),
                 Fill = f1,
@@ -20,7 +20,7 @@ namespace PlexShareWhiteboard
                 ZIndex = zi,
                 Id = id
             };
-            return shape;
+            return s;
         }
 
         public void HighLightIt(Rect rect)
@@ -30,35 +30,34 @@ namespace PlexShareWhiteboard
             double height = rect.Height;
             double width = rect.Width;
 
-            int blobSize = 10;
+            int highlightZIndex = 100000;
 
-            ShapeItem hsBody = GenerateRectangleXYWidthHeight(x, y, width, height, null, Brushes.DodgerBlue, "hsBody", curZIndex);
+            ShapeItem hsBody = GenerateRectangleXYWidthHeight(x, y, width, height, null, Brushes.DodgerBlue, "hsBody", highlightZIndex);
             highlightShapes.Add(hsBody);
 
-            ShapeItem hsTopCenter = GenerateRectangleXYWidthHeight(x + width / 2 - blobSize / 2, y - blobSize / 2, blobSize, blobSize, Brushes.DodgerBlue, Brushes.DodgerBlue, "hsTopCenter", curZIndex);
+            ShapeItem hsTopCenter = GenerateRectangleXYWidthHeight(x + width / 2 - blobSize / 2, y - blobSize / 2, blobSize, blobSize, Brushes.DodgerBlue, Brushes.DodgerBlue, "hsTopCenter", highlightZIndex);
             highlightShapes.Add(hsTopCenter);
 
-            ShapeItem hsBottomCenter = GenerateRectangleXYWidthHeight(x + width / 2 - blobSize / 2, y + height - blobSize / 2, blobSize, blobSize, Brushes.DodgerBlue, Brushes.DodgerBlue, "hsBottomCenter", curZIndex);
+            ShapeItem hsBottomCenter = GenerateRectangleXYWidthHeight(x + width / 2 - blobSize / 2, y + height - blobSize / 2, blobSize, blobSize, Brushes.DodgerBlue, Brushes.DodgerBlue, "hsBottomCenter", highlightZIndex);
             highlightShapes.Add(hsBottomCenter);
 
-            ShapeItem hsRightCenter = GenerateRectangleXYWidthHeight(x + width - blobSize / 2, y + height / 2 - blobSize / 2, blobSize, blobSize, Brushes.DodgerBlue, Brushes.DodgerBlue, "hsRightCenter", curZIndex);
+            ShapeItem hsRightCenter = GenerateRectangleXYWidthHeight(x + width - blobSize / 2, y + height / 2 - blobSize / 2, blobSize, blobSize, Brushes.DodgerBlue, Brushes.DodgerBlue, "hsRightCenter", highlightZIndex);
             highlightShapes.Add(hsRightCenter);
 
-            ShapeItem hsLeftCenter = GenerateRectangleXYWidthHeight(x - blobSize / 2, y + height / 2 - blobSize / 2, blobSize, blobSize, Brushes.DodgerBlue, Brushes.DodgerBlue, "hsLeftCenter", curZIndex);
+            ShapeItem hsLeftCenter = GenerateRectangleXYWidthHeight(x - blobSize / 2, y + height / 2 - blobSize / 2, blobSize, blobSize, Brushes.DodgerBlue, Brushes.DodgerBlue, "hsLeftCenter", highlightZIndex);
             highlightShapes.Add(hsLeftCenter);
 
-            ShapeItem hsTopLeft = GenerateRectangleXYWidthHeight(x - blobSize / 2, y - blobSize / 2, blobSize, blobSize, Brushes.DodgerBlue, Brushes.DodgerBlue, "hsTopLeft", curZIndex);
+            ShapeItem hsTopLeft = GenerateRectangleXYWidthHeight(x - blobSize / 2, y - blobSize / 2, blobSize, blobSize, Brushes.DodgerBlue, Brushes.DodgerBlue, "hsTopLeft", highlightZIndex);
             highlightShapes.Add(hsTopLeft);
 
-            ShapeItem hsBottomLeft = GenerateRectangleXYWidthHeight(x - blobSize / 2, y + height - blobSize / 2, blobSize, blobSize, Brushes.DodgerBlue, Brushes.DodgerBlue, "hsBottomLeft", curZIndex);
+            ShapeItem hsBottomLeft = GenerateRectangleXYWidthHeight(x - blobSize / 2, y + height - blobSize / 2, blobSize, blobSize, Brushes.DodgerBlue, Brushes.DodgerBlue, "hsBottomLeft", highlightZIndex);
             highlightShapes.Add(hsBottomLeft);
 
-            ShapeItem hsTopRight = GenerateRectangleXYWidthHeight(x + width - blobSize / 2, y - blobSize / 2, blobSize, blobSize, Brushes.DodgerBlue, Brushes.DodgerBlue, "hsTopRight", curZIndex);
+            ShapeItem hsTopRight = GenerateRectangleXYWidthHeight(x + width - blobSize / 2, y - blobSize / 2, blobSize, blobSize, Brushes.DodgerBlue, Brushes.DodgerBlue, "hsTopRight", highlightZIndex);
             highlightShapes.Add(hsTopRight);
 
-            ShapeItem hsBottomRight = GenerateRectangleXYWidthHeight(x + width - blobSize / 2, y + height - blobSize / 2, blobSize, blobSize, Brushes.DodgerBlue, Brushes.DodgerBlue, "hsBottomRight", curZIndex);
+            ShapeItem hsBottomRight = GenerateRectangleXYWidthHeight(x + width - blobSize / 2, y + height - blobSize / 2, blobSize, blobSize, Brushes.DodgerBlue, Brushes.DodgerBlue, "hsBottomRight", highlightZIndex);
             highlightShapes.Add(hsBottomRight);
-
 
             // just adds to shapeitems
             foreach (ShapeItem si in highlightShapes)
@@ -81,35 +80,5 @@ namespace PlexShareWhiteboard
 
             highlightShapes.Clear();
         }
-
-        public bool HighLightSideMouse(Point a)
-        {
-            if (highlightShapes.Count < 4)
-                return false;
-            for (int i = 1; i <= 4; i++)
-            {
-                Rect boundingBox = highlightShapes.ElementAt(i).Geometry.Bounds;
-                if (a.X > boundingBox.X && a.X < boundingBox.X + boundingBox.Width &&
-                        a.Y > boundingBox.Y && a.Y < boundingBox.Y + boundingBox.Height)
-                    return true;
-            }
-            return false;
-        }
-
-        public bool HighLightCornerMouse(Point a)
-        {
-            if (highlightShapes.Count < 8)
-                return false;
-
-            for (int i = 5; i <= 8; i++)
-            {
-                Rect boundingBox = highlightShapes.ElementAt(i).Geometry.Bounds;
-                if (a.X > boundingBox.X && a.X < boundingBox.X + boundingBox.Width &&
-                        a.Y > boundingBox.Y && a.Y < boundingBox.Y + boundingBox.Height)
-                    return true;
-            }
-            return false;
-        }
-
     }
 }
