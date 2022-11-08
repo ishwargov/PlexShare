@@ -130,7 +130,7 @@ namespace PlexShareApp
         {
             if (this.WindowState == WindowState.Maximized)
             {
-                this.BorderThickness = new System.Windows.Thickness(8);
+                this.BorderThickness = new System.Windows.Thickness(6);
             }
             else
             {

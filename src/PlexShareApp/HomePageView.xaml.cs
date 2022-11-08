@@ -40,7 +40,12 @@ namespace PlexShareApp
                 this.Name_box.Text = "";
                 this.Name_block.Text = "Name!!!";
                 this.Name_block.Foreground = Brushes.Red;
+
             }
+
+            MainScreenView mainScreenView = new MainScreenView();
+            mainScreenView.Show();
+            this.Close();
         }
 
         private void ToMainScreen(object sender, RoutedEventArgs e)
