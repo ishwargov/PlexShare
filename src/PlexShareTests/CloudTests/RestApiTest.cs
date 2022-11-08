@@ -4,10 +4,10 @@ using System.Text;
 namespace PlexShareTests.CloudTests
 {
 
-    public class RestApiTest
+    public class RestApiTest : IDisposable
     {
-        private const string SubmissionUrl = @"http://localhost:7074/api/submission";
-        private const string SessionUrl = @"http://localhost:7074/api/session";
+        private const string SubmissionUrl = @"http://localhost:7213/api/submission";
+        private const string SessionUrl = @"http://localhost:7213/api/session";
         private FileDownloadApi _downloadClient;
         private FileUploadApi _uploadClient;
 
@@ -16,19 +16,20 @@ namespace PlexShareTests.CloudTests
             _downloadClient = new(SessionUrl, SubmissionUrl);
             _uploadClient = new(SessionUrl, SubmissionUrl);
         }
-
+        ~RestApiTest()
+        {
+            Dispose();
+        }
         /// <summary>
         /// Cleans up the test leftovers.
         /// </summary>
-        /*
-        [TestCleanup]
-        public async Task Cleanup()
+        public void Dispose()
         {
-            // Delete all entries from our Azure table storage.
-            Logger.LogMessage("Deleting all entries from our Azure table storage.");
-            await _restClient.DeleteEntitiesAsync();
+            _downloadClient.DeleteAllFilesAsync().Wait();
+            _downloadClient.DeleteAllSessionsAsync().Wait();
+            GC.SuppressFinalize(this);
         }
-        */
+        
         /// <summary>
         /// Tests creating and getting an entity.
         /// </summary>
@@ -38,7 +39,7 @@ namespace PlexShareTests.CloudTests
             // Create an entity.
             //Logger.LogMessage("Create an entity.");
             byte[] newPdf = Encoding.ASCII.GetBytes("author");
-            SubmissionEntity? postEntity = await _uploadClient.PutSubmissionAsync("sessionId", "userName", newPdf);
+            SubmissionEntity? postEntity = await _uploadClient.PostSubmissionAsync("sessionId", "userName", newPdf);
 
             // Get the entity.
             //Logger.LogMessage("Get the entity.");
@@ -54,94 +55,113 @@ namespace PlexShareTests.CloudTests
 
             //Assert.Equal(postEntity?.Name, getEntity?.Name);
         }
-        /*
+
         [Fact]
-        public async Task TestPostAndGet()
+        public async Task TestCreateAndGetSession()
+        {
+            
+            SessionEntity? postEntity = await _uploadClient.PostSessionAsync("sessionId", "hostuserName");
+
+            // Get the entity.
+            //Logger.LogMessage("Get the entity.");
+
+            IReadOnlyList<SessionEntity>? getEntity = await _downloadClient.GetSessionsByUserAsync("hostuserName");
+
+            // Validate.
+            //Logger.LogMessage("Validate.");
+            Assert.Equal(1, getEntity?.Count);
+            for (int i = 0; i < getEntity?.Count; i++)
+            {
+                Assert.Equal(postEntity?.SessionId, getEntity[i].SessionId);
+            }
+        }
+
+        [Fact]
+        public async Task TestUpdateSubmission()
         {
             // Create an entity.
             //Logger.LogMessage("Create an entity.");
-            Entity? postEntity = await _restClient.PostEntityAsync("First");
+            byte[] newPdf = Encoding.ASCII.GetBytes("author");
+            byte[] changedPdf = Encoding.ASCII.GetBytes("writer");
+
+            SubmissionEntity? postEntity = await _uploadClient.PostSubmissionAsync("sessionId", "userName", newPdf);
+            SubmissionEntity? updateEntity = await _uploadClient.PutSubmissionAsync("sessionId", "userName", changedPdf);
 
             // Get the entity.
-            Logger.LogMessage("Get the entity.");
-            Entity? getEntity = await _restClient.GetEntityAsync(postEntity?.Id);
+            //Logger.LogMessage("Get the entity.");
+
+            IReadOnlyList<SubmissionEntity>? getEntity = await _downloadClient.GetFilesByUserAsync("userName");
 
             // Validate.
-            Logger.LogMessage("Validate.");
-            Assert.AreEqual(postEntity?.Id, getEntity?.Id);
-            Assert.AreEqual(postEntity?.Name, getEntity?.Name);
+            //Logger.LogMessage("Validate.");
+            Assert.Equal(1, getEntity?.Count);
+            for (int i = 0; i < getEntity?.Count; i++)
+            {
+                //Assert.Equal(postEntity?.SessionId, getEntity[i].SessionId);
+                if (getEntity[i].SessionId == postEntity.SessionId)
+                {
+                    Assert.Equal(changedPdf, getEntity[i].Pdf);
+                }
+            }
         }
-        /// <summary>
-        /// Tests updating an entity.
-        /// </summary>
-        [TestMethod]
-        public async Task TestPut()
+
+        [Fact]
+        public async Task TestGetFilesByUserInEmpty()
+        {
+
+            IReadOnlyList<SubmissionEntity>? getEntity = await _downloadClient.GetFilesByUserAsync("hostuserName");
+
+            // Validate.
+            //Logger.LogMessage("Validate.");
+            Assert.Equal(0, getEntity?.Count); //0 indicates empty case. 
+            
+        }
+
+        [Fact]
+        public async Task TestGetFilesBySessionInEmpty()
+        {
+
+            IReadOnlyList<SubmissionEntity>? getEntity = await _downloadClient.GetFilesBySessionIdAsync("hostuserName");
+
+            // Validate.
+            //Logger.LogMessage("Validate.");
+            Assert.Equal(0, getEntity?.Count); //0 indicates empty case. 
+
+        }
+
+        [Fact]
+        public async Task TestGetSessionByUserInEmpty()
+        {
+
+            IReadOnlyList<SessionEntity>? getEntity = await _downloadClient.GetSessionsByUserAsync("hostuserName");
+
+            // Validate.
+            //Logger.LogMessage("Validate.");
+            Assert.Equal(0, getEntity?.Count); //0 indicates empty case. 
+
+        }
+
+        /*
+        [Fact]
+        public async Task TestDeleteAndGetSubmission()
         {
             // Create an entity.
-            Logger.LogMessage("Create an entity.");
-            Entity? postEntity = await _restClient.PostEntityAsync("First");
+            //Logger.LogMessage("Create an entity.");
+            byte[] newPdf = Encoding.ASCII.GetBytes("author");
+            SubmissionEntity? postEntity = await _uploadClient.PostSubmissionAsync("sessionId", "userName", newPdf);
 
-            // Update the entity.
-            Logger.LogMessage("Update the entity.");
-            Entity? updatedEntity = await _restClient.PutEntityAsync(postEntity?.Id, "Updated First");
-
-            // Validate.
-            Logger.LogMessage("Validate.");
-            Entity? getEntity = await _restClient.GetEntityAsync(postEntity?.Id);
-            Assert.AreEqual(updatedEntity?.Id, getEntity?.Id);
-            Assert.AreEqual(updatedEntity?.Name, getEntity?.Name);
-        }
-
-        [TestMethod]
-        public async Task TestDeleteEntity()
-        {
-            // Create an entity.
-            Logger.LogMessage("Create an entity.");
-            Entity? postEntity = await _restClient.PostEntityAsync("First");
-
-            // Delete the entity.
-            Logger.LogMessage("Delete the entity.");
-            await _restClient.DeleteEntityAsync(postEntity?.Id);
+            // Get the entity.
+            //Logger.LogMessage("Get the entity.");
+            await _downloadClient.DeleteFilesbyUserAsync(postEntity.UserName);
+            IReadOnlyList<SubmissionEntity>? getEntity = await _downloadClient.GetFilesByUserAsync("userName");
 
             // Validate.
-            // Trying to get the entity should throw an exception.
-            try
+            //Logger.LogMessage("Validate.");
+            Assert.Equal(0, getEntity?.Count);
+            /*for (int i = 0; i < getEntity?.Count; i++)
             {
-                // Get the entity.
-                Logger.LogMessage("Getting the entity.");
-                Entity? getEntity = await _restClient.GetEntityAsync(postEntity?.Id);
-                Assert.Fail("Trying to get a deleted entity did not throw an exception.");
+                Assert.Equal(postEntity?.SessionId, getEntity[i].SessionId);
             }
-            catch (HttpRequestException httpEx) when (httpEx.StatusCode == HttpStatusCode.NotFound)
-            {
-                Logger.LogMessage("Rightly got the expected exception trying to get a deleted entity.");
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail($"Unexpected exception type. Message = {ex.Message}");
-            }
-        }
-
-        /// <summary>
-        /// Tests deleting all entities and getting all entities.
-        /// </summary>
-        [TestMethod]
-        public async Task TestDeleteAllAndGetAll()
-        {
-            // Delete any existing entities.
-            Logger.LogMessage("Delete any existing entities.");
-            await _restClient.DeleteEntitiesAsync();
-
-            // Create three entities.
-            Logger.LogMessage("Create three entities.");
-            _ = await _restClient.PostEntityAsync("First");
-            _ = await _restClient.PostEntityAsync("Second");
-            _ = await _restClient.PostEntityAsync("Third");
-
-            // Validate.
-            Logger.LogMessage("Validate.");
-            IReadOnlyList<Entity>? entities = await _restClient.GetEntitiesAsync();
-            Assert.AreEqual(entities?.Count, 3);
         }*/
     }
 }

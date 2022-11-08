@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
-using System.Net.Http.Json;
-using System.Security.Policy;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -32,7 +30,7 @@ namespace PlexShareCloud
         /// Makes a "GET" call to our Azure function APIs to get all files for given username.
         /// </summary>
         /// <param name="username">Username of the user details we are searching for</param>
-        /// <returns></returns>
+        /// <returns>Returns all files in submission table with the given username. </returns>
         public async Task<IReadOnlyList<SubmissionEntity>> GetFilesByUserAsync(string username)
         {
             var response = await _entityClient.GetAsync(_submissionUrl + $"/users/{username}");
@@ -53,7 +51,7 @@ namespace PlexShareCloud
         /// Makes a "GET" call to our Azure function APIs to get all files for given sessionid. 
         /// </summary>
         /// <param name="sessionId">The unqiue id for the given session</param>
-        /// <returns></returns>
+        /// <returns>Return all rows in Sessions with given session Id. </returns>
         public async Task<IReadOnlyList<SubmissionEntity>> GetFilesBySessionIdAsync(string sessionId)
         {
             var response = await _entityClient.GetAsync(_submissionUrl + $"/sessions/{sessionId}");
@@ -74,7 +72,7 @@ namespace PlexShareCloud
         /// Makes a "GET" call to our Azure function APIs to get all sessions for given username.
         /// </summary>
         /// <param name="hostUsername">Username of the user details we are searching for who conducted sessions</param>
-        /// <returns></returns>
+        /// <returns>Return all rows in session table with username of host given</returns>
         public async Task<IReadOnlyList<SessionEntity>> GetSessionsByUserAsync(string hostUsername)
         {
             var response = await _entityClient.GetAsync(_sessionUrl + $"/{hostUsername}");
@@ -90,5 +88,32 @@ namespace PlexShareCloud
             //Trace to be added. 
             return entities;
         }
+
+        /// <summary>
+        /// This Async takes cares for deleting files in the Submissions table.
+        /// </summary>
+        /// <returns>Returns a Http response with true when successfully exectues the delete operation.</returns>
+        public async Task DeleteAllFilesAsync()
+        {
+            using HttpResponseMessage response = await _entityClient.DeleteAsync(_submissionUrl);
+            response.EnsureSuccessStatusCode();
+        }
+
+        /// <summary>
+        /// This Async takes cares for deleting files in the sessions table. 
+        /// </summary>
+        /// <returns>Returns a Http response with true when successfully exectues the delete operation.</returns>
+        public async Task DeleteAllSessionsAsync()
+        {
+            using HttpResponseMessage response = await _entityClient.DeleteAsync(_sessionUrl);
+            response.EnsureSuccessStatusCode();
+        }
+
+        /* 
+        public async Task DeleteFilesbyUserAsync(string username)
+        {
+            using HttpResponseMessage response = await _entityClient.DeleteAsync(_submissionUrl + $"/users/{username}");
+            response.EnsureSuccessStatusCode();
+        }*/
     }
 }
