@@ -11,6 +11,7 @@ using Azure.Data.Tables;
 using Azure;
 using System;
 using Microsoft.AspNetCore.Routing;
+using System.Collections.Generic;
 
 namespace PlexShareCloud
 {
@@ -142,6 +143,12 @@ namespace PlexShareCloud
         }
 
         //Delete all files 
+        /// <summary>
+        /// Deleting all rows in the Submission Table.
+        /// </summary>
+        /// <param name="req">req is HttpRequest which we are not using here.</param>
+        /// <param name="entityClient"></param>
+        /// <returns></returns>
         [FunctionName("DeleteAllFiles")]
         public static async Task<IActionResult> DeleteAllFiles(
         [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = SubmissionRoute)] HttpRequest req,
@@ -162,6 +169,12 @@ namespace PlexShareCloud
         }
 
         //Delete all sessions
+        /// <summary>
+        /// Deleting all rows in sessions table. 
+        /// </summary>
+        /// <param name="req">req is HttpRequest which we are not using here.</param>
+        /// <param name="entityClient"></param>
+        /// <returns></returns>
         [FunctionName("DeleteAllSessions")]
         public static async Task<IActionResult> DeleteAllSessions(
         [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = SessionRoute)] HttpRequest req,
@@ -180,6 +193,28 @@ namespace PlexShareCloud
 
             return new OkResult();
         }
+
+        /*
+        //Delete all files 
+        [FunctionName("DeleteAllFilesOfUser")]
+        public static async Task<IActionResult> DeleteAllFilesOfUser(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = SubmissionRoute + "/users/{username}")] HttpRequest req,
+        [Table(SubmissionTableName, ConnectionName)] TableClient entityClient,
+        string username)
+        {
+            //Trace need to be added. 
+            //log.LogInformation($"Deleting entity by {username}");
+            try
+            {
+                await entityClient.DeleteEntityAsync(SubmissionEntity.PartitionKeyName, username, ETag.All);
+            }
+            catch (RequestFailedException e) when (e.Status == 404)
+            {
+                return new NotFoundResult();
+            }
+
+            return new OkResult();
+        }*/
 
         /*
         Delete files by username??
