@@ -23,23 +23,6 @@
         <Setter Property="Background" Value="Transparent" />
     </Style>
 
-    <!--Custom style for the textbox-->
-    <Style x:Name="ChatTextBox" TargetType="TextBox">
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="False">
-                <Setter Property="Cursor" Value="Arrow" />
-            </Trigger>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Cursor" Value="IBeam" />
-                <Setter Property="CaretBrush">
-                    <Setter.Value>
-                        <SolidColorBrush Color="White" />
-                    </Setter.Value>
-                </Setter>
-            </Trigger>
-        </Style.Triggers>
-    </Style>
-
     <!--Custom style the Button with our custom style template-->
     <Style x:Name="ChatSendButton" TargetType="{x:Type Button}">
         <Setter Property="Background" Value="{DynamicResource StaticButtonBack}" />
