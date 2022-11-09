@@ -11,9 +11,6 @@ using PlexShareNetwork.Serialization;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-// Each frame consists of the resolution of the image and the ImageDiffList
-using Frame = System.Tuple<System.Tuple<int, int>,
-                System.Collections.Generic.List<Pixel>>;
 
 namespace PlexShareScreenshare.Client
 {
@@ -115,7 +112,7 @@ namespace PlexShareScreenshare.Client
                 {
                     StartScreenSharing();
                 }
-                Tuple<int, int> res = _serializer.Deserialize<Tuple<int, int>>(dataPacket.Data);
+                Resolution res = _serializer.Deserialize<Resolution>(dataPacket.Data);
                 _processor.SetNewResolution(res);
             }
             else
@@ -134,7 +131,7 @@ namespace PlexShareScreenshare.Client
             while (!_imageCancellationTokenSource.IsCancellationRequested)
             {
                 Frame img = _processor.GetImage();
-                if (img.Item2.Count == 0) continue;
+                if (img.Pixels.Count == 0) continue;
                 string serializedImg = _serializer.Serialize(img);
                 DataPacket dataPacket = new(_id, _name, ClientDataHeader.Image.ToString(), serializedImg);
                 string serializedData = _serializer.Serialize(dataPacket);

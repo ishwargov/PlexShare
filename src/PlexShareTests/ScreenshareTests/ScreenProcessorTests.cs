@@ -3,15 +3,12 @@ using PlexShareTests.ScreenshareTests;
 using System.Diagnostics;
 using System.Drawing;
 
-ScreenProcessorTests tmp = new();
-tmp.Test1();
-
 namespace PlexShareTests.ScreenshareTests
 {
     public class ScreenProcessorTests
     {
         [Fact]
-        public void Test1()
+        public void TestProcessedFrameNonEmpty()
         {
             ScreenCapturer screenCapturer = new();
             ScreenProcessor screenProcessor = new(screenCapturer);
@@ -19,7 +16,7 @@ namespace PlexShareTests.ScreenshareTests
             screenProcessor.StartProcessing();
             screenCapturer.StartCapture();
 
-            Thread.Sleep(10000);
+            Thread.Sleep(500);
 
             screenCapturer.StopCapture();
             int v2 = screenProcessor.GetProcessedFrameLength();
@@ -29,7 +26,7 @@ namespace PlexShareTests.ScreenshareTests
         }
 
         [Fact]
-        public void Test2()
+        public void TestSameImagePixelDiffZero()
         {
             ScreenCapturer screenCapturer = new();
 

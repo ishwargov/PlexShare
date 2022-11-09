@@ -12,14 +12,6 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
-// This datatype is for storing a list of the coordinate
-// of pixel and its RGB values i.e. list of ((x, y), (R, G, B))
-using ImageDiffList = System.Collections.Generic.List<Pixel>;
-
-// Each frame consists of the resolution of the image and the ImageDiffList
-using Frame = System.Tuple<System.Tuple<int, int>,
-                System.Collections.Generic.List<Pixel>>;
-
 // struct for storing x and y coordinates of a pixel
 public struct Coordinates
 {
@@ -42,6 +34,21 @@ public struct Pixel
     public RGB RGB { get; set; }
 }
 
+public struct Resolution
+{
+    public int Height { get; set; }
+    public int Width { get; set; }
+
+    public bool Equals(Resolution p) => Height == p.Height && Width == p.Width;
+    public static bool operator ==(Resolution lhs, Resolution rhs) => lhs.Equals(rhs);
+    public static bool operator !=(Resolution lhs, Resolution rhs) => !(lhs == rhs);
+}
+
+public struct Frame
+{
+    public Resolution Resolution { get; set; }
+    public List<Pixel> Pixels { get; set; }
+}
 
 namespace PlexShareScreenshare.Client
 {
@@ -61,8 +68,9 @@ namespace PlexShareScreenshare.Client
         private readonly ScreenCapturer _capturer;
 
         // Old and the new resolutions 
-        private Tuple<int, int> OldRes;
-        public Tuple<int, int> NewRes { private get; set; }
+        private Resolution OldRes;
+        public Resolution NewRes { private get; set; }
+        public readonly Object VariableForResolutionLock;
 
         // Tokens added to be able to stop the thread execution
         private CancellationTokenSource? tokenSource;
@@ -79,9 +87,10 @@ namespace PlexShareScreenshare.Client
         {
             this._capturer = Capturer;
             _processedFrame = new Queue<Frame>();
-            OldRes = new Tuple<int, int>(720, 1280);
-            NewRes = new Tuple<int, int>(720, 1280);
+            OldRes = new Resolution() { Height = 720, Width = 1280};
+            NewRes = new Resolution() { Height = 720, Width = 1280 };
             prevImage = new Bitmap(720, 1280);
+            VariableForResolutionLock = new();
         }
 
         /// <summary>
@@ -108,10 +117,10 @@ namespace PlexShareScreenshare.Client
         /// In this function we go through every pixel of both the images and
         /// returns list of those pixels which are different in both the images
         /// </summary>
-        public static ImageDiffList ProcessUsingLockbits(Bitmap processedBitmap, Bitmap processedBitmap1)
+        public static List<Pixel> ProcessUsingLockbits(Bitmap processedBitmap, Bitmap processedBitmap1)
         {
             // List for storing the difference in pixels
-            ImageDiffList tmp = new();
+            List<Pixel> tmp = new();
             int count = 0;
             // Getting BitmapData from the Bitmap of first image
             // by locking the bits
@@ -182,10 +191,10 @@ namespace PlexShareScreenshare.Client
             {
                 Bitmap img = _capturer.GetImage();
                 img = Compress(img);
-                ImageDiffList DiffList = ProcessUsingLockbits(prevImage, img);
+                List<Pixel> DiffList = ProcessUsingLockbits(prevImage, img);
                 lock (_processedFrame)
                 {
-                    _processedFrame.Enqueue(new Frame(NewRes, DiffList));
+                    _processedFrame.Enqueue(new Frame() { Resolution = NewRes, Pixels = DiffList });
                 }
                 prevImage = img;
             }
@@ -238,11 +247,11 @@ namespace PlexShareScreenshare.Client
         /// Setting new resolution for sending the image 
         /// </summary>
         /// <param name="res"> New resolution values </param>
-        public void SetNewResolution(Tuple<int, int> res)
+        public void SetNewResolution(Resolution res)
         {
             // taking lock since newres is shared variable as it is
             // used even in Compress function
-            lock (NewRes)
+            lock (VariableForResolutionLock)
             {
                 NewRes = res;
             }
@@ -255,15 +264,15 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         public Bitmap Compress(Bitmap img)
         {
-            lock (NewRes)
+            lock (VariableForResolutionLock)
             {
                 if (NewRes != OldRes)
                 {
-                    prevImage = new Bitmap(NewRes.Item1, NewRes.Item2);
+                    prevImage = new Bitmap(NewRes.Height, NewRes.Width);
                     OldRes = NewRes;
                 }
             }
-            img = new Bitmap(img, NewRes.Item1, NewRes.Item2);
+            img = new Bitmap(img, NewRes.Height, NewRes.Width);
             return img;
         }
     }
