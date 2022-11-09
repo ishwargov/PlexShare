@@ -19,6 +19,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\PlexShareDashboard\PlexShareDashboard.csproj" />
 	  <ProjectReference Include="..\PlexShareNetwork\PlexShareNetwork.csproj" />
 	</ItemGroup>
 </Project>

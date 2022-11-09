@@ -18,10 +18,14 @@ namespace PlexShareNetwork.Serialization
         /// </summary>
         public string Serialize<T> (T genericObject)
         {
-            XmlSerializer xmlSerializer;
+            // Storing the generic data type in string form
+            string dataType = genericObject.GetType().ToString();
+            Wrapper<T> wrapperObject = new Wrapper<T>(dataType, genericObject);
+
+            XmlSerializer xmlWrapperSerializer;
             try
             {
-                xmlSerializer = new XmlSerializer(typeof(T));
+                xmlWrapperSerializer = new XmlSerializer(typeof(Wrapper<T>));
             }
             catch(InvalidOperationException e)
             {
@@ -48,7 +52,7 @@ namespace PlexShareNetwork.Serialization
             // Serializing the provided object
             try
             {
-                xmlSerializer.Serialize(xmlWriter, genericObject);
+                xmlWrapperSerializer.Serialize(xmlWriter, wrapperObject);
             }
             catch(InvalidOperationException e)
             {
@@ -64,16 +68,60 @@ namespace PlexShareNetwork.Serialization
         /// </summary>
         public T Deserialize<T> (string serializedString)
         {
-            XmlSerializer xmlSerializer;
+            T genericObject = default(T);
+
+            // Getting the wrapper object which contains the generic object and its datatype
+            Wrapper<T> wrapperObject = returnDeserializedWrapperObject<T>(serializedString);
+
             try
             {
-                xmlSerializer = new XmlSerializer(typeof(T));
+                genericObject = wrapperObject.genericObject;
+            }
+            catch(NullReferenceException e)
+            {
+                Trace.WriteLine($"{e.StackTrace}");
+            }
+
+            return genericObject;
+        }
+
+        /// <summary>
+        /// Given a serialized string, the method returns the type of the generic object which was serialized
+        /// </summary>
+        public string GetObjectType<T>(string serializedString)
+        {
+            string dataType = null;
+
+            // Getting the wrapper object which contains the generic object and its datatype
+            Wrapper<T> wrapperObject = returnDeserializedWrapperObject<T>(serializedString);
+
+            try
+            {
+                dataType = wrapperObject.dataType;
+            }
+            catch (NullReferenceException e)
+            {
+                Trace.WriteLine($"{e.StackTrace}");
+            }
+
+            return dataType;
+        }
+
+        /// <summary>
+        /// Given a serialized string in XML format, the method converts it into the wrapper object and returns it
+        /// </summary>
+        private Wrapper<T> returnDeserializedWrapperObject<T>(string serializedString)
+        {
+            XmlSerializer xmlWrapperSerializer;
+            try
+            {
+                xmlWrapperSerializer = new XmlSerializer(typeof(Wrapper<T>));
             }
             catch (InvalidOperationException e)
             {
                 // Arises if the class 'T' does not have an empty constructor
                 Trace.WriteLine($"{e.StackTrace}");
-                return default(T);
+                return default(Wrapper<T>);
             }
 
             // To read the string
@@ -82,25 +130,42 @@ namespace PlexShareNetwork.Serialization
             {
                 stringReader = new StringReader(serializedString);
             }
-            catch(ArgumentNullException e)
+            catch (ArgumentNullException e)
             {
                 Trace.WriteLine($"{e.StackTrace}");
-                return default(T);
+                return default(Wrapper<T>);
             }
 
             // The object to be returned
-            T returnObject = default(T);
+            Wrapper<T> wrapperObject = null;
             try
             {
-                returnObject = (T)xmlSerializer.Deserialize(stringReader);
+                wrapperObject = (Wrapper<T>)xmlWrapperSerializer.Deserialize(stringReader);
             }
-            catch(ArgumentNullException e)
+            catch (ArgumentNullException e)
             {
                 Trace.WriteLine($"{e.StackTrace}");
-                return default(T);
+                return null;
             }
 
-            return returnObject;
+            // Returning the wrapper object
+            return wrapperObject;
+        }
+    }
+
+    // Used to store the datatype of the object to be serialized
+    public class Wrapper<T>
+    {
+        public string dataType;
+        public T genericObject;
+
+        // Empty constructor
+        public Wrapper() {}
+
+        public Wrapper(string dataType, T genericObject)
+        {
+            this.dataType = dataType;
+            this.genericObject = genericObject;
         }
     }
 }
