@@ -48,7 +48,7 @@ namespace PlexShareWhiteboard.Client
 
             var newSerializedShapes = _serializer.ConvertToSerializableShapeItem(newShapes);
             WBServerShape wbShape = new WBServerShape(newSerializedShapes, op, boardShape.User);
-            _communicator.SendToServer(wbShape);
+            //_communicator.SendToServer(wbShape);
 
 
         }

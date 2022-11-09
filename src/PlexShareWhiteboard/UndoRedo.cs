@@ -75,7 +75,10 @@ namespace PlexShareWhiteboard
                 return null;
 
             UndoStackElement topOfStack = undoStack.Pop();
+            if (topOfStack.PrvShape == null)
+                return null;
             UndoStackElement modifiedObject = new UndoStackElement(topOfStack.PrvShape, topOfStack.NewShape, topOfStack.Op);
+
 
             Debug.WriteLine("\n" + topOfStack.Op + "\n");
 
@@ -114,7 +117,11 @@ namespace PlexShareWhiteboard
         {
             if (redoStack.Count == 0)
                 return null;
+            
             UndoStackElement topOfStack = redoStack.Pop();
+            if (topOfStack.NewShape == null)
+                return null;
+
             switch (topOfStack.Op)
             {
                 case Operation.Creation:
@@ -143,7 +150,7 @@ namespace PlexShareWhiteboard
         public void InsertIntoStack(UndoStackElement obj)
         {
             undoStack.Push(obj);
-
+            Debug.WriteLine(obj.Op + " Operation" + obj.NewShape.Id + "id inserted\n");
         }
 
     }
