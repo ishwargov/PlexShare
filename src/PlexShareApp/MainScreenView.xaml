@@ -30,7 +30,6 @@
                     <ColumnDefinition Width="15*"/>
                     <ColumnDefinition Width="10*"/>
                     <ColumnDefinition Width="20*"/>
-
                     <ColumnDefinition Width="1.5*"/>
                 </Grid.ColumnDefinitions>
 
@@ -103,7 +102,7 @@
                             <RotateTransform Angle="-90"/>
                         </TextBlock.LayoutTransform>
                     </TextBlock>-->
-                    <materialDesign:PackIcon Name="ChatIcon" Kind="Chat" Height="20" Width="30" Foreground="White"/>
+                    <materialDesign:PackIcon Name="ChatIcon" Kind="Chat" Height="20" Width="30" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 </Button>
 
                 <!--Frame Definitions-->

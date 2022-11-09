@@ -72,7 +72,7 @@ namespace PlexShareApp
             Screenshare.Foreground = Brushes.Black;
 
             System.Console.WriteLine("ScreenShareUX");
-            Main.Content = whiteBoardPage;
+            Main.Content = screenSharePage;
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace PlexShareApp
             Screenshare.Foreground = Brushes.SeaShell;
 
             System.Console.WriteLine("Whiteboard UX");
-            Main.Content = screenSharePage;
+            Main.Content = whiteBoardPage;
         }
 
         /// <summary>
