@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -16,6 +16,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\PlexShareContent\PlexShareContent.csproj" />
 	  <ProjectReference Include="..\PlexShareWhiteboard\PlexShareWhiteboard.csproj" />
 	  <PackageReference Include="LiveCharts" Version="0.9.7" />
 	  <PackageReference Include="LiveCharts.Wpf" Version="0.9.7" />
