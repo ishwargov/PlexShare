@@ -20,6 +20,7 @@
 	<ItemGroup>
 	  <None Remove="Resources\497-4973038_profile-picture-circle-png-transparent-png.png" />
 	  <None Remove="Resources\AuthScreenImg.jpg" />
+	  <None Remove="Resources\GoogleSignIn.png" />
 	  <None Remove="Resources\time_background.jpg" />
 	  <None Remove="Resources\[removal.ai]_tmp-635051040cac5.png" />
 	  <None Remove="Resources\[removal.ai]_tmp-6350549d077ef.png" />
@@ -32,6 +33,7 @@
 	<ItemGroup>
 	  <Resource Include="Resources\497-4973038_profile-picture-circle-png-transparent-png.png" />
 	  <Resource Include="Resources\AuthScreenImg.jpg" />
+	  <Resource Include="Resources\GoogleSignIn.png" />
 	  <Resource Include="Resources\time_background.jpg" />
 	  <Resource Include="Resources\[removal.ai]_tmp-635051040cac5.png" />
 	  <Resource Include="Resources\[removal.ai]_tmp-6350549d077ef.png" />
@@ -48,7 +50,6 @@
 	  <Resource Include="Resources\dashboard.png" />
 	  <Resource Include="Resources\DashboardFavi.png" />
 	  <Resource Include="Resources\DashFavi.png" />
-	  <Resource Include="Resources\GoogleSignIn" />
 	</ItemGroup>
 
 	<ItemGroup>

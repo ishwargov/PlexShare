@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -27,6 +28,30 @@ namespace PlexShareApp
             InitializeComponent();
             AuthenticationViewModel viewModel = new AuthenticationViewModel();
             this.DataContext = viewModel;
+            this.Show();
+
+            Animate_Auth_Screen(this);
+        }
+
+        /// <summary>
+        /// Shows the animation of the Authentication Screen
+        /// </summary>
+        /// <param name="obj"></param>
+        void Animate_Auth_Screen(AuthenticationView obj)
+        {
+            int v = 0;
+            while (v != 100)
+            {
+                v += 1;
+                obj.pb1.Dispatcher.Invoke(() => pb1.Value = v, System.Windows.Threading.DispatcherPriority.Background);
+                obj.pb2.Dispatcher.Invoke(() => pb2.Value = v, System.Windows.Threading.DispatcherPriority.Background);
+                obj.pb3.Dispatcher.Invoke(() => pb3.Value = v, System.Windows.Threading.DispatcherPriority.Background);
+                obj.pb4.Dispatcher.Invoke(() => pb4.Value = v, System.Windows.Threading.DispatcherPriority.Background);
+                obj.pb5.Dispatcher.Invoke(() => pb5.Value = v, System.Windows.Threading.DispatcherPriority.Background);
+                obj.pb6.Dispatcher.Invoke(() => pb6.Value = v, System.Windows.Threading.DispatcherPriority.Background);
+
+                Thread.Sleep(25);
+            }
         }
 
         ///<summary>
@@ -107,11 +132,7 @@ namespace PlexShareApp
                 var homePage = new HomePageView(returnVal[1], returnVal[2], returnVal[3]);
                 homePage.Show();
                 Close(); 
-            } 
-            else
-            {
-               this.SignInButton.Content = "Try Again!";
-            }            
+            }        
         }
     }
 }
