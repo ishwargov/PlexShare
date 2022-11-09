@@ -67,5 +67,10 @@ namespace PlexShareWhiteboard.Client
                 Trace.WriteLine(e.Message);
             }
         }
+
+        public void SetCommunicator(IClientCommunicator communicator)
+        {
+            _clientCommunicator = communicator;
+        }
     }
 }

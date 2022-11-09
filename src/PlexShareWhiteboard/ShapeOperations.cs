@@ -96,6 +96,7 @@ namespace PlexShareWhiteboard
             ShapeItem newShape = new ShapeItem
             {
                 Geometry = geometry,
+                GeometryString = name,
                 Start = start,
                 End = end,
                 Fill = fillBrush,

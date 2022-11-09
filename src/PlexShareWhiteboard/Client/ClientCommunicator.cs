@@ -21,7 +21,7 @@ using Serializer = PlexShareWhiteboard.BoardComponents.Serializer;
 
 namespace PlexShareWhiteboard.Client
 {
-    internal class ClientCommunicator : IClientCommunicator
+    public class ClientCommunicator : IClientCommunicator
     {
         private static ClientCommunicator instance;
         private static Serializer serializer;

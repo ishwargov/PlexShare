@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace PlexShareWhiteboard.Client.Interfaces
 {
-    internal interface IClientCommunicator
+    public interface IClientCommunicator
     {
         void SendToServer(WBServerShape wBServerShape);
         void SendMessageToServer(string message, string ipAddress);
