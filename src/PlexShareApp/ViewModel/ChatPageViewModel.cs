@@ -7,21 +7,17 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel;
 using PlexShareContent.DataModels;
 using System.Windows.Threading;
 using System.Windows;
 using PlexShareContent;
-using PlexShareDashboard;
-using PlexShareNetwork;
 using PlexShareContent.Client;
 using PlexShare.Dashboard.Client.SessionManagement;
 using Dashboard;
 using PlexShareDashboard.Dashboard.Client.SessionManagement;
 using PlexShare.Dashboard;
-using System.Security.Cryptography.Xml;
 using System.Diagnostics;
 
 namespace PlexShareApp.ViewModel
@@ -208,7 +204,9 @@ namespace PlexShareApp.ViewModel
                                       {
                                           UserId = _model.GetUserID();
                                       }
-                                      // 
+
+                                      // Message object, ReceivedMsg, to be added to the new user's _allmessages
+                                      // list upon property changed event
                                       ReceivedMsg = new Message();
                                       ReceivedMsg.MessageID = message.MessageID;
                                       ReceivedMsg.Type = message.Type == MessageType.Chat;
@@ -233,7 +231,46 @@ namespace PlexShareApp.ViewModel
 
         public void OnMessageReceived(ReceiveContentData contentData)
         {
-            throw new NotImplementedException();
+            // Execute the call on the application's main thread.
+            //
+            // Also note that we may execute the call asynchronously as the calling
+            // thread is not dependent on the callee thread finishing this method call.
+            // Hence we may call the dispatcher's BeginInvoke method which kicks off
+            // execution async as opposed to Invoke which does it synchronously.
+
+            _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
+                      DispatcherPriority.Normal,
+                      new Action<ReceiveContentData>(contentData =>
+                      {
+                          lock (this)
+                          {
+                              if(contentData.Event == PlexShareContent.Enums.MessageEvent.New)
+                              {
+                                  Trace.WriteLine("All messages have been received");
+                                  Messages.Add(contentData.MessageID, contentData.Data);
+                                  ThreadIds.Add(contentData.MessageID, contentData.ReplyThreadID);
+
+                                  if (ProductionMode)
+                                  {
+                                      UserId = _model.GetUserID();
+                                  }
+
+                                  // Message object, ReceivedMsg, to be added to the new user's _allmessages
+                                  // list upon property changed event
+                                  ReceivedMsg = new Message();
+                                  ReceivedMsg.MessageID = contentData.MessageID;
+                                  ReceivedMsg.Type = contentData.Type == MessageType.Chat;
+                                  ReceivedMsg.IncomingMessage = contentData.Data;
+                                  ReceivedMsg.Time = contentData.SentTime.ToString("hh:mm tt ddd"); // 11:09 AM Mon
+                                  ReceivedMsg.Sender = Users.ContainsKey(contentData.SenderID) ? Users[contentData.SenderID] : "Anonymous";
+                                  ReceivedMsg.ToFrom = UserId == contentData.SenderID;
+                                  ReceivedMsg.ReplyMessage = contentData.ReplyMessageID == -1 ? "" : Messages[contentData.ReplyMessageID];
+
+                                  OnPropertyChanged("ReceivedMsg");
+                              }
+                          }
+                      }),
+                      contentData);
         }
 
     }
