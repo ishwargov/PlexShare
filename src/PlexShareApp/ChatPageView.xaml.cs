@@ -120,9 +120,38 @@ namespace PlexShareApp
         /// </summary>
         /// <param name="sender"> Notification Sender</param>
         /// <param name="e"> Routed Event Data </param>
-        
+        private void ReplyButtonClick(object sender, RoutedEventArgs e)
+        {
+            if(sender is Button)
+            {
+                var cmd = (Button)sender;
+                if(cmd.DataContext is Message)
+                {
+                    var msg = (Message)cmd.DataContext;
+                    ReplyTextBox.Text = msg.IncomingMessage;
+                    ReplyMsgId = msg.MessageID;
+                }
+            }
+        }
 
         // TODO: Implement StarButtonClick event
+        private void StarButtonClick(object sender, RoutedEventArgs e)
+        {
+            var viewModel = DataContext as ChatPageViewModel;
+
+            if(sender is RadioButton)
+            {
+                var cmd = (RadioButton)sender;
+
+                if(cmd.DataContext is Message)
+                {
+                    var msg = (Message)cmd.DataContext;
+                    viewModel.StarChatMsg(msg.MessageID);
+                }
+
+            }
+
+        }
 
         // TODO: Implement DownloadButtonClick event
 

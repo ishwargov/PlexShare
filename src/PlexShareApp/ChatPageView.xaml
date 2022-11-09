@@ -22,9 +22,8 @@
                                          RecvFileBubble="{StaticResource ResourceKey=RecvFileTemplate}"/>
         </ResourceDictionary>
     </UserControl.Resources>
-
-
     
+
     <!--Grid layout for chat window-->
     <Grid Background="#E2DCC8">
         
@@ -76,11 +75,11 @@
 
                             </TextBlock>
                         </Border>
-                        <TextBox Grid.Row="1" HorizontalAlignment="Left" AcceptsReturn="True" Style="{StaticResource ModernTextbox}"></TextBox>
+                        <TextBox x:Name="SendTextBox" Grid.Row="1" HorizontalAlignment="Left" AcceptsReturn="True" Style="{StaticResource ModernTextbox}"></TextBox>
                     </Grid>
                     <!--Fileupload Button-->
                     <!--TODO: Remove the foreground colour and add Icon-->
-                    <Button Content="File" Foreground="AliceBlue" Background="Transparent" HorizontalAlignment="Right" Width="30"
+                    <Button x:Name="FileUpload" Content="File" Foreground="AliceBlue" Background="Transparent" HorizontalAlignment="Right" Width="30"
                             VerticalAlignment="Bottom" Margin="3,5,2,6" Click="UploadButtonClick">
                         <!--TODO: Add an upload icon-->
                     </Button>
