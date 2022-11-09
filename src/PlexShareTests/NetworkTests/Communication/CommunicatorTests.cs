@@ -12,46 +12,15 @@ namespace PlexShareNetwork.Communication.Test
     public class CommunicatorTests
     {
         private readonly string _module = "Test Module";
-        private readonly string _clientID = "Test Client ID";
-
-        private void StartServerAndClients(ICommunicator communicatorServer, ICommunicator[] communicatorsClient)
-        {
-            string serverIPAndPort = communicatorServer.Start();
-            string[] IPAndPort = serverIPAndPort.Split(":");
-
-            // first subscribe the module on the server so that it can be notified with the socket object when client joins
-            TestNotificationHandler testNotificationHandlerServer = new();
-            communicatorServer.Subscribe("_", testNotificationHandlerServer, true);
-
-            for (var i = 0; i < communicatorsClient.Length; i++)
-            {
-                string communicatorClientReturn = communicatorsClient[i].Start(IPAndPort[0], IPAndPort[1]);
-                Assert.Equal("success", communicatorClientReturn);
-
-                testNotificationHandlerServer.WaitForEvent();
-                Assert.Equal("OnClientJoined", testNotificationHandlerServer.GetLastEvent());
-                Assert.True(testNotificationHandlerServer.GetLastEventSocket().Connected);
-                communicatorServer.AddClient(_clientID + i, testNotificationHandlerServer.GetLastEventSocket());
-            }
-        }
-
-        private void StopServerAndClients(ICommunicator communicatorServer, ICommunicator[] communicatorsClient)
-        {
-            foreach (ICommunicator communicatorClient in communicatorsClient)
-            {
-                communicatorClient.Stop();
-            }
-            communicatorServer.Stop();
-        }
+        private readonly string _clientID = "Client ID";
 
         [Fact]
         public void ServerAndSingleClientStartAndStopTest()
         {
             CommunicatorServer communicatorServer = new();
             CommunicatorClient[] communicatorsClient = { new() };
-            StartServerAndClients(communicatorServer, communicatorsClient);
-            StopServerAndClients(communicatorServer, communicatorsClient);
-           
+            NetworkTestGlobals.StartServerAndClients(communicatorServer, communicatorsClient);
+            NetworkTestGlobals.StopServerAndClients(communicatorServer, communicatorsClient);
         }
 
         [Fact]
@@ -59,8 +28,8 @@ namespace PlexShareNetwork.Communication.Test
         {
             CommunicatorServer communicatorServer = new();
             CommunicatorClient[] communicatorsClient = { new(), new(), new(), new(), new() };
-            StartServerAndClients(communicatorServer, communicatorsClient);
-            StopServerAndClients(communicatorServer, communicatorsClient);
+            NetworkTestGlobals.StartServerAndClients(communicatorServer, communicatorsClient);
+            NetworkTestGlobals.StopServerAndClients(communicatorServer, communicatorsClient);
         }
 
         [Fact]
@@ -68,7 +37,7 @@ namespace PlexShareNetwork.Communication.Test
         {
             CommunicatorServer communicatorServer = new();
             CommunicatorClient[] communicatorsClient = { new() };
-            StartServerAndClients(communicatorServer, communicatorsClient);
+            NetworkTestGlobals.StartServerAndClients(communicatorServer, communicatorsClient);
 
             TestNotificationHandler testNotificationHandlerServer = new();
             TestNotificationHandler testNotificationHandlerClient = new();
@@ -79,7 +48,7 @@ namespace PlexShareNetwork.Communication.Test
             testNotificationHandlerServer.WaitForEvent();
             Assert.Equal("OnDataReceived", testNotificationHandlerServer.GetLastEvent());
             Assert.Equal("Hello from client to server", testNotificationHandlerServer.GetLastEventData());
-            StopServerAndClients(communicatorServer, communicatorsClient);
+            NetworkTestGlobals.StopServerAndClients(communicatorServer, communicatorsClient);
         }
 
         [Fact]
@@ -87,7 +56,7 @@ namespace PlexShareNetwork.Communication.Test
         {
             CommunicatorServer communicatorServer = new();
             CommunicatorClient[] communicatorsClient = { new(), new(), new(), new(), new() };
-            StartServerAndClients(communicatorServer, communicatorsClient);
+            NetworkTestGlobals.StartServerAndClients(communicatorServer, communicatorsClient);
 
             TestNotificationHandler testNotificationHandlerServer = new();
             communicatorServer.Subscribe(_module, testNotificationHandlerServer, true);
@@ -101,7 +70,7 @@ namespace PlexShareNetwork.Communication.Test
                 Assert.Equal("OnDataReceived", testNotificationHandlerServer.GetLastEvent());
                 Assert.Equal("Hello to server from client" + i, testNotificationHandlerServer.GetLastEventData());
             }
-            StopServerAndClients(communicatorServer, communicatorsClient);
+            NetworkTestGlobals.StopServerAndClients(communicatorServer, communicatorsClient);
         }
 
         [Fact]
@@ -109,7 +78,7 @@ namespace PlexShareNetwork.Communication.Test
         {
             CommunicatorServer communicatorServer = new();
             CommunicatorClient[] communicatorsClient = { new() };
-            StartServerAndClients(communicatorServer, communicatorsClient);
+            NetworkTestGlobals.StartServerAndClients(communicatorServer, communicatorsClient);
 
             TestNotificationHandler testNotificationHandlerServer = new();
             TestNotificationHandler testNotificationHandlerClient = new();
@@ -120,7 +89,7 @@ namespace PlexShareNetwork.Communication.Test
             testNotificationHandlerClient.WaitForEvent();
             Assert.Equal("OnDataReceived", testNotificationHandlerClient.GetLastEvent());
             Assert.Equal("Hello from server to client", testNotificationHandlerClient.GetLastEventData());
-            StopServerAndClients(communicatorServer, communicatorsClient);
+            NetworkTestGlobals.StopServerAndClients(communicatorServer, communicatorsClient);
         }
 
         [Fact]
@@ -128,7 +97,7 @@ namespace PlexShareNetwork.Communication.Test
         {
             CommunicatorServer communicatorServer = new();
             CommunicatorClient[] communicatorsClient = { new(), new(), new(), new(), new() };
-            StartServerAndClients(communicatorServer, communicatorsClient);
+            NetworkTestGlobals.StartServerAndClients(communicatorServer, communicatorsClient);
 
             TestNotificationHandler testNotificationHandlerServer = new();
             communicatorServer.Subscribe(_module, testNotificationHandlerServer, true);
@@ -142,7 +111,7 @@ namespace PlexShareNetwork.Communication.Test
                 Assert.Equal("OnDataReceived", testNotificationHandlersClient[i].GetLastEvent());
                 Assert.Equal("Hello from server to client" + i, testNotificationHandlersClient[i].GetLastEventData());
             }
-            StopServerAndClients(communicatorServer, communicatorsClient);
+            NetworkTestGlobals.StopServerAndClients(communicatorServer, communicatorsClient);
         }
 
         [Fact]
@@ -150,7 +119,7 @@ namespace PlexShareNetwork.Communication.Test
         {
             CommunicatorServer communicatorServer = new();
             CommunicatorClient[] communicatorsClient = { new(), new(), new(), new(), new() };
-            StartServerAndClients(communicatorServer, communicatorsClient);
+            NetworkTestGlobals.StartServerAndClients(communicatorServer, communicatorsClient);
 
             TestNotificationHandler testNotificationHandlerServer = new();
             communicatorServer.Subscribe(_module, testNotificationHandlerServer, true);
@@ -168,7 +137,7 @@ namespace PlexShareNetwork.Communication.Test
                 Assert.Equal("OnDataReceived", testNotificationHandlersClient[i].GetLastEvent());
                 Assert.Equal("Hello from server to all clients", testNotificationHandlersClient[i].GetLastEventData());
             }
-            StopServerAndClients(communicatorServer, communicatorsClient);
+            NetworkTestGlobals.StopServerAndClients(communicatorServer, communicatorsClient);
         }
     }
 }
