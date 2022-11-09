@@ -1,4 +1,11 @@
-﻿using System;
+﻿/**
+ * Owned By: Joel Sam Mathew
+ * Created By: Joel Sam Mathew
+ * Date Created: 22/10/2022
+ * Date Modified: 08/11/2022
+**/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +15,7 @@ namespace PlexShareWhiteboard.BoardComponents
 {
     public class WBServerShape
     {
-        public WBServerShape(List<ShapeItem> shapeItems, Operation op, string userID, int snapshotNumber = -1)
+        public WBServerShape(List<SerializableShapeItem> shapeItems, Operation op, string userID = "1", int snapshotNumber = -1)
         {
             ShapeItems = shapeItems;
             Op = op;
@@ -16,7 +23,7 @@ namespace PlexShareWhiteboard.BoardComponents
             UserID = userID;
         }
 
-        public List<ShapeItem> ShapeItems { get; set; }
+        public List<SerializableShapeItem> ShapeItems { get; set; }
         public Operation Op { get; set; }
         public int SnapshotNumber { get; set; }
         public string UserID { get; set; }
