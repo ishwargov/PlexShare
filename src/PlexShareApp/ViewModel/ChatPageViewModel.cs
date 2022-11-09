@@ -131,7 +131,7 @@ namespace PlexShareApp.ViewModel
             MsgToSend.ReplyThreadID = replyMsgId != -1 ? ThreadIds[replyMsgId] : -1;
 
             // Empty list denotes it's broadcast message
-            MsgToSend.ReceiverIDs = new int[] { };
+            MsgToSend.ReceiverIDs = Array.Empty<int>();
 
             if (ProductionMode)
             {
