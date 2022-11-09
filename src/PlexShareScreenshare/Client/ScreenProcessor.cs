@@ -65,7 +65,7 @@ namespace PlexShareScreenshare.Client
         public Tuple<int, int> NewRes { private get; set; }
 
         // Tokens added to be able to stop the thread execution
-        private CancellationTokenSource? tokenSource;
+        private bool _cancellationToken;
 
         // Storing the previous frame
         Bitmap prevImage;
@@ -178,7 +178,8 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         private void Processing()
         {
-            while (true)
+            _cancellationToken = false;
+            while (!_cancellationToken)
             {
                 Bitmap img = _capturer.GetImage();
                 img = Compress(img);
@@ -198,9 +199,7 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         public void StartProcessing()
         {
-            tokenSource = new CancellationTokenSource();
-            CancellationToken processingToken = tokenSource.Token;
-            _processorTask = new Task(Processing, processingToken);
+            _processorTask = new Task(Processing);
             _processorTask.Start();
         }
 
@@ -230,7 +229,8 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         public void StopProcessing()
         {
-            tokenSource?.Cancel();
+            _cancellationToken = true;
+            _processorTask?.Wait();
             _processedFrame.Clear();
         }
 
