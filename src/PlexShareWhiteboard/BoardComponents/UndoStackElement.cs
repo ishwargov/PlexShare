@@ -1,3 +1,16 @@
+/***************************
+ * Filename    = WhiteBoardViewModel.cs
+ *
+ * Author      = Aiswarya H
+ *
+ * Product     = Plex Share
+ * 
+ * Project     = White Board
+ *
+ * Description = This contains the UndoStackElement.
+ *               This constitutes an element of the Undo and Redo Stacks.
+ ***************************/
+
 using PlexShareWhiteboard;
 
 namespace PlexShareWhiteboard.BoardComponents

@@ -1,3 +1,18 @@
+/***************************
+ * Filename    = WhiteBoardViewModel.cs
+ *
+ * Author      = Aiswarya H
+ *
+ * Product     = Plex Share
+ * 
+ * Project     = White Board
+ *
+ * Description = This is the Client Side Implementation.
+ *               This implements the client side handling when it receives 
+ *               a message or shape from the View Model and sends it to Server
+ *               with the help of methods provided by IClientCommunicator interface.
+ ***************************/
+
 using PlexShareWhiteboard.BoardComponents;
 using System;
 using System.Collections.Generic;
@@ -8,7 +23,7 @@ using PlexShareWhiteboard.Client.Interfaces;
 
 namespace PlexShareWhiteboard.Client
 {
-    internal class ClientSide : IClientServer
+    internal class ClientSide : IShapeListener
     {
         // Instance of ClientCommunicator for sending to Server
         ClientCommunicator _communicator;
@@ -18,9 +33,9 @@ namespace PlexShareWhiteboard.Client
         }
 
         /// <summary>
-        /// Whenever an action is performed, the operation and shape
-        /// associated is passed from the View Model to the ClientSide.
-        /// This function will send the ShapeItem and Operation to the server.
+        ///         Whenever an action is performed, the operation and shape
+        ///         associated is passed from the View Model to the ClientSide.
+        ///         This function will send the ShapeItem and Operation to the server.
         /// </summary>
         /// <param name="newShape">ShapeItem to be sent to Server</param>
         /// <param name="op">Operation to be sent to Server</param>
