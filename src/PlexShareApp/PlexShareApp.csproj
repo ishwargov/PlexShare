@@ -42,7 +42,6 @@
 	  <None Remove="Resources\DashboardFavi.png" />
 	  <None Remove="Resources\DashFavi.png" />
 	  <None Remove="Resources\GoogleSignIn" />
-	  <None Remove="Resources\UserProfilePicture.png" />
   </ItemGroup>
 
 	<ItemGroup>
@@ -50,12 +49,12 @@
 	  <Resource Include="Resources\DashboardFavi.png" />
 	  <Resource Include="Resources\DashFavi.png" />
 	  <Resource Include="Resources\GoogleSignIn" />
-	  <Resource Include="Resources\UserProfilePicture.png" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <PackageReference Include="Google.Apis.Auth.AspNetCore3" Version="1.57.0" />
 	  <PackageReference Include="Google.Apis.PeopleService.v1" Version="1.57.0.2707" />
+	  <PackageReference Include="MaterialDesignColors" Version="2.0.9" />
 	  <PackageReference Include="MaterialDesignThemes" Version="4.6.1" />
 	  <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 	</ItemGroup>

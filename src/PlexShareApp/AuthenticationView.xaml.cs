@@ -104,7 +104,7 @@ namespace PlexShareApp
             // There were no errors in authentication
             if (returnVal[0] == "true")
             {
-                var homePage = new HomePageView(returnVal[1], returnVal[2], returnVal[2]);
+                var homePage = new HomePageView(returnVal[1], returnVal[2], returnVal[3]);
                 homePage.Show();
                 Close(); 
             } 
