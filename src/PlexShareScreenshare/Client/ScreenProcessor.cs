@@ -11,21 +11,44 @@ using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-// Each frame consists of the resolution of the image and the ImageDiffList
-using Frame = System.Tuple<System.Tuple<int, int>,
-                        System.Collections.Generic.List<System.Tuple<System.Tuple<int, int>,
-                        System.Tuple<int, int, int>>>>;
+
 // This datatype is for storing a list of the coordinate
 // of pixel and its RGB values i.e. list of ((x, y), (R, G, B))
-using ImageDiffList = System.Collections.Generic.List<System.Tuple<System.Tuple<int, int>,
-                        System.Tuple<int, int, int>>>;
+using ImageDiffList = System.Collections.Generic.List<Pixel>;
+
+// Each frame consists of the resolution of the image and the ImageDiffList
+using Frame = System.Tuple<System.Tuple<int, int>,
+                System.Collections.Generic.List<Pixel>>;
+
+// struct for storing x and y coordinates of a pixel
+public struct Coordinates
+{
+    public int X { get; set; }
+    public int Y { get; set; }
+}
+
+// struct for storing RGB value of a pixel
+public struct RGB
+{
+    public int R { get; set; }
+    public int G { get; set; }
+    public int B { get; set; }
+}
+
+// struct for storing both the coordinates and the RGB values
+public struct Pixel
+{
+    public Coordinates Coordinates { get; set; }
+    public RGB RGB { get; set; }
+}
+
 
 namespace PlexShareScreenshare.Client
 {
     /// <summary>
     /// Class contains implementation of the screen processing using threads (tasks)
     /// </summary>
-    internal class ScreenProcessor
+    public class ScreenProcessor
     {
         // The queue in which the image will be enqueued after
         // processing it
@@ -72,11 +95,20 @@ namespace PlexShareScreenshare.Client
                 return _processedFrame.Dequeue();
             }
         }
+
+        public int GetProcessedFrameLength()
+        {
+            lock (_processedFrame)
+            {
+                return _processedFrame.Count;
+            }
+        }
+
         /// <summary>
         /// In this function we go through every pixel of both the images and
         /// returns list of those pixels which are different in both the images
         /// </summary>
-        private static ImageDiffList ProcessUsingLockbits(Bitmap processedBitmap, Bitmap processedBitmap1)
+        public static ImageDiffList ProcessUsingLockbits(Bitmap processedBitmap, Bitmap processedBitmap1)
         {
             // List for storing the difference in pixels
             ImageDiffList tmp = new();
@@ -129,9 +161,10 @@ namespace PlexShareScreenshare.Client
                     // coordinates and the RGB value of the second image
                     if (oldBlue != newBlue || oldGreen != newGreen || oldRed != newRed)
                     {
-                        Tuple<int, int> coordinates = new(x / bytesPerPixel, y);
-                        Tuple<int, int, int> colors = new(newRed, newGreen, newBlue);
-                        tmp.Add(new Tuple<Tuple<int, int>, Tuple<int, int, int>>(coordinates, colors));
+                        Coordinates coordinates = new Coordinates() { X = x / bytesPerPixel, Y = y };
+                        RGB rgb = new RGB() { R = newRed, G = newGreen, B = newBlue};
+                        Pixel tmpVal = new Pixel() { Coordinates = coordinates, RGB = rgb }; 
+                        tmp.Add(tmpVal);
                         count++;
                     }
                 }

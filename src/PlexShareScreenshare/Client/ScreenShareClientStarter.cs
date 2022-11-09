@@ -13,9 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 // Each frame consists of the resolution of the image and the ImageDiffList
 using Frame = System.Tuple<System.Tuple<int, int>,
-                        System.Collections.Generic.List<System.Tuple<System.Tuple<int, int>,
-                        System.Tuple<int, int, int>>>>;
-
+                System.Collections.Generic.List<Pixel>>;
 
 namespace PlexShareScreenshare.Client
 {
