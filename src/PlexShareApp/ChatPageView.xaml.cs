@@ -65,7 +65,6 @@ namespace PlexShareApp
             }
         }
 
-
         private void UploadButtonClick(object sender, RoutedEventArgs e)
         {
             var viewModel = DataContext as ChatPageViewModel;
