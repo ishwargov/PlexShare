@@ -146,6 +146,27 @@ namespace PlexShareApp.ViewModel
             }
         }
 
+        /// <summary>
+        /// Download file to specific path on client machine
+        /// </summary>
+        /// <param name="savePath"> Path to which the file will be downloaded </param>
+        /// <param name="msgId"> ID of the message </param>
+        public void DownloadFile(string savePath, int msgId)
+        {
+            _model.ClientDownload(msgId, savePath);
+            Trace.WriteLine("Download Request");
+        }
+
+        /// <summary>
+        /// Star message for it to be included in the dashboard summary
+        /// </summary>
+        /// <param name="msgId"> Id of the message </param>
+        public void StarChatMsg(int msgId)
+        {
+            _model.ClientStar(msgId);
+            Trace.WriteLine("Message has been starred");
+        }      
+
         public void OnAllMessagesReceived(List<ChatThread> allMessages)
         {
             throw new NotImplementedException();
