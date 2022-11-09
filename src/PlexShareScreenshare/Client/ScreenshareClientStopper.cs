@@ -23,10 +23,13 @@ namespace PlexShareScreenshare.Client
             DataPacket deregisterPacket = new DataPacket(_id, _name, ClientDataHeader.Deregister.ToString(), "");
             var serializedDeregisterPacket = _serializer.Serialize(deregisterPacket);
             StopImageSending();
-            _confirmationCancellationTokenSource?.Cancel();
+            // Stops sending confirmation token
+            _confirmationCancellationToken = true;
             _sendConfirmationTask?.Wait();
+            // Stops the processing and the capturing module
             _processor.StopProcessing();
             _capturer.StopCapture();
+            // Sending de-rgister request to server
             _communicator.Send(serializedDeregisterPacket, "ScreenShare", null);
         }
 
@@ -36,7 +39,7 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         private void StopImageSending()
         {
-            _imageCancellationTokenSource?.Cancel();
+            _imageCancellationToken = true;
             _sendImageTask?.Wait();
         }
 
@@ -46,19 +49,18 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         private void SendConfirmationPacket()
         {
-            _confirmationCancellationTokenSource = new CancellationTokenSource();
-            CancellationToken cancelConfirmationToken = _confirmationCancellationTokenSource.Token;
+            _confirmationCancellationToken = false;
             DataPacket confirmationPacket = new DataPacket(_id, _name, ClientDataHeader.Confirmation.ToString(), "");
             var serializedConfirmationPacket = _serializer.Serialize(confirmationPacket);
 
             _sendConfirmationTask = new Task(() =>
             {
-                while (!_confirmationCancellationTokenSource.IsCancellationRequested)
+                while (!_confirmationCancellationToken)
                 {
                     _communicator.Send(serializedConfirmationPacket, "ScreenShare", null);
                     Thread.Sleep(1000);
                 }
-            }, cancelConfirmationToken);
+            });
 
             _sendConfirmationTask.Start();
         }

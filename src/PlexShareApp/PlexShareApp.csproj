@@ -7,11 +7,11 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
-	<PropertyGroup>
-		<EnableNETAnalyzers>true</EnableNETAnalyzers>
-	</PropertyGroup>
+    <PropertyGroup>
+        <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    </PropertyGroup>
 
-	<PropertyGroup>
-		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-	</PropertyGroup>
+    <PropertyGroup>
+        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    </PropertyGroup>
 </Project>

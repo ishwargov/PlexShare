@@ -43,8 +43,8 @@ namespace PlexShareScreenshare.Client
         private string? _id;
 
         // Tokens added to be able to stop the thread execution
-        private CancellationTokenSource? _confirmationCancellationTokenSource;
-        private CancellationTokenSource? _imageCancellationTokenSource;
+        private bool _confirmationCancellationToken;
+        private bool _imageCancellationToken;
 
         // Varible to store if screen share is active
         private bool _isScreenSharing = false;
@@ -128,7 +128,7 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         private void ImageSending()
         {
-            while (!_imageCancellationTokenSource.IsCancellationRequested)
+            while (!_imageCancellationToken)
             {
                 Frame img = _processor.GetImage();
                 if (img.Pixels.Count == 0) continue;
@@ -144,9 +144,8 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         private void StartImageSending()
         {
-            _imageCancellationTokenSource = new CancellationTokenSource();
-            CancellationToken token = _imageCancellationTokenSource.Token;
-            _sendImageTask = new Task(ImageSending, token);
+            _imageCancellationToken = false;
+            _sendImageTask = new Task(ImageSending);
             _sendImageTask.Start();
         }
 
