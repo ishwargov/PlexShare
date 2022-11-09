@@ -170,6 +170,38 @@ namespace PlexShareApp.ViewModel
             (Application.Current?.Dispatcher != null) ? 
                     Application.Current.Dispatcher : 
                     Dispatcher.CurrentDispatcher;
+        
+        /// <summary>
+        /// Updating users
+        /// </summary>
+        /// <param name="session"></param>
+        public void OnClientSessionChanged(SessionData currentSession)
+        {
+            // Execute the call on the application's main thread.
+            //
+            // Also note that we may execute the call asynchronously as the calling
+            // thread is not dependent on the callee thread finishing this method call.
+            // Hence we may call the dispatcher's BeginInvoke method which kicks off
+            // execution async as opposed to Invoke which does it synchronously.
+
+            _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
+                      DispatcherPriority.Normal,
+                      new Action<SessionData>(currentSession =>
+                      {
+                          lock (this)
+                          {
+                              if(currentSession!= null)
+                              {
+                                  Users.Clear();
+                                  foreach (var user in currentSession.users)
+                                  {
+                                      Users.Add(user.userID, user.username);
+                                  }
+                              }
+                          }
+                      }),
+                      currentSession);
+        }
 
         /// <summary>
         /// When a new user joins, they receive the list of messages upto then
@@ -222,11 +254,6 @@ namespace PlexShareApp.ViewModel
                           }
                       }),
                       allMessages);
-        }
-
-        public void OnClientSessionChanged(SessionData session)
-        {
-            throw new NotImplementedException();
         }
 
         public void OnMessageReceived(ReceiveContentData contentData)
