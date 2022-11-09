@@ -600,7 +600,7 @@ namespace PlexShareContent.Client
             Trace.WriteLine("[ContentClient] Received requested file from server");
             var savePath = message.Data;
             Trace.WriteLine($"[ContentClient] Saving file to path : {savePath}");
-            File.WriteAllBytes(savePath, message.FileData.DataInFile);
+            File.WriteAllBytes(savePath, message.FileData.Data);
         }
 
         /// <summary>

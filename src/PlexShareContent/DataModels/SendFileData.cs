@@ -19,7 +19,7 @@ namespace PlexShareContent.DataModels
         /// <summary>
         /// Data present in the file.
         /// </summary>
-        public byte[] DataInFile;
+        public byte[] Data;
         
         /// <summary>
         /// Name of the file.
@@ -41,9 +41,9 @@ namespace PlexShareContent.DataModels
             if (File.Exists(filePath))
             {
                 // set details of the file
-                DataInFile = File.ReadAllBytes(filePath);
+                Data = File.ReadAllBytes(filePath);
                 Name = Path.GetFileName(filePath);
-                Size = DataInFile.Length;
+                Size = Data.Length;
             }
             //else
             //{

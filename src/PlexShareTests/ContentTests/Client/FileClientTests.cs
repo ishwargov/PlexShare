@@ -44,7 +44,7 @@ namespace PlexShareTests.ContentTests.Client
             Assert.Equal(sendContentData.Data, deserializedData.Data);
             Assert.Equal(sendContentData.ReceiverIDs, deserializedData.ReceiverIDs);
             Assert.Equal(sendContentData.ReplyThreadID, deserializedData.ReplyThreadID);
-            Assert.Equal(fileData.DataInFile, deserializedData.FileData.DataInFile);
+            Assert.Equal(fileData.Data, deserializedData.FileData.Data);
             Assert.Equal(fileData.Name, deserializedData.FileData.Name);
             Assert.Equal(fileData.Size, deserializedData.FileData.Size);
             Assert.Equal(userID, deserializedData.SenderID);
