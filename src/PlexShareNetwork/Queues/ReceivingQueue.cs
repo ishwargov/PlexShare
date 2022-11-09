@@ -1,4 +1,6 @@
-﻿/// <author> Anish Bhagavatula </author>
+﻿
+using System.Diagnostics;
+/// <author> Anish Bhagavatula </author>
 /// <summary>
 /// This file contains the class definition of the receiving queue
 /// </summary>
@@ -14,6 +16,7 @@ namespace PlexShareNetwork.Queues
         /// </summary>
         public void Enqueue(Packet packet)
         {
+            Trace.WriteLine("[Networking] ReceivingQueue.Enqueue() function called.");
             _queue.Enqueue(packet);
         }
 
@@ -22,6 +25,7 @@ namespace PlexShareNetwork.Queues
         /// </summary>
         public Packet Dequeue()
         {
+            Trace.WriteLine("[Networking] ReceivingQueue.Dequeue() function called.");
             return _queue.Dequeue();
         }
 
@@ -62,6 +66,7 @@ namespace PlexShareNetwork.Queues
         /// </summary>
         public bool WaitForPacket()
         {
+            Trace.WriteLine("[Networking] ReceivingQueue.WaitForPacket() function called.");
             return _queue.WaitForPacket();
         }
     }

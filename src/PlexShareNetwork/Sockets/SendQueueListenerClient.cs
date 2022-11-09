@@ -20,16 +20,13 @@ namespace PlexShareNetwork.Sockets
 		// the thread which will be running
 		private readonly Thread _thread;
 		// boolean to tell whether thread is running or stopped
-		private volatile bool _threadRun;
+		private bool _threadRun;
 
 		// variable to store the send queue
 		private readonly SendingQueue _sendingQueue;
 
 		// variable to store the socket
 		private readonly TcpClient _clientSocket;
-
-        // serializer object to serialize the packet to send
-        readonly Serializer _serializer = new();
 
         /// <summary>
         /// It is the Constructor which initializes the queue and socket
@@ -40,7 +37,7 @@ namespace PlexShareNetwork.Sockets
 		{
             _sendingQueue = sendingQueue;
             _clientSocket = clientSocket;
-			_thread = new Thread(Listen); // the thread is only created and not started here
+            _thread = new Thread(Listen);
         }
 
 		/// <summary>
@@ -78,8 +75,8 @@ namespace PlexShareNetwork.Sockets
 			{
                 _sendingQueue.WaitForPacket();
 				Packet packet = _sendingQueue.Dequeue();
-                string sendString = "BEGIN" + _serializer.Serialize(packet) + "END";
-				try
+                string sendString = SendString.PacketToSendString(packet);
+                try
 				{
                     _clientSocket.Client.Send(Encoding.ASCII.GetBytes(sendString));
 					Trace.WriteLine($"[Networking] SendQueueListenerClient. Data sent from client to server by module: {packet.moduleOfPacket}.");

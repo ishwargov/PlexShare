@@ -5,11 +5,16 @@
 
 using PlexShareNetwork.Queues;
 using PlexShareNetwork.Serialization;
+using PlexShareNetwork.Sockets;
 using System;
+using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
+using System.Windows.Markup;
+using Xunit;
 
 namespace PlexShareNetwork
 {
@@ -35,34 +40,43 @@ namespace PlexShareNetwork
 			.Select(s => s[random.Next(s.Length)]).ToArray());
 		}
 
-        public static void SendPacket(Packet packet, TcpClient socket)
+        public static Packet[] GeneratePackets(int dataSize, string? destination, string module, int count)
         {
-            string sendString = "BEGIN" + _serializer.Serialize(packet) + "END";
-            byte[] bytes = Encoding.ASCII.GetBytes(sendString);
-            socket.Client.Send(bytes);
+            Packet[] packets = new Packet[count];
+            for (var i = 0; i < count; i++)
+            {
+                packets[i] = new(RandomString(dataSize), destination, module);
+            }
+            return packets;
         }
 
-        public static void AssertSinglePacketReceive(Packet sendPacket, ReceivingQueue receivingQueue)
+        public static void SendPackets(Packet[] sendPackets, TcpClient socket, int count)
         {
-            while (receivingQueue.Size() < 1)
+            for (var i = 0; i < count; i++)
+            {
+                string sendString = SendString.PacketToSendString(sendPackets[i]);
+                byte[] bytes = Encoding.ASCII.GetBytes(sendString);
+                socket.Client.Send(bytes);
+            }
+        }
+
+        public static void SendPackets(Packet[] sendPackets, SendingQueue sendingQueue, int count)
+        {
+            for (var i = 0; i < count; i++)
+            {
+                sendingQueue.Enqueue(sendPackets[i]);
+            }
+        }
+
+        public static void PacketsReceiveAssert(Packet[] sendPackets, ReceivingQueue receivingQueue, int count)
+        {
+            while (receivingQueue.Size() < count)
             {
                 Thread.Sleep(100);
             }
-            Assert.True(receivingQueue.Size() == 1);
+            Assert.True(receivingQueue.Size() == count);
 
-            Packet receivedPacket = receivingQueue.Dequeue();
-            AssertPacketEquality(sendPacket, receivedPacket);
-        }
-
-        public static void AssertTenPacketsReceive(Packet[] sendPackets, ReceivingQueue receivingQueue)
-        {
-            while (receivingQueue.Size() < 10)
-            {
-                Thread.Sleep(100);
-            }
-            Assert.True(receivingQueue.Size() == 10);
-
-            for (var i = 0; i < 10; i++)
+            for (var i = 0; i < count; i++)
             {
                 Packet receivedPacket = receivingQueue.Dequeue();
                 AssertPacketEquality(sendPackets[i], receivedPacket);
@@ -75,62 +89,59 @@ namespace PlexShareNetwork
             Assert.Equal(packet1.destination, packet2.destination);
             Assert.Equal(packet1.moduleOfPacket, packet2.moduleOfPacket);
         }
-	}
+    }
 
 	/// <summary>
 	/// An implementation of the notification handler.
 	/// </summary>
 	public class TestNotificationHandler : INotificationHandler
 	{
-		public string? Data = null;
-		public string? Event = null;
-        public string? ClientID = null;
-        public TcpClient? Socket = null;
+        public List<Tuple<string, string?, TcpClient?>> eventAndEventArgument = new();
+        public Dictionary<string, Tuple<string?, TcpClient?>> eventToEventArgumentMap = new();
+        public int lastEventCount = 0;
 
-		public void OnDataReceived(string data)
+        public void OnDataReceived(string data)
 		{
-			Event = "OnDataReceived";
-			Data = data;
-		}
-
-		public void OnClientJoined(TcpClient socket)
-		{
-			Event = "OnClientJoined";
-			Socket = socket;
-		}
-
-		public void OnClientLeft(string clientId)
-		{
-			Event = "OnClientLeft";
-			ClientID = clientId;
-		}
-
-		public void Wait()
-		{
-            while (Event == null)
-            {
-                Thread.Sleep(100);
-            }
-            while (Event == "OnDataReceived" && Data == null)
-            {
-                Thread.Sleep(100);
-            }
-            while (Event == "OnClientJoined" && Socket == null)
-            {
-                Thread.Sleep(100);
-            }
-            while (Event == "OnClientLeft" && ClientID == null)
-            {
-                Thread.Sleep(100);
-            }
+            eventAndEventArgument.Add(new("OnDataReceived", data, null));
         }
 
-		public void Reset()
+        public void OnClientJoined(TcpClient socket)
+        {
+            eventAndEventArgument.Add(new("OnClientJoined", null, socket));
+        }
+
+        public void OnClientLeft(string clientId)
 		{
-			Event = null;
-			Data = null;
-            Socket = null;
-            ClientID = null;
+            eventAndEventArgument.Add(new("OnClientLeft", clientId, null));
 		}
-	}
+
+		public void WaitForEvent()
+		{
+            while (eventAndEventArgument.Count == lastEventCount)
+            {
+                Thread.Sleep(100);
+            }
+            lastEventCount = eventAndEventArgument.Count;
+        }
+
+        public string GetLastEvent()
+        {
+            return eventAndEventArgument.Last().Item1;
+        }
+
+        public string? GetLastEventData()
+        {
+            return eventAndEventArgument.Last().Item2;
+        }
+
+        public TcpClient? GetLastEventSocket()
+        {
+            return eventAndEventArgument.Last().Item3;
+        }
+
+        public string? GetLastEventClientId()
+        {
+            return eventAndEventArgument.Last().Item2;
+        }
+    }
 }

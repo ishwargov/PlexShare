@@ -13,7 +13,7 @@
     <SolidColorBrush x:Key="StaticSentFile" Color="SandyBrown" />
     <SolidColorBrush x:Key="StaticRecvMsg" Color="LightGreen" />
     <SolidColorBrush x:Key="StaticRecvFile" Color="RosyBrown" />
-    <SolidColorBrush x:Key="StaticSendBox" Color="MediumPurple" />
+    <SolidColorBrush x:Key="StaticSendBox" Color="#0f3d3e" />
     <SolidColorBrush x:Key="StaticHeader" Color="Black" />
     <SolidColorBrush x:Key="StaticButtonBack" Color="Blue" />
     <SolidColorBrush x:Key="StaticSentReplyMsg" Color="YellowGreen" />

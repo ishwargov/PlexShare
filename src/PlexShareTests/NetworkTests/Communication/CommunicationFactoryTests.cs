@@ -1,30 +1,30 @@
-﻿/// <author>Mohammad Umar Sultan</author>
-/// <created>16/10/2022</created>
-/// <summary>
-/// This file contains unit tests for the class SocketListener
-/// </summary>
-
-using PlexShareNetwork.Communication;
-using PlexShareNetwork;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace PlexShareNetwork.Communication.Test
 {
     public class CommunicationFactoryTests
     {
         [Fact]
-        public void GetClientCommunicatorTest()
+        public void GetCommunicatorClientTest()
         {
-            ICommunicator clientCommunicator = CommunicationFactory.GetCommunicator(true);
-            clientCommunicator.Start("0", "0");
-            clientCommunicator.Stop();
+            ICommunicator communicatorClient = CommunicationFactory.GetCommunicator(true);
+            string returnString = communicatorClient.Start("0", "0");
+            Assert.Equal("failure", returnString);
+            communicatorClient.Stop();
         }
 
         [Fact]
-        public void GetServerCommunicatorTest()
+        public void GetCommunicatorServerTest()
         {
-            ICommunicator serverCommunicator = CommunicationFactory.GetCommunicator(false);
-            serverCommunicator.Start();
-            serverCommunicator.Stop();
+            ICommunicator communicatorServer = CommunicationFactory.GetCommunicator(false);
+            string returnString = communicatorServer.Start();
+            Assert.NotEqual("success", returnString);
+            Assert.NotEqual("failure", returnString);
+            communicatorServer.Stop();
         }
     }
 }

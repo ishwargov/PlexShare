@@ -21,7 +21,7 @@ namespace PlexShareNetwork.Sockets
 		// the thread which will be running
 		private readonly Thread _thread;
 		// boolean to tell whether thread is running or stopped
-		private volatile bool _threadRun;
+		private bool _threadRun;
 
 		// variable to store the send queue
 		private readonly SendingQueue _sendingQueue;
@@ -31,9 +31,6 @@ namespace PlexShareNetwork.Sockets
 
 		// variable to store the dictionary which maps module identifiers to their respective notification handlers
 		private readonly Dictionary<string, INotificationHandler> _moduleToNotificationHandlerMap;
-
-        // serializer object to serialize the packet to send
-        readonly Serializer _serializer = new();
 
         /// <summary>
         /// It is the Constructor which initializes the queue, clientIdSocket and subscribedModules
@@ -49,7 +46,7 @@ namespace PlexShareNetwork.Sockets
             _sendingQueue = sendingQueue;
 			_clientIdToClientSocketMap = clientIdToClientSocketMap;
 			_moduleToNotificationHandlerMap = moduleToNotificationHandlerMap;
-			_thread = new Thread(Listen); // the thread is only created and not started here
+            _thread = new Thread(Listen);
         }
 
 		/// <summary>
@@ -88,7 +85,7 @@ namespace PlexShareNetwork.Sockets
 			{
                 _sendingQueue.WaitForPacket();
 				Packet packet = _sendingQueue.Dequeue();
-                string sendString = "BEGIN" + _serializer.Serialize(packet) + "END";
+                string sendString = SendString.PacketToSendString(packet);
 
                 // get the socket corresponding to the destination in the packet
                 var clientSockets = ClientIdToSocket(packet.destination);
