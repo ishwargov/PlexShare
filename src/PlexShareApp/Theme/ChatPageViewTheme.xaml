@@ -1,7 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:PlexShareApp"
-                    >
+                    xmlns:local="clr-namespace:PlexShareApp">
                     
 
     <!--Colours for various User Control objects-->
@@ -114,9 +113,10 @@
                         <TextBlock Foreground="{StaticResource StaticTextClr}" Text="{Binding TextMessage}"
                                        x:Name="MainText" TextWrapping="Wrap" Grid.Row="0" Width="250" FontSize="16"
                                        Padding="8,5,8,5" Grid.Column="0" />
+                        <!--TODO: Add a reply button click event-->
                         <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
                                     Width="30" Margin="0,0,0,0" >
-                            <!--TODO:Add icon-->
+                            <!--TODO:Add reply icon-->
                         </Button>
                     </Grid>
                     <Grid Grid.Row="2">
@@ -128,6 +128,7 @@
                         <TextBlock Opacity="0.8" Foreground="{StaticResource StaticTextClr}"
                                        Text="{Binding Time}" x:Name="timeText" Margin="0" TextWrapping="Wrap"
                                        Grid.Row="0" Padding="8" Grid.Column="0" />
+                        <!--Add event for click star button-->
                         <RadioButton Grid.Column="1" Content="All" Padding="2" HorizontalAlignment="Left"
                                          Template="{DynamicResource StarToggleButton}" />
                         <TextBlock Opacity="0.8" Foreground="{StaticResource StaticTextClr}" Text="Sent"
@@ -186,8 +187,8 @@
                                    x:Name="MainText" TextWrapping="Wrap" Grid.Row="0" Width="250" FontSize="16"
                                    Padding="8,5,8,5" Grid.Column="0" />
                     <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
-                                Width="30" Margin="0,0,0,0" >
-                        <!--TODO:Add icon-->
+                             Width="30" Margin="0,0,0,0" >
+                        <!--TODO:Add icon for arrow-->
                     </Button>
                 </Grid>
                 <Grid Grid.Row="3">
@@ -199,7 +200,7 @@
                                    x:Name="timeText" Margin="0" TextWrapping="Wrap" Grid.Row="0" Padding="8"
                                    Grid.Column="0" />
                     <RadioButton Grid.Column="1" Content="All" Padding="2" HorizontalAlignment="Left"
-                                     Template="{DynamicResource StarToggleButton}" />
+                                  Template="{DynamicResource StarToggleButton}" />
                 </Grid>
             </Grid>
         </Grid>
@@ -240,19 +241,23 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <!--TODO:Add icon-->
+                                <!--TODO:Add an icon of a file, that will be displayed on sending a file-->
                                 <TextBlock Grid.Column="1" Foreground="{DynamicResource StaticTextClr}"
                                                Text="{Binding TextMessage}" x:Name="MainText" TextWrapping="Wrap"
                                                Width="150" FontSize="16" Padding="8,5,8,5" />
+                                <!--Add download button click event-->
                                 <Button Grid.Column="2" Background="Transparent" BorderBrush="Transparent"
-                                            HorizontalAlignment="Right" Width="40" Margin="0,0,0,0">
-                                    <!--TODO:Add icon-->
+                                             HorizontalAlignment="Right" 
+                                            Width="40" Margin="0,0,0,0">
+                                    <!--TODO:Add icon for download-->
                                 </Button>
                             </Grid>
                         </Border>
+                        <!--Add reply button click event-->
                         <Button Grid.Column="1" Background="Transparent" BorderBrush="Transparent"
-                                    HorizontalAlignment="Right" Width="30" Margin="0,0,0,0">
-                            <!--TODO:Add icon-->
+                                 HorizontalAlignment="Right" 
+                                Width="30" Margin="0,0,0,0">
+                            <!--TODO:Add icon for reply arrow-->
                         </Button>
                     </Grid>
                     <Grid Grid.Row="2">
@@ -323,19 +328,23 @@
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <!--TODO:Add icon-->
+                            <!--TODO:Add icon for file, that will be displayed next to the file sent-->
                             <TextBlock Grid.Column="1" Foreground="{DynamicResource StaticSentReplyMsg}"
                                            Text="{Binding TextMessage}" x:Name="MainText" TextWrapping="Wrap"
                                            Width="150" FontSize="16" Padding="8,5,8,5" />
+                            <!--Add download button click event-->
                             <Button Grid.Column="2" Background="Transparent" BorderBrush="Transparent"
-                                        HorizontalAlignment="Right" Width="40" Margin="0,0,0,0">
-                                <!--TODO:Add icon-->
+                                     HorizontalAlignment="Right" 
+                                    Width="40" Margin="0,0,0,0">
+                                <!--TODO:Add icon download-->
                             </Button>
                         </Grid>
                     </Border>
+                    <!--Add reply button click event-->
                     <Button Grid.Column="1" Background="Transparent" BorderBrush="Transparent"
-                                HorizontalAlignment="Right" Width="30" Margin="0,0,0,0" >
-                        <!--TODO:Add icon-->
+                             HorizontalAlignment="Right" 
+                            Width="30" Margin="0,0,0,0" >
+                        <!--TODO:Add icon reply arrow-->
                     </Button>
                 </Grid>
                 <Grid Grid.Row="3">
