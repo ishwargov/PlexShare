@@ -28,11 +28,13 @@ namespace PlexShareWhiteboard
         Brush fillBrush = Brushes.Azure;
         Brush strokeBrush = Brushes.Black;
         string mode = "select_object";
+        string modeForUndo = "select_object";
         ShapeItem currentShape = null;
         ShapeItem lastShape = null;
         int blobSize = 12;
         ClientSide Client;
         UndoStackElement stackElement;
+
         public WhiteBoardViewModel()
         {
             Client = new ClientSide();

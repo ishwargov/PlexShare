@@ -16,18 +16,21 @@ namespace PlexShareWhiteboard
         public void ShapeFinished(Point _)
         {
             //Debug.WriteLine("Entering Shape Finished..............\n");
-            if (mode == "create_rectangle" || mode == "create_ellipse" || mode == "create_freehand")
+            if (modeForUndo == "create" )
             {
+                Debug.WriteLine("passing into undo stack " + lastShape.Geometry.GetType().Name);
                 stackElement = new UndoStackElement(lastShape, lastShape, Operation.Creation);
                 InsertIntoStack(stackElement);
             }
-            else if (mode == "delete_mode")
+            else if (modeForUndo == "delete")
             {
+                Debug.WriteLine("passing into undo stack " + lastShape.Geometry.GetType().Name);
                 stackElement = new UndoStackElement(lastShape, lastShape, Operation.Deletion);
                 InsertIntoStack(stackElement);
             }
-            else if (mode == "translate_mode" || mode == "transform_mode" || mode == "dimensionChange_mode")
+            else if (modeForUndo == "modify")
             {
+                Debug.WriteLine("passing into undo stack " + select.selectedObject.Geometry.GetType().Name);
                 stackElement = new UndoStackElement(select.initialSelectionObject, select.selectedObject, Operation.ModifyShape);
                 InsertIntoStack(stackElement);
             }
@@ -53,6 +56,8 @@ namespace PlexShareWhiteboard
 
             if (mode != "create_textbox")
                 lastShape = null;
+
+            modeForUndo = "select";
 
             //Debug.WriteLine("Exiting Shape Finished........");
         }
