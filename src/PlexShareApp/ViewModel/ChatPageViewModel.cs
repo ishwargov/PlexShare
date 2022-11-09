@@ -110,23 +110,38 @@ namespace PlexShareApp.ViewModel
         /// </summary>
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public void SendFile(string message, int replyMsgId)
+        /// <summary>
+        /// Sends the message to content module. Message type is determined by messageType parameter
+        /// </summary>
+        /// <param name="message"> The string containing the file path </param>
+        /// <param name="replyMsgId"> Either the reply ID of the mesage being replied to or -1 denoting its not a reply message </param>
+        /// <param name="messageType"> File or Chat </param>
+        public void SendMessage(string message, int replyMsgId, string messageType)
         {
 
             // Creating a SendContentData object
             MsgToSend = new SendContentData();
-            // Setting the corresponding fields of the SendContentData object
-            MsgToSend.Type = MessageType.File;
+            // Setting message type field
+            if(messageType == "File")
+            {
+                MsgToSend.Type = MessageType.File;
+            }
+            else if(messageType == "Chat")
+            {
+                MsgToSend.Type = MessageType.Chat;
+            }
+
+            // Setting the remaining fields of the SendContentData object
             MsgToSend.ReplyMessageID = replyMsgId;
             MsgToSend.Data = message;
             MsgToSend.ReplyThreadID = replyMsgId != -1 ? ThreadIds[replyMsgId] : -1;
 
-            // Empty list denotes it's  broadcast message
+            // Empty list denotes it's broadcast message
             MsgToSend.ReceiverIDs = new int[] { };
 
-            if(!TestingMode)
+            if (!TestingMode)
             {
-                Trace.WriteLine("UX: Sending a File Message");
+                Trace.WriteLine("UX: I am Sending a File Message");
                 _model.ClientSendData(MsgToSend);
             }
         }
