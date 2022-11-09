@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Xunit;
 using System.Diagnostics;
 using Dashboard.Server.Persistence;
@@ -85,4 +85,3 @@ namespace PlexShareTests.DashboardTests.Persistence
                 }
     }
 }
-
