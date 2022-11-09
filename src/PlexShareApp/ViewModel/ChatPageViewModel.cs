@@ -30,7 +30,7 @@ namespace PlexShareApp.ViewModel
     public class ChatPageViewModel : INotifyPropertyChanged, IContentListener, IClientSessionNotifications
     {
         /// <summary>
-        /// Client Content Data Model
+        /// Content Client Data Model
         /// </summary>
         private readonly IContentClient _model;
 
@@ -55,13 +55,13 @@ namespace PlexShareApp.ViewModel
         public IDictionary<int, int> ThreadIds;
 
 
-        public ChatPageViewModel(bool testing = false)
+        public ChatPageViewModel(bool production = true)
         {
             Users = new Dictionary<int, string>();
             Messages = new Dictionary<int, string>();
             ThreadIds = new Dictionary<int, int>();
 
-            if(!testing)
+            if(production)
             {
                 // Getting Content Client model and subscribing to the content module
                 _model = ContentClientFactory.GetInstance();
@@ -90,25 +90,23 @@ namespace PlexShareApp.ViewModel
         public Message ReceivedMsg { get; private set; }
 
         /// <summary>
-        /// True means testing mode
+        /// True means Productin mode
         /// </summary>
-        public bool TestingMode { get; }
-
-
-        /// <summary>
-        ///     Gets the dispatcher to the main thread. In case it is not available
-        ///     (such as during unit testing) the dispatcher associated with the
-        ///     current thread is returned.
-        /// </summary>
-        private Dispatcher ApplicationMainThreadDispatcher =>
-            Application.Current?.Dispatcher != null ? Application.Current.Dispatcher : Dispatcher.CurrentDispatcher;
-
-        // TODO: COMPLETE CODE
+        public bool ProductionMode { get; }
 
         /// <summary>
         /// Whenever a property changes, a Property Changed event is raised
         /// </summary>
         public event PropertyChangedEventHandler? PropertyChanged;
+
+        /// <summary>
+        /// Handling the Property Changed event raised 
+        /// </summary>
+        /// <param name="property">The name of the property.</param>
+        public void OnPropertyChanged(string property)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+        }
 
         /// <summary>
         /// Sends the message to content module. Message type is determined by messageType parameter
@@ -139,7 +137,7 @@ namespace PlexShareApp.ViewModel
             // Empty list denotes it's broadcast message
             MsgToSend.ReceiverIDs = new int[] { };
 
-            if (!TestingMode)
+            if (ProductionMode)
             {
                 Trace.WriteLine("UX: I am Sending a File Message");
                 _model.ClientSendData(MsgToSend);
@@ -153,8 +151,8 @@ namespace PlexShareApp.ViewModel
         /// <param name="msgId"> ID of the message </param>
         public void DownloadFile(string savePath, int msgId)
         {
-            _model.ClientDownload(msgId, savePath);
             Trace.WriteLine("Download Request");
+            _model.ClientDownload(msgId, savePath);
         }
 
         /// <summary>
@@ -163,13 +161,69 @@ namespace PlexShareApp.ViewModel
         /// <param name="msgId"> Id of the message </param>
         public void StarChatMsg(int msgId)
         {
-            _model.ClientStar(msgId);
             Trace.WriteLine("Message has been starred");
-        }      
+            _model.ClientStar(msgId);
+        }
 
+        /// <summary>
+        ///     Gets the dispatcher to the main thread. In case it is not available
+        ///     (such as during unit testing) the dispatcher associated with the
+        ///     current thread is returned.
+        /// </summary>
+        private Dispatcher ApplicationMainThreadDispatcher =>
+            (Application.Current?.Dispatcher != null) ? 
+                    Application.Current.Dispatcher : 
+                    Dispatcher.CurrentDispatcher;
+
+        /// <summary>
+        /// When a new user joins, they receive the list of messages upto then
+        /// </summary>
+        /// <param name="allMessages"> List of all messages upto now </param>
         public void OnAllMessagesReceived(List<ChatThread> allMessages)
         {
-            throw new NotImplementedException();
+            // Execute the call on the application's main thread.
+            //
+            // Also note that we may execute the call asynchronously as the calling
+            // thread is not dependent on the callee thread finishing this method call.
+            // Hence we may call the dispatcher's BeginInvoke method which kicks off
+            // execution async as opposed to Invoke which does it synchronously.
+
+            _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
+                      DispatcherPriority.Normal,
+                      new Action<List<ChatThread>>(allMessages =>
+                      {
+                          lock (this)
+                          {
+                              Messages.Clear();
+                              ThreadIds.Clear();
+                              foreach (var messageList in allMessages)
+                              {
+                                  foreach (var message in messageList.MessageList)
+                                  {
+                                      Trace.WriteLine("All messages have been received");
+                                      Messages.Add(message.MessageID, message.Data);
+                                      ThreadIds.Add(message.MessageID, message.ReplyThreadID);
+
+                                      if (ProductionMode)
+                                      {
+                                          UserId = _model.GetUserID();
+                                      }
+                                      // 
+                                      ReceivedMsg = new Message();
+                                      ReceivedMsg.MessageID = message.MessageID;
+                                      ReceivedMsg.Type = message.Type == MessageType.Chat;
+                                      ReceivedMsg.IncomingMessage = message.Data;
+                                      ReceivedMsg.Time = message.SentTime.ToString("hh:mm tt ddd"); // 11:09 AM Mon
+                                      ReceivedMsg.Sender = Users.ContainsKey(message.SenderID) ? Users[message.SenderID] : "Anonymous";
+                                      ReceivedMsg.ToFrom = UserId == message.SenderID;
+                                      ReceivedMsg.ReplyMessage = message.ReplyMessageID == -1 ? "" : Messages[message.ReplyMessageID];
+
+                                      OnPropertyChanged("ReceivedAllMsgs");
+                                  }
+                              }
+                          }
+                      }),
+                      allMessages);
         }
 
         public void OnClientSessionChanged(SessionData session)
@@ -182,15 +236,5 @@ namespace PlexShareApp.ViewModel
             throw new NotImplementedException();
         }
 
-        // TODO: COMPLETE CODE
-
-        /// <summary>
-        /// Handling the Property Changed event raised 
-        /// </summary>
-        /// <param name="property">The name of the property.</param>
-        public void OnPropertyChanged(string property)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
-        }
     }
 }
