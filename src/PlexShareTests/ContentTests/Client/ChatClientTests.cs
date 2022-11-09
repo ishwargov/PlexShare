@@ -1,9 +1,19 @@
-﻿using PlexShareContent;
+﻿/******************************************************************************
+ * Filename    = ChatClientTests.cs
+ *
+ * Author      = Narvik Nandan
+ *
+ * Product     = PlexShare
+ * 
+ * Project     = PlexShareTests
+ *
+ * Description = Tests for chat client class.    
+ *****************************************************************************/
+
+using PlexShareContent;
 using PlexShareContent.Client;
 using PlexShareContent.DataModels;
 using PlexShareContent.Enums;
-using SharpDX.Direct3D11;
-using System.Windows.Markup;
 
 namespace PlexShareTests.ContentTests.Client
 {
