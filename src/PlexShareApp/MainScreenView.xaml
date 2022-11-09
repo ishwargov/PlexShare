@@ -72,7 +72,7 @@
                         FontFamily="Cascadia Mono" FontSize="20" 
                         BorderBrush="Transparent" BorderThickness="0" >
                     <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
-                        <TextBlock Text="Dashboard" VerticalAlignment="Center" FontFamily="Roboto"></TextBlock>
+                        <TextBlock Text="Dashboard" VerticalAlignment="Center" FontFamily="Cascadia Mono"></TextBlock>
                     </StackPanel>
                 </Button>
 
@@ -82,17 +82,28 @@
                         Click="WhiteboardClick" Background="DarkSlateGray" 
                         FontFamily="Cascadia Mono" FontSize="20" 
                         Foreground="SeaShell" BorderThickness="0">
-                    Whiteboard
+                    <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+                        <TextBlock Text="Whiteboard" VerticalAlignment="Center" FontFamily="Cascadia Mono"></TextBlock>
+                    </StackPanel>
                 </Button>
 
                 <!--Screenshare Tab-->
-                <Button BorderBrush="Transparent" BorderThickness="0" Name="Screenshare" Grid.Column="4" Grid.Row="1" Grid.ColumnSpan="3" Click="ScreenShareClick" Background="DarkSlateGray" FontFamily="Cascadia Mono" FontSize="20" Foreground="SeaShell">
-                    Screenshare
+                <Button BorderBrush="Transparent" BorderThickness="0" Name="Screenshare" Grid.Column="4" Grid.Row="1" Grid.ColumnSpan="3" Click="ScreenShareClick"
+                        Background="DarkSlateGray" FontFamily="Cascadia Mono" FontSize="20" Foreground="SeaShell">
+                    <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+                        <TextBlock Text="Screenshare" VerticalAlignment="Center" FontFamily="Cascadia Mono"></TextBlock>
+                    </StackPanel>
                 </Button>
 
                 <!--Chat Tab-->
-                <Button BorderBrush="Transparent"  Name="ChatWindow" BorderThickness="0" Grid.Column="6" Grid.Row="2" Click="ChatButtonClick" Background="DarkSlateGray">
-                    Chat
+                <Button BorderBrush="Transparent"  Name="ChatWindow" BorderThickness="0" Grid.Column="6" Grid.Row="2" Click="ChatButtonClick" 
+                        Background="DarkSlateGray" >
+                    <!--<TextBlock Text="Chat" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <TextBlock.LayoutTransform>
+                            <RotateTransform Angle="-90"/>
+                        </TextBlock.LayoutTransform>
+                    </TextBlock>-->
+                    <materialDesign:PackIcon Name="ChatIcon" Kind="Chat" Height="20" Width="30" Foreground="White"/>
                 </Button>
 
                 <!--Frame Definitions-->

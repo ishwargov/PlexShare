@@ -100,11 +100,15 @@ namespace PlexShareApp
             if (chatOn == false)
             {
                 chatOn = true;
+                ChatWindow.Background = Brushes.PeachPuff;
+                ChatIcon.Foreground = Brushes.Black;
                 ScreenWithChat.Content = chatPage;
             }
             else
             {
                 chatOn=false;
+                ChatWindow.Background = Brushes.DarkSlateGray;
+                ChatIcon.Foreground = Brushes.White;
                 ScreenWithChat.Content = null;
             }
         }
