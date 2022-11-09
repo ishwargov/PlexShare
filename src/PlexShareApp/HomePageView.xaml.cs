@@ -44,6 +44,10 @@ namespace PlexShareApp
             }
 
             MainScreenView mainScreenView = new MainScreenView();
+
+            //
+            //
+
             mainScreenView.Show();
             this.Close();
         }

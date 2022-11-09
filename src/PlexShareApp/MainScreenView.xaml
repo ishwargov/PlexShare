@@ -17,90 +17,93 @@
         ResizeMode="CanResize"
         WindowStyle="None"
         SizeChanged="Window_SizeChanged"
-      
     >
 
-
-
     <Border BorderThickness="0">
-       <Grid Background="White">
-        <Grid>
+        <Grid Background="White">
+            <Grid>
 
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="15*"/>
-                <ColumnDefinition Width="15*"/>
-                <ColumnDefinition Width="15*"/>
-                <ColumnDefinition Width="15*"/>
-                <ColumnDefinition Width="10*"/>
-                <ColumnDefinition Width="20*"/>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="15*"/>
+                    <ColumnDefinition Width="15*"/>
+                    <ColumnDefinition Width="15*"/>
+                    <ColumnDefinition Width="15*"/>
+                    <ColumnDefinition Width="10*"/>
+                    <ColumnDefinition Width="20*"/>
 
-                <ColumnDefinition Width="1.5*"/>
-            </Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.5*"/>
+                </Grid.ColumnDefinitions>
 
-            <Grid.RowDefinitions>
-                <RowDefinition Height="20" />
-                <RowDefinition Height="35" />
-                <RowDefinition />
-            </Grid.RowDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="20" />
+                    <RowDefinition Height="35" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
 
-
-            <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="10" MouseDown="TitleBarDrag" Background="White"/>
-            
-                <TextBlock Grid.Row="0" Grid.Column="0" FontFamily="Cascadia Mono" FontSize="15"  VerticalAlignment="Center" Foreground="Black"> PlexShare</TextBlock>
-
+                <!--Title Bar-->
+                <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="10" MouseDown="TitleBarDrag" Background="White"/>
+                <TextBlock Grid.Row="0" Grid.Column="0" FontFamily="Cascadia Mono" FontSize="15"  
+                               VerticalAlignment="Center" Foreground="Black"> PlexShare
+                </TextBlock>
                 <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="5" Grid.ColumnSpan="2" HorizontalAlignment="Right">
-
-
-
+                    <!--Maximize Button-->
                     <Button Width="25"  Height="20" Click="MinimizeApp"
-                            Background="Transparent" ToolTip="Maximise"
-                            BorderBrush="Transparent">
+                                Background="Transparent" ToolTip="Maximise"
+                                BorderBrush="Transparent">
                         <materialDesign:PackIcon Kind="WindowMinimize" Width="16" Height="16" VerticalAlignment="Center"/>
                     </Button>
 
-
+                    <!--Minimize Button-->
                     <Button Width="25" Height="20" Click="MaximizeApp" Background="Transparent" BorderBrush="Transparent">
                         <materialDesign:PackIcon Kind="WindowMaximize" Width="16" Height="16" VerticalAlignment="Center"/>
                     </Button>
 
-                    <Button Width="25" Background="Transparent" BorderThickness="0" Height="20" Click="CloseApp"
-                            >
+                    <!--Close Button-->
+                    <Button Width="25" Background="Transparent" BorderThickness="0"
+                                Height="20" Click="CloseApp">
                         <materialDesign:PackIcon Kind="WindowClose" Width="16" Height="16" VerticalAlignment="Center"/>
-
                     </Button>
 
                 </StackPanel>
-    
 
-            <Button Name="Dashboard" Grid.Column="0" Grid.Row="1" 
-                    Grid.ColumnSpan="2" Click="DashboardClick" Background ="PeachPuff" 
-                    FontFamily="Cascadia Mono" FontSize="20" 
-                    BorderBrush="Transparent" BorderThickness="0" >
-                <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
-                    <TextBlock Text="Dashboard" VerticalAlignment="Center" FontFamily="Roboto"></TextBlock>
-                </StackPanel>
-            </Button>
-            
-            <Button BorderBrush="Transparent" Name="Whiteboard" 
-                    Grid.Column="2" Grid.ColumnSpan="2" Grid.Row="1" 
-                    Click="WhiteboardClick" Background="DarkSlateGray" 
-                    FontFamily="Cascadia Mono" FontSize="20" 
-                    Foreground="SeaShell" BorderThickness="0">
-                Whiteboard
-            </Button>
-            
-            <Button BorderBrush="Transparent" BorderThickness="0" Name="Screenshare" Grid.Column="4" Grid.Row="1" Grid.ColumnSpan="3" Click="ScreenShareClick" Background="DarkSlateGray" FontFamily="Cascadia Mono" FontSize="20" Foreground="SeaShell">
-                Screenshare
-            </Button>
-            <Button BorderBrush="Transparent"  Name="ChatWindow" BorderThickness="0" Grid.Column="6" Grid.Row="2" Click="ChatButtonClick" Background="DarkSlateGray">
-                Chat
-            </Button>
-            <Frame x:Name="Main" NavigationUIVisibility="Hidden" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="6"/>
-            <Frame x:Name="ScreenWithChat" Grid.Column="5" Grid.Row="2" Grid.ColumnSpan="1" NavigationUIVisibility="Hidden"></Frame>
+                <!--Dashboard Tab-->
+                <Button Name="Dashboard" Grid.Column="0" Grid.Row="1" 
+                        Grid.ColumnSpan="2" Click="DashboardClick" Background ="PeachPuff" 
+                        FontFamily="Cascadia Mono" FontSize="20" 
+                        BorderBrush="Transparent" BorderThickness="0" >
+                    <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+                        <TextBlock Text="Dashboard" VerticalAlignment="Center" FontFamily="Roboto"></TextBlock>
+                    </StackPanel>
+                </Button>
+
+                <!--Whiteboard Tab-->
+                <Button BorderBrush="Transparent" Name="Whiteboard" 
+                        Grid.Column="2" Grid.ColumnSpan="2" Grid.Row="1" 
+                        Click="WhiteboardClick" Background="DarkSlateGray" 
+                        FontFamily="Cascadia Mono" FontSize="20" 
+                        Foreground="SeaShell" BorderThickness="0">
+                    Whiteboard
+                </Button>
+
+                <!--Screenshare Tab-->
+                <Button BorderBrush="Transparent" BorderThickness="0" Name="Screenshare" Grid.Column="4" Grid.Row="1" Grid.ColumnSpan="3" Click="ScreenShareClick" Background="DarkSlateGray" FontFamily="Cascadia Mono" FontSize="20" Foreground="SeaShell">
+                    Screenshare
+                </Button>
+
+                <!--Chat Tab-->
+                <Button BorderBrush="Transparent"  Name="ChatWindow" BorderThickness="0" Grid.Column="6" Grid.Row="2" Click="ChatButtonClick" Background="DarkSlateGray">
+                    Chat
+                </Button>
+
+                <!--Frame Definitions-->
+                <!--Main Frame-->
+                <Frame x:Name="Main" NavigationUIVisibility="Hidden" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="6"/>
+                <!--Chat Frame-->
+                <Frame x:Name="ScreenWithChat" Grid.Column="5" Grid.Row="2" Grid.ColumnSpan="1" NavigationUIVisibility="Hidden"></Frame>
+            </Grid>
+
+
         </Grid>
-           
-
-    </Grid>
     </Border>
 
 

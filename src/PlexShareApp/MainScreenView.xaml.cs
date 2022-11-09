@@ -37,6 +37,9 @@ namespace PlexShareApp
             Main.Content = dashboardPage;
         }
 
+        /// <summary>
+        /// Transfer control to dashboard on click
+        /// </summary>
         private void DashboardClick(object sender, RoutedEventArgs e)
         {
             Dashboard.Background = Brushes.PeachPuff;
@@ -53,6 +56,11 @@ namespace PlexShareApp
 
         }
 
+        /// <summary>
+        /// Transfer control to whiteboard on click
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ScreenShareClick(object sender, RoutedEventArgs e)
         {
             Dashboard.Background = Brushes.DarkSlateGray;
@@ -67,6 +75,9 @@ namespace PlexShareApp
             Main.Content = whiteBoardPage;
         }
 
+        /// <summary>
+        /// To transfer control to the wihteboard on click
+        /// </summary>
         private void WhiteboardClick(object sender, RoutedEventArgs e)
         {
             Dashboard.Background = Brushes.DarkSlateGray;
@@ -81,6 +92,9 @@ namespace PlexShareApp
             Main.Content = screenSharePage;
         }
 
+        /// <summary>
+        /// Open the chat overlay when clicked
+        /// </summary>
         private void ChatButtonClick(object sender, RoutedEventArgs e)
         {
             if (chatOn == false)
@@ -95,16 +109,25 @@ namespace PlexShareApp
             }
         }
 
+        ///<summary>
+        ///To move the window
+        ///</summary>
         private void TitleBarDrag(object sender, MouseButtonEventArgs e)
         {
             DragMove();
         }
 
+        ///<summary>
+        /// To close the window
+        ///</summary>
         private void CloseApp(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
         }
 
+        ///<summary>
+        ///  To minimize the application
+        ///</summary>
         private void MinimizeApp(object sender, RoutedEventArgs e)
         {
             if (WindowState == WindowState.Normal || WindowState == WindowState.Maximized)
@@ -113,6 +136,9 @@ namespace PlexShareApp
                 WindowState = WindowState.Normal;
         }
 
+        ///<summary>
+        ///  To maximise the window
+        ///</summary>
         private void MaximizeApp(object sender, RoutedEventArgs e)
         {
             if(WindowState == WindowState.Maximized)
@@ -126,6 +152,10 @@ namespace PlexShareApp
             }
         }
 
+        ///<summary>
+        ///  This is used to add a border thickness in the maximised window
+        ///  since window is going out of bounds
+        ///</summary>
         public void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             if (this.WindowState == WindowState.Maximized)
@@ -138,9 +168,5 @@ namespace PlexShareApp
             }
         }
 
-        private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
     }
 }

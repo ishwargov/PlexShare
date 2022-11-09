@@ -40,14 +40,12 @@
             <ColumnDefinition Width="0.05*"/>
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-
+        
         <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="10" Background="#272537" MouseDown="TitleBarDrag"/>
         <TextBlock Grid.Row="0" Grid.Column="0" FontFamily="Cascadia Mono" FontSize="15" Foreground="#FFB0ADAD"> PlexShare</TextBlock>
 
         <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="5" Grid.ColumnSpan="2" HorizontalAlignment="Right">
-
-
-
+        
             <Button Width="15"  Height="15" Background="Yellow" Click="MinimizeApp">
                 <Button.Resources>
                     <Style TargetType="Border">
