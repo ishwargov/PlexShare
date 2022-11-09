@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -40,7 +40,6 @@
 	  <None Remove="Resources\DashboardFavi.png" />
 	  <None Remove="Resources\DashFavi.png" />
 	  <None Remove="Resources\GoogleSignIn" />
-	  <None Remove="Resources\UserProfilePicture.png" />
   </ItemGroup>
 
 	<ItemGroup>
@@ -48,7 +47,6 @@
 	  <Resource Include="Resources\DashboardFavi.png" />
 	  <Resource Include="Resources\DashFavi.png" />
 	  <Resource Include="Resources\GoogleSignIn" />
-	  <Resource Include="Resources\UserProfilePicture.png" />
 	</ItemGroup>
 
 	<ItemGroup>

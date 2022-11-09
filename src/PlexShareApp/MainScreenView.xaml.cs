@@ -27,7 +27,7 @@ namespace PlexShareApp
         private static WhiteBoardPage whiteBoardPage;
         private static ChatPage chatPage;
         private static ScreenSharePage screenSharePage;
-        public MainScreenView()
+        public MainScreenView(string name,string email,string imageLocation,string server_ip,string server_port)
         {
             InitializeComponent();
             dashboardPage = new DashboardPage();
