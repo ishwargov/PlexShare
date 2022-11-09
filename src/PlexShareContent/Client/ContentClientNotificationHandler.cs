@@ -44,9 +44,7 @@ namespace PlexShareContent.Client
             Trace.WriteLine("[ContentClientNotificationHandler] Deserializing data received from network");
             try
             {
-                // get type of object using serializer object
-                // change based on serialzer function
-                var deserializedType = typeof(ContentData).ToString();
+                var deserializedType = _serialzer.GetObjectType(data, "Content");
                 if(string.Equals(deserializedType, typeof(ContentData).ToString()))
                 {
                     _receivedMessage = _serialzer.Deserialize<ContentData>(data);
