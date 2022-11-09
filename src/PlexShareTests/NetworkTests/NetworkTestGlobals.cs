@@ -12,32 +12,34 @@ using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Text;
 using System.Threading;
+using System.Transactions;
 using System.Windows.Markup;
 using Xunit;
 
 namespace PlexShareNetwork
 {
-	public static class NetworkTestGlobals
-	{
-		public const string dashboardName = "Dashboard";
+    public static class NetworkTestGlobals
+    {
+        public const string dashboardName = "Dashboard";
 
-		// Priorities of each module (true is for high priority)
-		public const bool dashboardPriority = true;
+        // Priorities of each module (true is for high priority)
+        public const bool dashboardPriority = true;
 
-		// Used to generate random strings
-		private static readonly Random random = new();
+        // Used to generate random strings
+        private static readonly Random random = new();
 
         /// <summary>
         /// Returns a randomly generated alphanumeric string
         /// </summary>
         public static string RandomString(int length)
-		{
-			const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-			return new string(Enumerable.Repeat(chars, length)
-			.Select(s => s[random.Next(s.Length)]).ToArray());
-		}
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            return new string(Enumerable.Repeat(chars, length)
+            .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
 
         public static Packet[] GeneratePackets(int dataSize, string? destination, string module, int count)
         {
@@ -87,6 +89,36 @@ namespace PlexShareNetwork
             Assert.Equal(packet1.serializedData, packet2.serializedData);
             Assert.Equal(packet1.destination, packet2.destination);
             Assert.Equal(packet1.moduleOfPacket, packet2.moduleOfPacket);
+        }
+
+        public static CommunicatorClient[] GetCommunicatorsClient(int count)
+        {
+            CommunicatorClient[] communicatorsClient = new CommunicatorClient[count];
+            for (int i = 0; i < count; i++)
+            {
+                communicatorsClient[i] = new CommunicatorClient();
+            }
+            return communicatorsClient;
+        }
+
+        public static TestNotificationHandler[] GetTestNotificationHandlers(int count)
+        {
+            TestNotificationHandler[] notificaitonHandlers = new TestNotificationHandler[count];
+            for (int i = 0; i < count; i++)
+            {
+                notificaitonHandlers[i] = new TestNotificationHandler();
+            }
+            return notificaitonHandlers;
+        }
+
+        public static void SubscribeOnServerAndClient(ICommunicator communicatorServer, ICommunicator[] communicatorsClient,
+                TestNotificationHandler testNotificationHandlerServer, TestNotificationHandler[] testNotificationHandlersClient)
+        {
+            communicatorServer.Subscribe("Test Module", testNotificationHandlerServer, true);
+            for (var i = 0; i < communicatorsClient.Length; i++)
+            {
+                communicatorsClient[i].Subscribe("Test Module", testNotificationHandlersClient[i], true);
+            }
         }
 
         public static void StartServerAndClients(ICommunicator communicatorServer, ICommunicator[] communicatorsClient)

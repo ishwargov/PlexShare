@@ -14,58 +14,51 @@ namespace PlexShareNetwork.Communication.Test
         private readonly string _module = "Test Module";
         private readonly string _clientID = "Client ID";
 
+        private static void ServerAndClientsStartAndStopTest(int numClients)
+        {
+            CommunicatorServer communicatorServer = new();
+            CommunicatorClient[] communicatorsClient = NetworkTestGlobals.GetCommunicatorsClient(numClients);
+            NetworkTestGlobals.StartServerAndClients(communicatorServer, communicatorsClient);
+            NetworkTestGlobals.StopServerAndClients(communicatorServer, communicatorsClient);
+        }
+
         [Fact]
         public void ServerAndSingleClientStartAndStopTest()
         {
-            CommunicatorServer communicatorServer = new();
-            CommunicatorClient[] communicatorsClient = { new() };
-            NetworkTestGlobals.StartServerAndClients(communicatorServer, communicatorsClient);
-            NetworkTestGlobals.StopServerAndClients(communicatorServer, communicatorsClient);
+            ServerAndClientsStartAndStopTest(1);
         }
 
         [Fact]
         public void ServerAndMultipleClientsStartAndStopTest()
         {
-            CommunicatorServer communicatorServer = new();
-            CommunicatorClient[] communicatorsClient = { new(), new(), new(), new(), new() };
-            NetworkTestGlobals.StartServerAndClients(communicatorServer, communicatorsClient);
-            NetworkTestGlobals.StopServerAndClients(communicatorServer, communicatorsClient);
+            ServerAndClientsStartAndStopTest(10);
         }
 
         [Fact]
-        public void SingleClientSendDataToServerTest()
+        public void ServerAndClientsSubscribeTest()
         {
             CommunicatorServer communicatorServer = new();
-            CommunicatorClient[] communicatorsClient = { new() };
+            CommunicatorClient[] communicatorsClient = NetworkTestGlobals.GetCommunicatorsClient(10);
             NetworkTestGlobals.StartServerAndClients(communicatorServer, communicatorsClient);
-
             TestNotificationHandler testNotificationHandlerServer = new();
-            TestNotificationHandler testNotificationHandlerClient = new();
-            communicatorServer.Subscribe(_module, testNotificationHandlerServer, true);
-            communicatorsClient[0].Subscribe(_module, testNotificationHandlerClient, true);
-            communicatorsClient[0].Send("Hello from client to server", _module, null);
-
-            testNotificationHandlerServer.WaitForEvent();
-            Assert.Equal("OnDataReceived", testNotificationHandlerServer.GetLastEvent());
-            Assert.Equal("Hello from client to server", testNotificationHandlerServer.GetLastEventData());
+            TestNotificationHandler[] testNotificationHandlersClient = NetworkTestGlobals.GetTestNotificationHandlers(10);
+            NetworkTestGlobals.SubscribeOnServerAndClient(communicatorServer, communicatorsClient,
+                testNotificationHandlerServer, testNotificationHandlersClient);
             NetworkTestGlobals.StopServerAndClients(communicatorServer, communicatorsClient);
         }
 
-        [Fact]
-        public void MultipleClientsSendDataToServerTest()
+        private void ClientsSendDataToServerTest(int numClients)
         {
             CommunicatorServer communicatorServer = new();
-            CommunicatorClient[] communicatorsClient = { new(), new(), new(), new(), new() };
+            CommunicatorClient[] communicatorsClient = NetworkTestGlobals.GetCommunicatorsClient(numClients);
             NetworkTestGlobals.StartServerAndClients(communicatorServer, communicatorsClient);
-
             TestNotificationHandler testNotificationHandlerServer = new();
-            communicatorServer.Subscribe(_module, testNotificationHandlerServer, true);
+            TestNotificationHandler[] testNotificationHandlersClient = NetworkTestGlobals.GetTestNotificationHandlers(10);
+            NetworkTestGlobals.SubscribeOnServerAndClient(communicatorServer, communicatorsClient,
+                testNotificationHandlerServer, testNotificationHandlersClient);
             for (var i = 0; i < communicatorsClient.Length; i++)
             {
-                TestNotificationHandler testNotificationHandlerClient = new();
-                communicatorsClient[i].Subscribe(_module, testNotificationHandlerClient, true);
                 communicatorsClient[i].Send("Hello to server from client" + i, _module, null);
-
                 testNotificationHandlerServer.WaitForEvent();
                 Assert.Equal("OnDataReceived", testNotificationHandlerServer.GetLastEvent());
                 Assert.Equal("Hello to server from client" + i, testNotificationHandlerServer.GetLastEventData());
@@ -74,70 +67,66 @@ namespace PlexShareNetwork.Communication.Test
         }
 
         [Fact]
-        public void ServerUnicastDataToSingleClientTest()
+        public void SingleClientSendDataToServerTest()
+        {
+            ClientsSendDataToServerTest(1);
+        }
+
+        [Fact]
+        public void MultipleClientsSendDataToServerTest()
+        {
+            ClientsSendDataToServerTest(10);
+        }
+
+        private void ServerSendDataToClientsTest(int numClients, bool doBroadcast)
         {
             CommunicatorServer communicatorServer = new();
-            CommunicatorClient[] communicatorsClient = { new() };
+            CommunicatorClient[] communicatorsClient = NetworkTestGlobals.GetCommunicatorsClient(numClients);
             NetworkTestGlobals.StartServerAndClients(communicatorServer, communicatorsClient);
-
             TestNotificationHandler testNotificationHandlerServer = new();
-            TestNotificationHandler testNotificationHandlerClient = new();
-            communicatorServer.Subscribe(_module, testNotificationHandlerServer, true);
-            communicatorsClient[0].Subscribe(_module, testNotificationHandlerClient, true);
-            communicatorServer.Send("Hello from server to client", _module, _clientID + 0);
+            TestNotificationHandler[] testNotificationHandlersClient = NetworkTestGlobals.GetTestNotificationHandlers(numClients);
+            NetworkTestGlobals.SubscribeOnServerAndClient(communicatorServer, communicatorsClient,
+                testNotificationHandlerServer, testNotificationHandlersClient);
 
-            testNotificationHandlerClient.WaitForEvent();
-            Assert.Equal("OnDataReceived", testNotificationHandlerClient.GetLastEvent());
-            Assert.Equal("Hello from server to client", testNotificationHandlerClient.GetLastEventData());
+            if (doBroadcast)
+            {
+                communicatorServer.Send("Hello from server to all clients", _module, null);
+                for (var i = 0; i < communicatorsClient.Length; i++)
+                {
+                    testNotificationHandlersClient[i].WaitForEvent();
+                    Assert.Equal("OnDataReceived", testNotificationHandlersClient[i].GetLastEvent());
+                    Assert.Equal("Hello from server to all clients", testNotificationHandlersClient[i].GetLastEventData());
+                }
+            }
+            else
+            {
+                for (var i = 0; i < communicatorsClient.Length; i++)
+                {
+                    communicatorServer.Send("Hello from server to client" + i, _module, _clientID + i);
+                    testNotificationHandlersClient[i].WaitForEvent();
+                    Assert.Equal("OnDataReceived", testNotificationHandlersClient[i].GetLastEvent());
+                    Assert.Equal("Hello from server to client" + i, testNotificationHandlersClient[i].GetLastEventData());
+                }
+            }
             NetworkTestGlobals.StopServerAndClients(communicatorServer, communicatorsClient);
+        }
+
+        [Fact]
+        public void ServerUnicastDataToSingleClientTest()
+        {
+            ServerSendDataToClientsTest(1, false);
         }
 
         [Fact]
         public void ServerUnicastDataToMultipleClientsTest()
         {
-            CommunicatorServer communicatorServer = new();
-            CommunicatorClient[] communicatorsClient = { new(), new(), new(), new(), new() };
-            NetworkTestGlobals.StartServerAndClients(communicatorServer, communicatorsClient);
-
-            TestNotificationHandler testNotificationHandlerServer = new();
-            communicatorServer.Subscribe(_module, testNotificationHandlerServer, true);
-            TestNotificationHandler[] testNotificationHandlersClient = { new(), new(), new(), new(), new() };
-
-            for (var i = 0; i < communicatorsClient.Length; i++)
-            {
-                communicatorsClient[i].Subscribe(_module, testNotificationHandlersClient[i], true);
-                communicatorServer.Send("Hello from server to client" + i, _module, _clientID + i);
-                testNotificationHandlersClient[i].WaitForEvent();
-                Assert.Equal("OnDataReceived", testNotificationHandlersClient[i].GetLastEvent());
-                Assert.Equal("Hello from server to client" + i, testNotificationHandlersClient[i].GetLastEventData());
-            }
-            NetworkTestGlobals.StopServerAndClients(communicatorServer, communicatorsClient);
+            ServerSendDataToClientsTest(10, false);
         }
 
         [Fact]
         public void ServerBroadcastDataToClientsTest()
         {
-            CommunicatorServer communicatorServer = new();
-            CommunicatorClient[] communicatorsClient = { new(), new(), new(), new(), new() };
-            NetworkTestGlobals.StartServerAndClients(communicatorServer, communicatorsClient);
-
-            TestNotificationHandler testNotificationHandlerServer = new();
-            communicatorServer.Subscribe(_module, testNotificationHandlerServer, true);
-            TestNotificationHandler[] testNotificationHandlersClient = { new(), new(), new(), new(), new() };
-            for (var i = 0; i < communicatorsClient.Length; i++)
-            {
-                communicatorsClient[i].Subscribe(_module, testNotificationHandlersClient[i], true);
-            }
-
-            communicatorServer.Send("Hello from server to all clients", _module, null);
-
-            for (var i = 0; i < communicatorsClient.Length; i++)
-            {
-                testNotificationHandlersClient[i].WaitForEvent();
-                Assert.Equal("OnDataReceived", testNotificationHandlersClient[i].GetLastEvent());
-                Assert.Equal("Hello from server to all clients", testNotificationHandlersClient[i].GetLastEventData());
-            }
-            NetworkTestGlobals.StopServerAndClients(communicatorServer, communicatorsClient);
+            ServerSendDataToClientsTest(10, true);
         }
     }
 }
