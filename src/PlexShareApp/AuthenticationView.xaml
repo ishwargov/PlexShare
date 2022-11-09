@@ -26,7 +26,8 @@
             <RowDefinition Height="1.65*"/>
             <RowDefinition Height="0.7*"/>
             <RowDefinition Height="1*"/>
-            <RowDefinition Height="1.3*"/>
+            <RowDefinition Height="1.1*"/>
+            <RowDefinition Height="0.2*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*" />
@@ -34,7 +35,8 @@
             <ColumnDefinition Width="0.3*" />
             <ColumnDefinition Width="0.06*" />
             <ColumnDefinition Width="1.3*" />
-            <ColumnDefinition Width="0.06*" />
+            <ColumnDefinition Width="0.04*" />
+            <ColumnDefinition Width="0.02*" />
         </Grid.ColumnDefinitions>
 
         <TextBlock Grid.Row="0" Grid.Column="0" FontFamily="Cascadia Mono" FontSize="15"  
@@ -65,14 +67,62 @@
         <Image Grid.Column="0" Grid.RowSpan="7" Grid.Row="1" Source="/Resources/AuthScreenImg.jpg" Stretch="UniformToFill" MaxWidth="500"/>
         
         <!-- Welcome Block -->
-        <TextBlock Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="3" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="40" FontFamily="MV Boli" MaxHeight="50" >Welcome To</TextBlock>
-        <TextBlock Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="3" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="80" FontFamily="MV Boli" MaxHeight="100">PlexShare</TextBlock>
+        <TextBlock Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="5" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="40" FontFamily="MV Boli" MaxHeight="50" >Welcome To</TextBlock>
+        <TextBlock Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="5" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="80" FontFamily="MV Boli" MaxHeight="100">PlexShare</TextBlock>
         
         <!-- Sign In Button -->
-        <Button Grid.Column="2" Click="Home_Click" Grid.Row="6" MaxWidth="80" MaxHeight="80" Background="Transparent" BorderThickness="0">
-            <Image Source="/Resources/GoogleSignIn" MaxWidth="100" MaxHeight="100" Stretch="Uniform"/>
+        <Button Grid.Column="1" Grid.ColumnSpan="5" Click="Home_Click" Grid.Row="6" MaxWidth="500" MaxHeight="400" BorderBrush="Gray" BorderThickness="2" Background="Transparent">
+            <Button.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="50"/>
+                </Style>
+            </Button.Resources>
+            <Button.Style>
+                <Style TargetType="{x:Type Button}">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type Button}">
+                                        <Border Background="{TemplateBinding Background}">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+            <Image Source="/Resources/GoogleSignIn.png"  MaxWidth="500" MaxHeight="400" Stretch="UniformToFill"/>
         </Button>
-        <Button Name="SignInButton" Click="Home_Click" Grid.Column="3" Grid.Row="6" Grid.ColumnSpan="2" MaxHeight="70" MaxWidth="500" Background="MediumSeaGreen" Foreground="White" FontSize="40" FontFamily="Centaur">Sign In With Google</Button>
-   
+
+        <!-- Animation for the Authentication Screen-->
+        <StackPanel Grid.Row="1" Grid.RowSpan="7" Grid.Column="1">
+            <ProgressBar x:Name="pb1" Height="1000" Width="10" Orientation="Vertical" Background="Transparent" BorderThickness="0"  Foreground="BurlyWood"></ProgressBar>
+        </StackPanel>
+        
+        <StackPanel Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="4">
+            <ProgressBar x:Name="pb2" Height="10" Width="1000" Background="Transparent" BorderThickness="0" Foreground="Wheat"></ProgressBar>
+        </StackPanel>
+
+        <StackPanel  Grid.Row="1" Grid.RowSpan="8" Grid.Column="4" HorizontalAlignment="Right">
+            <ProgressBar x:Name="pb3" Height="1000" Width="10" Orientation="Vertical" Background="Transparent" BorderThickness="0" Foreground="BurlyWood"></ProgressBar>
+        </StackPanel>
+
+        <StackPanel Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="5" VerticalAlignment="Bottom">
+            <ProgressBar x:Name="pb4" Height="10" Width="1000" Background="Transparent" BorderThickness="0" Foreground="Wheat"></ProgressBar>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="4" VerticalAlignment="Bottom" HorizontalAlignment="Left">
+            <ProgressBar x:Name="pb5" Height="10" Width="500" Background="Transparent" BorderThickness="0" Foreground="BurlyWood"></ProgressBar>
+        </StackPanel>
+
+        <StackPanel  Grid.Row="5" Grid.RowSpan="4" Grid.Column="5" HorizontalAlignment="Right">
+            <ProgressBar x:Name="pb6" Height="500" Width="10" Orientation="Vertical" Background="Transparent" BorderThickness="0" Foreground="Wheat"></ProgressBar>
+        </StackPanel>
+
     </Grid>
 </Window>
