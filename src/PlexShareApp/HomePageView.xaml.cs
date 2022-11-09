@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -60,7 +60,14 @@ namespace PlexShareApp
             {
                 return;
             }
-            MainScreenView mainScreenView = new MainScreenView(Name,Email,absolute_path,"-1","0");
+            
+
+            MainScreenView mainScreenView = new MainScreenView();
+
+            
+            //
+            //
+
             mainScreenView.Show();
             this.Close();
         }
