@@ -34,6 +34,7 @@ public struct Pixel
     public RGB RGB { get; set; }
 }
 
+// struct for storing the resolution of a image
 public struct Resolution
 {
     public int Height { get; set; }
@@ -44,6 +45,8 @@ public struct Resolution
     public static bool operator !=(Resolution lhs, Resolution rhs) => !(lhs == rhs);
 }
 
+// frame struct storing resolution of the image and list of 
+// pixels which are different from the previous image
 public struct Frame
 {
     public Resolution Resolution { get; set; }
