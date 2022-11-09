@@ -90,12 +90,37 @@ namespace PlexShareApp
             }
         }
 
+        /// <summary>
+        /// Event Handler on Clicking Send Button
+        /// </summary>
+        /// <param name="sender"> Notification Sender </param>
+        /// <param name="e"> Routed Event Data </param>
         private void SendButtonClick(object sender, RoutedEventArgs e)
         {
+            if(SendTextBox.Text != null && SendTextBox.Text != string.Empty)
+            {
+                var viewModel = DataContext as ChatPageViewModel;
 
+                if(ReplyTextBox.Text != null && ReplyTextBox.Text != string.Empty)
+                {
+                    viewModel.SendMessage(SendTextBox.Text, ReplyMsgId, "Chat");
+                }
+                else
+                {
+                    viewModel.SendMessage(SendTextBox.Text, -1, "Chat");
+                }
+            }
+            SendTextBox.Text = string.Empty;
+            ReplyTextBox.Text = string.Empty;
         }
 
         // TODO: Implement ReplyButtonClick event
+        /// <summary>
+        /// Event Handler on Clicking Reply Button
+        /// </summary>
+        /// <param name="sender"> Notification Sender</param>
+        /// <param name="e"> Routed Event Data </param>
+        
 
         // TODO: Implement StarButtonClick event
 
