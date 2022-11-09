@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:PlexShareApp"
         mc:Ignorable="d"
         WindowStartupLocation = "Manual"
@@ -112,41 +113,32 @@
             <ColumnDefinition Width="136*"/>
             <ColumnDefinition Width="30*"/>
         </Grid.ColumnDefinitions>
-        <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="10" Background="#272537" MouseDown="TitleBarDrag"/>
-        <TextBlock Grid.Row="0" Grid.Column="0" FontFamily="Cascadia Mono" FontSize="15" Foreground="#FFB0ADAD"> PlexShare</TextBlock>
+        <!--Title Bar-->
+        <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="10" MouseDown="TitleBarDrag" Background="White">
+            <TextBlock Grid.Row="0" Grid.Column="0" FontFamily="Cascadia Mono" FontSize="15"  
+                               VerticalAlignment="Center" Foreground="Black"> PlexShare
+            </TextBlock>
+            <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="5" Grid.ColumnSpan="2" HorizontalAlignment="Right">
+                <!--Maximize Button-->
+                <Button Width="25"  Height="20" Click="MinimizeApp"
+                                Background="Transparent" ToolTip="Maximise"
+                                BorderBrush="Transparent">
+                    <materialDesign:PackIcon Kind="WindowMinimize" Width="16" Height="16" VerticalAlignment="Center"/>
+                </Button>
 
-        <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="5" Grid.ColumnSpan="2" HorizontalAlignment="Right">
+                <!--Minimize Button-->
+                <Button Width="25" Height="20" Click="MaximizeApp" Background="Transparent" BorderBrush="Transparent">
+                    <materialDesign:PackIcon Kind="WindowMaximize" Width="16" Height="16" VerticalAlignment="Center"/>
+                </Button>
 
+                <!--Close Button-->
+                <Button Width="25" Background="Transparent" BorderThickness="0"
+                                Height="20" Click="CloseApp">
+                    <materialDesign:PackIcon Kind="WindowClose" Width="16" Height="16" VerticalAlignment="Center"/>
+                </Button>
 
-
-            <Button Width="15"  Height="15" Background="Yellow" Click="MinimizeApp">
-                <Button.Resources>
-                    <Style TargetType="Border">
-                        <Setter Property="CornerRadius" Value="10"/>
-                    </Style>
-                </Button.Resources>
-            </Button>
-
-            <StackPanel Width="5"></StackPanel>
-
-            <Button Width="15" Height="15" Background="Green" Click="MaximizeApp" >
-                <Button.Resources>
-                    <Style TargetType="Border">
-                        <Setter Property="CornerRadius" Value="10"/>
-                    </Style>
-                </Button.Resources>
-            </Button>
-            <StackPanel Width="5"></StackPanel>
-
-            <Button Width="15" Background="Red" BorderThickness="0" Height="15" Click="CloseApp">
-                <Button.Resources>
-                    <Style TargetType="Border">
-                        <Setter Property="CornerRadius" Value="10"/>
-                    </Style>
-                </Button.Resources>
-            </Button>
-            <StackPanel Width="5"></StackPanel>
-        </StackPanel>
+            </StackPanel>
+        </Grid>
         <Grid Grid.Column="5" Grid.Row="3" Grid.RowSpan="4" Grid.ColumnSpan="2" Margin="0,0,135,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="37*"/>

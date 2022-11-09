@@ -97,7 +97,7 @@ namespace PlexShareApp
             {
                 return;
             }
-            MainScreenView mainScreenView = new MainScreenView(Name, Email, absolute_path, this.Server_IP.Text,this.Server_PORT.Text);
+            MainScreenView mainScreenView = new MainScreenView();
             mainScreenView.Show();
             this.Close();
         }
