@@ -10,6 +10,7 @@
  * Description =   This file provides Interface for ContentServer
  *****************************************************************************/
 
+using PlexShareContent.Client;
 using PlexShareContent.DataModels;
 using System;
 using System.Collections.Generic;
@@ -25,18 +26,18 @@ namespace PlexShareContent.Server
         ///     Add a new subscriber to the list of subscribers
         /// </summary>
         /// <param name="subscriber">IContentListener implementation provided by the subscriber</param>
-        public void ServerSubscribe(Client.IContentListener subscriber);
+        void ServerSubscribe(IContentListener subscriber);
 
         /// <summary>
         ///     Get all the messages sent
         /// </summary>
         /// <returns>List of Thread objects</returns>
-        public List<ChatThread> ServerGetMessages();
+        List<ChatThread> GetAllMessages();
 
         /// <summary>
-        ///     Sends all the messages to the client of the user with given user Id
+        ///     Sends all the messages to the client of the user with user id = userId
         /// </summary>
         /// <param name="userId">user id of the user to which messages needs to be sent</param>
-        public void SSendAllMessagesToClient(int userID);
+        void SSendAllMessagesToClient(int userId);
     }
 }

@@ -1,4 +1,16 @@
-﻿using PlexShareContent.DataModels;
+﻿/******************************************************************************
+ * Filename    = ContentServerNotificationHandlerTests.cs
+ *
+ * Author      = Anurag Jha
+ *
+ * Product     = PlexShare
+ * 
+ * Project     = PlexShareContent
+ *
+ * Description = Contains Tests for ContentServerNotificationHandler
+ *****************************************************************************/
+
+using PlexShareContent.DataModels;
 using PlexShareContent.Enums;
 using PlexShareContent.Server;
 using PlexShareContent;
@@ -8,67 +20,33 @@ namespace PlexShareTests.ContentTests.Server
 {
     public class ContentServerNotificationHandlerTest
     {
-        private FakeCommunicator communicator;
+        private FakeCommunicator _communicator;
         private ContentServer contentServer;
-        private FakeContentListener listener;
-        private INotificationHandler notificationHandler;
-        private IContentSerializer serializer;
+        private FakeContentListener _listener;
+        private INotificationHandler _notifHandler;
+        private IContentSerializer _serializer;
 
         private int sleeptime;
         private Utility utils;
 
-        public void Setup()
+        public void Initialiser()
         {
             utils = new Utility();
             contentServer = ContentServerFactory.GetInstance() as ContentServer;
             contentServer.Reset();
-            notificationHandler = new ContentServerNotificationHandler(contentServer);
-            serializer = new ContentSerializer();
-            listener = new FakeContentListener();
-            communicator = new FakeCommunicator();
-            contentServer.Communicator = communicator;
-            contentServer.ServerSubscribe(listener);
+            _notifHandler = new ContentServerNotificationHandler(contentServer);
+            _serializer = new ContentSerializer();
+           _listener = new FakeContentListener();
+           _communicator = new FakeCommunicator();
+            contentServer.Communicator =_communicator;
+            contentServer.ServerSubscribe(_listener);
             sleeptime = 50;
         }
 
         [Fact]
-        public void OnDataReceived_ChatDataIsReceived_CallReceiveMethodOfContentDatabase()
+        public void OnDataReceived_FileIsReceived_CallReceiveMethodOfContentDB()
         {
-            Setup();
-            var messageData = utils.GenerateContentData(data: "Hello");
-
-            var serializedMessage = serializer.Serialize(messageData);
-
-            notificationHandler.OnDataReceived(serializedMessage);
-
-            Thread.Sleep(sleeptime);
-
-            var notifiedMessage = listener.GetReceivedMessage();
-
-            Assert.Equal("Hello", notifiedMessage.Data);
-            Assert.Equal(messageData.Type, notifiedMessage.Type);
-            Assert.Equal(messageData.Event, notifiedMessage.Event);
-            Assert.Equal(messageData.SenderID, notifiedMessage.SenderID);
-            Assert.Equal(messageData.Starred, notifiedMessage.Starred);
-            Assert.Equal(messageData.ReceiverIDs, notifiedMessage.ReceiverIDs);
-
-            var sentMessage = communicator.GetSentData();
-
-            var deserializesSentMessage = serializer.Deserialize<ContentData>(sentMessage);
-
-            Assert.Equal("Hello", deserializesSentMessage.Data);
-            Assert.Equal(messageData.Type, deserializesSentMessage.Type);
-            Assert.Equal(messageData.Event, deserializesSentMessage.Event);
-            Assert.Equal(messageData.SenderID, deserializesSentMessage.SenderID);
-            Assert.Equal(messageData.Starred, deserializesSentMessage.Starred);
-            Assert.Equal(messageData.ReceiverIDs, deserializesSentMessage.ReceiverIDs);
-            Assert.True(communicator.IsBroadcast());
-        }
-
-        [Fact]
-        public void OnDataReceived_FileDataIsReceived_CallReceiveMethodOfContentDatabase()
-        {
-            Setup();
+            Initialiser();
             var CurrentDirectory = Directory.GetCurrentDirectory();
             var path = CurrentDirectory.Split(new[] { "\\PlexShareTests" }, StringSplitOptions.None);
             var pathA = path[0] + "\\PlexShareTests\\ContentTests\\Test_File.pdf";
@@ -84,49 +62,40 @@ namespace PlexShareTests.ContentTests.Server
                 ReceiverIDs = new int[0]
             };
 
-            var serializedMessage = serializer.Serialize(file);
-
-            notificationHandler.OnDataReceived(serializedMessage);
+            var serializedMessage = _serializer.Serialize(file);
+            _notifHandler.OnDataReceived(serializedMessage);
 
             Thread.Sleep(sleeptime);
+            var notifiedMessage = _listener.GetReceivedMessage();
 
-            var notifiedMessage = listener.GetReceivedMessage();
-            Assert.Equal("Test_File.pdf", notifiedMessage.Data);
-            Assert.Equal(file.Type, notifiedMessage.Type);
-            Assert.Equal(file.Event, notifiedMessage.Event);
-            Assert.Equal(file.SenderID, notifiedMessage.SenderID);
-            Assert.Equal(file.Starred, notifiedMessage.Starred);
-            Assert.Equal(file.ReceiverIDs, notifiedMessage.ReceiverIDs);
-
-            var sentMessage = communicator.GetSentData();
-
-            var deserializesSentMessage = serializer.Deserialize<ContentData>(sentMessage);
-
+            var sentMessage = _communicator.GetSentData();
+            var deserializesSentMessage = _serializer.Deserialize<ContentData>(sentMessage);
             Assert.Equal("Test_File.pdf", deserializesSentMessage.Data);
-            Assert.Equal(file.Type, deserializesSentMessage.Type);
-            Assert.Equal(file.Event, deserializesSentMessage.Event);
-            Assert.Equal(file.SenderID, deserializesSentMessage.SenderID);
-            Assert.Equal(file.Starred, deserializesSentMessage.Starred);
-            Assert.Equal(file.ReceiverIDs, deserializesSentMessage.ReceiverIDs);
-            Assert.True(communicator.IsBroadcast());
+            Assert.True(_communicator.IsBroadcast());
         }
 
         [Fact]
-        public void OnDataReceived_InvalidDataIsReceived_CallReceiveMethodOfContentDatabase()
+        public void OnDataReceived_ChatIsReceived_CallReceiveMethodOfContentDB()
         {
-            Setup();
-            var previousMessageToSubsribers = listener.GetReceivedMessage();
-            var previousMessageToCommunicator = communicator.GetSentData();
-
-            var garbageData = " adfasfasfsadf";
-            notificationHandler.OnDataReceived(garbageData);
+            Initialiser();
+            var messageData = utils.GenerateContentData(data: "Test Message");
+            var serializedMessage = _serializer.Serialize(messageData);
+            _notifHandler.OnDataReceived(serializedMessage);
 
             Thread.Sleep(sleeptime);
+            var notifiedMessage =_listener.GetReceivedMessage();
+            Assert.Equal("Test Message", notifiedMessage.Data);
+            Assert.Equal(messageData.Type, notifiedMessage.Type);
+            Assert.Equal(messageData.Event, notifiedMessage.Event);
+            Assert.Equal(messageData.SenderID, notifiedMessage.SenderID);
+            Assert.Equal(messageData.Starred, notifiedMessage.Starred);
+            Assert.Equal(messageData.ReceiverIDs, notifiedMessage.ReceiverIDs);
 
-            var currentMessageToSubscribers = listener.GetReceivedMessage();
+            var sentMessage =_communicator.GetSentData();
+            var deserializesSentMessage = _serializer.Deserialize<ContentData>(sentMessage);
 
-            Assert.Equal(currentMessageToSubscribers, previousMessageToSubsribers);
-            Assert.Equal(communicator.GetSentData(), previousMessageToCommunicator);
+            Assert.Equal("Test Message", deserializesSentMessage.Data);
+            Assert.True(_communicator.IsBroadcast());
         }
     }
 }

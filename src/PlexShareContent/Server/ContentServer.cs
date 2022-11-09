@@ -19,57 +19,43 @@ using PlexShareContent.DataModels;
 using PlexShareContent.Enums;
 using PlexShareNetwork;
 using PlexShareNetwork.Communication;
+using PlexShareNetwork.Serialization;
 
 namespace PlexShareContent.Server
 {
     public class ContentServer : IContentServer
     {
-        private static readonly object _l = new();
-        private INotificationHandler _notifHandler;
-        private ChatServer _chatServer;
-        private ICommunicator _comm;
-        private ContentDB _contentDB;
+        private static readonly object _lock = new();
+        private readonly INotificationHandler _notificationHandler;
+        private ChatServer _chatContextServer;
+        private ICommunicator _communicator;
+        private ContentDB _contentDatabase;
         private FileServer _fileServer;
         private IContentSerializer _serializer;
         private List<IContentListener> _subscribers;
 
-        /// <summary>
-        ///     ContentServer Constructor to initilize member variales.
-        /// </summary>
         public ContentServer()
         {
             _subscribers = new List<IContentListener>();
-            _comm = CommunicationFactory.GetCommunicator(false);
-            _contentDB = new ContentDB();
-            _notifHandler = new ContentServerNotificationHandler(this);
-            _fileServer = new FileServer(_contentDB);
-            _chatServer = new ChatServer(_contentDB);
+            _communicator = CommunicationFactory.GetCommunicator(false);
+            _contentDatabase = new ContentDB();
+            _notificationHandler = new ContentServerNotificationHandler(this);
+            _fileServer = new FileServer(_contentDatabase);
+            _chatContextServer = new ChatServer(_contentDatabase);
             _serializer = new ContentSerializer();
-            _comm.Subscribe("Content", _notifHandler);
+            _communicator.Subscribe("Content", _notificationHandler);
         }
 
         /// <summary>
-        ///     Function to reset the member variables.
-        /// </summary>
-        public void Reset()
-        {
-            _subscribers = new List<IContentListener>();
-            _contentDB = new ContentDB();
-            _fileServer = new FileServer(_contentDB);
-            _chatServer = new ChatServer(_contentDB);
-            _serializer = new ContentSerializer();
-        }
-
-        /// <summary>
-        ///     get and set values of communicator.
+        ///     Get and Set Communicator, Meant to be only used for testing
         /// </summary>
         public ICommunicator Communicator
         {
-            get => _comm;
+            get => _communicator;
             set
             {
-                _comm = value;
-                _comm.Subscribe("Content", _notifHandler);
+                _communicator = value;
+                _communicator.Subscribe("Content", _notificationHandler);
             }
         }
 
@@ -79,22 +65,30 @@ namespace PlexShareContent.Server
             _subscribers.Add(subscriber);
         }
 
-        /// <summary>
-        ///     Notifies all the subscribed modules.
-        /// </summary>
-        /// <param name="receiveMessageData"></param>
-        private void Notify(ReceiveContentData receivedMsg)
+        /// <inheritdoc />
+        public List<ChatThread> GetAllMessages()
         {
-            foreach (var subscriber in _subscribers) _ = Task.Run(() => { subscriber.OnMessageReceived(receivedMsg); });
+            lock (_lock)
+            {
+                return _chatContextServer.GetMessages();
+            }
+        }
+
+        /// <inheritdoc />
+        public void SSendAllMessagesToClient(int userId)
+        {
+            var allMessagesSerialized = _serializer.Serialize(GetAllMessages());
+            _communicator.Send(allMessagesSerialized, "Content", userId.ToString());
         }
 
         /// <summary>
-        ///     This function is used to receive data from ContentServerNotificationHandler and processes it.
+        ///     Receives data from ContentServerNotificationHandler and processes it accordingly
         /// </summary>
         /// <param name="data"></param>
         public void Receive(string data)
         {
             ContentData messageData;
+            // Try deserializing the data if error then do nothing and return.
             try
             {
                 messageData = _serializer.Deserialize<ContentData>(data);
@@ -104,34 +98,40 @@ namespace PlexShareContent.Server
                 Trace.WriteLine($"[ContentServer] Exception occured while deserialsing data. Exception: {e}");
                 return;
             }
-            ContentData receivedMsg = null;
+
+            ContentData receiveMessageData;
+
             Trace.WriteLine("[ContentServer] Received messageData from ContentServerNotificationHandler");
 
-            lock (_l)
+            // lock to prevent multiple threads from modifying the messages at once.
+            lock (_lock)
             {
-                if (messageData.Type == MessageType.Chat)
+                switch (messageData.Type)
                 {
-                    Trace.WriteLine("[ContentServer] MessageType is Chat, Calling ChatServer.Receive()");
-                    receivedMsg = _chatServer.Receive(messageData);
-                }
-                else if (messageData.Type == MessageType.File)
-                {
-                    Trace.WriteLine("[ContentServer] MessageType is File, Calling FileServer.Receive()");
-                    receivedMsg = _fileServer.Receive(messageData);
-                }
-                else if (messageData.Type == MessageType.HistoryRequest)
-                {
-                    Trace.WriteLine("[ContentServer] MessageType is HistoryRequest, Calling ContentServer.Receive()");
-                    SSendAllMessagesToClient(messageData.SenderID);
-                }
-                else
-                {
-                    Trace.WriteLine("[ContentServer] MessageType is Incorrect");
-                    return;
+                    case MessageType.Chat:
+                        Trace.WriteLine("[ContentServer] MessageType is Chat, Calling ChatServer.Receive()");
+                        receiveMessageData = _chatContextServer.Receive(messageData);
+                        break;
+
+                    case MessageType.File:
+                        Trace.WriteLine("[ContentServer] MessageType is File, Calling FileServer.Receive()");
+                        receiveMessageData = _fileServer.Receive(messageData);
+                        break;
+
+                    case MessageType.HistoryRequest:
+                        Trace.WriteLine(
+                            "[ContentServer] MessageType is HistoryRequest, Calling ContentServer.SSendAllMessagesToClient");
+                        SSendAllMessagesToClient(messageData.SenderID);
+                        return;
+
+                    default:
+                        Trace.WriteLine("[ContentServer] Unknown Message Type");
+                        return;
                 }
             }
 
-            if (receivedMsg == null)
+            // If this is null then something went wrong, probably message was not found.
+            if (receiveMessageData == null)
             {
                 Trace.WriteLine("[ContentServer] Something went wrong while handling the message.");
                 return;
@@ -139,76 +139,82 @@ namespace PlexShareContent.Server
 
             try
             {
+                // If Event is Download then send the file to client
                 if (messageData.Event == MessageEvent.Download)
                 {
-                    Trace.WriteLine("[ContentServer] Download initiated, trying to fetch file and send to client");
-                    SendFile(receivedMsg);
+                    Trace.WriteLine("[ContentServer] Sending File to client");
+                    SendFile(receiveMessageData);
                 }
                 // Else send the message to all the receivers and notify the subscribers
                 else
                 {
                     Trace.WriteLine("[ContentServer] Notifying subscribers");
-                    Notify(receivedMsg);
+                    Notify(receiveMessageData);
                     Trace.WriteLine("[ContentServer] Sending message to clients");
-                    Send(receivedMsg);
+                    Send(receiveMessageData);
                 }
             }
             catch (Exception e)
             {
-                Trace.WriteLine($"[ContentServer] Exception {e}");
+                Trace.WriteLine($"[ContentServer] Something went wrong while sending message. Exception {e}");
                 return;
             }
+
             Trace.WriteLine("[ContentServer] Message sent");
         }
 
-        /// <inheritdoc />
-        public List<ChatThread> ServerGetMessages()
-        {
-            lock (_l)
-            {
-                return _chatServer.GetMessages();
-            }
-        }
-
-        /// <inheritdoc />
-        public void SSendAllMessagesToClient(int id)
-        {
-            var serializedMsg = _serializer.Serialize(ServerGetMessages());
-            _comm.Send(serializedMsg, "Content", id.ToString());
-        }
-
         /// <summary>
-        ///     This function is used to send the message to the client.
+        ///     Sends the message to clients.
         /// </summary>
         /// <param name="messageData"></param>
-        private void Send(ContentData msg)
+        public void Send(ContentData messageData)
         {
-            var message = _serializer.Serialize(msg);
+            var message = _serializer.Serialize(messageData);
 
             // If length of ReceiverIds is 0 that means its a broadcast.
-            if (msg.ReceiverIDs.Length == 0)
+            if (messageData.ReceiverIDs.Length == 0)
             {
-                _comm.Send(message, "Content", null);
+                _communicator.Send(message, "Content", null);
             }
             // Else send the message to the receivers in ReceiversIds.
             else
             {
-                foreach (var userId in msg.ReceiverIDs)
-                    _comm.Send(message, "Content", userId.ToString());
+                foreach (var userId in messageData.ReceiverIDs)
+                    _communicator.Send(message, "Content", userId.ToString());
                 // Sending the message back to the sender.
-                _comm.Send(message, "Content", msg.SenderID.ToString());
+                _communicator.Send(message, "Content", messageData.SenderID.ToString());
             }
         }
 
         /// <summary>
-        ///     This function is used to send the file to the client who requests for it.
+        ///     Sends the file back to the requester.
         /// </summary>
         /// <param name="messageData"></param>
-        private void SendFile(ContentData msg)
+        public void SendFile(ContentData messageData)
         {
-            var message = _serializer.Serialize(msg);
-            _comm.Send(message, "Content", msg.SenderID.ToString());
+            var message = _serializer.Serialize(messageData);
+            _communicator.Send(message, "Content", messageData.SenderID.ToString());
         }
 
+        /// <summary>
+        ///     Notifies all the subscribed modules.
+        /// </summary>
+        /// <param name="receiveMessageData"></param>
+        public void Notify(ReceiveContentData receiveMessageData)
+        {
+            foreach (var subscriber in _subscribers) _ = Task.Run(() => { subscriber.OnMessageReceived(receiveMessageData); });
+        }
+
+        /// <summary>
+        ///     Resets the ContentServer, Meant to be used only for Testing
+        /// </summary>
+        public void Reset()
+        {
+            _subscribers = new List<IContentListener>();
+            _contentDatabase = new ContentDB();
+            _fileServer = new FileServer(_contentDatabase);
+            _chatContextServer = new ChatServer(_contentDatabase);
+            _serializer = new ContentSerializer();
+        }
     }
 }
