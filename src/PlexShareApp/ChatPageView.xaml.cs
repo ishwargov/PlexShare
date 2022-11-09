@@ -58,7 +58,7 @@ namespace PlexShareApp
             var propertyName = e.PropertyName; ;
             var viewModel = DataContext as ChatPageViewModel;
 
-            if(propertyName == "ReceivedMsg" || propertyName == "ReceivedMsgs")
+            if(propertyName == "ReceivedMsg" || propertyName == "ReceivedAllMsgs")
             {
                 _allMessages.Add(viewModel.ReceivedMsg);
             }
@@ -80,11 +80,11 @@ namespace PlexShareApp
             {
                 if(string.IsNullOrEmpty(ReplyTextBox.Text))
                 {
-                    viewModel.SendFile(openFileDialog.FileName, -1);
+                    viewModel.SendMessage(openFileDialog.FileName, -1, "File");
                 }
                 else
                 {
-                    viewModel.SendFile(openFileDialog.FileName, ReplyMsgId);
+                    viewModel.SendMessage(openFileDialog.FileName, ReplyMsgId, "File");
                 }
                 ReplyTextBox.Text = "";
             }
