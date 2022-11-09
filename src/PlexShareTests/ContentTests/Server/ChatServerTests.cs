@@ -1,12 +1,19 @@
-﻿using PlexShareContent;
+﻿/******************************************************************************
+ * Filename    = ChatServerTests.cs
+ *
+ * Author      = Anurag Jha
+ *
+ * Product     = PlexShare
+ * 
+ * Project     = PlexShareContent
+ *
+ * Description = Contains Tests for ChatServer
+ *****************************************************************************/
+
+using PlexShareContent;
 using PlexShareContent.DataModels;
 using PlexShareContent.Enums;
 using PlexShareContent.Server;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PlexShareTests.ContentTests.Server
 {
@@ -24,252 +31,231 @@ namespace PlexShareTests.ContentTests.Server
         }
 
         [Fact]
-        public void Receive_HandlingNewMessage_StoreTheNewMessageAndReturnTheStoredMessage()
+        public void Receive_UpdatingMessage_ReturnsUpdatedMessage()
         {
             Setup();
-            var message1 = _utils.GenerateContentData(data: "Hello", senderID: 1);
-
-            ReceiveContentData recv = ChatServer.Receive(message1);
-
-            Assert.Equal(message1.Data, recv.Data);
-        }
-
-        [Fact]
-        public void Receive_StarringAStoredMessage_MessageIsStarredAndReturnsTheStarredMessage()
-        {
-            Setup();
-            var message1 = _utils.GenerateContentData(data: "Hello", senderID: 1);
-
-            ReceiveContentData recv = ChatServer.Receive(message1);
-
-            Assert.Equal(message1.Data, recv.Data);
-
-            var starMessage = new ContentData
-            {
-                MessageID = recv.MessageID,
-                ReplyThreadID = recv.ReplyThreadID,
-                Type = recv.Type,
-                Event = MessageEvent.Star
-            };
-
-            recv = ChatServer.Receive(starMessage);
-
-            Assert.NotNull(recv);
-            Assert.Equal("Hello", recv.Data);
-        }
-
-        [Fact]
-        public void Receive_StarringAMessageThatDoesNotExist_NullIsReturned()
-        {
-            Setup();
-            var message1 = _utils.GenerateContentData(data: "Hello", senderID: 1);
-
-            ReceiveContentData recv = ChatServer.Receive(message1);
-
-            Assert.Equal(message1.Data, recv.Data);
-
-            var starMessage = new ContentData
-            {
-                MessageID = 1,
-                ReplyThreadID = recv.ReplyThreadID,
-                Type = MessageType.Chat,
-                Event = MessageEvent.Star
-            };
-
-            recv = ChatServer.Receive(starMessage);
-
-            Assert.Null(recv);
-
-            starMessage.MessageID = 0;
-            starMessage.ReplyThreadID = 1;
-
-            recv = ChatServer.Receive(starMessage);
-
-            Assert.Null(recv);
-        }
-
-        [Fact]
-        public void Receive_UpdatingAStoredMessage_MessageIsUpdatedAndReturnsTheUpdatedMessage()
-        {
-            Setup();
-            var message1 = _utils.GenerateContentData(data: "Hello", senderID: 1);
-
-            ReceiveContentData recv = ChatServer.Receive(message1);
-
-            Assert.Equal(message1.Data, recv.Data);
+            var msg1 = _utils.GenerateContentData(data: "Test Message", senderID: 1);
+            ReceiveContentData receivedMsg = ChatServer.Receive(msg1);
+            Assert.Equal(msg1.Data, receivedMsg.Data);
 
             var updateMessage = new ContentData
             {
-                Data = "Hello World!",
-                MessageID = recv.MessageID,
-                ReplyThreadID = recv.ReplyThreadID,
+                Data = "Testing Update",
+                MessageID = receivedMsg.MessageID,
+                ReplyThreadID = receivedMsg.ReplyThreadID,
                 Type = MessageType.Chat,
                 Event = MessageEvent.Edit
             };
 
-            recv = ChatServer.Receive(updateMessage);
+            receivedMsg = ChatServer.Receive(updateMessage);
 
-            Assert.NotNull(recv);
-            Assert.Equal("Hello World!", recv.Data);
+            Assert.NotNull(receivedMsg);
+            Assert.Equal("Testing Update", receivedMsg.Data);
         }
 
         [Fact]
-        public void Receive_UpdatingAMessageThatDoesNotExist_NullIsReturned()
+        public void Receive_UpdatingMessageDoesntExist_ReturnsNull()
         {
             Setup();
-            var message1 = _utils.GenerateContentData(data: "Hello", senderID: 1);
+            var msg1 = _utils.GenerateContentData(data: "Test Message", senderID: 1);
 
-            ReceiveContentData recv = ChatServer.Receive(message1);
+            ReceiveContentData receivedMsg = ChatServer.Receive(msg1);
 
-            Assert.Equal(message1.Data, recv.Data);
-            Assert.Equal(message1.Type, recv.Type);
+            Assert.Equal(msg1.Data, receivedMsg.Data);
+            Assert.Equal(msg1.Type, receivedMsg.Type);
 
             var updateMessage = new ContentData
             {
-                Data = "Hello World!",
+                Data = "Testing Update",
                 MessageID = 1,
-                ReplyThreadID = recv.ReplyThreadID,
+                ReplyThreadID = receivedMsg.ReplyThreadID,
                 Type = MessageType.Chat,
                 Event = MessageEvent.Edit
             };
 
-            recv = ChatServer.Receive(updateMessage);
-
-            Assert.Null(recv);
-
+            receivedMsg = ChatServer.Receive(updateMessage);
             updateMessage.MessageID = 0;
             updateMessage.ReplyThreadID = 1;
-
-            recv = ChatServer.Receive(updateMessage);
-
-            Assert.Null(recv);
+            receivedMsg = ChatServer.Receive(updateMessage);
+            Assert.Null(receivedMsg);
         }
 
         [Fact]
-        public void Receive_ProvidingInvalidEventForChatType_NullIsReturned()
+        public void Receive_StoringMultipleMessages_AllMessagesReturned()
         {
             Setup();
-            var message1 = _utils.GenerateContentData(data: "Hello", senderID: 1);
+            var msg1 = _utils.GenerateContentData(data: "Test Message", senderID: 1);
+            ReceiveContentData receivedMsg = ChatServer.Receive(msg1);
+            Assert.Equal(msg1.Data, receivedMsg.Data);
 
-            message1.Event = MessageEvent.Download;
+            var msg2 = _utils.GenerateContentData(data: "Test Message2", senderID: 1, replyThreadID: msg1.ReplyThreadID);
+            receivedMsg = ChatServer.Receive(msg2);
+            Assert.Equal(msg2.Data, receivedMsg.Data);
+            Assert.NotEqual(msg2.MessageID, msg1.MessageID);
 
-            ReceiveContentData recv = ChatServer.Receive(message1);
-
-            Assert.Null(recv);
+            var msg3 = _utils.GenerateContentData(data: "Test Message3", senderID: 1);
+            receivedMsg = ChatServer.Receive(msg3);
+            Assert.Equal(msg3.Data, receivedMsg.Data);
+            Assert.NotEqual(msg3.MessageID, msg2.MessageID);
+            Assert.NotEqual(msg3.MessageID, msg1.MessageID);
         }
 
         [Fact]
-        public void Receive_StoringMultipleMessages_AllMessagesAreStoredAndReturned()
+        public void Receive_NewMessage_StoreMessageAn_ReturnStoredMessage()
         {
             Setup();
-            var message1 = _utils.GenerateContentData(data: "Hello", senderID: 1);
-
-            ReceiveContentData recv = ChatServer.Receive(message1);
-
-            Assert.Equal(message1.Data, recv.Data);
-
-            var message2 = _utils.GenerateContentData(data: "Hello2", senderID: 1, replyThreadID: message1.ReplyThreadID);
-
-            recv = ChatServer.Receive(message2);
-
-            Assert.Equal(message2.Data, recv.Data);
-            Assert.NotEqual(message2.MessageID, message1.MessageID);
-
-            var message3 = _utils.GenerateContentData(data: "Hello3", senderID: 1);
-
-            recv = ChatServer.Receive(message3);
-
-            Assert.Equal(message3.Data, recv.Data);
-            Assert.NotEqual(message3.MessageID, message2.MessageID);
-            Assert.NotEqual(message3.MessageID, message1.MessageID);
+            var msg1 = _utils.GenerateContentData(data: "Test Message", senderID: 1);
+            ReceiveContentData receivedMsg = ChatServer.Receive(msg1);
+            Assert.Equal(msg1.Data, receivedMsg.Data);
         }
 
         [Fact]
-        public void Receive_StarringMultipleMessages_OnlyTheGivenMessagesAreStarred()
+        public void Receive_StarringMessage_ReturnsTheStarredMessage()
         {
             Setup();
-            database = new ContentDB();
-            ChatServer = new ChatServer(database);
+            var msg = _utils.GenerateContentData(data: "Test Message", senderID: 1);
+            ReceiveContentData receivedMsg = ChatServer.Receive(msg);
+            Assert.Equal(msg.Data, receivedMsg.Data);
 
-            Receive_StoringMultipleMessages_AllMessagesAreStoredAndReturned();
-
-            var message1 = new ContentData
+            var starMessage = new ContentData
             {
-                MessageID = 0,
-                ReplyThreadID = 0,
+                MessageID = receivedMsg.MessageID,
+                ReplyThreadID = receivedMsg.ReplyThreadID,
+                Type = receivedMsg.Type,
+                Event = MessageEvent.Star
+            };
+
+            receivedMsg = ChatServer.Receive(starMessage);
+            Assert.NotNull(receivedMsg);
+            Assert.Equal("Test Message", receivedMsg.Data);
+        }
+
+        [Fact]
+        public void Receive_StarringMessageDoesNotExist_ReturnsNull()
+        {
+            Setup();
+            var msg = _utils.GenerateContentData(data: "Test Message", senderID: 1);
+            ReceiveContentData receivedMsg = ChatServer.Receive(msg);
+            Assert.Equal(msg.Data, receivedMsg.Data);
+
+            var starMessage = new ContentData
+            {
+                MessageID = 1,
+                ReplyThreadID = receivedMsg.ReplyThreadID,
                 Type = MessageType.Chat,
                 Event = MessageEvent.Star
             };
 
-            ReceiveContentData recv = ChatServer.Receive(message1);
-
-            Assert.Equal("Hello", recv.Data);
-
-            message1 = new ContentData
-            {
-                MessageID = 2,
-                ReplyThreadID = 1,
-                Type = MessageType.Chat,
-                Event = MessageEvent.Star
-            };
-
-            recv = ChatServer.Receive(message1);
-
-            Assert.Equal("Hello3", recv.Data);
+            receivedMsg = ChatServer.Receive(starMessage);
+            starMessage.MessageID = 0;
+            starMessage.ReplyThreadID = 1;
+            receivedMsg = ChatServer.Receive(starMessage);
+            Assert.Null(receivedMsg);
         }
 
         [Fact]
         public void Receive_UpdatingMultipleMessages_OnlyTheGivenMessagesAreUpdated()
         {
             Setup();
-            database = new ContentDB();
+            database = new ContentDB();                                                                                                                         
             ChatServer = new ChatServer(database);
 
-            Receive_StoringMultipleMessages_AllMessagesAreStoredAndReturned();
+            Receive_StoringMultipleMessages_AllMessagesReturned();
 
-            var message1 = new ContentData
+            var msg1 = new ContentData
             {
                 MessageID = 0,
-                Data = "Hello World!",
+                Data = "Test Message",
                 ReplyThreadID = 0,
                 Type = MessageType.Chat,
                 Event = MessageEvent.Edit
             };
 
-            ReceiveContentData recv = ChatServer.Receive(message1);
+            ReceiveContentData receivedMsg = ChatServer.Receive(msg1);
+            Assert.Equal("Test Message", receivedMsg.Data);
 
-            Assert.Equal("Hello World!", recv.Data);
-
-            message1 = new ContentData
+            msg1 = new ContentData
             {
                 MessageID = 2,
-                Data = "Hello There",
+                Data = "Updated",
                 ReplyThreadID = 1,
                 Type = MessageType.Chat,
                 Event = MessageEvent.Edit
             };
 
-            recv = ChatServer.Receive(message1);
-
-            Assert.Equal("Hello There", recv.Data);
+            receivedMsg = ChatServer.Receive(msg1);
+            Assert.Equal("Updated", receivedMsg.Data);
         }
 
         [Fact]
-        public void GetAllMessages_GetAllTheMessagesStoredOnTheServer_ListOfChatContextsIsReturnedWithAllTheMessages()
+        public void GetMessages_GetAllTheMessagesStoredOnTheServer_ListOfChatContextsIsReturnedWithAllTheMessages()
         {
             Setup();
-            Receive_StarringMultipleMessages_OnlyTheGivenMessagesAreStarred();
+            Receive_StoringMultipleMessages_AllMessagesReturned();
+
+            var msg1 = new ContentData
+            {
+                MessageID = 0,
+                ReplyThreadID = 0,
+                Type = MessageType.Chat,
+                Event = MessageEvent.Star
+            };
+
+            ReceiveContentData recv = ChatServer.Receive(msg1);
+
+            Assert.Equal("Test Message", recv.Data);
+            Assert.Equal(MessageType.Chat, recv.Type);
+            Assert.Equal(1, recv.SenderID);
+            Assert.Equal(MessageEvent.Star, recv.Event);
+            Assert.True(recv.Starred);
+
+            msg1 = new ContentData
+            {
+                MessageID = 2,
+                ReplyThreadID = 1,
+                Type = MessageType.Chat,
+                Event = MessageEvent.Star
+            };
+
+            recv = ChatServer.Receive(msg1);
+
+            Assert.Equal("Test Message3", recv.Data);
+            Assert.Equal(MessageType.Chat, recv.Type);
+            Assert.Equal(1, recv.SenderID);
+            Assert.Equal(MessageEvent.Star, recv.Event);
+            Assert.True(recv.Starred);
 
             var msgList = ChatServer.GetMessages();
 
-            var message1 = msgList[0].MessageList[0];
-            Assert.Equal("Hello", message1.Data);
+            var msg = msgList[0].MessageList[0];
+            Assert.Equal("Test Message", msg.Data);
 
-            message1 = msgList[0].MessageList[1];
-            Assert.Equal("Hello2", message1.Data);
+            msg = msgList[0].MessageList[1];
+            Assert.Equal("Test Message2", msg.Data);
 
-            message1 = msgList[1].MessageList[0];
-            Assert.Equal("Hello3", message1.Data);
+            msg = msgList[1].MessageList[0];
+            Assert.Equal("Test Message3", msg.Data);
+        }
+
+        [Fact]
+        public void Receive_DeletingtingMessage_ReturnsMessageDeleted()
+        {
+            Setup();
+            var msg1 = _utils.GenerateContentData(data: "Test Message", senderID: 1);
+            ReceiveContentData receivedMsg = ChatServer.Receive(msg1);
+            Assert.Equal(msg1.Data, receivedMsg.Data);
+
+            var deleteMessage = new ContentData
+            {
+                MessageID = receivedMsg.MessageID,
+                ReplyThreadID = receivedMsg.ReplyThreadID,
+                Type = MessageType.Chat,
+                Event = MessageEvent.Delete
+            };
+
+            receivedMsg = ChatServer.Receive(deleteMessage);
+            Assert.NotNull(receivedMsg);
+            Assert.Equal("Message Deleted.", receivedMsg.Data);
         }
     }
 }
