@@ -1,5 +1,7 @@
 ﻿using PlexShareWhiteboard.BoardComponents;
 using PlexShareWhiteboard.Client;
+using PlexShareWhiteboard.Client.Interfaces;
+using PlexShareWhiteboard.Server;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -32,14 +34,24 @@ namespace PlexShareWhiteboard
         ShapeItem currentShape = null;
         ShapeItem lastShape = null;
         int blobSize = 12;
-        ClientSide Client;
+        IShapeListener machine;
         UndoStackElement stackElement;
 
         public WhiteBoardViewModel()
         {
-            Client = new ClientSide();
+            // this will become client and server 
+            Boolean isServer = true;
+            if (isServer)
+                //machine = new ServerSide();
+                machine = ServerSide.Instance;
+            else
+                machine = new ClientSide();
             ShapeItems = new ObservableCollection<ShapeItem>();
             highlightShapes = new List<ShapeItem>();
+            
+            // this is a new user
+            machine.OnShapeReceived(lastShape, Operation.NewUser);
+
         }
 
         public void IncrementId()

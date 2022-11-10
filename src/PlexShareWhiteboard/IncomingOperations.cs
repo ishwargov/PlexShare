@@ -67,6 +67,7 @@ namespace PlexShareWhiteboard
             ShapeItems.Clear();
             undoStack.Clear();
             redoStack.Clear();
+            machine.OnShapeReceived(lastShape, Operation.Clear);
         }
     }
 }

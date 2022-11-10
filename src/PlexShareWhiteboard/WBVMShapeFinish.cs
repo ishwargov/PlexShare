@@ -22,6 +22,10 @@ namespace PlexShareWhiteboard
                 Debug.WriteLine("passing into undo stack " + lastShape.Geometry.GetType().Name);
                 stackElement = new UndoStackElement(lastShape, lastShape, Operation.Creation);
                 InsertIntoStack(stackElement);
+
+                if (lastShape != null)
+                    machine.OnShapeReceived(lastShape, Operation.Creation);
+
             }
             else if (modeForUndo == "delete" && lastShape != null)
             {
@@ -29,6 +33,9 @@ namespace PlexShareWhiteboard
                 Debug.WriteLine("passing into undo stack " + lastShape.Geometry.GetType().Name);
                 stackElement = new UndoStackElement(lastShape, lastShape, Operation.Deletion);
                 InsertIntoStack(stackElement);
+                if (lastShape != null)
+                    machine.OnShapeReceived(lastShape, Operation.Deletion);
+
             }
             else if (modeForUndo == "modify")
             {
@@ -36,6 +43,10 @@ namespace PlexShareWhiteboard
                 Debug.WriteLine(" inital bounding box" + select.initialSelectionObject.Geometry.Bounds.ToString() + "  final bounding box " + lastShape.Geometry.Bounds.ToString());
                 stackElement = new UndoStackElement(select.initialSelectionObject, lastShape, Operation.ModifyShape);
                 InsertIntoStack(stackElement);
+
+                if (lastShape != null)
+                    machine.OnShapeReceived(lastShape, Operation.ModifyShape);
+
             }
             else;
 
@@ -50,13 +61,8 @@ namespace PlexShareWhiteboard
 
             if (mode == "transform_mode" || mode == "dimensionChange_mode" || mode == "translate_mode")
                 mode = "select_mode";
-            /*
-            if (mode == "create_rectangle" || mode == "create_ellipse" || mode == "create_freehand")
-                undoredo.OnShapeReceiveFromVM(lastShape, lastShape, Operation.Creation);
-            if (mode == "delete_mode")
-                undoredo.OnShapeReceiveFromVM(lastShape,lastShape, Operation.Deletion);*/
-            /*if (mode == "transform_mode" || mode == "translate_mode")*/
 
+            
             if (mode != "create_textbox")
                 lastShape = null;
 
