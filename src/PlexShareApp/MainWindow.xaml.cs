@@ -27,6 +27,9 @@ namespace PlexShareApp
             AuthenticationView authView = new AuthenticationView();
             authView.Show();
             this.Close();
+            //HomePageView Homeview = new HomePageView("asdf","adsfafds", "https://images.unsplash.com/photo-1661956602868-6ae368943878?ixlib=rb-4.0.3&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80");
+            //Homeview.Show();
+            //this.Close();
         }
 
     }

@@ -278,7 +278,7 @@
         <!--Join Button-->
         <Button Name="Join_Meeting_Button" Click="Join_Meeting_Button_Click" Grid.Row="4"   Grid.Column="3" Background="{DynamicResource Color4Bg}">
             <Grid Grid.Column="3" HorizontalAlignment="Center" Grid.Row="4">
-                <Image Name="Join_Meeting_image" Source="/Resources/[removal.ai]_tmp-6350549d077ef.png" Stretch="Fill" Margin="55,12,55,12"/>
+                <Image Name="Join_Meeting_image" Source="/Resources/[removal.ai]_tmp-635051040cac5.png" Stretch="Fill" Margin="85,25,65,22" />
             </Grid>
             <Button.Resources>
                 <Style TargetType="Border">
@@ -289,7 +289,7 @@
         <!--New Meeting-->
         <Button Name="New_Meeting_Button" Click="New_Meeting_Button_Click"  Grid.Row="4"   Grid.Column="1" Background="{DynamicResource Color4Bg}">
             <Grid Grid.Column="1" HorizontalAlignment="Center" Grid.Row="4">
-                <Image Name="New_Meeting_image" Source="/Resources/[removal.ai]_tmp-635051040cac5.png" Stretch="Fill" Margin="85,25,65,22"/>
+                <Image Name="New_Meeting_image" Source="/Resources/[removal.ai]_tmp-6350549d077ef.png" Stretch="Fill" Margin="55,12,55,12"/> 
             </Grid>
             <Button.Resources>
                 <Style TargetType="Border">
@@ -350,6 +350,20 @@
             <ToggleButton Name="Theme_toggle_button" Click="Theme_toggle_button_Click"  HorizontalAlignment="Left" Height="26" VerticalAlignment="Center" Width="44"  Cursor="Hand" />
             <TextBlock Foreground="{DynamicResource Color5Bg}" Text="Theme" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="24" FontFamily="Cascadia Code SemiBold"/>
         </DockPanel>
-
+        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Bottom">
+            <ProgressBar x:Name="pb1" Height="10" Width="1000"  Orientation="Horizontal" Background="Transparent"  BorderThickness="0" Foreground="{DynamicResource Color1Bg}"></ProgressBar>
+        </StackPanel>
+        <StackPanel Grid.Row="2" Grid.RowSpan="2" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Center">
+            <ProgressBar x:Name="pb3" Height="10" Width="1000"  Orientation="Horizontal" Background="Transparent"  BorderThickness="0" Foreground="{DynamicResource Color4Bg}"></ProgressBar>
+        </StackPanel>
+        <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" VerticalAlignment="Center">
+            <ProgressBar x:Name="pb2" Height="15" Width="1000"  Orientation="Horizontal" Background="Transparent"   BorderThickness="0" Foreground="{DynamicResource Color1Bg}"></ProgressBar>
+        </StackPanel>
+        <StackPanel Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="5" VerticalAlignment="Center">
+            <ProgressBar x:Name="pb4" Height="20" Width="1000"  Orientation="Horizontal" Background="Transparent"   BorderThickness="0" Foreground="{DynamicResource Color1Bg}"></ProgressBar>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Grid.Column="0" Grid.RowSpan="7" HorizontalAlignment="Center">
+            <ProgressBar x:Name="pb5" Height="1000" Width="15"  Orientation="Vertical" Background="Transparent"   BorderThickness="0" Foreground="{DynamicResource Color6Bg}"></ProgressBar>
+        </StackPanel>
     </Grid>
 </Window>

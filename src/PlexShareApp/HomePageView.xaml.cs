@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -46,6 +47,8 @@ namespace PlexShareApp
             this.Email_textbox.IsEnabled = false;
             absolute_path = DownloadImage(imageLocation);
             this.profile_picture.ImageSource = new BitmapImage(new Uri(absolute_path,UriKind.Absolute));
+            this.Show();
+            HomePage_Animate(this);
         }
 
         private void New_Meeting_Button_Click(object sender, RoutedEventArgs e)
@@ -172,6 +175,23 @@ namespace PlexShareApp
             else
             {
                 this.BorderThickness = new System.Windows.Thickness(0);
+            }
+        }
+
+        void HomePage_Animate(HomePageView obj)
+        {
+            int v = 0;
+            while (v != 100)
+            {
+                v += 1;
+                obj.pb1.Dispatcher.Invoke(() => pb1.Value = v, System.Windows.Threading.DispatcherPriority.Background);
+                obj.pb2.Dispatcher.Invoke(() => pb2.Value = v, System.Windows.Threading.DispatcherPriority.Background);
+                obj.pb3.Dispatcher.Invoke(() => pb3.Value = v, System.Windows.Threading.DispatcherPriority.Background);
+                obj.pb4.Dispatcher.Invoke(() => pb4.Value = v, System.Windows.Threading.DispatcherPriority.Background);
+                obj.pb5.Dispatcher.Invoke(() => pb5.Value = v, System.Windows.Threading.DispatcherPriority.Background);
+                //obj.pb6.Dispatcher.Invoke(() => pb6.Value = v, System.Windows.Threading.DispatcherPriority.Background);
+
+                Thread.Sleep(25);
             }
         }
         private void Theme_toggle_button_Click(object sender, RoutedEventArgs e)
