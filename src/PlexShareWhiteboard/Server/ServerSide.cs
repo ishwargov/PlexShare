@@ -60,15 +60,11 @@ namespace PlexShareWhiteboard.Server
         private static int _maxZIndex = 0;
 
         // An instance of the ServerCommunicator
-<<<<<<< HEAD
-        
-=======
         ServerCommunicator _communicator;
 
         Serializer serializer = new Serializer();
 
         ServerSnapshotHandler serverSnapshotHandler = new ServerSnapshotHandler();
->>>>>>> ac74839d0395109539c1fd4acd1a2987520b5563
 
         /// <summary>
         ///         When a ShapeItem is received from the Client/ViewModel, it updates the server side 

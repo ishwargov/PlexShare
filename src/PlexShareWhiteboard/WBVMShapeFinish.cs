@@ -33,10 +33,7 @@ namespace PlexShareWhiteboard
             else if (modeForUndo == "modify")
             {
                 Debug.WriteLine("passing into undo stack " + lastShape.Geometry.GetType().Name);
-<<<<<<< HEAD
-=======
                 Debug.WriteLine(" inital bounding box" + select.initialSelectionObject.Geometry.Bounds.ToString() + "  final bounding box " + lastShape.Geometry.Bounds.ToString());
->>>>>>> ac74839d0395109539c1fd4acd1a2987520b5563
                 stackElement = new UndoStackElement(select.initialSelectionObject, lastShape, Operation.ModifyShape);
                 InsertIntoStack(stackElement);
             }
