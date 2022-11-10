@@ -6,6 +6,7 @@ using System.Drawing;
 
 namespace PlexShareTests.ScreenshareTests
 {
+    [Collection("Sequential")]
     public class ScreenProcessorTests
     {
         [Fact]
