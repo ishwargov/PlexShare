@@ -12,8 +12,280 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Theme/ChatPageViewTheme.xaml"/>
-                <ResourceDictionary Source="Theme/TextBoxTheme.xaml" />
+                    <ResourceDictionary Source="Theme/TextBoxTheme.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <!--Data template for the chat message sent by the user-->
+            <DataTemplate x:Key="SentMsgTemplate" >
+                <Grid>
+                    <Grid x:Name="ToBubble" HorizontalAlignment="Right" Margin="0" VerticalAlignment="Top">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="20" />
+                        </Grid.RowDefinitions>
+                        <Grid Margin="0" Background="{StaticResource StaticSentMsg}" Grid.Row="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0">
+                                <Border Grid.Column="0" CornerRadius="8" BorderBrush="{StaticResource StaticSentMsg}"
+                                    BorderThickness="5" Background="{StaticResource StaticSentFile}" Opacity="0.5">
+                                    <TextBlock Style="{StaticResource ReplyText}"
+                                           Foreground="{StaticResource StaticTextClr}" Text="{Binding ReplyMessage}"
+                                           TextWrapping="Wrap" Width="250" FontSize="14" Padding="8,5,8,5" />
+                                </Border>
+                            </Grid>
+                            <Grid Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Foreground="{StaticResource StaticTextClr}" Text="{Binding TextMessage}"
+                                       x:Name="MainText" TextWrapping="Wrap" Grid.Row="0" Width="250" FontSize="16"
+                                       Padding="8,5,8,5" Grid.Column="0" />
+                                <!--TODO: Add a reply button click event-->
+                                <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
+                                    Width="30" Margin="0,0,0,0" >
+                                    <!--TODO:Add reply icon-->
+                                </Button>
+                            </Grid>
+                            <Grid Grid.Row="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="70" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Opacity="0.8" Foreground="{StaticResource StaticTextClr}"
+                                       Text="{Binding Time}" x:Name="timeText" Margin="0" TextWrapping="Wrap"
+                                       Grid.Row="0" Padding="8" Grid.Column="0" />
+                                <!--Add event for click star button-->
+                                <RadioButton Grid.Column="1" Content="All" Padding="2" HorizontalAlignment="Left"
+                                         Template="{DynamicResource StarToggleButton}" />
+                                <TextBlock Opacity="0.8" Foreground="{StaticResource StaticTextClr}" Text="Sent"
+                                       x:Name="status" Margin="0" TextWrapping="Wrap" Grid.Row="0" Padding="8"
+                                       Grid.Column="2" HorizontalAlignment="Right" />
+                            </Grid>
+                        </Grid>
+                        <Path Grid.Row="1" Data="M404,136 L404,149.5 L387.5,134.5 z"
+                          Fill="{StaticResource StaticSentMsg}" HorizontalAlignment="Right" Height="20"
+                          Stretch="Fill" UseLayoutRounding="False" Width="20" Margin="0,-5,10,0" />
+                    </Grid>
+                </Grid>
+            </DataTemplate>
+
+            <!--Data template for the chat message received by the user-->
+            <DataTemplate x:Key="RecvMsgTemplate">
+                <Grid x:Name="FromBubble" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Top">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="20" />
+                    </Grid.RowDefinitions>
+                    <Path Grid.Row="1" Data="M404,136 L404,149.5 L387.5,134.5 z" Fill="{StaticResource StaticRecvMsg}"
+                      HorizontalAlignment="Left" Height="20" Stretch="Fill" UseLayoutRounding="False" Width="20"
+                      Margin="10,-2,10,0" RenderTransformOrigin="0.5,0.5">
+                        <Path.RenderTransform>
+                            <TransformGroup>
+                                <RotateTransform Angle="-95" />
+                            </TransformGroup>
+                        </Path.RenderTransform>
+                    </Path>
+                    <Grid Margin="0" Background="{StaticResource StaticRecvMsg}" Grid.Row="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0" Background="{StaticResource StaticChatBackGrd}">
+                            <TextBlock Foreground="Black" Text="{Binding UserName}" x:Name="SenderName" TextWrapping="Wrap"
+                                   Width="250" FontSize="14" TextAlignment="Left" Padding="8,2,8,2" />
+                        </Grid>
+                        <Grid Grid.Row="1">
+                            <Border Grid.Column="0" CornerRadius="8" BorderBrush="{StaticResource StaticRecvMsg}"
+                                BorderThickness="5" Background="{StaticResource StaticRecvFile}" Opacity="0.5">
+                                <TextBlock Style="{StaticResource ReplyText}" Foreground="{StaticResource  StaticSentReplyMsg}"
+                                       Text="{Binding ReplyMessage}" TextWrapping="Wrap" Width="250" FontSize="14"
+                                       Padding="8,5,8,5" />
+                            </Border>
+                        </Grid>
+                        <Grid Grid.Row="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Foreground="{StaticResource StaticTextClr}" Text="{Binding TextMessage}"
+                                   x:Name="MainText" TextWrapping="Wrap" Grid.Row="0" Width="250" FontSize="16"
+                                   Padding="8,5,8,5" Grid.Column="0" />
+                            <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
+                             Width="30" Margin="0,0,0,0" >
+                                <!--TODO:Add icon for arrow-->
+                            </Button>
+                        </Grid>
+                        <Grid Grid.Row="3">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="70" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Opacity="0.8" Foreground="{StaticResource StaticTextClr}" Text="{Binding Time}"
+                                   x:Name="timeText" Margin="0" TextWrapping="Wrap" Grid.Row="0" Padding="8"
+                                   Grid.Column="0" />
+                            <RadioButton Grid.Column="1" Content="All" Padding="2" HorizontalAlignment="Left"
+                                  Template="{DynamicResource StarToggleButton}" />
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </DataTemplate>
+
+            <!--Data template for the file message sent by the user-->
+            <DataTemplate x:Key="SentFileTemplate">
+                <Grid>
+                    <Grid x:Name="ToBubble" HorizontalAlignment="Right" Margin="0" VerticalAlignment="Top">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="20" />
+                        </Grid.RowDefinitions>
+                        <Grid Margin="0" Background="{DynamicResource StaticSentMsg}" Grid.Row="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0">
+                                <Border Grid.Column="0" CornerRadius="8" BorderBrush="{DynamicResource StaticSentMsg}"
+                                    BorderThickness="5" Background="{DynamicResource StaticSentFile}" Opacity="0.5">
+                                    <TextBlock Style="{StaticResource ReplyText}"
+                                           Foreground="{DynamicResource StaticTextClr}" Text="{Binding ReplyMessage}"
+                                           TextWrapping="Wrap" Width="250" FontSize="14" Padding="8,5,8,5" />
+                                </Border>
+                            </Grid>
+                            <Grid Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Border Grid.Column="0" CornerRadius="8" BorderBrush="{DynamicResource StaticSentMsg}"
+                                    BorderThickness="5" Background="{DynamicResource StaticSentFile}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <!--TODO:Add an icon of a file, that will be displayed on sending a file-->
+                                        <TextBlock Grid.Column="1" Foreground="{DynamicResource StaticTextClr}"
+                                               Text="{Binding TextMessage}" x:Name="MainText" TextWrapping="Wrap"
+                                               Width="150" FontSize="16" Padding="8,5,8,5" />
+                                        <!--Add download button click event-->
+                                        <Button Grid.Column="2" Background="Transparent" BorderBrush="Transparent"
+                                             HorizontalAlignment="Right" 
+                                            Width="40" Margin="0,0,0,0">
+                                            <!--TODO:Add icon for download-->
+                                        </Button>
+                                    </Grid>
+                                </Border>
+                                <!--Add reply button click event-->
+                                <Button Grid.Column="1" Background="Transparent" BorderBrush="Transparent"
+                                 HorizontalAlignment="Right" 
+                                Width="30" Margin="0,0,0,0">
+                                    <!--TODO:Add icon for reply arrow-->
+                                </Button>
+                            </Grid>
+                            <Grid Grid.Row="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="70" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Opacity="0.8" Foreground="{DynamicResource StaticTextClr}"
+                                       Text="{Binding Time}" x:Name="timeText" Margin="0" TextWrapping="Wrap"
+                                       Grid.Row="0" Padding="8" Grid.Column="0" />
+                                <TextBlock Opacity="0.8" Foreground="{DynamicResource StaticTextClr}" Text="Sent"
+                                       x:Name="status" Margin="0" TextWrapping="Wrap" Grid.Row="0" Padding="8"
+                                       Grid.Column="2" HorizontalAlignment="Right" />
+                            </Grid>
+                        </Grid>
+                        <Path Grid.Row="1" Data="M404,136 L404,149.5 L387.5,134.5 z"
+                          Fill="{DynamicResource StaticSentMsg}" HorizontalAlignment="Right" Height="20"
+                          Stretch="Fill" UseLayoutRounding="False" Width="20" Margin="0,-5,10,0" />
+                    </Grid>
+                </Grid>
+            </DataTemplate>
+
+            <!--Data template for the file message received by the user-->
+            <DataTemplate x:Key="RecvFileTemplate">
+                <Grid x:Name="FromBubble" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Top">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="20" />
+                    </Grid.RowDefinitions>
+                    <Path Grid.Row="1" Data="M404,136 L404,149.5 L387.5,134.5 z" Fill="{DynamicResource StaticRecvMsg}"
+                      HorizontalAlignment="Left" Height="20" Stretch="Fill" UseLayoutRounding="False" Width="20"
+                      Margin="10,-2,10,0" RenderTransformOrigin="0.5,0.5">
+                        <Path.RenderTransform>
+                            <TransformGroup>
+                                <RotateTransform Angle="-95" />
+                            </TransformGroup>
+                        </Path.RenderTransform>
+                    </Path>
+                    <Grid Margin="0" Background="{DynamicResource StaticRecvMsg}" Grid.Row="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0" Background="{DynamicResource StaticChatBackGrd}">
+                            <TextBlock Foreground="Black" Text="{Binding UserName}" x:Name="SenderName" TextWrapping="Wrap"
+                                   Width="250" FontSize="14" TextAlignment="Left" Padding="8,2,8,2" />
+                        </Grid>
+                        <Grid Grid.Row="1">
+                            <Border Grid.Column="0" CornerRadius="8" BorderBrush="{DynamicResource StaticRecvMsg}"
+                                BorderThickness="5" Background="{DynamicResource StaticRecvFile}" Opacity="0.5">
+                                <TextBlock Style="{StaticResource ReplyText}" Foreground="{DynamicResource StaticSentReplyMsg}"
+                                       Text="{Binding ReplyMessage}" TextWrapping="Wrap" Width="250" FontSize="14"
+                                       Padding="8,5,8,5" />
+                            </Border>
+                        </Grid>
+                        <Grid Grid.Row="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" CornerRadius="8" BorderBrush="{DynamicResource StaticRecvMsg}"
+                                BorderThickness="5" Background="{DynamicResource StaticRecvFile}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <!--TODO:Add icon for file, that will be displayed next to the file sent-->
+                                    <TextBlock Grid.Column="1" Foreground="{DynamicResource StaticSentReplyMsg}"
+                                           Text="{Binding TextMessage}" x:Name="MainText" TextWrapping="Wrap"
+                                           Width="150" FontSize="16" Padding="8,5,8,5" />
+                                    <!--Add download button click event-->
+                                    <Button Grid.Column="2" Background="Transparent" BorderBrush="Transparent"
+                                     HorizontalAlignment="Right" 
+                                    Width="40" Margin="0,0,0,0">
+                                        <!--TODO:Add icon download-->
+                                    </Button>
+                                </Grid>
+                            </Border>
+                            <!--Add reply button click event-->
+                            <Button Grid.Column="1" Background="Transparent" BorderBrush="Transparent"
+                             HorizontalAlignment="Right" 
+                            Width="30" Margin="0,0,0,0" >
+                                <!--TODO:Add icon reply arrow-->
+                            </Button>
+                        </Grid>
+                        <Grid Grid.Row="3">
+                            <TextBlock Opacity="0.8" Foreground="{DynamicResource StaticTextClr}" Text="{Binding Time}"
+                                   x:Name="timeText" Margin="0" TextWrapping="Wrap" Grid.Row="0" Padding="8"
+                                   Grid.Column="0" />
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </DataTemplate>
 
             <local:ChatBubbleConstructor x:Key="ChatBubbleTemplateConstructor"
                                          SentMsgBubble="{StaticResource ResourceKey=SentMsgTemplate}"
