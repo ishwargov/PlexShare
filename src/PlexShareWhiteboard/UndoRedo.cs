@@ -1,3 +1,17 @@
+/***************************
+ * Filename    = WhiteBoardViewModel.cs
+ *
+ * Author      = Aiswarya H
+ *
+ * Product     = Plex Share
+ * 
+ * Project     = White Board
+ *
+ * Description = This is the Undo Redo Implementation.
+ *               This contains the undo and redo functions which are
+ *               a part of the ViewModel. 
+ ***************************/
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -18,7 +32,6 @@ namespace PlexShareWhiteboard
         /// </summary>
         public void CallUndo()
         {
-            Debug.WriteLine("Undocall Entered");
             UndoStackElement shapeToSend = Undo();
             if (shapeToSend != null)
                 Client.OnShapeReceived(shapeToSend.PrvShape, shapeToSend.Op);
@@ -58,14 +71,15 @@ namespace PlexShareWhiteboard
         /// <returns>UndoStackElement containing the shape and the operation to be broadcasted</returns>
         public UndoStackElement Undo()
         {
-            Debug.WriteLine("Undo Entered");
             if (undoStack.Count == 0)   // Undo Stack Empty Case
                 return null;
 
             UndoStackElement topOfStack = undoStack.Pop();
-            UndoStackElement modifiedObject = new UndoStackElement(topOfStack.PrvShape, topOfStack.NewShape, topOfStack.Op);
             if (topOfStack.PrvShape == null)
                 return null;
+            UndoStackElement modifiedObject = new UndoStackElement(topOfStack.PrvShape, topOfStack.NewShape, topOfStack.Op);
+
+
             Debug.WriteLine("\n" + topOfStack.Op + "\n");
 
             /* Depending on the operation, perform the inverse opreation 
@@ -103,9 +117,11 @@ namespace PlexShareWhiteboard
         {
             if (redoStack.Count == 0)
                 return null;
+            
             UndoStackElement topOfStack = redoStack.Pop();
             if (topOfStack.NewShape == null)
                 return null;
+
             switch (topOfStack.Op)
             {
                 case Operation.Creation:
@@ -134,7 +150,7 @@ namespace PlexShareWhiteboard
         public void InsertIntoStack(UndoStackElement obj)
         {
             undoStack.Push(obj);
-
+            Debug.WriteLine(obj.Op + " Operation" + obj.NewShape.Id + "id inserted\n");
         }
 
     }

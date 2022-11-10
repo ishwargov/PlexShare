@@ -18,7 +18,7 @@ namespace PlexShareWhiteboard
             {
 
                 Debug.WriteLine("In Delete mode\n");
-
+                modeForUndo = "delete";
                 DeleteShape(a);
             }
             else if (mode == "select_mode")
