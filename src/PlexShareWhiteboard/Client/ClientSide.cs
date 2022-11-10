@@ -23,15 +23,17 @@ using PlexShareWhiteboard.Client.Interfaces;
 
 namespace PlexShareWhiteboard.Client
 {
-    internal class ClientSide : IShapeListener
+    public class ClientSide : IShapeListener
     {
         // Instance of ClientCommunicator for sending to Server
         ClientCommunicator _communicator;
         Serializer _serializer;
+        ClientSnapshotHandler _snapshotHandler;
         public ClientSide()
         {
-            _communicator = new ClientCommunicator();
+            _communicator = ClientCommunicator.Instance;
             _serializer = new Serializer();
+            OnNewUserJoinMessage();
         }
 
         /// <summary>
@@ -50,22 +52,22 @@ namespace PlexShareWhiteboard.Client
             WBServerShape wbShape = new WBServerShape(newSerializedShapes, op, boardShape.User);
             //_communicator.SendToServer(wbShape);
 
-
         }
 
-        public void OnNewUserJoinMessage(string message, string ipAddress)
+        public void OnNewUserJoinMessage()
         {
-            _communicator.SendMessageToServer(message, ipAddress);
+            WBServerShape wbShape = new WBServerShape(null, Operation.NewUser, null);
+            _communicator.SendToServer(wbShape);
         }
 
-        public void OnSaveMessage(string message, string userId)
+        public void OnSaveMessage(string userId)
         {
-            _communicator.SendMessageToServer(message, userId);
+            _snapshotHandler.SaveSnapshot(userId);
         }
 
-        public void OnLoadMessage(string message, string userId)
+        public void OnLoadMessage(int snapshotNumber, string userId)
         {
-            _communicator.SendMessageToServer(message, userId);
+            _snapshotHandler.RestoreSnapshot(snapshotNumber, userId);
         }
 
     }

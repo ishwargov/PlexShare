@@ -52,8 +52,8 @@ namespace PlexShareWhiteboard
 
 
         // Initialising Stacks for Undo and Redo
-        private Stack<UndoStackElement> undoStack = new Stack<UndoStackElement>();
-        private Stack<UndoStackElement> redoStack = new Stack<UndoStackElement>();
+        public Stack<UndoStackElement> undoStack = new Stack<UndoStackElement>();
+        public Stack<UndoStackElement> redoStack = new Stack<UndoStackElement>();
 
 
         /// <summary>

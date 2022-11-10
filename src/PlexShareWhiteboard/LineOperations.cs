@@ -53,7 +53,7 @@ namespace PlexShareWhiteboard
             else
             {
                 move_point = shape.End;
-                CreateShape(shape.Start, a, "LineGeometry", shape.Id);
+                lastShape = CreateShape(shape.Start, a, "LineGeometry", shape.Id);
             }
         }
 
@@ -90,7 +90,7 @@ namespace PlexShareWhiteboard
 
             }
 
-            UpdateShape(p1, p2, shape.Geometry.GetType().Name, shape, shape.TextString);
+            lastShape = UpdateShape(p1, p2, shape.Geometry.GetType().Name, shape, shape.TextString);
             HighLightIt(p1, p2);
         }
     }

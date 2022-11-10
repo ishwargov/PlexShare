@@ -13,7 +13,11 @@
  *               It also contains the Server Side WhiteBoardState Management.
  ***************************/
 
+using PlexShareNetwork.Communication;
+using PlexShareNetwork.Serialization;
+using PlexShareNetwork;
 using PlexShareWhiteboard.BoardComponents;
+using PlexShareWhiteboard.Client;
 using PlexShareWhiteboard.Client.Interfaces;
 using PlexShareWhiteboard.Server.Interfaces;
 using System;
@@ -27,8 +31,25 @@ namespace PlexShareWhiteboard.Server
     /// <summary>
     ///         Class to perform Server Side WhiteBoardState Management and Broadcast (Server to Clients).
     /// </summary>
-    internal class ServerSide : IShapeListener
+    public class ServerSide : IShapeListener
     {
+        private static ServerSide instance;
+        private static IServerCommunicator _communicator;
+
+        // To create only a single instance of ServerSide
+        public static ServerSide Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new ServerSide();
+                    _communicator = ServerCommunicator.Instance;
+                }
+
+                return instance;
+            }
+        }
         // An objectId to object map which contains all the ShapeItems in the WhiteBoard presently
         private Dictionary<string, ShapeItem> objIdToObjectMap = new Dictionary<string, ShapeItem>();
 
@@ -39,7 +60,7 @@ namespace PlexShareWhiteboard.Server
         private static int _maxZIndex = 0;
 
         // An instance of the ServerCommunicator
-        IServerCommunicator _communicator;
+        
 
         /// <summary>
         ///         When a ShapeItem is received from the Client/ViewModel, it updates the server side 
@@ -132,8 +153,6 @@ namespace PlexShareWhiteboard.Server
             }
         }
 
-
-
         // To clear (empty) the Server Object List
         // Save the current list in a copy (oldObjectMapCopy)
         private void ClearObjectsInServerList(ShapeItem newShape, Operation op)
@@ -143,13 +162,7 @@ namespace PlexShareWhiteboard.Server
             BroadcastToClients(newShape, op);
         }
 
-        // If a user performs undo after clear, then display all objects in the oldObjectMapCopy
-        // Set the objIdToObjectMap as the old copy i.e. oldObjectMapCopy
-        private void DisplayObjectsInServerList(ShapeItem newShape, Operation op)
-        {
-            objIdToObjectMap = oldObjectMapCopy;
-            BroadcastToClients(oldObjectMapCopy.Values.ToList(), op);
-        }
+
 
     }
 }

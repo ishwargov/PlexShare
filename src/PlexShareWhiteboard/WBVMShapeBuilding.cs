@@ -129,7 +129,7 @@ namespace PlexShareWhiteboard
                     modeForUndo = "create";
                     Point _anchorPoint = lastShape.AnchorPoint;
                     //UpdateShape(_anchorPoint, a, "LineGeometry", lastShape);
-                    UpdateShape(lastShape.Start, a, "LineGeometry", lastShape);
+                    lastShape = UpdateShape(lastShape.Start, a, "LineGeometry", lastShape);
                 }
 
             }
