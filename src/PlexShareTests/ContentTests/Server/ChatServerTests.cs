@@ -86,6 +86,7 @@ namespace PlexShareTests.ContentTests.Server
             database = new ContentDB();
             ChatServer = new ChatServer(database);
             _utils = new Utility();
+
             var msg1 = _utils.GenerateContentData(data: "Test Message", senderID: 1);
             ReceiveContentData receivedMsg = ChatServer.Receive(msg1);
             Assert.Equal(msg1.Data, receivedMsg.Data);
