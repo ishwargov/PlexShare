@@ -39,7 +39,11 @@ namespace PlexShareWhiteboard.Server
         private static int _maxZIndex = 0;
 
         // An instance of the ServerCommunicator
-        IServerCommunicator _communicator;
+        ServerCommunicator _communicator;
+
+        Serializer serializer = new Serializer();
+
+        ServerSnapshotHandler serverSnapshotHandler = new ServerSnapshotHandler();
 
         /// <summary>
         ///         When a ShapeItem is received from the Client/ViewModel, it updates the server side 
@@ -151,5 +155,35 @@ namespace PlexShareWhiteboard.Server
             BroadcastToClients(oldObjectMapCopy.Values.ToList(), op);
         }
 
+        public void RestoreSnapshotHandler(WBServerShape deserializedObject)
+        {
+            List<ShapeItem> loadedShapes = serverSnapshotHandler.LoadBoard(deserializedObject.SnapshotNumber);
+            List<SerializableShapeItem> serializableShapeItems = serializer.ConvertToSerializableShapeItem(loadedShapes);
+            WBServerShape wBServerShape = new WBServerShape(
+                serializableShapeItems,
+                Operation.RestoreSnapshot,
+                deserializedObject.UserID
+            );
+            BroadcastToClients(loadedShapes, Operation.RestoreSnapshot);
+        }
+
+        public void CreateSnapshotHandler(WBServerShape deserializedObject)
+        {
+            serverSnapshotHandler.SaveBoard(objIdToObjectMap.Values.ToList());
+            _communicator.Broadcast(deserializedObject);
+        }
+
+        public void NewUserHandler(WBServerShape deserializedObject)
+        {
+            List<ShapeItem> shapeItems = objIdToObjectMap.Values.ToList();
+            List<SerializableShapeItem> serializableShapeItems = serializer.ConvertToSerializableShapeItem(shapeItems);
+            WBServerShape wBServerShape = new WBServerShape(
+                serializableShapeItems,
+                Operation.NewUser,
+                deserializedObject.UserID
+            );
+            wBServerShape.IPAddress = deserializedObject.IPAddress;
+            _communicator.Broadcast(wBServerShape, deserializedObject.IPAddress);
+        }
     }
 }

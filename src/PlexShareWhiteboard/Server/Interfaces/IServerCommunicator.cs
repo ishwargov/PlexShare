@@ -19,5 +19,7 @@ namespace PlexShareWhiteboard.Server.Interfaces
         public void Broadcast(ShapeItem newShape, Operation op);
 
         public void Broadcast(List<ShapeItem> newShapes, Operation op);
+
+        public void Broadcast(WBServerShape clientUpdate, string? ipAddress);
     }
 }

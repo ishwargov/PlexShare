@@ -27,5 +27,7 @@ namespace PlexShareWhiteboard.BoardComponents
         public Operation Op { get; set; }
         public int SnapshotNumber { get; set; }
         public string UserID { get; set; }
+        public string IPAddress { get; set; }
+
     }
 }
