@@ -11,27 +11,21 @@ namespace PlexShareNetwork
 {
 	public static class CommunicationFactory
 	{
-		private static readonly Lazy<ICommunicator> _clientCommunicator = new(() => new CommunicatorClient());
-		private static readonly Lazy<ICommunicator> _serverCommunicator = new(() => new CommunicatorServer());
+		private static readonly CommunicatorClient _communicatorClient = new();
+		private static readonly CommunicatorServer _communicatorServer = new();
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public static ICommunicator GetCommunicator(bool isClient = true, bool isTesting = false)
+        /// <summary>
+        /// Factory function to get the communicator.
+        /// </summary>
+        /// <param name="isClientSide"> Boolean telling is it client side or server side. </param>
+        /// <returns> The communicator singleton instance. </returns>
+        public static ICommunicator GetCommunicator(bool isClientSide = true)
 		{
-			if (isTesting)
+			if (isClientSide)
 			{
-				if (isClient)
-				{
-					return new CommunicatorClient();
-				}
-				return new CommunicatorServer();
+				return _communicatorClient;
 			}
-			if (isClient)
-			{
-				return _clientCommunicator.Value;
-			}
-			return _serverCommunicator.Value;
+			return _communicatorServer;
 		}
 	}
 }

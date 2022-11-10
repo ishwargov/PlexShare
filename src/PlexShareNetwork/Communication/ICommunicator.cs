@@ -1,8 +1,11 @@
+
 /// <author>Mohammad Umar Sultan</author>
 /// <created>16/10/2022</created>
 /// <summary>
 /// This file contains the ICommunicator interface.
 /// </summary>
+
+using System.Net.Sockets;
 
 namespace PlexShareNetwork.Communication
 {
@@ -37,7 +40,7 @@ namespace PlexShareNetwork.Communication
 		/// <param name="clientId"> The client Id. </param>
 		/// <param name="socketObject"> The socket object of the client. </param>
 		/// <returns> void </returns>
-		public void AddClient<T>(string clientId, T socket);
+		public void AddClient(string clientId, TcpClient socket);
 
 		/// <summary>
 		/// This function is to be called only on the server when a client is leaves.
@@ -48,15 +51,6 @@ namespace PlexShareNetwork.Communication
 		public void RemoveClient(string clientId);
 
         /// <summary>
-        /// Client side: Sends data to the server.
-        /// Server side: Broadcasts data to all clients.
-        /// </summary>
-        /// <param name="serializedData"> The serialzed data to be sent over the network. </param>
-        /// <param name="moduleOfPacket"> Module sending the data. </param>
-        /// <returns> void </returns>
-        public void Send(string serializedData, string moduleOfPacket);
-
-        /// <summary>
         /// Function to send data to a specific client given by the destination argument.
         /// This function is to be called only on the server side.
         /// </summary>
@@ -64,7 +58,7 @@ namespace PlexShareNetwork.Communication
         /// <param name="moduleOfPacket"> Module sending the data. </param>
         /// <param name="destination"> The destination or client Id to which to send the data. </param>
         /// <returns> void </returns>
-        public void Send(string serializedData, string moduleOfPacket, string destination);
+        public void Send(string serializedData, string moduleOfPacket, string? destination);
 
         /// <summary>
         /// Other modules can subscribe using this function to be notified on receiving data over the network.

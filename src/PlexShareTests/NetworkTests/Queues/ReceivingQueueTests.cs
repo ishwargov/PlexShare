@@ -17,9 +17,9 @@ namespace PlexShareNetwork.Queues.Tests
         [Fact]
         public void EnqueueOnePacketTest()
         {
-            string serializedString = NetworkingGlobals.RandomString(10);
-            string destinationModule = NetworkingGlobals.RandomString(5);
-            string moduleName = NetworkingGlobals.dashboardName;
+            string serializedString = NetworkTestGlobals.RandomString(10);
+            string destinationModule = NetworkTestGlobals.RandomString(5);
+            string moduleName = NetworkTestGlobals.dashboardName;
 
             Packet packet = new Packet(serializedString, destinationModule, moduleName);
 
@@ -32,14 +32,14 @@ namespace PlexShareNetwork.Queues.Tests
         [Fact]
         public void EnqueueMultiplePacketsTest()
         {
-            string moduleName = NetworkingGlobals.dashboardName;
-            string destinationModule = NetworkingGlobals.RandomString(5);
+            string moduleName = NetworkTestGlobals.dashboardName;
+            string destinationModule = NetworkTestGlobals.RandomString(5);
 
             int number_of_packets = 100;
 
             // Enqueueing multiple packets
             for (int i = 0; i < number_of_packets; ++i)
-                _receivingQueue.Enqueue(new Packet(NetworkingGlobals.RandomString(10), destinationModule, moduleName));
+                _receivingQueue.Enqueue(new Packet(NetworkTestGlobals.RandomString(10), destinationModule, moduleName));
 
             Assert.Equal(_receivingQueue.Size(), number_of_packets);
         }
@@ -47,8 +47,8 @@ namespace PlexShareNetwork.Queues.Tests
         [Fact]
         public void EnqueueOrderMultiplePacketsOrderTest()
         {
-            string moduleName = NetworkingGlobals.dashboardName;
-            string destinationModule = NetworkingGlobals.RandomString(5);
+            string moduleName = NetworkTestGlobals.dashboardName;
+            string destinationModule = NetworkTestGlobals.RandomString(5);
 
             int number_of_packets = 100;
 
@@ -58,7 +58,7 @@ namespace PlexShareNetwork.Queues.Tests
             // Enqueueing multiple packets
             for (int i = 0; i < number_of_packets; ++i)
             {
-                Packet packet = new Packet(NetworkingGlobals.RandomString(10), destinationModule, moduleName);
+                Packet packet = new Packet(NetworkTestGlobals.RandomString(10), destinationModule, moduleName);
                 _receivingQueue.Enqueue(packet);
 
                 stack.Push(packet);
@@ -89,10 +89,10 @@ namespace PlexShareNetwork.Queues.Tests
                 for (int i = 0; i < number_of_packets; ++i)
                 {
                     // Taking a random module name
-                    string moduleName = NetworkingGlobals.RandomString(10);
+                    string moduleName = NetworkTestGlobals.RandomString(10);
 
                     // Creating a packet of the above module
-                    Packet packet = new Packet(NetworkingGlobals.RandomString(10), NetworkingGlobals.RandomString(5), moduleName);
+                    Packet packet = new Packet(NetworkTestGlobals.RandomString(10), NetworkTestGlobals.RandomString(5), moduleName);
 
                     _receivingQueue.Enqueue(packet);
                 }
@@ -104,10 +104,10 @@ namespace PlexShareNetwork.Queues.Tests
                 for (int i = 0; i < number_of_packets; ++i)
                 {
                     // Taking a random module name
-                    string moduleName = NetworkingGlobals.RandomString(10);
+                    string moduleName = NetworkTestGlobals.RandomString(10);
 
                     // Creating a packet of the above module
-                    Packet packet = new Packet(NetworkingGlobals.RandomString(10), NetworkingGlobals.RandomString(5), moduleName);
+                    Packet packet = new Packet(NetworkTestGlobals.RandomString(10), NetworkTestGlobals.RandomString(5), moduleName);
 
                     _receivingQueue.Enqueue(packet);
                 }
@@ -127,10 +127,10 @@ namespace PlexShareNetwork.Queues.Tests
             for (int i = 0; i < number_of_packets; ++i)
             {
                 // Taking a random module name
-                string moduleName = NetworkingGlobals.RandomString(10);
+                string moduleName = NetworkTestGlobals.RandomString(10);
 
                 // Creating a packet of the above module
-                Packet packet = new Packet(NetworkingGlobals.RandomString(10), NetworkingGlobals.RandomString(5), moduleName);
+                Packet packet = new Packet(NetworkTestGlobals.RandomString(10), NetworkTestGlobals.RandomString(5), moduleName);
 
                 _receivingQueue.Enqueue(packet);
             }
@@ -147,8 +147,8 @@ namespace PlexShareNetwork.Queues.Tests
         [Fact]
         public void concurrentDequeueTest()
         {
-            string serializedData = NetworkingGlobals.RandomString(10);
-            string destinationModule = NetworkingGlobals.RandomString(5);
+            string serializedData = NetworkTestGlobals.RandomString(10);
+            string destinationModule = NetworkTestGlobals.RandomString(5);
             string moduleName = "Demo";
 
             // Creating a packet
@@ -178,8 +178,8 @@ namespace PlexShareNetwork.Queues.Tests
         [Fact]
         public void concurrentPeekTest()
         {
-            string serializedData = NetworkingGlobals.RandomString(10);
-            string destinationModule = NetworkingGlobals.RandomString(5);
+            string serializedData = NetworkTestGlobals.RandomString(10);
+            string destinationModule = NetworkTestGlobals.RandomString(5);
             string moduleName = "Demo";
 
             // Creating a packet
@@ -206,8 +206,8 @@ namespace PlexShareNetwork.Queues.Tests
         [Fact]
         public void WaitForPacketTest()
         {
-            string serializedData = NetworkingGlobals.RandomString(10);
-            string destinationModule = NetworkingGlobals.RandomString(5);
+            string serializedData = NetworkTestGlobals.RandomString(10);
+            string destinationModule = NetworkTestGlobals.RandomString(5);
             string moduleName = "Demo";
 
             // Creating a packet
