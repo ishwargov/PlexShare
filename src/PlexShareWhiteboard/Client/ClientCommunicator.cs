@@ -47,6 +47,7 @@ namespace PlexShareWhiteboard.Client
             throw new NotImplementedException();
         }
 
+
         public void SendToServer(WBServerShape clientUpdate)
         {
             try
