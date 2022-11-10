@@ -71,7 +71,7 @@
         <TextBlock Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="5" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="80" FontFamily="MV Boli" MaxHeight="100">PlexShare</TextBlock>
         
         <!-- Sign In Button -->
-        <Button Grid.Column="1" Grid.ColumnSpan="5" Click="Home_Click" Grid.Row="6" MaxWidth="500" MaxHeight="400" BorderBrush="Gray" BorderThickness="2" Background="Transparent">
+        <Button Grid.Column="1" Grid.ColumnSpan="5" Click="Home_Click" Grid.Row="6" MaxWidth="500" MaxHeight="300" BorderBrush="Gray" BorderThickness="2" Background="Transparent">
             <Button.Resources>
                 <Style TargetType="Border">
                     <Setter Property="CornerRadius" Value="50"/>
@@ -96,7 +96,7 @@
                     </Style.Triggers>
                 </Style>
             </Button.Style>
-            <Image Source="/Resources/GoogleSignIn.png"  MaxWidth="500" MaxHeight="400" Stretch="UniformToFill"/>
+            <Image Source="/Resources/GoogleSignIn.png"  MaxWidth="500" MaxHeight="400" Stretch="Uniform"/>
         </Button>
 
         <!-- Animation for the Authentication Screen-->
