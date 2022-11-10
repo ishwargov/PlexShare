@@ -64,7 +64,7 @@
 
         </StackPanel>
 
-        <Image Grid.Column="0" Grid.RowSpan="7" Grid.Row="1" Source="/Resources/AuthScreenImg.jpg" Stretch="UniformToFill" MaxWidth="500"/>
+        <Image Grid.Column="0" Grid.RowSpan="7" Grid.Row="1" Source="/Resources/AuthScreenImg.jpg" Stretch="UniformToFill" MaxWidth="700"/>
         
         <!-- Welcome Block -->
         <TextBlock Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="5" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="40" FontFamily="MV Boli" MaxHeight="50" >Welcome To</TextBlock>
