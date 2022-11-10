@@ -65,8 +65,7 @@ namespace PlexShareTests.ContentTests.Server
         [Fact]
         public void ServerSubscribe_SubscribingToNotification_GetNewMessageNotification()
         {
-            _utility = new Utility();
-            _contentServer = ContentServerFactory.GetInstance() as ContentServer;
+            Initialiser();
             var messageData = _utility.GenerateContentData(data: "Test Message");
            _serializer = new ContentSerializer();
             var serializesMessage =_serializer.Serialize(messageData);
@@ -74,7 +73,7 @@ namespace PlexShareTests.ContentTests.Server
             _contentServer.Receive(serializesMessage);
 
             Thread.Sleep(50);
-           _listener = new FakeContentListener();
+           
             var notifiedMessage =_listener.GetReceivedMessage();
             Assert.Equal( "Test Message", notifiedMessage.Data);
         }
@@ -223,41 +222,6 @@ namespace PlexShareTests.ContentTests.Server
             Assert.Equal(MessageEvent.New, secondMessage.Event);
             Assert.Equal(1, secondMessage.MessageID);
             Assert.Equal(1, secondMessage.ReplyThreadID);
-        }
-
-        [Fact]
-        public void
-            SSendAllMessagesToClient_SendingAllMessagesToANewlyJoinedClient_ListOfChatContextsShouldBeForwadedToCommunicator()
-        {
-            Initialiser();
-            _communicator.Reset();
-
-            var messageData = new ContentData
-            {
-                Type = MessageType.HistoryRequest,
-                SenderID = 10
-            };
-
-            var serializedMessageData =_serializer.Serialize(messageData);
-
-            _contentServer.Receive(serializedMessageData);
-
-            var serializedAllMessages = _communicator.GetSentData();
-
-            var chatContexts =_serializer.Deserialize<List<ChatThread>>(serializedAllMessages);
-
-            var firstMessage = chatContexts[0].MessageList[0];
-
-            Assert.Equal("First Message", firstMessage.Data);
-
-            var secondMessage = chatContexts[1].MessageList[0];
-
-            Assert.Equal("Test_File.pdf", secondMessage.Data);
-
-            var ReceiverIDs = _communicator.GetReceiverIDs();
-            Assert.Equal(1, ReceiverIDs.Count);
-            Assert.Equal("10", ReceiverIDs[0]);
-            Assert.False(_communicator.IsBroadcast());
         }
     }
 }
