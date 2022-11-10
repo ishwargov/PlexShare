@@ -13,11 +13,7 @@
  *               It also contains the Server Side WhiteBoardState Management.
  ***************************/
 
-using PlexShareNetwork.Communication;
-using PlexShareNetwork.Serialization;
-using PlexShareNetwork;
 using PlexShareWhiteboard.BoardComponents;
-using PlexShareWhiteboard.Client;
 using PlexShareWhiteboard.Client.Interfaces;
 using PlexShareWhiteboard.Server.Interfaces;
 using System;
@@ -33,8 +29,11 @@ namespace PlexShareWhiteboard.Server
     /// </summary>
     public class ServerSide : IShapeListener
     {
+
+        // An instance of the ServerCommunicator
+        private static ServerCommunicator _communicator;
+
         private static ServerSide instance;
-        private static IServerCommunicator _communicator;
 
         // To create only a single instance of ServerSide
         public static ServerSide Instance
@@ -59,8 +58,7 @@ namespace PlexShareWhiteboard.Server
         // To keep track of the ZIndex of the objects
         private static int _maxZIndex = 0;
 
-        // An instance of the ServerCommunicator
-        ServerCommunicator _communicator;
+
 
         Serializer serializer = new Serializer();
 
