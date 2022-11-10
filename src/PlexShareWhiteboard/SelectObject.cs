@@ -161,6 +161,7 @@ namespace PlexShareWhiteboard
                         //Debug.Write("In translate_mode ");
                         mode = "translate_mode";
                     }
+                    select.initialSelectionObject = select.selectedObject;
                 }
                 else
                 {

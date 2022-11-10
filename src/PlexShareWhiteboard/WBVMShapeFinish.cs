@@ -7,6 +7,7 @@ using System.Windows.Media;
 using System.Diagnostics;
 using System.Windows;
 using PlexShareWhiteboard.BoardComponents;
+using System.Windows.Automation.Peers;
 
 namespace PlexShareWhiteboard
 {
@@ -22,16 +23,18 @@ namespace PlexShareWhiteboard
                 stackElement = new UndoStackElement(lastShape, lastShape, Operation.Creation);
                 InsertIntoStack(stackElement);
             }
-            else if (modeForUndo == "delete")
+            else if (modeForUndo == "delete" && lastShape != null)
             {
+
                 Debug.WriteLine("passing into undo stack " + lastShape.Geometry.GetType().Name);
                 stackElement = new UndoStackElement(lastShape, lastShape, Operation.Deletion);
                 InsertIntoStack(stackElement);
             }
             else if (modeForUndo == "modify")
             {
-                Debug.WriteLine("passing into undo stack " + select.selectedObject.Geometry.GetType().Name);
-                stackElement = new UndoStackElement(select.initialSelectionObject, select.selectedObject, Operation.ModifyShape);
+                Debug.WriteLine("passing into undo stack " + lastShape.Geometry.GetType().Name);
+                Debug.WriteLine(" inital bounding box" + select.initialSelectionObject.Geometry.Bounds.ToString() + "  final bounding box " + lastShape.Geometry.Bounds.ToString());
+                stackElement = new UndoStackElement(select.initialSelectionObject, lastShape, Operation.ModifyShape);
                 InsertIntoStack(stackElement);
             }
             else;
