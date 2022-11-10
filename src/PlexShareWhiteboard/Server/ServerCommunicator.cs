@@ -52,18 +52,18 @@ namespace PlexShareWhiteboard.Server
             Broadcast(clientUpdate);
         }
 
-        public void Broadcast(WBServerShape clientUpdate)
+        public void Broadcast(WBServerShape clientUpdate, string? ipAddress=null)
         {
             try
             {
-                Trace.WriteLine("[Whiteboard] ClientCommunicator.Send: Sending objects to server");
+                Trace.WriteLine("[Whiteboard] ServerCommunicator.Broadcast: Sending objects to client");
                 var serializedObj = serializer.SerializeWBServerShape(clientUpdate);
-                communicator.Send(serializedObj, moduleIdentifier, null);
-                Trace.WriteLine("[Whiteboard] ClientCommunicator.Send: Sent objects to server");
+                communicator.Send(serializedObj, moduleIdentifier, ipAddress);
+                Trace.WriteLine("[Whiteboard] ServerCommunicator.Broadcast: Sent objects to client");
             }
             catch (Exception e)
             {
-                Trace.WriteLine("[Whiteboard] ClientCommunicator.Send: Exception Occured");
+                Trace.WriteLine("[Whiteboard] ServerCommunicator.Broadcast: Exception Occured");
                 Trace.WriteLine(e.Message);
             }
         }

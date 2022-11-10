@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Shapes;
 using PlexShareWhiteboard.BoardComponents;
 using System.Globalization;
+using System.Diagnostics;
 
 namespace PlexShareWhiteboard
 {
@@ -133,9 +134,11 @@ namespace PlexShareWhiteboard
                     tempZIndex = ShapeItems[i].ZIndex;
                     toDelete = ShapeItems[i];
                 }
-                else if (ShapeItems[i].ZIndex > tempZIndex && Child.GetType().Name == "PathGeometry" &&
+                else if (ShapeItems[i].ZIndex > tempZIndex &&
+                    (Child.GetType().Name == "PathGeometry" ||  Child.GetType().Name == "LineGeometry" ) &&
                     PointInsideRect(Child.Bounds, a))
                 {
+                    //Debug.WriteLine(" child bounds "+ Child.Bounds.ToString());
                     tempZIndex = ShapeItems[i].ZIndex;
                     toDelete = ShapeItems[i];
                 }

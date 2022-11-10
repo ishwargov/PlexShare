@@ -32,59 +32,47 @@ namespace PlexShareWhiteboard
         public void OnDataReceived(string serializedData)
         {
             Serializer serializer = new Serializer();
-            ServerSnapshotHandler serverSnapshotHandler = new ServerSnapshotHandler();
             ServerSide serverSide = new ServerSide();
             ServerCommunicator serverCommunicator = ServerCommunicator.Instance;
             if (IsServer())
             {
                 try
                 {
-                    Trace.WriteLine(
-                        "ServerBoardCommunicator.onDataReceived: Receiving the XML string"
-                    );
-                    WBServerShape deserializedObject = serializer.DeserializeWBServerShape(
-                        serializedData
-                    );
-                    List<ShapeItem> shapeItems = serializer.ConvertToShapeItem(
-                        deserializedObject.ShapeItems
-                    );
+                    Trace.WriteLine("ServerBoardCommunicator.onDataReceived: Receiving the XML string");
+                    WBServerShape deserializedObject = serializer.DeserializeWBServerShape(serializedData);
+                    List<ShapeItem> shapeItems = serializer.ConvertToShapeItem(deserializedObject.ShapeItems);
                     var userId = deserializedObject.UserID;
-                    if (deserializedObject.Op == Operation.RestoreSnapshot)
+                    switch (deserializedObject.Op)
                     {
-                        List<ShapeItem> loadedShapes = serverSnapshotHandler.LoadBoard(
-                            deserializedObject.SnapshotNumber
-                        );
-                        List<SerializableShapeItem> serializableShapeItems =
-                            serializer.ConvertToSerializableShapeItem(loadedShapes);
-                        WBServerShape wBServerShape = new WBServerShape(
-                            serializableShapeItems,
-                            Operation.RestoreSnapshot,
-                            userId
-                        );
-                        //Send(wBServerShape);
-                        serverSide.BroadcastToClients(loadedShapes, Operation.RestoreSnapshot);
+                        case Operation.RestoreSnapshot:
+                            serverSide.RestoreSnapshotHandler(deserializedObject);
+                            break;
+                        case Operation.CreateSnapshot:
+                            serverSide.CreateSnapshotHandler(deserializedObject);
+                            break;
+                        case Operation.Creation:
+                            serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
+                            break;
+                        case Operation.Deletion:
+                            serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
+                            break;
+                        case Operation.ModifyShape:
+                            serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
+                            break;
+                        case Operation.Clear:
+                            serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
+                            break;
+                        case Operation.NewUser:
+                            serverSide.NewUserHandler(deserializedObject);
+                            break;
+                        default:
+                            Console.WriteLine("Unidentified Operation at ServerBoardCommunicator");
+                            break;
                     }
-                    else if (deserializedObject.Op == Operation.CreateSnapshot)
-                    {
-                        serverSnapshotHandler.SaveBoard(shapeItems);
-                        serverCommunicator.Broadcast(deserializedObject);
-                    }
-                    else if (
-                        deserializedObject.Op == Operation.Creation
-                        || deserializedObject.Op == Operation.Deletion
-                        || deserializedObject.Op == Operation.ModifyShape
-                        || deserializedObject.Op == Operation.Clear
-                    )
-                    {
-                        serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Unidentified Operation at ServerBoardCommunicator");
-                    }
+                    
 
                     Trace.WriteLine(
-                        "ServerBoardCommunicator.OnDataReceived: Took necessary actions on received object"
+                        "WBMessageHandler.OnDataReceived: Took necessary actions on received object"
                     );
                 }
                 catch (Exception e)
@@ -107,7 +95,7 @@ namespace PlexShareWhiteboard
                             LoadBoard(shapeItems);
                             break;
                         case Operation.CreateSnapshot:
-                            //DisplayMessage(); that board number is saved
+                            DisplayMessage(deserializedShape.UserID, deserializedShape.SnapshotNumber); //message that board number is saved
                             break;
                         case Operation.Creation:
                             CreateIncomingShape(shapeItems[0]);
@@ -121,6 +109,9 @@ namespace PlexShareWhiteboard
                         case Operation.Clear:
                             ClearAllShapes();
                             break;
+                        case Operation.NewUser:
+                            LoadBoard(shapeItems);
+                            break;
                     }
                 }
                 catch (Exception e)
@@ -131,6 +122,11 @@ namespace PlexShareWhiteboard
             }
         }
 
+        private void DisplayMessage(string userID, int snapshotNumber)
+        {
+            throw new NotImplementedException();
+        }
+
         private void LoadBoard(List<ShapeItem> shapeItems)
         {
             ClearAllShapes();
@@ -139,6 +135,5 @@ namespace PlexShareWhiteboard
                 CreateIncomingShape(shapeItem);
             }
         }
-
     }
 }

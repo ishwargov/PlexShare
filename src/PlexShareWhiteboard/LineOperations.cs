@@ -47,13 +47,19 @@ namespace PlexShareWhiteboard
             if (ClickInsideHighlightBox(shape.Start, select.initialSelectionPoint, blobSize / 2) == 1)
             {
                 move_point = shape.Start;
-                CreateShape(a, shape.End, "LineGeometry", shape.Id);
+                //lastShape=CreateShape(a, shape.End, "LineGeometry", shape.Id);
+                lastShape= UpdateShape(a, shape.End, "LineGeometry", shape);
                 //Debug.WriteLine("Start point selected for transform in line");
             }
             else
             {
                 move_point = shape.End;
+<<<<<<< HEAD
                 lastShape = CreateShape(shape.Start, a, "LineGeometry", shape.Id);
+=======
+                //lastShape=CreateShape(shape.Start, a, "LineGeometry", shape.Id);
+                lastShape= UpdateShape(shape.Start, a, "LineGeometry", shape);
+>>>>>>> ac74839d0395109539c1fd4acd1a2987520b5563
             }
         }
 
@@ -90,7 +96,11 @@ namespace PlexShareWhiteboard
 
             }
 
+<<<<<<< HEAD
             lastShape = UpdateShape(p1, p2, shape.Geometry.GetType().Name, shape, shape.TextString);
+=======
+            lastShape=UpdateShape(p1, p2, shape.Geometry.GetType().Name, shape, shape.TextString);
+>>>>>>> ac74839d0395109539c1fd4acd1a2987520b5563
             HighLightIt(p1, p2);
         }
     }
