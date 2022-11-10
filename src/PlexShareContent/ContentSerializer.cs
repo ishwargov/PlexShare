@@ -37,72 +37,72 @@ namespace PlexShareContent
     }
     public class ContentSerializer : IContentSerializer
     {
-            private readonly JsonSerializerSettings _jsonSerializerSettings;
+        private readonly JsonSerializerSettings _jsonSerializerSettings;
 
-            public ContentSerializer()
+        public ContentSerializer()
+        {
+            _jsonSerializerSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
+        }
+
+        /// <inheritdoc />
+        string IContentSerializer.Serialize<T>(T objectToSerialize)
+        {
+            try
             {
-                _jsonSerializerSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
+                var json = SerializeJson(objectToSerialize);
+                var obj = new MetaObject(typeof(T).ToString(), json);
+                return SerializeJson(obj);
             }
-
-            /// <inheritdoc />
-            string IContentSerializer.Serialize<T>(T objectToSerialize)
+            catch (Exception ex)
             {
-                try
-                {
-                    var json = SerializeJson(objectToSerialize);
-                    var obj = new MetaObject(typeof(T).ToString(), json);
-                    return SerializeJson(obj);
-                }
-                catch (Exception ex)
-                {
-                    Trace.WriteLine($"[Networking] Error while serializing: {ex.Message}");
-                    throw;
-                }
-            }
-
-            /// <inheritdoc />
-            string IContentSerializer.GetObjectType(string serializedString, string nameSpace)
-            {
-                // json string
-                var obj = DeserializeJson<MetaObject>(serializedString);
-                return obj.typ;
-            }
-
-            /// <inheritdoc />
-            T IContentSerializer.Deserialize<T>(string serializedString)
-            {
-                try
-                {
-                    var obj = DeserializeJson<MetaObject>(serializedString);
-                    return DeserializeJson<T>(obj.data);
-                }
-                catch (Exception ex)
-                {
-                    Trace.WriteLine($"[Networking] Error while deserializing: {ex.Message}");
-                    throw;
-                }
-            }
-
-            /// <summary>
-            ///     JSON supported serialization
-            /// </summary>
-            /// <typeparam name="T"></typeparam>
-            /// <param name="objectToSerialize"></param>
-            /// <returns></returns>
-            private string SerializeJson<T>(T objectToSerialize)
-            {
-                return JsonConvert.SerializeObject(objectToSerialize, Formatting.Indented, _jsonSerializerSettings);
-            }
-
-            /// <summary>
-            ///     JSON supoorted deserialization.
-            /// </summary>
-            /// <typeparam name="T"></typeparam>
-            /// <param name="json"></param>
-            /// <returns></returns>
-            private T DeserializeJson<T>(string json)
-            {
-                return JsonConvert.DeserializeObject<T>(json, _jsonSerializerSettings);
+                Trace.WriteLine($"[Networking] Error while serializing: {ex.Message}");
+                throw;
             }
         }
+
+        /// <inheritdoc />
+        public string GetObjectType(string serializedString, string nameSpace)
+        {
+            // json string
+            var obj = DeserializeJson<MetaObject>(serializedString);
+            return obj.typ;
+        }
+
+        /// <inheritdoc />
+        public T Deserialize<T>(string serializedString)
+        {
+            try
+            {
+                var obj = DeserializeJson<MetaObject>(serializedString);
+                return DeserializeJson<T>(obj.data);
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine($"[Networking] Error while deserializing: {ex.Message}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        ///     JSON supported serialization
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="objectToSerialize"></param>
+        /// <returns></returns>
+        private string SerializeJson<T>(T objectToSerialize)
+        {
+            return JsonConvert.SerializeObject(objectToSerialize, Formatting.Indented, _jsonSerializerSettings);
+        }
+
+        /// <summary>
+        ///     JSON supoorted deserialization.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="json"></param>
+        /// <returns></returns>
+        private T DeserializeJson<T>(string json)
+        {
+            return JsonConvert.DeserializeObject<T>(json);
+        }
+    }
 }
