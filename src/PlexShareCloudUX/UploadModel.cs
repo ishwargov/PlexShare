@@ -1,4 +1,16 @@
-﻿using System;
+﻿/******************************************************************************
+ * Filename    = UploadModel.cs
+ *
+ * Author      = Yagnesh Katragadda
+ *
+ * Product     = PlexShare
+ * 
+ * Project     = PlexShareCloud
+ *
+ * Description = Consists of functions to upload to drive by making API calls. 
+ *****************************************************************************/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
