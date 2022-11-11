@@ -299,7 +299,7 @@ namespace Dashboard.Server.SessionManagement
             {
                 // fetching all the chats from the content module.
                PlexShareContent.DataModels.ChatThread[] allChatsTillNow;
-                allChatsTillNow = _contentServer.GetAllMessages().ToArray();
+                //allChatsTillNow = _contentServer.GetAllMessages().ToArray();
 
                 // creating the summary from the chats
                 //  _sessionSummary = _summarizer.GetSummary(allChatsTillNow);
