@@ -30,15 +30,19 @@ namespace PlexShareCloudUX
         /// Gets the details of the submissions of the session conducted by the user.
         /// Then dispatch the changes to the view.
         /// <param name="sessionId">Id of the session for which we want the submissions.</param>
-        /// <param name="userName">The username of the user.</param>
         /// </summary>
-        public SubmissionsViewModel(string sessionId, string userName)
+        public SubmissionsViewModel(string sessionId)
         {
             _model = new SubmissionsModel();
-            List<SubmissionEntity> submissionsList = _model.GetSubmissions(sessionId, userName);
+            GetSubmissions(sessionId);
+        }
+
+        public async void GetSubmissions(string sessionId)
+        {
+            IReadOnlyList<SubmissionEntity> submissionsList = await _model.GetSubmissions(sessionId);
             _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
                         DispatcherPriority.Normal,
-                        new Action<List<SubmissionEntity>>((submissionsList) =>
+                        new Action<IReadOnlyList<SubmissionEntity>>((submissionsList) =>
                         {
                             lock (this)
                             {
@@ -65,7 +69,7 @@ namespace PlexShareCloudUX
         /// <summary>
         /// The received submissions.
         /// </summary>
-        public List<SubmissionEntity>? ReceivedSubmissions
+        public IReadOnlyList<SubmissionEntity>? ReceivedSubmissions
         {
             get; private set;
         }

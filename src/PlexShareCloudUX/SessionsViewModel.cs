@@ -33,11 +33,17 @@ namespace PlexShareCloudUX
         /// </summary>
         public SessionsViewModel(string userName)
         {
-            List<SessionEntity> sessionsList = SessionsModel.GetSessionsDetails(userName);
+            _model = new();
+            GetSessions(userName);
+        }
+
+        public async void GetSessions(string userName)
+        {
+            IReadOnlyList<SessionEntity> sessionsList = await _model.GetSessionsDetails(userName);
 
             _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
                         DispatcherPriority.Normal,
-                        new Action<List<SessionEntity>>((sessionsList) =>
+                        new Action<IReadOnlyList<SessionEntity>>((sessionsList) =>
                         {
                             lock (this)
                             {
@@ -47,13 +53,12 @@ namespace PlexShareCloudUX
                             }
                         }),
                         sessionsList);
-
         }
 
         /// <summary>
         /// List to store the sessions conducted.
         /// </summary>
-        public List<SessionEntity>? ReceivedSessions;
+        public IReadOnlyList<SessionEntity>? ReceivedSessions;
 
         /// <summary>
         /// Property changed event raised when a property is changed on a component.
@@ -78,5 +83,11 @@ namespace PlexShareCloudUX
             (Application.Current?.Dispatcher != null) ?
                     Application.Current.Dispatcher :
                     Dispatcher.CurrentDispatcher;
+
+        /// <summary>
+        /// Underlying data model.
+        /// </summary>
+        private SessionsModel _model;
     }
+
 }
