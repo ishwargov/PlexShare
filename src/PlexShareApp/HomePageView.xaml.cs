@@ -105,8 +105,8 @@ namespace PlexShareApp
         private void Logout_button_Click(object sender, RoutedEventArgs e)
         {
             AuthenticationView authenticationView = new AuthenticationView();
-            authenticationView.Show();
             this.Close();
+            authenticationView.Show();
         }
 
         string DownloadImage(string url)
