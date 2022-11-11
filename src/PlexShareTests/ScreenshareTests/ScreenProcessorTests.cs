@@ -18,7 +18,7 @@ namespace PlexShareTests.ScreenshareTests
             screenProcessor.StartProcessing();
             screenCapturer.StartCapture();
 
-            Thread.Sleep(500);
+            Thread.Sleep(1000);
 
             screenCapturer.StopCapture();
             int v2 = screenProcessor.GetProcessedFrameLength();
