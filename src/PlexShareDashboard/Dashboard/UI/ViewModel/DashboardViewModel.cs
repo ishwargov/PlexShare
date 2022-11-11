@@ -431,8 +431,8 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
             //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
             //UserData currU = new UserData("Rupesh", 1);
-            UserData currU = new UserData("Rupesh", 2);
-            currUser = currU;
+            //UserData currU = new UserData("Rupesh", 2);
+            //currUser = currU;
             //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
             //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
@@ -442,8 +442,8 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
                 //this user is host hence it can switch the mode 
 
 
-                //TODO WHILE INTEGRATION
-                //clientSessionManager.ToggleSessionMode();
+                //calling the toggle function to toggle the session for this particular meeting
+                clientSessionManager.ToggleSessionMode();
 
 
 
