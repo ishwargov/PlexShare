@@ -1,4 +1,16 @@
-﻿using PlexShareCloud;
+﻿/******************************************************************************
+ * Filename    = SessionModel.cs
+ *
+ * Author      = Polisetty Vamsi
+ *
+ * Product     = PlexShare
+ * 
+ * Project     = PlexShareCloudUx
+ *
+ * Description = Model logic for the sessions. 
+ *****************************************************************************/
+
+using PlexShareCloud;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +28,11 @@ namespace PlexShareCloudUX
         {
             fileDownloadApi = new FileDownloadApi(SessionUrl, SubmissionUrl);
         }
+        /// <summary>
+        /// Takes the username and retreive the information from the session table. 
+        /// </summary>
+        /// <param name="userName">Username of the user we consider</param>
+        /// <returns>will return the session entity for given username.</returns>
         public async Task<IReadOnlyList<SessionEntity>> GetSessionsDetails(string userName)
         {
             IReadOnlyList<SessionEntity>? getEntity = await fileDownloadApi.GetSessionsByUserAsync(userName);

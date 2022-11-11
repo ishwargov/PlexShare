@@ -1,4 +1,16 @@
-﻿using Azure;
+﻿/******************************************************************************
+ * Filename    = SubmissionEntity.cs
+ *
+ * Author      = Polisetty Vamsi
+ *
+ * Product     = PlexShare
+ * 
+ * Project     = PlexShareCloud
+ *
+ * Description = Model for the entity which stores the structure of submitted file.
+ *****************************************************************************/
+
+using Azure;
 using System;
 using System.Text.Json.Serialization;
 using ITableEntity = Azure.Data.Tables.ITableEntity;
