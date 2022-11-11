@@ -39,7 +39,7 @@ namespace PlexShareApp
         {
             InitializeComponent();
 
-            viewModel = new SubmissionsViewModel(sessionId, userName);
+            viewModel = new SubmissionsViewModel(sessionId);
             this.DataContext = viewModel;
             viewModel.PropertyChanged += Listener;
             submissions = new List<SubmissionEntity> { };
