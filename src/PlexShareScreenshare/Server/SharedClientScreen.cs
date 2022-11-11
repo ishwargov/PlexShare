@@ -130,11 +130,11 @@ namespace PlexShareScreenshare.Server
             }
             catch (Exception e)
             {
-                Trace.WriteLine(GetDebugMessage($"Failed to create the timer: {e.Message}", withTimeStamp: true));
+                Trace.WriteLine(Utils.GetDebugMessage($"Failed to create the timer: {e.Message}", withTimeStamp: true));
                 throw new OperationCanceledException("Failed to create the timer", e);
             }
 
-            Trace.WriteLine(GetDebugMessage($"Successfully created client with id: {this.Id} and name: {this.Name}", withTimeStamp: true));
+            Trace.WriteLine(Utils.GetDebugMessage($"Successfully created client with id: {this.Id} and name: {this.Name}", withTimeStamp: true));
         }
 
         /// <summary>
@@ -186,30 +186,6 @@ namespace PlexShareScreenshare.Server
         public bool Pinned { get; set; }
 
         /// <summary>
-        /// Static method to get a nice debug message wrapped with useful information.
-        /// </summary>
-        /// <param name="message">
-        /// Message to wrap
-        /// </param>
-        /// <param name="withTimeStamp">
-        /// Whether to prefix the wrapped message with time stamp or not
-        /// </param>
-        /// <returns>
-        /// The message wrapped with class and method name and prefixed with time stamp if asked
-        /// </returns>
-        public static string GetDebugMessage(string message, bool withTimeStamp = false)
-        {
-            // Get the class name and the name of the caller function
-            StackFrame? stackFrame = (new StackTrace()).GetFrame(1);
-            string className = stackFrame?.GetMethod()?.DeclaringType?.Name ?? "SharedClientScreen";
-            string methodName = stackFrame?.GetMethod()?.Name ?? "GetDebugMessage";
-
-            string prefix = withTimeStamp ? $"{DateTimeOffset.Now:F} | " : "";
-
-            return $"{prefix}[{className}::{methodName}] : {message}";
-        }
-
-        /// <summary>
         /// Pops and returns the received Frame at the beginning of the received image queue.
         /// </summary>
         /// <returns>
@@ -217,7 +193,7 @@ namespace PlexShareScreenshare.Server
         /// </returns>
         public Frame? GetImage()
         {
-            Debug.Assert(_imageQueue != null, GetDebugMessage("_imageQueue is found null"));
+            Debug.Assert(_imageQueue != null, Utils.GetDebugMessage("_imageQueue is found null"));
 
             // Wait until the queue is not empty
             while (_imageQueue.Count != 0) Thread.Sleep(100);
@@ -230,7 +206,7 @@ namespace PlexShareScreenshare.Server
                 }
                 catch (InvalidOperationException e)
                 {
-                    Trace.WriteLine(GetDebugMessage($"Dequeue failed: {e.Message}", withTimeStamp: true));
+                    Trace.WriteLine(Utils.GetDebugMessage($"Dequeue failed: {e.Message}", withTimeStamp: true));
                     return null;
                 }
             }
@@ -244,7 +220,7 @@ namespace PlexShareScreenshare.Server
         /// </param>
         public void PutImage(Frame frame)
         {
-            Debug.Assert(_imageQueue != null, GetDebugMessage("_imageQueue is found null"));
+            Debug.Assert(_imageQueue != null, Utils.GetDebugMessage("_imageQueue is found null"));
 
             lock (_imageQueue)
             {
@@ -260,7 +236,7 @@ namespace PlexShareScreenshare.Server
         /// </returns>
         public Bitmap? GetFinalImage()
         {
-            Debug.Assert(_finalImageQueue != null, GetDebugMessage("_finalImageQueue is found null"));
+            Debug.Assert(_finalImageQueue != null, Utils.GetDebugMessage("_finalImageQueue is found null"));
 
             // Wait until the queue is not empty
             while (_finalImageQueue.Count != 0) Thread.Sleep(100);
@@ -273,7 +249,7 @@ namespace PlexShareScreenshare.Server
                 }
                 catch (InvalidOperationException e)
                 {
-                    Trace.WriteLine(GetDebugMessage($"Dequeue failed: {e.Message}", withTimeStamp: true));
+                    Trace.WriteLine(Utils.GetDebugMessage($"Dequeue failed: {e.Message}", withTimeStamp: true));
                     return null;
                 }
             }
@@ -287,7 +263,7 @@ namespace PlexShareScreenshare.Server
         /// </param>
         public void PutFinalImage(Bitmap image)
         {
-            Debug.Assert(_finalImageQueue != null, GetDebugMessage("_finalImageQueue is found null"));
+            Debug.Assert(_finalImageQueue != null, Utils.GetDebugMessage("_finalImageQueue is found null"));
 
             lock (_finalImageQueue)
             {
@@ -304,7 +280,7 @@ namespace PlexShareScreenshare.Server
         /// <exception cref="OperationCanceledException"></exception>
         public void StartProcessing(Action<CancellationToken> task)
         {
-            Debug.Assert(_stitcher != null, GetDebugMessage("_stitcher is found null"));
+            Debug.Assert(_stitcher != null, Utils.GetDebugMessage("_stitcher is found null"));
 
             // Start the stitcher
             _stitcher.StartStitching();
@@ -321,12 +297,12 @@ namespace PlexShareScreenshare.Server
                 }
                 catch (Exception e)
                 {
-                    Trace.WriteLine(GetDebugMessage($"Failed to start the task: {e.Message}", withTimeStamp: true));
+                    Trace.WriteLine(Utils.GetDebugMessage($"Failed to start the task: {e.Message}", withTimeStamp: true));
                     throw new OperationCanceledException("Failed to start the task", e);
                 }
             }
 
-            Trace.WriteLine(GetDebugMessage($"Successfully created the processing task for the client with id {this.Id}", withTimeStamp: true));
+            Trace.WriteLine(Utils.GetDebugMessage($"Successfully created the processing task for the client with id {this.Id}", withTimeStamp: true));
         }
 
         /// <summary>
@@ -337,9 +313,9 @@ namespace PlexShareScreenshare.Server
         /// <exception cref="OperationCanceledException"></exception>
         public async void StopProcessing()
         {
-            Debug.Assert(_stitcher != null, GetDebugMessage("_stitcher is found null"));
-            Debug.Assert(_tokenSource != null, GetDebugMessage("_tokenSource is found null"));
-            Debug.Assert(_imageSendTask != null, GetDebugMessage("_imageSendTask is found null"));
+            Debug.Assert(_stitcher != null, Utils.GetDebugMessage("_stitcher is found null"));
+            Debug.Assert(_tokenSource != null, Utils.GetDebugMessage("_tokenSource is found null"));
+            Debug.Assert(_imageSendTask != null, Utils.GetDebugMessage("_imageSendTask is found null"));
 
             // Stop the stitcher
             _stitcher.StopStitching();
@@ -353,7 +329,7 @@ namespace PlexShareScreenshare.Server
             }
             catch (Exception e)
             {
-                Trace.WriteLine(GetDebugMessage($"Failed to cancel the task: {e.Message}", withTimeStamp: true));
+                Trace.WriteLine(Utils.GetDebugMessage($"Failed to cancel the task: {e.Message}", withTimeStamp: true));
                 throw new OperationCanceledException("Failed to cancel the task", e);
             }
             finally
@@ -374,7 +350,7 @@ namespace PlexShareScreenshare.Server
                 _finalImageQueue.Clear();
             }
 
-            Trace.WriteLine(GetDebugMessage($"Successfully stopped the processing task for the client with id {this.Id}", withTimeStamp: true));
+            Trace.WriteLine(Utils.GetDebugMessage($"Successfully stopped the processing task for the client with id {this.Id}", withTimeStamp: true));
         }
 
         /// <summary>
@@ -383,7 +359,7 @@ namespace PlexShareScreenshare.Server
         /// <exception cref="OperationCanceledException"></exception>
         public void UpdateTimer()
         {
-            Debug.Assert(_timer != null, GetDebugMessage("_timer is found null"));
+            Debug.Assert(_timer != null, Utils.GetDebugMessage("_timer is found null"));
 
             try
             {
@@ -392,7 +368,7 @@ namespace PlexShareScreenshare.Server
             }
             catch (Exception e)
             {
-                Trace.WriteLine(GetDebugMessage($"Failed to reset the timer: {e.Message}", withTimeStamp: true));
+                Trace.WriteLine(Utils.GetDebugMessage($"Failed to reset the timer: {e.Message}", withTimeStamp: true));
                 throw new OperationCanceledException("Failed to reset the timer", e);
             }
         }
