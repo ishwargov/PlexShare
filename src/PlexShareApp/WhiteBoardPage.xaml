@@ -510,8 +510,8 @@
                                         <Image Source="Assets/LineTool.png" ></Image>
                                     </Button>
                                 </Grid>
-                                <Grid Grid.Row="3">
-                                    <Button Name="TextBox" ToolTip="Add Text" HorizontalAlignment="Center" VerticalAlignment="Center" Click="RectangleCreateMode" Cursor="Hand" Style="{StaticResource ToolBarStyle}">
+                                <Grid KeyDown="Textbox_KeyDown" Grid.Row="3">
+                                    <Button Name="TextBox" ToolTip="Add Text" HorizontalAlignment="Center" VerticalAlignment="Center" Click="TextboxCreateMode" Cursor="Hand" Style="{StaticResource ToolBarStyle}">
                                         <Image Source="Assets/Text.png"></Image>
                                     </Button>
 

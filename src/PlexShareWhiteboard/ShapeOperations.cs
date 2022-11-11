@@ -226,14 +226,14 @@ namespace PlexShareWhiteboard
 
             if (boxNumber > 0)
             {
-                shape = UpdateShape(p1, p2, shape.Geometry.GetType().Name, shape);
+                shape = UpdateShape(p1, p2, shape.Geometry.GetType().Name, shape,shape.TextString);
                 lastShape = shape;
                 //HighLightIt(shape.Geometry.Bounds);
             }
         }
         public void TranslatingShape(ShapeItem shape, Point p1, Point p2)
         {
-            lastShape = UpdateShape(p1, p2, shape.Geometry.GetType().Name, shape);
+            lastShape = UpdateShape(p1, p2, shape.Geometry.GetType().Name, shape,shape.TextString);
             HighLightIt(p1, p2);
         }
     }

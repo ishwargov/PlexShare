@@ -183,23 +183,33 @@ namespace PlexShareWhiteboard
                     };
                     select.initialSelectionObject = newShape;
 
-
-                    if (boxNumber > 4)
+                    if (select.selectedObject.Geometry.GetType().Name != "GeometryGroup")
                     {
-                        Debug.WriteLine("Going to enter dimensionChange_mode \n");
-                        mode = "dimensionChange_mode";
-                        select.selectBox = boxNumber;
+                        if (boxNumber > 4)
+                        {
+                            Debug.WriteLine("Going to enter dimensionChange_mode \n");
+                            mode = "dimensionChange_mode";
+                            select.selectBox = boxNumber;
+                        }
+                        else if (boxNumber > 0)
+                        {
+                            Debug.WriteLine("Going to enter transform mode \n");
+                            mode = "transform_mode";
+                            select.selectBox = boxNumber;
+                        }
+                        else if (select.selectBox == 0)
+                        {
+                            Debug.Write("Going to enter translate_mode \n");
+                            mode = "translate_mode";
+                        }
                     }
-                    else if (boxNumber > 0)
+                    else
                     {
-                        Debug.WriteLine("Going to enter transform mode \n");
-                        mode = "transform_mode";
-                        select.selectBox = boxNumber;
-                    }
-                    else if (select.selectBox == 0)
-                    {
-                        Debug.Write("Going to enter translate_mode \n");
-                        mode = "translate_mode";
+                        if (select.selectBox == 0)
+                        {
+                            Debug.Write("Going to enter translate_mode \n");
+                            mode = "translate_mode";
+                        }
                     }
 
                 }
