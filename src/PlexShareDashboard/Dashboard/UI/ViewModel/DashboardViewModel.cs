@@ -296,7 +296,8 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
 
             //TODO WHILE INTEGRATION 
-            //clientSessionManager.GetAnalytics();
+            //calling the function to get the analytics 
+            clientSessionManager.GetAnalytics();
 
 
 
@@ -306,42 +307,42 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
 
             //FOR TESTING PURPOSE 
-            User user1 = new User(1, "Rupesh Kumar", "Presenting");
-            User user2 = new User(2, "Shubham Raj", "Presenting");
-            User user3 = new User(3, "Hrishi Raaj", "Presenting");
-            User user4 = new User(4, "Saurabh kumar", "Not Presenting");
-            User user5 = new User(5, "Aditya Agarwal", "Not Presenting");
+            //User user1 = new User(1, "Rupesh Kumar", "Presenting");
+            //User user2 = new User(2, "Shubham Raj", "Presenting");
+            //User user3 = new User(3, "Hrishi Raaj", "Presenting");
+            //User user4 = new User(4, "Saurabh kumar", "Not Presenting");
+            //User user5 = new User(5, "Aditya Agarwal", "Not Presenting");
 
-            ParticipantsList.Add(user1);
-            ParticipantsList.Add(user2);
-            ParticipantsList.Add(user3);
-            ParticipantsList.Add(user4);
-            ParticipantsList.Add(user5);
+            //ParticipantsList.Add(user1);
+            //ParticipantsList.Add(user2);
+            //ParticipantsList.Add(user3);
+            //ParticipantsList.Add(user4);
+            //ParticipantsList.Add(user5);
 
-            UserCountList.Add(10);
-            UserCountList.Add(20);
-            UserCountList.Add(30);
-            UserCountList.Add(40);
+            //UserCountList.Add(10);
+            //UserCountList.Add(20);
+            //UserCountList.Add(30);
+            //UserCountList.Add(40);
 
-            TimeStampsList.Add("15");
-            TimeStampsList.Add("20");
-            TimeStampsList.Add("25");
-            TimeStampsList.Add("35");
+            //TimeStampsList.Add("15");
+            //TimeStampsList.Add("20");
+            //TimeStampsList.Add("25");
+            //TimeStampsList.Add("35");
 
 
-            ChatCountList.Add(10);
-            ChatCountList.Add(12);
-            ChatCountList.Add(13);
-            ChatCountList.Add(4);
+            //ChatCountList.Add(10);
+            //ChatCountList.Add(12);
+            //ChatCountList.Add(13);
+            //ChatCountList.Add(4);
 
-            UserIdList.Add("1");
-            UserIdList.Add("2");
-            UserIdList.Add("3");
-            UserIdList.Add("4");
+            //UserIdList.Add("1");
+            //UserIdList.Add("2");
+            //UserIdList.Add("3");
+            //UserIdList.Add("4");
             //UserIdVsChatCounts.Add(new UserIdVsChatCount(5, 16));
 
             //adding the new stuff into the usercount list and the participant list 
-            UserCountList.Add(50);
+            //UserCountList.Add(50);
             //TimeStampsList.Add("35");
             //string currDateTime = DateTime.Now.ToString("yyyyMMddHHmmss");
             DateTime currDateTime = DateTime.Now;
@@ -359,12 +360,12 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             //update the total message count
 
             //update total paritcipant count 
-            TotalParticipantsCountSetter = 201;
-            TotalMessageCountSetter = 120;
-            EngagementRateSetter = "95%";
-            NonAttentiveUsersSetter = 50;
-            AttentiveUsersSetter = 50;
-            SessionScoreSetter = 100;
+            //TotalParticipantsCountSetter = 201;
+            //TotalMessageCountSetter = 120;
+            //EngagementRateSetter = "95%";
+            //NonAttentiveUsersSetter = 50;
+            //AttentiveUsersSetter = 50;
+            //SessionScoreSetter = 100;
             //TotalParticipantsCount = 200;
 
             //update the engagement rate 
@@ -422,6 +423,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         //function to change the session mode 
         public void SwitchSessionMode()
         {
+            //getting the current user because this action is only allowed for the faculty 
             UserData currUser = clientSessionManager.GetUser();
 
 
@@ -479,6 +481,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         //function to initiate leavemeeting procedure 
         public void LeaveMeetingProcedure()
         {
+            //getting the current user as LeaveMeetingProcedure is only allowed for the server 
             UserData currUser = clientSessionManager.GetUser();
 
 
@@ -486,18 +489,20 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
 
 
-            //if (currUser.userID == 1)
-            //{
-            //    //this user is host hence it will end the meet  
-            //    //clientSessionManager.EndMeet();
-            //    //buttonValue = "Switch Mode"
-            //}
-            //else
-            //{
-            //    //buttonValue = SessionMode;
-            //    //the user will be just removed by session manager 
-            //    //clientSessionManager.RemoveClient();
-            //}
+            if (currUser.userID == 1)
+            {
+                //this user is host hence it will end the meet  
+                //calling the end meet procedure 
+                clientSessionManager.EndMeet();
+                //buttonValue = "Switch Mode"
+            }
+            else
+            {
+                //the user will be just removed by session manager 
+                //this is normal user hence we have to call the remove client 
+                clientSessionManager.RemoveClient();
+
+            }
 
         }
 
