@@ -7,11 +7,11 @@ using PlexShareContent;
 using PlexShareDashboard;
 using Dashboard;
 using System.Net.Sockets;
-//using PlexShareDashboard.Dashboard.Server.Summary;
+using PlexShareDashboard.Dashboard.Server.Summary;
 using PlexShareDashboard.Dashboard.Server.Telemetry;
 using PlexShare.Dashboard;
 using PlexShare.Dashboard.Server.SessionManagement;
-using PlexShareScreenshare;
+using PlexShareScreenshare.Server;
 using PlexShareWhiteboard;
 using PlexShareDashboard.Dashboard.Server.SessionManagement;
 using PlexShareDashboard.Dashboard;
@@ -30,9 +30,9 @@ namespace Dashboard.Server.SessionManagement
         private readonly ICommunicator _communicator;
       //  private readonly IContentServer _contentServer;
         private readonly IDashboardSerializer _serializer;
-
+        
         private readonly SessionData _sessionData;
-       // private readonly ISummarizer _summarizer;
+        private readonly ISummarizer _summarizer;
 
         private readonly List<ITelemetryNotifications> _telemetrySubscribers;
 
@@ -44,7 +44,7 @@ namespace Dashboard.Server.SessionManagement
         private ITelemetry _telemetry;
         public bool summarySaved;
         private int userCount;
-      //  private ScreenShareServer _screenShareServer;
+        private ScreenshareServer _screenShareServer;
 
         //Constructor for the ServerSessionManager.
         //It initialises whiteboard module,content module, screenshare module,
@@ -60,12 +60,12 @@ namespace Dashboard.Server.SessionManagement
             _sessionData = new SessionData();
             _serializer = new DashboardSerializer();
             _telemetrySubscribers = new List<ITelemetryNotifications>();
-          //  _summarizer = SummarizerFactory.GetSummarizer();
+            _summarizer = SummarizerFactory.GetSummarizer();
 
             userCount = 0;
 
-        //    _communicator = CommunicationFactory.GetCommunicator(false);
-         //   _communicator.Subscribe(moduleIdentifier, this);
+            _communicator = CommunicationFactory.GetCommunicator(false);
+            _communicator.Subscribe(moduleIdentifier, this);
 
             //------------------------------------_telemetry = new Telemetry.Telemetry();
           //  _ = ServerBoardCommunicator.Instance;
