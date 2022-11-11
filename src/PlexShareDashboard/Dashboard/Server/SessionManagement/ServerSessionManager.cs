@@ -7,15 +7,16 @@ using PlexShareContent;
 using PlexShareDashboard;
 using Dashboard;
 using System.Net.Sockets;
-//using PlexShareDashboard.Dashboard.Server.Summary;
+using PlexShareDashboard.Dashboard.Server.Summary;
 using PlexShareDashboard.Dashboard.Server.Telemetry;
 using PlexShare.Dashboard;
 using PlexShare.Dashboard.Server.SessionManagement;
-using PlexShareScreenshare;
+using PlexShareScreenshare.Server;
 using PlexShareWhiteboard;
 using PlexShareDashboard.Dashboard.Server.SessionManagement;
 using PlexShareDashboard.Dashboard;
 using PlexShareNetwork.Communication;
+using PlexShareContent.Server;
 //using PlexShareNetwork.Serialization;
 using PlexShareDashboard.Dashboard;
 using PlexShareNetwork;
@@ -28,11 +29,11 @@ namespace Dashboard.Server.SessionManagement
     public class ServerSessionManager : ITelemetrySessionManager, IUXServerSessionManager, INotificationHandler
     {
         private readonly ICommunicator _communicator;
-      //  private readonly IContentServer _contentServer;
+        private readonly IContentServer _contentServer;
         private readonly IDashboardSerializer _serializer;
-
+        
         private readonly SessionData _sessionData;
-       // private readonly ISummarizer _summarizer;
+        private readonly ISummarizer _summarizer;
 
         private readonly List<ITelemetryNotifications> _telemetrySubscribers;
 
@@ -44,7 +45,7 @@ namespace Dashboard.Server.SessionManagement
         private ITelemetry _telemetry;
         public bool summarySaved;
         private int userCount;
-      //  private ScreenShareServer _screenShareServer;
+        private ScreenshareServer _screenShareServer;
 
         //Constructor for the ServerSessionManager.
         //It initialises whiteboard module,content module, screenshare module,
@@ -60,12 +61,12 @@ namespace Dashboard.Server.SessionManagement
             _sessionData = new SessionData();
             _serializer = new DashboardSerializer();
             _telemetrySubscribers = new List<ITelemetryNotifications>();
-          //  _summarizer = SummarizerFactory.GetSummarizer();
+            _summarizer = SummarizerFactory.GetSummarizer();
 
             userCount = 0;
 
-        //    _communicator = CommunicationFactory.GetCommunicator(false);
-         //   _communicator.Subscribe(moduleIdentifier, this);
+            _communicator = CommunicationFactory.GetCommunicator(false);
+            _communicator.Subscribe(moduleIdentifier, this);
 
             //------------------------------------_telemetry = new Telemetry.Telemetry();
           //  _ = ServerBoardCommunicator.Instance;
@@ -297,11 +298,12 @@ namespace Dashboard.Server.SessionManagement
             try
             {
                 // fetching all the chats from the content module.
-                ChatThread[] allChatsTillNow;
-               // allChatsTillNow = _contentServer.SGetAllMessages().ToArray();
+               PlexShareContent.DataModels.ChatThread[] allChatsTillNow;
+                //allChatsTillNow = _contentServer.GetAllMessages().ToArray();
 
                 // creating the summary from the chats
-             //   _sessionSummary = _summarizer.GetSummary(allChatsTillNow);
+                //  _sessionSummary = _summarizer.GetSummary(allChatsTillNow);
+                _sessionSummary = "This is temporary Summary";
 
                 // returning the summary
                 return new SummaryData(_sessionSummary);
@@ -375,8 +377,8 @@ namespace Dashboard.Server.SessionManagement
             try
             {
                 // Fetching the chats and creating analytics on them
-            //    var allChats = _contentServer.SGetAllMessages().ToArray();
-           //     _sessionAnalytics = _telemetry.GetTelemetryAnalytics(allChats);
+                //   var allChats = _contentServer.GetAllMessages().ToArray();
+                //   _sessionAnalytics = _telemetry.GetTelemetryAnalytics(allChats);
                 SendDataToClient("getAnalytics", null, null, _sessionAnalytics, user);
             }
             catch (Exception e)

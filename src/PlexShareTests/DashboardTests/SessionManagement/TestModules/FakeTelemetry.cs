@@ -1,5 +1,6 @@
 ﻿using Dashboard;
 using PlexShareDashboard.Dashboard.Server.Telemetry;
+using PlexShareContent.DataModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,12 +21,12 @@ namespace PlexShareTests.DashboardTests.SessionManagement.TestModules
             sessionAnalytics = new SessionAnalytics();
         }
 
-        public void SaveAnalytics(ChatThread[] allMessages)
+        public void SaveAnalytics(PlexShareContent.DataModels.ChatThread[] allMessages)
         {
 
         }
 
-        public SessionAnalytics GetTelemetryAnalytics(ChatThread[] allMessages)
+        public SessionAnalytics GetTelemetryAnalytics(PlexShareContent.DataModels.ChatThread[] allMessages)
         {
             return sessionAnalytics;
         }
