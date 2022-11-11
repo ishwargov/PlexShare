@@ -17,14 +17,13 @@ namespace PlexShareTests.ContentTests.UX
     {
         public static class DispatcherUtil
         {
-
             private static object ExitFrame(object frame)
             {
                 ((DispatcherFrame)frame).Continue = false;
                 return null;
             }
 
-            public static void DoEvent()
+            public static void DoEvents()
             {
                 var frame = new DispatcherFrame();
                 Dispatcher.CurrentDispatcher.BeginInvoke(
