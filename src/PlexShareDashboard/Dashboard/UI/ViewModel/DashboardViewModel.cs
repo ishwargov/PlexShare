@@ -71,6 +71,9 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         private string ButtonContent { get; set; }
 
 
+        //adding the new variable to store the value of the summary 
+        private string SummaryContent { get; set; }
+
         /// <summary>
         /// Total number of messages sent in chat during the session
         /// </summary>
@@ -182,6 +185,20 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         }
 
 
+        public string SummaryContentSetter
+        {
+            get { return SummaryContent; }
+            set
+            {
+                if (SummaryContent != value)
+                {
+                    SummaryContent = value;
+                    OnPropertyChanged("SummaryContentSetter");
+                }
+            }
+        }
+
+
         //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         //constructor for view model 
@@ -268,8 +285,8 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             ////$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
             ////$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
             //UpdateButtonContent(currUser);
+            SummaryContentSetter = "This is summary of the session till now. Keep refreshing this page in order to see the updated summary till now of the session for this purpose. order to see the updated summary till now of the session for this purpose.order to see the updated summary till now of the session for this purpose.order to see the updated summary till now of the session for this purpose.order to see the updated summary till now of the session for this purpose.order to see the updated summary till now of the session for this purpose.order to see the updated summary till now of the session for this purpose.order to see the updated summary till now of the session for this purpose.order to see the updated summary till now of the session for this purpose.";
 
-           
 
 
 

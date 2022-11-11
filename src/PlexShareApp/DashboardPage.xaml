@@ -207,6 +207,20 @@
                         <ProgressBar Grid.Row="1"  Margin="10,10,0,13" Name="PBar2" HorizontalAlignment="Center" VerticalAlignment="Center" Width="150" Height="15" Foreground="Red" Value="{Binding NonAttentiveUsersSetter}" ></ProgressBar>
                     </Grid>
                 </Grid>
+                <Grid Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="5*"/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Text="Summary Of Session"></TextBlock>
+                        
+                    </Grid>
+                    <Grid Grid.Row="1">
+                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Text="{Binding SummaryContentSetter}" TextWrapping="WrapWithOverflow"></TextBlock>
+
+                    </Grid>
+                </Grid>
 
                 <!--<ProgressBar Grid.Row="1" Margin="10,10,0,13" Name="PBar2" HorizontalAlignment="Center" VerticalAlignment="Center" Width="300" Height="30" Value="60" ></ProgressBar>-->
 
