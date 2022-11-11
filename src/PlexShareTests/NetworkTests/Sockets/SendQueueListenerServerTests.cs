@@ -7,7 +7,6 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading;
 using System.Threading.Tasks;
 using PlexShareNetwork.Communication;
 using PlexShareNetwork.Queues;
@@ -17,205 +16,158 @@ namespace PlexShareNetwork.Sockets.Tests
 {
 	public class SendQueueListenerServerTests
 	{
-		private readonly SendingQueue _sendingQueue = new();
-        private readonly ReceivingQueue _receivingQueue1 = new();
-        private readonly ReceivingQueue _receivingQueue2 = new();
-        private readonly ICommunicator _serverCommunicator = CommunicationFactory.GetCommunicator(false);
-		private readonly SendQueueListenerServer _sendQueueListenerServer;
-        private readonly SocketListener _socketListener1;
-        private readonly SocketListener _socketListener2;
-        private readonly TcpClient _clientSocket1 = new();
-        private readonly TcpClient _clientSocket2 = new();
-        private TcpClient _serverSocket1, _serverSocket2;
-		private readonly TcpListener _serverListener;
-		private readonly Dictionary<string, TcpClient> _clientIdToSocket = new();
-		private readonly Dictionary<string, INotificationHandler> _subscribedModules = new();
-		private readonly int _port;
-		private readonly IPAddress _IP;
+        private readonly int _multiplePacketsCount = 10;
+        private readonly int _smallPacketSize = 10;
+        private readonly int _largePacketSize = 1000;
+        private readonly int _veryLargePacketSize = 1000000;
+        private readonly string[] _destinations = { "Client1 ID", "Client2 ID" };
+        private readonly string _module = "Test Module";
+        bool _clientGotDisconnectedTest = false;
 
-		public SendQueueListenerServerTests()
-		{
-			string[] IPAndPort = _serverCommunicator.Start().Split(":");
-            _serverCommunicator.Stop();
-            _IP = IPAddress.Parse(IPAndPort[0]);
-			_port = int.Parse(IPAndPort[1]);
-			_serverListener = new TcpListener(_IP, _port);
-			_serverListener.Start();
+        private void PacketsSendTest(int size, string? destination, int count)
+        {
+            // start the server and start listening to client connect requests
+            CommunicatorServer communicatorServer = new();
+            string[] ipAddressAndPort = communicatorServer.Start().Split(":");
+            IPAddress ipAddress = IPAddress.Parse(ipAddressAndPort[0]);
+            int port = int.Parse(ipAddressAndPort[1]);
+            TcpListener clientConnectRequestListener = new(ipAddress, port);
+            clientConnectRequestListener.Start();
 
-            _sendingQueue.RegisterModule("Test Module1", true);
-            _subscribedModules["Test Module1"] = new TestNotificationHandler();
-            _sendingQueue.RegisterModule("Test Module2", true);
-            _subscribedModules["Test Module2"] = new TestNotificationHandler();
-
-            _sendQueueListenerServer = new SendQueueListenerServer(_sendingQueue, _clientIdToSocket, _subscribedModules);
-            _sendQueueListenerServer.Start();
-
-            _clientSocket1.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, true);
-            _clientSocket2.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, true);
-
-            var t1 = Task.Run(() => { _clientSocket1.Connect(_IP, _port); });
-			var t2 = Task.Run(() => { _serverSocket1 = _serverListener.AcceptTcpClient(); });
-			Task.WaitAll(t1, t2);
-
-            Task t3 = Task.Run(() => { _clientSocket2.Connect(_IP, _port); });
-            Task t4 = Task.Run(() => { _serverSocket2 = _serverListener.AcceptTcpClient(); });
+            // connect the 2 clients to the server
+            TcpClient serverSocket1 = new();
+            TcpClient serverSocket2 = new();
+            TcpClient clientSocket2 = new();
+            TcpClient clientSocket1 = new();
+            clientSocket1.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, true);
+            clientSocket2.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, true);
+            var t1 = Task.Run(() => { clientSocket1.Connect(ipAddress, port); });
+            var t2 = Task.Run(() => { serverSocket1 = clientConnectRequestListener.AcceptTcpClient(); });
+            Task.WaitAll(t1, t2);
+            Task t3 = Task.Run(() => { clientSocket2.Connect(ipAddress, port); });
+            Task t4 = Task.Run(() => { serverSocket2 = clientConnectRequestListener.AcceptTcpClient(); });
             Task.WaitAll(t3, t4);
 
-			_clientIdToSocket["Client1 ID"] = _serverSocket1;
-            _clientIdToSocket["Client2 ID"] = _serverSocket2;
+            // start send queue listener on server
+            SendingQueue sendingQueue = new();
+            sendingQueue.RegisterModule("Test Module", true);
+            Dictionary<string, TcpClient> clientIdToSocket = new()
+            {
+                ["Client1 ID"] = serverSocket1,
+                ["Client2 ID"] = serverSocket2
+            };
+            Dictionary<string, INotificationHandler> subscribedModules = new()
+            {
+                ["Test Module"] = new TestNotificationHandler()
+            };
+            SendQueueListenerServer sendQueueListenerServer = new(sendingQueue, clientIdToSocket, subscribedModules);
+            sendQueueListenerServer.Start();
 
-            _socketListener1 = new SocketListener(_receivingQueue1, _clientSocket1);
-            _socketListener1.Start();
-            _socketListener2 = new SocketListener(_receivingQueue2, _clientSocket2);
-            _socketListener2.Start();
+            // start socket listener on both clients
+            ReceivingQueue receivingQueue1 = new();
+            ReceivingQueue receivingQueue2 = new();
+            SocketListener socketListener1 = new(receivingQueue1, clientSocket1);
+            SocketListener socketListener2 = new(receivingQueue2, clientSocket2);
+            socketListener1.Start();
+            socketListener2.Start();
+
+            // if its client got disconnected test then disconnect client 1
+            if (_clientGotDisconnectedTest)
+            {
+                clientSocket1.Close();
+                clientSocket1.Dispose();
+            }
+
+            // send packets
+            Packet[] sendPackets = NetworkTestGlobals.GeneratePackets(size, destination, _module, count);
+            NetworkTestGlobals.SendPackets(sendPackets, sendingQueue, count);
+
+            // if its client got disconnected test then check whether modules are notified
+            if (_clientGotDisconnectedTest)
+            {
+                TestNotificationHandler testNotificationHandler = (TestNotificationHandler)subscribedModules["Test Module"];
+                testNotificationHandler.WaitForEvent();
+                // assert module is notified, client1 did not receive, and client2 received
+                Assert.Equal("OnClientLeft", testNotificationHandler.GetLastEvent());
+                Assert.Equal("Client1 ID", testNotificationHandler.GetLastEventClientId());
+                Assert.True(receivingQueue1.IsEmpty());
+            }
+            else // check client 1 received the packets
+            {
+                NetworkTestGlobals.PacketsReceiveAssert(sendPackets, receivingQueue1, count);
+            }
+            // if it was a broadcast test then check client2 also received the packets
+            if (destination == null)
+            {
+                NetworkTestGlobals.PacketsReceiveAssert(sendPackets, receivingQueue2, count);
+            }
         }
 
-		[Fact]
-		public void SinglePacketUnicastTest()
+        [Fact]
+		public void SmallPacketUnicastTest()
 		{
-            Packet sendPacket = new("Test string", "Client1 ID", "Test Module1");
-            _sendingQueue.Enqueue(sendPacket);
-            NetworkTestGlobals.AssertSinglePacketReceive(sendPacket, _receivingQueue1);
+            PacketsSendTest(_smallPacketSize, _destinations[0], 1);
         }
 
 		[Fact]
 		public void LargePacketUnicastTest()
 		{
-            Packet sendPacket = new(NetworkTestGlobals.RandomString(1000), "Client1 ID", "Test Module1");
-            _sendingQueue.Enqueue(sendPacket);
-            NetworkTestGlobals.AssertSinglePacketReceive(sendPacket, _receivingQueue1);
+            PacketsSendTest(_largePacketSize, _destinations[0], 1);
         }
 
         [Fact]
-        public void FromSameModuleToDifferentClientsUnicastTest()
+        public void VeryLargePacketUnicastTest()
         {
-            Packet sendPacket1 = new("Test string1", "Client1 ID", "Test Module1");
-            _sendingQueue.Enqueue(sendPacket1);
-            
-            Packet sendPacket2 = new("Test string2", "Client2 ID", "Test Module1");
-            _sendingQueue.Enqueue(sendPacket2);
-
-            NetworkTestGlobals.AssertSinglePacketReceive(sendPacket1, _receivingQueue1);
-            NetworkTestGlobals.AssertSinglePacketReceive(sendPacket2, _receivingQueue2);
+            PacketsSendTest(_veryLargePacketSize, _destinations[0], 1);
         }
 
         [Fact]
-        public void FromDifferentModuleToDifferentClientsUnicastTest()
+        public void MultipleSmallPacketsUnicastTest()
         {
-            Packet sendPacket1 = new("Test string1", "Client1 ID", "Test Module1");
-            _sendingQueue.Enqueue(sendPacket1);
-
-            Packet sendPacket2 = new("Test string2", "Client2 ID", "Test Module2");
-            _sendingQueue.Enqueue(sendPacket2);
-
-            NetworkTestGlobals.AssertSinglePacketReceive(sendPacket1, _receivingQueue1);
-            NetworkTestGlobals.AssertSinglePacketReceive(sendPacket2, _receivingQueue2);
-        }
-
-        [Fact]
-        public void MultiplePacketsFromSameModuleUnicastTest()
-        {
-            Packet[] sendPackets = new Packet[10];
-            for (var i = 0; i < 10; i++)
-            {
-                sendPackets[i] = new("Test string" + i, "Client1 ID", "Test Module1");
-                _sendingQueue.Enqueue(sendPackets[i]);
-            }
-            NetworkTestGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue1);
-        }
-
-        [Fact]
-        public void MultiplePacketsFromDifferentModulesUnicastTest()
-        {
-            Packet[] sendPackets = new Packet[10];
-            for (var i = 0; i < 10; i++)
-            {
-                sendPackets[i] = new("Test string" + i, "Client1 ID", "Test Module" + (i%2+1));
-                _sendingQueue.Enqueue(sendPackets[i]);
-            }
-            NetworkTestGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue1);
+            PacketsSendTest(_smallPacketSize, _destinations[0], _multiplePacketsCount);
         }
 
         [Fact]
         public void MultipleLargePacketsUnicastTest()
         {
-            Packet[] sendPackets = new Packet[10];
-            for (var i = 0; i < 10; i++)
-            {
-                sendPackets[i] = new(NetworkTestGlobals.RandomString(1000), "Client1 ID", "Test Module1");
-                _sendingQueue.Enqueue(sendPackets[i]);
-            }
-            NetworkTestGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue1);
+            PacketsSendTest(_largePacketSize, _destinations[0], _multiplePacketsCount);
         }
 
         [Fact]
-        public void SinglePacketBroadcastTest()
+        public void SmallPacketBroadcastTest()
         {
-            Packet sendPacket = new("Test string", null, "Test Module1");
-            _sendingQueue.Enqueue(sendPacket);
-            NetworkTestGlobals.AssertSinglePacketReceive(sendPacket, _receivingQueue1);
-            NetworkTestGlobals.AssertSinglePacketReceive(sendPacket, _receivingQueue2);
+            PacketsSendTest(_smallPacketSize, null, 1);
         }
 
         [Fact]
         public void LargePacketBroadcastTest()
         {
-            Packet sendPacket = new(NetworkTestGlobals.RandomString(1000), null, "Test Module1");
-            _sendingQueue.Enqueue(sendPacket);
-            NetworkTestGlobals.AssertSinglePacketReceive(sendPacket, _receivingQueue1);
-            NetworkTestGlobals.AssertSinglePacketReceive(sendPacket, _receivingQueue2);
+            PacketsSendTest(_largePacketSize, null, 1);
         }
 
         [Fact]
-        public void MultiplePacketsFromSameModuleBroadcastTest()
+        public void VeryLargePacketBroadcastTest()
         {
-            Packet[] sendPackets = new Packet[10];
-            for (var i = 0; i < 10; i++)
-            {
-                sendPackets[i] = new("Test string" + i, null, "Test Module1");
-                _sendingQueue.Enqueue(sendPackets[i]);
-            }
-            NetworkTestGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue1);
-            NetworkTestGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue2);
+            PacketsSendTest(_veryLargePacketSize, null, 1);
         }
 
         [Fact]
-        public void MultiplePacketsFromDifferentModulesBroadcastTest()
+        public void MultipleSmallPacketsBroadcastTest()
         {
-            Packet[] sendPackets = new Packet[10];
-            for (var i = 0; i < 10; i++)
-            {
-                sendPackets[i] = new("Test string" + i, null, "Test Module" + (i%2+1));
-                _sendingQueue.Enqueue(sendPackets[i]);
-            }
-            NetworkTestGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue1);
-            NetworkTestGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue2);
+            PacketsSendTest(_smallPacketSize, null, _multiplePacketsCount);
         }
 
         [Fact]
         public void MultipleLargePacketsBroadcastTest()
         {
-            Packet[] sendPackets = new Packet[10];
-            for (var i = 0; i < 10; i++)
-            {
-                sendPackets[i] = new(NetworkTestGlobals.RandomString(1000), null, "Test Module1");
-                _sendingQueue.Enqueue(sendPackets[i]);
-            }
-            NetworkTestGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue1);
-            NetworkTestGlobals.AssertTenPacketsReceive(sendPackets, _receivingQueue2);
+            PacketsSendTest(_largePacketSize, null, _multiplePacketsCount);
         }
 
         [Fact]
 		public void ClientGotDisconnectedTest()
 		{
-			_clientSocket1.Close();
-			_clientSocket1.Dispose();
-            Packet sendPacket = new("Test string", null, "Test Module1");
-            _sendingQueue.Enqueue(sendPacket);
-            TestNotificationHandler testNotificationHandler = (TestNotificationHandler) _subscribedModules["Test Module1"];
-            testNotificationHandler.Wait();
-			Assert.Equal("OnClientLeft", testNotificationHandler.Event);
-            Assert.Equal("Client1 ID", testNotificationHandler.ClientID);
+            _clientGotDisconnectedTest = true;
+            SmallPacketBroadcastTest();
         }
     }
 }
