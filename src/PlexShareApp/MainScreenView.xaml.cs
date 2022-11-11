@@ -25,14 +25,14 @@ namespace PlexShareApp
         private bool chatOn;
         private static DashboardPage dashboardPage;
         private static WhiteBoardPage whiteBoardPage;
-        private static ChatPage chatPage;
+        private static ChatPageView chatPage;
         private static ScreenSharePage screenSharePage;
         public MainScreenView()
         {
             InitializeComponent();
             dashboardPage = new DashboardPage();
             whiteBoardPage = new WhiteBoardPage();
-            chatPage = new ChatPage();
+            chatPage = new ChatPageView();
             screenSharePage = new ScreenSharePage();
             Main.Content = dashboardPage;
         }

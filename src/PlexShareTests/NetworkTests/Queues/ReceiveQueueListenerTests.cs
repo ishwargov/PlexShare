@@ -28,14 +28,14 @@ namespace PlexShareNetwork.Queues.Tests
 
             _receiveQueueListener = new ReceiveQueueListener(_modulesToNotificationHandlerMap, _receivingQueue);
 
-            string moduleName = NetworkingGlobals.dashboardName;
+            string moduleName = NetworkTestGlobals.dashboardName;
             INotificationHandler notificationHandler = new DemoNotificationHandler();
 
             // Registering
             _receiveQueueListener.RegisterModule(moduleName, notificationHandler);
 
-            string serializedData = NetworkingGlobals.RandomString(10);
-            string destination = NetworkingGlobals.RandomString(5);
+            string serializedData = NetworkTestGlobals.RandomString(10);
+            string destination = NetworkTestGlobals.RandomString(5);
 
             // Starting it up
             _receiveQueueListener.Start();
@@ -69,9 +69,9 @@ namespace PlexShareNetwork.Queues.Tests
 
             for (int i = 0; i < 3; ++i)
             {
-                string moduleName = NetworkingGlobals.RandomString(5 + i);
-                string serializedData = NetworkingGlobals.RandomString(10);
-                string destination = NetworkingGlobals.RandomString(5);
+                string moduleName = NetworkTestGlobals.RandomString(5 + i);
+                string serializedData = NetworkTestGlobals.RandomString(10);
+                string destination = NetworkTestGlobals.RandomString(5);
                 INotificationHandler notificationHandler = new DemoNotificationHandler();
 
                 // Registering

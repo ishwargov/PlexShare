@@ -40,6 +40,7 @@ public class AuthenticationViewModel
 
     public AuthenticationViewModel()
     {
+       var  _ = new TraceFile();
     }
  
     /// <summary>
