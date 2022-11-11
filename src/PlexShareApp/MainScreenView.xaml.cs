@@ -13,7 +13,10 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Diagnostics;
-
+using PlexShareDashboard.Dashboard.Server.SessionManagement;
+using PlexShare.Dashboard;
+using PlexShareDashboard.Dashboard.Client.SessionManagement;
+using Dashboard;
 
 namespace PlexShareApp
 {
@@ -27,13 +30,26 @@ namespace PlexShareApp
         private static WhiteBoardPage whiteBoardPage;
         private static ChatPageView chatPage;
         private static ScreenSharePage screenSharePage;
-        public MainScreenView()
+        
+        public MainScreenView(string name, string email, string picPath, string url, string ip, string port)
         {
             InitializeComponent();
             dashboardPage = new DashboardPage();
             whiteBoardPage = new WhiteBoardPage();
             chatPage = new ChatPageView();
             screenSharePage = new ScreenSharePage();
+
+            IUXServerSessionManager serverSessionManager = SessionManagerFactory.GetServerSessionManager();
+            IUXClientSessionManager clientSessionManafer = SessionManagerFactory.GetClientSessionManager();
+            if (ip == "-1")
+            {
+              MeetingCredentials meetingCredentials =  serverSessionManager.GetPortsAndIPAddress();
+                clientSessionManafer.AddClient(meetingCredentials.ipAddress, meetingCredentials.port, name);
+            }
+            else
+            {
+                clientSessionManafer.AddClient(ip, int.Parse(port), name);
+            }
             Main.Content = dashboardPage;
         }
 
