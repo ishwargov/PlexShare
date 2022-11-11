@@ -11,8 +11,8 @@ namespace PlexShareNetwork
 {
 	public static class CommunicationFactory
 	{
-		private static readonly CommunicatorClient _clientCommunicator = new();
-		private static readonly CommunicatorServer _serverCommunicator = new();
+		private static readonly CommunicatorClient _communicatorClient = new();
+		private static readonly CommunicatorServer _communicatorServer = new();
 
         /// <summary>
         /// Factory function to get the communicator.
@@ -23,9 +23,9 @@ namespace PlexShareNetwork
 		{
 			if (isClientSide)
 			{
-				return _clientCommunicator;
+				return _communicatorClient;
 			}
-			return _serverCommunicator;
+			return _communicatorServer;
 		}
 	}
 }

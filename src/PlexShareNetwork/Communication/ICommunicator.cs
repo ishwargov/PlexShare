@@ -58,7 +58,7 @@ namespace PlexShareNetwork.Communication
         /// <param name="moduleOfPacket"> Module sending the data. </param>
         /// <param name="destination"> The destination or client Id to which to send the data. </param>
         /// <returns> void </returns>
-        public void Send(string serializedData, string moduleOfPacket, string destination);
+        public void Send(string serializedData, string moduleOfPacket, string? destination);
 
         /// <summary>
         /// Other modules can subscribe using this function to be notified on receiving data over the network.

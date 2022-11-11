@@ -57,10 +57,10 @@ namespace PlexShareApp
 
         public void OnSwitchModeButtonClick(object sender, RoutedEventArgs e)
         {
-            
+
             //just call the session manager to change the mode of the current lab 
             this.DashboardViewModelInstance.SwitchSessionMode();
-            
+
 
         }
 

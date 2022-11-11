@@ -200,8 +200,8 @@
                 <!--<ProgressBar Grid.Row="1" Margin="10,10,0,13" Name="PBar2" HorizontalAlignment="Center" VerticalAlignment="Center" Width="300" Height="30" Value="60" ></ProgressBar>-->
 
             </Grid>
-            
-            
+
+
 
             <!--now adding the different buttons for the user-->
             <Grid Grid.Row="2" Grid.ColumnSpan="2" Background="LightGray">
