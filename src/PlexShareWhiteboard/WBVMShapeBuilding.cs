@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Windows;
 using PlexShareWhiteboard.BoardComponents;
 
@@ -8,12 +9,11 @@ namespace PlexShareWhiteboard
     {
         public void ShapeBuilding(Point a)
         {
-            Debug.WriteLine("Entering Shape Building......\n");
+            //Debug.WriteLine("Entering Shape Building......\n");
 
             if (mode == "transform_mode")
             {
-
-                Debug.WriteLine("In transform mode\n");
+                modeForUndo = "modify";
                 UnHighLightIt();
 
                 double newXLen = a.X - select.initialSelectionPoint.X;
@@ -29,19 +29,21 @@ namespace PlexShareWhiteboard
                 if (shape.Geometry.GetType().Name == "PathGeometry")
                 {
 
-                    Debug.WriteLine("Transforming curve\n");
                     TransformCurve(a, shape);
+                }
+                else if (shape.Geometry.GetType().Name == "LineGeometry")
+                {
+                    TransformingLine(a, shape);
                 }
                 else
                 {
 
-                    Debug.WriteLine("Transforming shape\n");
                     TransformShape(shape, newXLen, newYLen, signX, signY);
                 }
             }
             else if (mode == "dimensionChange_mode")
             {
-                Debug.WriteLine("In dimension changing mode\n");
+                modeForUndo = "modify";
                 UnHighLightIt();
 
                 ShapeItem shape = select.selectedObject;
@@ -49,24 +51,22 @@ namespace PlexShareWhiteboard
                 if (shape.Geometry.GetType().Name == "PathGeometry")
                 {
 
-                    Debug.WriteLine("Changing dimenstion of curve\n");
                     DimensionChangeCurve(a, shape);
                 }
                 else
                 {
 
-                    Debug.WriteLine("Changing dimenstion of shape\n");
                     DimensionChangingShape(a, shape);
                 }
             }
             else if (mode == "translate_mode")
             {
-
-                Debug.WriteLine("In translate mode\n");
+                modeForUndo = "modify";
                 UnHighLightIt();
 
                 ShapeItem shape = select.selectedObject;
                 Rect boundingBox = shape.Geometry.Bounds;
+                Debug.WriteLine(" tranlsating line " + shape.AnchorPoint.ToString() + "   start : " + shape.Start.ToString());
                 double bx = shape.AnchorPoint.X + (a.X - select.initialSelectionPoint.X);
                 double by = shape.AnchorPoint.Y + (a.Y - select.initialSelectionPoint.Y);
                 double width = boundingBox.Width;
@@ -77,23 +77,26 @@ namespace PlexShareWhiteboard
                 if (shape.Geometry.GetType().Name == "PathGeometry")
                 {
 
-                    Debug.WriteLine("Translating curve\n");
                     TranslatingCurve(shape, bx, by, p1);
+                }
+                else if (shape.Geometry.GetType().Name == "LineGeometry")
+                {
+
+                    TranslatingLine(boundingBox, shape, p1, p2, width, height);
+
                 }
                 else
                 {
 
-                    Debug.WriteLine("Translating curve\n");
                     TranslatingShape(shape, p1, p2);
                 }
             }
             else if (mode == "create_rectangle")
             {
 
-                Debug.WriteLine("In create rectangle mode\n");
-
                 if (lastShape != null)
                 {
+                    modeForUndo = "create";
                     Point _AnchorPoint = lastShape.AnchorPoint;
                     lastShape = UpdateShape(_AnchorPoint, a, "RectangleGeometry", lastShape);
                 }
@@ -101,32 +104,43 @@ namespace PlexShareWhiteboard
             else if (mode == "create_ellipse")
             {
 
-                Debug.WriteLine("In create ellipse mode\n");
-
                 if (lastShape != null)
                 {
-
+                    modeForUndo = "create";
                     Point _AnchorPoint = lastShape.AnchorPoint;
                     lastShape = UpdateShape(_AnchorPoint, a, "EllipseGeometry", lastShape);
                 }
             }
             else if (mode == "create_freehand")
             {
-                Debug.WriteLine("In create curve mode\n");
 
                 if (lastShape != null)
                 {
-
+                    modeForUndo = "create";
                     Point _anchorPoint = lastShape.AnchorPoint;
                     lastShape = UpdateCurve(a, _anchorPoint);
                 }
             }
+            else if (mode == "create_line")
+            {
+
+                if (lastShape != null)
+                {
+                    modeForUndo = "create";
+                    Point _anchorPoint = lastShape.AnchorPoint;
+                    //UpdateShape(_anchorPoint, a, "LineGeometry", lastShape);
+                    //UpdateShape(lastShape.Start, a, "LineGeometry", lastShape);
+                    lastShape =UpdateShape(lastShape.Start, a, "LineGeometry", lastShape);
+                    // when we do lastshape == 
+                }
+
+            }
             else
             {
-                Debug.WriteLine("In unknown mode\n");
+                //Debug.WriteLine("In unknown mode\n");
             }
 
-            Debug.WriteLine("Exiting Shape Building......\n");
+            //Debug.WriteLine("Exiting Shape Building......\n");
         }
     }
 }

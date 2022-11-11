@@ -31,10 +31,26 @@ namespace PlexShareWhiteboard.BoardComponents
         public string TimeStamp { get; set; }
         public Point AnchorPoint { get; set; }
 
-
-        public SerialisableShapeItem ConvertToSerialisableShapeItem(ShapeItem x)
+        public ShapeItem DeepClone()
         {
-            SerialisableShapeItem y = new SerialisableShapeItem
+            ShapeItem newShape = new()
+            {
+                Geometry = this.Geometry.Clone(),
+                GeometryString = this.GeometryString,
+                Start = this.Start,
+                End = this.End,
+                Fill = this.Fill,
+                Stroke = this.Stroke,
+                ZIndex = this.ZIndex,
+                AnchorPoint = this.AnchorPoint,
+                Id = this.Id,
+                StrokeThickness = this.StrokeThickness,
+            };
+            return newShape;
+        }
+        public SerializableShapeItem ConvertToSerialisableShapeItem(ShapeItem x)
+        {
+            SerializableShapeItem y = new SerializableShapeItem
             {
                 FontSize = x.FontSize,
                 GeometryString = x.GeometryString,
