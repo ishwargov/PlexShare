@@ -9,9 +9,17 @@ namespace PlexShareCloudUX
 {
     internal class SessionsModel
     {
-        public static List<SessionEntity> GetSessionsDetails(string userName)
+        private const string SubmissionUrl = @"http://localhost:7213/api/submission";
+        private const string SessionUrl = @"http://localhost:7213/api/session";
+        private FileDownloadApi fileDownloadApi;
+        public SessionsModel()
         {
-            return new List<SessionEntity>();
+            fileDownloadApi = new FileDownloadApi(SessionUrl, SubmissionUrl);
+        }
+        public async Task<IReadOnlyList<SessionEntity>> GetSessionsDetails(string userName)
+        {
+            IReadOnlyList<SessionEntity>? getEntity = await fileDownloadApi.GetSessionsByUserAsync(userName);
+            return getEntity;
         }
     }
 }

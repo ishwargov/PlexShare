@@ -1,4 +1,16 @@
-﻿using System.Collections.Generic;
+﻿/******************************************************************************
+ * Filename    = FileDownloadApi.cs
+ *
+ * Author      = Polisetty Vamsi
+ *
+ * Product     = PlexShare
+ * 
+ * Project     = PlexShareCloud
+ *
+ * Description = Provides Api functionality for the user to get the file from cloud. 
+ *****************************************************************************/
+
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;

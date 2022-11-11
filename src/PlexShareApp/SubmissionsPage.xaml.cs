@@ -41,7 +41,7 @@ namespace PlexShareApp
         /// <summary>
         /// List of submissions made.
         /// </summary>
-        public List<SubmissionEntity>? submissions;
+        public IReadOnlyList<SubmissionEntity>? submissions;
 
         /// <summary>
         /// OnPropertyChange handler to handle the change of submissions varibale.

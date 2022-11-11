@@ -43,7 +43,7 @@ namespace PlexShareApp
         /// <summary>
         /// List of the sessions for this userName.
         /// </summary>
-        public List<SessionEntity>? sessions;
+        public IReadOnlyList<SessionEntity>? sessions;
 
         /// <summary>
         /// Username of the client using the application.
