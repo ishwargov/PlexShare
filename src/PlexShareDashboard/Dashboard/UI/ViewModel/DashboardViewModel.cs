@@ -21,6 +21,7 @@ using Dashboard;
 using System.Diagnostics;
 using LiveCharts.Wpf;
 using LiveCharts;
+using System.Windows;
 
 namespace PlexShareDashboard.Dashboard.UI.ViewModel
 {
@@ -528,7 +529,13 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         //function to update the ParticipantsList of viewmodel 
         public void UpdateParticipantsList(List<UserData> users)
         {
-            ParticipantsList.Clear();
+            //writing the code to update the observable collection for the participant list 
+            Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
+            {
+                ParticipantsList.Clear();
+                //_matchObsCollection.Add(match);
+            });
+            //ParticipantsList.Clear();
 
             //using the for loop to push the updated list of the users into participants list 
             foreach (var currUser in users)
@@ -538,7 +545,11 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
                 string currUserStatus = "Presenting";
                 User newUser = new User(currUserId, currUserName, currUserStatus);
 
-                ParticipantsList.Add(newUser);
+
+                Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
+                {
+                    ParticipantsList.Add(newUser);
+                });
 
             }
 
@@ -568,8 +579,13 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             //UserCountVsTimeStamps.Clear();
 
             //we have to clear the userscountList 
-            UserCountList.Clear();
-            TimeStampsList.Clear();
+            Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
+            {
+                UserCountList.Clear();
+                TimeStampsList.Clear();
+                //ParticipantsList.Clear();
+                //_matchObsCollection.Add(match);
+            });
 
 
             //using the for loop for this purpose 
@@ -578,21 +594,17 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
                 int currUserCount = currElement.Value;
                 DateTime currTimeStamp = currElement.Key;
                 string finalTimeStampToShow = GetHourAndMinute(currTimeStamp);
-                //TODO to convert the date time into the minutes and then append
-                //int currTimeStampInt = 20;
-                //UserCountVsTimeStamp newUserCountVsTimeStampElement = new UserCountVsTimeStamp(currUserCount, finalTimeStampToShow);
 
-                //UserCountVsTimeStamps.Add(newUserCountVsTimeStampElement);
+                Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
+                {
+                    //ParticipantsList.Clear();
+                    //adding this new users count into the usercountlist 
+                    UserCountList.Add(currUserCount);
 
+                    //adding the new entry to the timestamp 
+                    TimeStampsList.Add(finalTimeStampToShow);
+                });
 
-
-
-
-                //adding this new users count into the usercountlist 
-                UserCountList.Add(currUserCount);
-
-                //adding the new entry to the timestamp 
-                TimeStampsList.Add(finalTimeStampToShow);
 
             }
 
@@ -606,10 +618,14 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         public void UpdateUserIdVsChatCount(Dictionary<int, int> chatCountForEachUser)
         {
             //UserIdVsChatCounts.Clear();
-
-            //we have to clear the array of the userid list and 
-            UserIdList.Clear();
-            ChatCountList.Clear();
+            Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
+            {
+                //we have to clear the array of the userid list and 
+                UserIdList.Clear();
+                ChatCountList.Clear();
+                //ParticipantsList.Clear();
+                //_matchObsCollection.Add(match);
+            });
 
 
 
@@ -624,10 +640,14 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
                 //UserIdVsChatCount currUserIdChatCount = new UserIdVsChatCount(currUserid, currChatCount);
 
                 //UserIdVsChatCounts.Add(currUserIdChatCount);
-
-                //we have to add  the new element into the chart values 
-                UserIdList.Add(currUserid.ToString());
-                ChatCountList.Add(currChatCount);
+                Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
+                {
+                    //we have to add  the new element into the chart values 
+                    UserIdList.Add(currUserid.ToString());
+                    ChatCountList.Add(currChatCount);
+                    //ParticipantsList.Clear();
+                    //_matchObsCollection.Add(match);
+                });
 
                 chatCount = chatCount + currChatCount;
             }
