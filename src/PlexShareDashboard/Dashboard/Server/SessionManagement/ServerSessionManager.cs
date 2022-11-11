@@ -16,6 +16,7 @@ using PlexShareWhiteboard;
 using PlexShareDashboard.Dashboard.Server.SessionManagement;
 using PlexShareDashboard.Dashboard;
 using PlexShareNetwork.Communication;
+using PlexShareContent.Server;
 //using PlexShareNetwork.Serialization;
 using PlexShareDashboard.Dashboard;
 using PlexShareNetwork;
@@ -28,7 +29,7 @@ namespace Dashboard.Server.SessionManagement
     public class ServerSessionManager : ITelemetrySessionManager, IUXServerSessionManager, INotificationHandler
     {
         private readonly ICommunicator _communicator;
-      //  private readonly IContentServer _contentServer;
+        private readonly IContentServer _contentServer;
         private readonly IDashboardSerializer _serializer;
         
         private readonly SessionData _sessionData;
@@ -297,11 +298,12 @@ namespace Dashboard.Server.SessionManagement
             try
             {
                 // fetching all the chats from the content module.
-                ChatThread[] allChatsTillNow;
-               // allChatsTillNow = _contentServer.SGetAllMessages().ToArray();
+               PlexShareContent.DataModels.ChatThread[] allChatsTillNow;
+                allChatsTillNow = _contentServer.GetAllMessages().ToArray();
 
                 // creating the summary from the chats
-             //   _sessionSummary = _summarizer.GetSummary(allChatsTillNow);
+                //  _sessionSummary = _summarizer.GetSummary(allChatsTillNow);
+                _sessionSummary = "This is temporary Summary";
 
                 // returning the summary
                 return new SummaryData(_sessionSummary);
@@ -375,8 +377,8 @@ namespace Dashboard.Server.SessionManagement
             try
             {
                 // Fetching the chats and creating analytics on them
-            //    var allChats = _contentServer.SGetAllMessages().ToArray();
-           //     _sessionAnalytics = _telemetry.GetTelemetryAnalytics(allChats);
+                //   var allChats = _contentServer.GetAllMessages().ToArray();
+                //   _sessionAnalytics = _telemetry.GetTelemetryAnalytics(allChats);
                 SendDataToClient("getAnalytics", null, null, _sessionAnalytics, user);
             }
             catch (Exception e)
