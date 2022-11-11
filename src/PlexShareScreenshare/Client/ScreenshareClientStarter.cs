@@ -67,7 +67,7 @@ namespace PlexShareScreenshare.Client
         /// Gives an instance of ScreenshareClient class and that instance is always 
         /// the same i.e. singleton pattern.
         /// </summary>
-        public ScreenshareClient GetInstance()
+        public static ScreenshareClient GetInstance()
         {
             if (_screenShareClient == null)
             {
@@ -81,7 +81,7 @@ namespace PlexShareScreenshare.Client
         /// start capturer, processor, image sending function and 
         /// the confirmation sending function.
         /// </summary>
-        public void StartScreenSharing()
+        public void StartScreensharing()
         {
             _isScreenSharing = true;
             // sending register packet
@@ -110,7 +110,7 @@ namespace PlexShareScreenshare.Client
             {
                 if (!_isScreenSharing)
                 {
-                    StartScreenSharing();
+                    StartScreensharing();
                 }
                 Resolution res = _serializer.Deserialize<Resolution>(dataPacket.Data);
                 _processor.SetNewResolution(res);
