@@ -1,4 +1,16 @@
-﻿using PlexShareCloud;
+﻿/******************************************************************************
+ * Filename    = RestApiTest.cs
+ *
+ * Author      = Polisetty Vamsi, Yagnesh Katragadda
+ *
+ * Product     = PlexShare
+ * 
+ * Project     = PlexShareCloud
+ *
+ * Description = Testing for the api functionalities.  
+ *****************************************************************************/
+
+using PlexShareCloud;
 using System.Text;
 
 namespace PlexShareTests.CloudTests
