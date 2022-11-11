@@ -1,6 +1,6 @@
 using System;
 
-namespace PlexShareContent
+namespace PlexShareDashboard
 {
     public class Class1
     {
