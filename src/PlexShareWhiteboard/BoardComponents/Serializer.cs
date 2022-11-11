@@ -109,6 +109,8 @@ namespace PlexShareWhiteboard.BoardComponents
 
         public SerializableShapeItem ConvertToSerializableShapeItem(ShapeItem x)
         {
+            if (x == null)
+                return null;
             SerializableShapeItem y = new SerializableShapeItem
             {
                 FontSize = x.FontSize,
