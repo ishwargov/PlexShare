@@ -14,7 +14,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using static PlexShareTests.ContentTests.UX.ChatUtility;
-using Assert = NUnit.Framework.Assert;
 using NUnit.Framework;
 using PlexShareApp.ViewModel;
 using PlexShareDashboard;
@@ -23,6 +22,7 @@ using Dashboard;
 using Xunit;
 using PlexShareContent.Enums;
 using PlexShareContent.DataModels;
+using Assert = Xunit.Assert;
 
 namespace PlexShareTests.ContentTests.UX
 {
@@ -55,10 +55,10 @@ namespace PlexShareTests.ContentTests.UX
             // Assert
             // MUST CALL DispatcherUtil.DoEvents()
             DispatcherUtil.DoEvents();
-            Assert.AreEqual(_viewModel.Users.Count, 3);
-            Assert.AreEqual(_viewModel.Users[111901049], "Sughandhan");
-            Assert.AreEqual(_viewModel.Users[111901035], "Narvik");
-            Assert.AreEqual(_viewModel.Users[111901010], "Jha");
+            Assert.Equal(3, _viewModel.Users.Count);
+            Assert.Equal("Sughandhan", _viewModel.Users[111901049]);
+            Assert.Equal("Narvik", _viewModel.Users[111901035]);
+            Assert.Equal("Jha", _viewModel.Users[111901010]);
         }
 
         [Fact]
@@ -90,11 +90,11 @@ namespace PlexShareTests.ContentTests.UX
             //Assert
             // MUST CALL DispatcherUtil.DoEvents()
             DispatcherUtil.DoEvents();
-            Assert.AreEqual(_viewModel.ReceivedMsg.Sender, "Sughandhan");
-            Assert.AreEqual(_viewModel.ReceivedMsg.MessageID, 1);
-            Assert.AreEqual(_viewModel.ReceivedMsg.IncomingMessage, "Good Morning Narvik!");
-            Assert.AreEqual(_viewModel.ReceivedMsg.ReplyMessage, "");
-            Assert.AreEqual(_viewModel.ReceivedMsg.Type, true);
+            Assert.Equal("Sughandhan", _viewModel.ReceivedMsg.Sender);
+            Assert.Equal(1, _viewModel.ReceivedMsg.MessageID);
+            Assert.Equal("Good Morning Narvik!", _viewModel.ReceivedMsg.IncomingMessage);
+            Assert.Equal("", _viewModel.ReceivedMsg.ReplyMessage);
+            Assert.True(_viewModel.ReceivedMsg.Type);
         }
 
         [Fact]
@@ -147,11 +147,11 @@ namespace PlexShareTests.ContentTests.UX
             //Assert
             // MUST CALL DispatcherUtil.DoEvents()
             DispatcherUtil.DoEvents();
-            Assert.AreEqual(_viewModel.ReceivedMsg.Sender, "Narvik");
-            Assert.AreEqual(_viewModel.ReceivedMsg.MessageID, 2);
-            Assert.AreEqual(_viewModel.ReceivedMsg.IncomingMessage, "We have made it steady and reliable");
-            Assert.AreEqual(_viewModel.ReceivedMsg.ReplyMessage, "What is our Content Module progress?");
-            Assert.AreEqual(_viewModel.ReceivedMsg.Type, true);
+            Assert.Equal("Narvik", _viewModel.ReceivedMsg.Sender);
+            Assert.Equal(2, _viewModel.ReceivedMsg.MessageID);
+            Assert.Equal("We have made it steady and reliable", _viewModel.ReceivedMsg.IncomingMessage);
+            Assert.Equal("What is our Content Module progress?", _viewModel.ReceivedMsg.ReplyMessage);
+            Assert.True(_viewModel.ReceivedMsg.Type);
         }
 
         /// <summary>
@@ -170,8 +170,8 @@ namespace PlexShareTests.ContentTests.UX
             _viewModel.SendMessage(testMessage, testReplyMsgID, testMessageType);
 
             // Assert
-            Assert.IsTrue(_viewModel.MsgToSend.Data == "Welcome to the Chat Page");
-            Assert.IsTrue(_viewModel.MsgToSend.ReplyThreadID == -1);
+            Assert.True(_viewModel.MsgToSend.Data == "Welcome to the Chat Page");
+            Assert.True(_viewModel.MsgToSend.ReplyThreadID == -1);
         }
 
         /// <summary>
@@ -192,7 +192,7 @@ namespace PlexShareTests.ContentTests.UX
             _viewModel.SendMessage(testMesage, testReplyMsgID, testMessageType);
 
             // Assert
-            Assert.IsTrue(_viewModel.MsgToSend.ReplyThreadID == -1);
+            Assert.True(_viewModel.MsgToSend.ReplyThreadID == -1);
         }
 
         /// <summary>
@@ -214,8 +214,8 @@ namespace PlexShareTests.ContentTests.UX
             _viewModel.OnPropertyChanged("testing");
 
             // Assert
-            Assert.IsNotNull(testingPropertyName);
-            Assert.AreEqual("testing", testingPropertyName);
+            Assert.NotNull(testingPropertyName);
+            Assert.Equal("testing", testingPropertyName);
         }
 
 
