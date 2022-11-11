@@ -303,6 +303,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             ////this function will be called whenever the summary and the telemetry data wil be ready 
             //clientSessionManager.SummaryCreated += (latestSummary) => OnSummaryChanged(latestSummary);
             clientSessionManager.AnalyticsCreated += (latestAnalytics) => OnAnalyticsChanged(latestAnalytics);
+            clientSessionManager.SummaryCreated += (latestSummary) => OnSummaryChanged(latestSummary);
 
         }
 
@@ -316,6 +317,8 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             //TODO WHILE INTEGRATION 
             //calling the function to get the analytics 
             clientSessionManager.GetAnalytics();
+            //calling the function to get the summary for this purpose 
+            clientSessionManager.GetSummary();
 
 
 
@@ -702,6 +705,16 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             return;
         }
 
+
+        //defining the function to update the summary of the current session till now 
+        public void OnSummaryChanged(string latestSummary)
+        { 
+            //updating the summary for this session 
+            SummaryContentSetter = latestSummary;
+
+            //say everything went fine 
+            return;
+        }
 
 
         //##################################################################################
