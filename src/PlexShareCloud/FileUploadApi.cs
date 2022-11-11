@@ -1,4 +1,16 @@
-﻿using System.Net.Http;
+﻿/******************************************************************************
+ * Filename    = FileUploadApi.cs
+ *
+ * Author      = Yagnesh Katragadda
+ *
+ * Product     = PlexShare
+ * 
+ * Project     = PlexShareCloud
+ *
+ * Description = Consists of Rest API functions for the Submission and Session. 
+ *****************************************************************************/
+
+using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
