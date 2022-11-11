@@ -136,6 +136,24 @@ namespace PlexShareApp
             viewModel.ChangeMode("create_freehand");
 
         }
+        private void Textbox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            Debug.WriteLine("Enter text mode");
+            Debug.WriteLine(e.Key);
+            viewModel.TextBoxStart(e.Key);
+        }
+
+        private void TextboxCreateMode(object sender, RoutedEventArgs e)
+        {
+            viewModel.UnHighLightIt();
+            Cursor = Cursors.Pen;
+            if (this.ShapeToolBar.Visibility == Visibility.Visible)
+                this.ShapeToolBar.Visibility = Visibility.Collapsed;
+            this.currentTool = "Textbox";
+
+            viewModel.ChangeMode("create_textbox");
+
+        }
         private void ColorGreen(object sender, RoutedEventArgs e)
         {
             viewModel.ChangeFillBrush(Brushes.Green);
