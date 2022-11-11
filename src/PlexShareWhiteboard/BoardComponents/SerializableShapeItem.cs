@@ -33,6 +33,8 @@ namespace PlexShareWhiteboard.BoardComponents
 
         public ShapeItem ConvertToShapeItem(SerializableShapeItem x)
         {
+            if (x == null)
+                return null;
             Geometry g = null;
 
             if (x.GeometryString == "EllipseGeometry")
