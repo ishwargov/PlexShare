@@ -16,6 +16,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Unnoficial.Microsoft.Expression.Drawing" Version="1.0.0" />
+	  <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\PlexShareNetwork\PlexShareNetwork.csproj" />
 	</ItemGroup>
 </Project>
