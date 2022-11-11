@@ -47,7 +47,7 @@ namespace PlexShareCloud
         }
 
         /// <summary>
-        /// Makes a "POST" call to our Azure function APIs.
+        /// Makes a "POST" call to our Azure function APIs to add a submission
         /// </summary>
         /// <param name="name">Name of the entity.</param>
         /// <returns>A new entity with the given name.</returns>
@@ -66,6 +66,12 @@ namespace PlexShareCloud
             return entity;
         }
 
+        /// <summary>
+        /// Makes a "POST" call to our Azure Function APIs to add a session.
+        /// </summary>
+        /// <param name="sessionId"></param>
+        /// <param name="userName"></param>
+        /// <returns></returns>
         public async Task<SessionEntity> PostSessionAsync(string sessionId, string userName)
         {
             using HttpResponseMessage response = await _entityClient.PostAsJsonAsync<string>(_sessionUrl + $"/{userName}", sessionId);

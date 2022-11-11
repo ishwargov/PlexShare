@@ -38,7 +38,7 @@ namespace PlexShareCloudUX
         /// </summary>
         public void Function(string path)
         {
-            bool isUploaded = _model.UploadDocument(path);
+            bool isUploaded = _model.UploadDocumentAsync(path);
             _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
                         DispatcherPriority.Normal,
                         new Action<bool>((isUploded) =>
