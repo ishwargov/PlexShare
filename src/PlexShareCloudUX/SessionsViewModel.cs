@@ -1,4 +1,16 @@
-﻿using PlexShareCloud;
+﻿/******************************************************************************
+ * Filename    = SessionsPage.xaml.cs
+ *
+ * Author      = B Sai Subrahmanyam
+ *
+ * Product     = PlexShareSolution
+ * 
+ * Project     = PlexShareAppCloudUX
+ *
+ * Description = Defines the View Model of the Sessions Page.
+ *****************************************************************************/
+
+using PlexShareCloud;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

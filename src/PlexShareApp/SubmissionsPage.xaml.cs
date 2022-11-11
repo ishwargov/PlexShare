@@ -1,4 +1,16 @@
-﻿using PlexShareCloud;
+﻿/******************************************************************************
+ * Filename    = SessionsPage.xaml.cs
+ *
+ * Author      = B Sai Subrahmanyam
+ *
+ * Product     = PlexShareSolution
+ * 
+ * Project     = PlexShareApp
+ *
+ * Description = Defines the View of the Submissions Page.
+ *****************************************************************************/
+
+using PlexShareCloud;
 using PlexShareCloudUX;
 using System;
 using System.Collections.Generic;

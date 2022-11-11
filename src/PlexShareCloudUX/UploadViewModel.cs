@@ -1,4 +1,16 @@
-﻿using Newtonsoft.Json.Linq;
+﻿/******************************************************************************
+ * Filename    = SessionsPage.xaml.cs
+ *
+ * Author      = B Sai Subrahmanyam
+ *
+ * Product     = PlexShareSolution
+ * 
+ * Project     = PlexShareAppCloudUX
+ *
+ * Description = Defines the View Model of the Upload Page.
+ *****************************************************************************/
+
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -38,7 +50,7 @@ namespace PlexShareCloudUX
         /// </summary>
         public void Function(string path)
         {
-            bool isUploaded = _model.UploadDocumentAsync(path);
+            bool isUploaded = _model.UploadDocument(path);
             _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
                         DispatcherPriority.Normal,
                         new Action<bool>((isUploded) =>

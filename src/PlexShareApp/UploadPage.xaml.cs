@@ -1,4 +1,16 @@
-﻿using Microsoft.Azure.WebJobs.Host.Listeners;
+﻿/******************************************************************************
+ * Filename    = SessionsPage.xaml.cs
+ *
+ * Author      = B Sai Subrahmanyam
+ *
+ * Product     = PlexShareSolution
+ * 
+ * Project     = PlexShareApp
+ *
+ * Description = Defines the View of the Upload Page.
+ *****************************************************************************/
+
+using Microsoft.Azure.WebJobs.Host.Listeners;
 using Microsoft.Win32;
 using PlexShareCloudUX;
 using System;

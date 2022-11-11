@@ -1,4 +1,16 @@
-﻿using System;
+﻿/******************************************************************************
+ * Filename    = SessionsPage.xaml.cs
+ *
+ * Author      = B Sai Subrahmanyam
+ *
+ * Product     = PlexShareSolution
+ * 
+ * Project     = PlexShareApp
+ *
+ * Description = Defines the View of the Sessions Page.
+ *****************************************************************************/
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
