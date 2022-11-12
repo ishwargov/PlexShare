@@ -11,10 +11,10 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
     public interface ITelemetry
     {
         //function to save the analytics when the meeting ends 
-        public void SaveAnalytics(ChatThread[] allChatMessages);
+        public void SaveAnalytics(PlexShareContent.DataModels.ChatThread[] allChatMessages);
 
         //function to get the telemetry analytics on demand 
-        public SessionAnalytics GetTelemetryAnalytics(ChatThread[] allChatMessages);
+        public SessionAnalytics GetTelemetryAnalytics(PlexShareContent.DataModels.ChatThread[] allChatMessages);
 
     }
 }
