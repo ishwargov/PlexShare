@@ -18,8 +18,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:PlexShareApp"
         mc:Ignorable="d"
-        WindowStartupLocation = "Manual"
-        Left="0" Top="0"
+        WindowStartupLocation = "CenterScreen"
         Title="HomePageView"
         MinWidth="1411" MinHeight="800" WindowStyle="None" Height="722" Width="1291">
     <Window.Resources>
