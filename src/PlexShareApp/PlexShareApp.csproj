@@ -8,9 +8,9 @@
 		<Platforms>AnyCPU;x64</Platforms>
 	</PropertyGroup>
 
-    <PropertyGroup>
-        <EnableNETAnalyzers>true</EnableNETAnalyzers>
-    </PropertyGroup>
+	<PropertyGroup>
+		<EnableNETAnalyzers>true</EnableNETAnalyzers>
+	</PropertyGroup>
 
 	<PropertyGroup>
 		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
@@ -18,53 +18,53 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <None Remove="Assets\back.png" />
-	  <None Remove="Assets\brush.png" />
-	  <None Remove="Assets\ClearTool.png" />
-	  <None Remove="Assets\crayon.png" />
-	  <None Remove="Assets\EllipseTool.png" />
-	  <None Remove="Assets\EraserTool.png" />
-	  <None Remove="Assets\FillTool.png" />
-	  <None Remove="Assets\LineTool.png" />
-	  <None Remove="Assets\Push.png" />
-	  <None Remove="Assets\RectangleTool.png" />
-	  <None Remove="Assets\RedoTool.png" />
-	  <None Remove="Assets\RestoreTool.png" />
-	  <None Remove="Assets\SaveTool.png" />
-	  <None Remove="Assets\SelectTool.png" />
-	  <None Remove="Assets\Text.png" />
-	  <None Remove="Assets\TextTool.png" />
-	  <None Remove="Assets\UndoTool.png" />
-	  <None Remove="Assets\ZIndexTool.png" />
+		<None Remove="Assets\back.png" />
+		<None Remove="Assets\brush.png" />
+		<None Remove="Assets\ClearTool.png" />
+		<None Remove="Assets\crayon.png" />
+		<None Remove="Assets\EllipseTool.png" />
+		<None Remove="Assets\EraserTool.png" />
+		<None Remove="Assets\FillTool.png" />
+		<None Remove="Assets\LineTool.png" />
+		<None Remove="Assets\Push.png" />
+		<None Remove="Assets\RectangleTool.png" />
+		<None Remove="Assets\RedoTool.png" />
+		<None Remove="Assets\RestoreTool.png" />
+		<None Remove="Assets\SaveTool.png" />
+		<None Remove="Assets\SelectTool.png" />
+		<None Remove="Assets\Text.png" />
+		<None Remove="Assets\TextTool.png" />
+		<None Remove="Assets\UndoTool.png" />
+		<None Remove="Assets\ZIndexTool.png" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\PlexShareWhiteboard\PlexShareWhiteboard.csproj" />
-	  <PackageReference Include="LiveCharts" Version="0.9.7" />
-	  <PackageReference Include="LiveCharts.Wpf" Version="0.9.7" />
-	  <PackageReference Include="Syncfusion.SfChart.WPF" Version="20.3.0.56" />
-	  <ProjectReference Include="..\PlexShareDashboard\PlexShareDashboard.csproj" />
+		<ProjectReference Include="..\PlexShareWhiteboard\PlexShareWhiteboard.csproj" />
+		<PackageReference Include="LiveCharts" Version="0.9.7" />
+		<PackageReference Include="LiveCharts.Wpf" Version="0.9.7" />
+		<PackageReference Include="Syncfusion.SfChart.WPF" Version="20.3.0.56" />
+		<ProjectReference Include="..\PlexShareDashboard\PlexShareDashboard.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Resource Include="Assets\back.png" />
-	  <Resource Include="Assets\brush.png" />
-	  <Resource Include="Assets\ClearTool.png" />
-	  <Resource Include="Assets\crayon.png" />
-	  <Resource Include="Assets\EllipseTool.png" />
-	  <Resource Include="Assets\EraserTool.png" />
-	  <Resource Include="Assets\FillTool.png" />
-	  <Resource Include="Assets\LineTool.png" />
-	  <Resource Include="Assets\Push.png" />
-	  <Resource Include="Assets\RectangleTool.png" />
-	  <Resource Include="Assets\RedoTool.png" />
-	  <Resource Include="Assets\RestoreTool.png" />
-	  <Resource Include="Assets\SaveTool.png" />
-	  <Resource Include="Assets\SelectTool.png" />
-	  <Resource Include="Assets\Text.png" />
-	  <Resource Include="Assets\TextTool.png" />
-	  <Resource Include="Assets\UndoTool.png" />
-	  <Resource Include="Assets\ZIndexTool.png" />
+		<Resource Include="Assets\back.png" />
+		<Resource Include="Assets\brush.png" />
+		<Resource Include="Assets\ClearTool.png" />
+		<Resource Include="Assets\crayon.png" />
+		<Resource Include="Assets\EllipseTool.png" />
+		<Resource Include="Assets\EraserTool.png" />
+		<Resource Include="Assets\FillTool.png" />
+		<Resource Include="Assets\LineTool.png" />
+		<Resource Include="Assets\Push.png" />
+		<Resource Include="Assets\RectangleTool.png" />
+		<Resource Include="Assets\RedoTool.png" />
+		<Resource Include="Assets\RestoreTool.png" />
+		<Resource Include="Assets\SaveTool.png" />
+		<Resource Include="Assets\SelectTool.png" />
+		<Resource Include="Assets\Text.png" />
+		<Resource Include="Assets\TextTool.png" />
+		<Resource Include="Assets\UndoTool.png" />
+		<Resource Include="Assets\ZIndexTool.png" />
 		<None Remove="Resources\497-4973038_profile-picture-circle-png-transparent-png.png" />
 		<None Remove="Resources\AuthScreenImg.jpg" />
 		<None Remove="Resources\GoogleSignIn.png" />
@@ -123,7 +123,7 @@
 		<ProjectReference Include="..\PlexShareDashboard\PlexShareDashboard.csproj">
 			<ReferenceSourceTarget></ReferenceSourceTarget>
 		</ProjectReference>
-	  <ProjectReference Include="..\PlexShareCloudUX\PlexShareCloudUX.csproj" />
-	  <ProjectReference Include="..\PlexShareCloud\PlexShareCloud.csproj" />
+		<ProjectReference Include="..\PlexShareCloudUX\PlexShareCloudUX.csproj" />
+		<ProjectReference Include="..\PlexShareCloud\PlexShareCloud.csproj" />
 	</ItemGroup>
 </Project>
