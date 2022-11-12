@@ -71,6 +71,8 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         //variable for storing the button content to be shown according to the user 
         private string ButtonContent { get; set; }
 
+        private string LeaveButtonContent { get; set; }
+
 
         //adding the new variable to store the value of the summary 
         private string SummaryContent { get; set; }
@@ -185,6 +187,19 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             }
         }
 
+        public string LeaveButtonContentSetter
+        {
+            get { return LeaveButtonContent; }
+            set
+            {
+                if (LeaveButtonContent != value)
+                {
+                    LeaveButtonContent = value;
+                    OnPropertyChanged("LeaveButtonContentSetter");
+                }
+            }
+        }
+
 
         public string SummaryContentSetter
         {
@@ -243,6 +258,10 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             Trace.WriteLine("Initializing the dashboard viewmodel");
             ButtonContentSetter = "Switch Mode";
 
+            //SetLeaveButtonAccordingToUser();
+            
+            //LeaveButtonContentSetter = "End Meet";
+
 
             //hi this is development branch for this purpose 
             SummaryContentSetter = "This is summary of the session till now. Keep refreshing this page in order to see the updated summary till now of the session for this purpose. order to see the updated summary till now of the session for this purpose.order to see the updated summary till now of the session for this purpose.order to see the updated summary till now of the session for this purpose.order to see the updated summary till now of the session for this purpose.order to see the updated summary till now of the session for this purpose.order to see the updated summary till now of the session for this purpose.order to see the updated summary till now of the session for this purpose.order to see the updated summary till now of the session for this purpose.";
@@ -266,6 +285,26 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
         }
 
+
+        public void SetLeaveButtonAccordingToUser()
+        {
+            UserData currUser =  clientSessionManager.GetUser();
+
+            if (currUser.userID == 1)
+            {
+                //this is host 
+                LeaveButtonContentSetter = "End Meet";
+            }
+            else
+            {
+                //then this is normal user hence we have to show the leave meeting 
+                LeaveButtonContentSetter = "Leave Meet";
+            }
+
+            //say everything went fine 
+            return;
+        
+        }
         //function to update the viewModel whenever required 
         public void UpdateDashboardViewModel()
         {
@@ -578,6 +617,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
                 //we have to update the participants list and SessionMode
                 UpdateParticipantsList(newSessionData.users);
                 UserData currUser = clientSessionManager.GetUser();
+                SetLeaveButtonAccordingToUser();
                 SessionModeSetter = newSessionData.sessionMode;
                 UpdateButtonContent(currUser);
                 //UpdateButtonContent(currUser);
