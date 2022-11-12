@@ -22,7 +22,7 @@ namespace PlexShareWhiteboard
 
         String currentId = "u0_f0";
         int currentIdVal = 0;
-        int userId = 0;
+        string userId = "0";
         int currentZIndex = 0;
         string text = "";
         Point textBoxPoint = new (100, 100);
@@ -36,24 +36,31 @@ namespace PlexShareWhiteboard
         int blobSize = 12;
         IShapeListener machine;
         UndoStackElement stackElement;
+        Boolean isServer=false;
 
         public WhiteBoardViewModel()
         {
             // this will become client and server 
             Boolean isServer = true;
-            if (isServer)
-                //machine = new ServerSide();
-                machine = ServerSide.Instance;
-            else
-                machine = new ClientSide();
+            SetUserId(userId);
+            
             ShapeItems = new ObservableCollection<ShapeItem>();
             highlightShapes = new List<ShapeItem>();
-            
-            // this is a new user
-            machine.OnShapeReceived(lastShape, Operation.NewUser);
 
         }
 
+        public void SetUserId(string _userId)
+        {
+            userId = _userId;
+            currentId = "u" + userId + "_f" + currentIdVal;
+            currentIdVal++;
+
+            if (isServer)
+                machine = ServerSide.Instance;
+            else
+                machine = ClientSide.Instance;
+            machine.SetUserId(userId);
+        }
         public void IncrementId()
         {
             currentIdVal++;
