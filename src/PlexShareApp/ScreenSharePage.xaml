@@ -3,12 +3,165 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:gif="https://github.com/XamlAnimatedGif/XamlAnimatedGif"
       xmlns:local="clr-namespace:PlexShareApp"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="ScreenSharePage">
 
-    <Grid Background="Black">
-        
-    </Grid>
+    <Grid Background = "#202124" >
+        <!--
+        <Grid.ColumnDefinitions >
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions >
+        -->
+
+        <Grid.RowDefinitions >
+            <RowDefinition Height = "16*" />
+            <RowDefinition/>
+        </Grid.RowDefinitions >
+
+        <DockPanel Grid.Row = "1" HorizontalAlignment = "Center" VerticalAlignment = "Stretch" >
+            <Button x:Name = "PreviousPage" Click = "OnPreviousPageButtonClicked" ToolTip = "Previous Page" 
+                    Width = "40" Height = "40" Background="Transparent" BorderThickness="0">
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="50"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding = "{Binding CurrentPage}" Value = "1">
+                                <Setter Property = "Visibility" Value = "Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Resources>
+
+                <Image Source = "\Icons\PreviousButton_white.png" Height="15"/>
+            </Button>
+
+            <TextBlock Text="1 of 14" HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent" 
+                       Foreground="White" Margin="20,0,20,0" FontWeight="DemiBold" FontSize="14" />
+
+            <Button x:Name = "NextPage" Click = "OnNextPageButtonClicked" ToolTip = "Next Page" Width = "40" 
+                    Height = "40" Background = "Transparent" BorderThickness="0">
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="50"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding = "{Binding IsLastPage}" Value = "True">
+                                <Setter Property = "Visibility" Value = "Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Resources>
+                <Image Source = "\Icons\NextButton_white.png" Height="15"/>
+            </Button >
+        </DockPanel >
+
+        <StackPanel Orientation="Vertical" Grid.Row="0">
+
+            <Image gif:AnimationBehavior.SourceUri="Icons/tenor.gif" Name="EmptyScreen" Height="300" VerticalAlignment="Center" 
+                   HorizontalAlignment="Center" Margin="0,200,0,20"/>
+
+            <TextBlock Name="EmptyText" Text="No One's Here" Foreground="IndianRed" FontSize="60" FontFamily="Comic Sans MS" 
+                       TextWrapping="WrapWithOverflow" HorizontalAlignment="Center"/>
+            
+            <StackPanel.Resources>
+                <Style TargetType="{x:Type StackPanel}">
+                    <Setter Property="Visibility" Value="Hidden"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding = "{Binding ImageList.Count}" Value = "0">
+                            <Setter Property = "Visibility" Value = "Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Resources>
+
+        </StackPanel>
+
+        <StackPanel Orientation="Vertical" Grid.Row="0">
+
+            <ItemsControl x:Name ="items" ItemsSource="{Binding ImageList}">
+
+                <!-- This panel will be used to hold the items -->
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Rows="3" Columns="3" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+                <!-- Each item will be drawn using this template -->
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Vertical">
+                            <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Width="400" Height="225">
+
+                                <!-- (L, U, R, D)-->
+                                <Border BorderThickness="2" CornerRadius="5" Background="#3C4043" Margin="0,10,0,0">
+                                    <Image Source="{Binding Image}" Stretch="Uniform"/>
+                                </Border>
+
+                                <Button Name="PINbutton" CommandParameter="{Binding Id}" Width="30" Height="30" Opacity ="0.5" Click="OnPinButtonClicked" 
+                                        ToolTip="Pin this user" Background="#3C4043" BorderThickness="0">
+                                    <Image Name="PIN" Source="Icons/PinButton_white.png" Width="18" Margin="0,3,0,0"/>
+                                    <Button.Resources>
+                                        <Style TargetType="{x:Type Button}">
+                                            <Setter Property="Visibility" Value="Hidden" />
+                                            <Style.Triggers>
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Grid}},Path=IsMouseOver}" Value="True" />
+                                                        <Condition Binding="{Binding Pinned}" Value="True" />
+                                                    </MultiDataTrigger.Conditions>
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </MultiDataTrigger>
+                                                <Trigger Property="IsMouseDirectlyOver" Value="True">
+                                                    <Setter Property="Background" Value="Transparent"/>
+                                                    <Setter Property="Opacity" Value="0.2"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="CornerRadius" Value="50"/>
+                                        </Style>
+                                    </Button.Resources>
+                                </Button>
+                                <Button Name="UnpinButton" Width="30" Height="30" Opacity ="0.5" HorizontalAlignment="Center" 
+                                        Click="OnPinButtonClicked" ToolTip="Unpin this user" Background="Transparent" BorderThickness="0">
+                                    <Image Name="UNPIN" Source="Icons/UnpinButton.png"/>
+                                    <Button.Resources>
+                                        <Style TargetType="{x:Type Button}">
+                                            <Setter Property="Visibility" Value="Hidden" />
+                                            <Style.Triggers>
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Grid}},Path=IsMouseOver}" Value="True" />
+                                                        <Condition Binding="{Binding Pinned}" Value="False" />
+                                                    </MultiDataTrigger.Conditions>
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </MultiDataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="CornerRadius" Value="50"/>
+                                        </Style>
+                                    </Button.Resources>
+                                </Button>
+
+                            <TextBlock Text="Harsh Dubey" Foreground="AntiqueWhite" FontWeight="SemiBold" Background="Transparent" VerticalAlignment="Bottom" Padding="11,0,0,7"
+                                       FontSize="11.5"/>
+
+                            </Grid>
+                            <!--<TextBlock Text="Harsh Dubey" Background="Beige" Foreground="DarkRed" FontFamily="Times New Roman"
+                                       HorizontalAlignment="Center" TextWrapping="Wrap" Width="400"/> -->
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+    </Grid >
 </Page>

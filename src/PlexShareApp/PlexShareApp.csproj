@@ -36,6 +36,18 @@
 	  <None Remove="Assets\TextTool.png" />
 	  <None Remove="Assets\UndoTool.png" />
 	  <None Remove="Assets\ZIndexTool.png" />
+	  <None Remove="Icons\main.jpeg" />
+	  <None Remove="Icons\NextButton.png" />
+	  <None Remove="Icons\NextButton_white.png" />
+	  <None Remove="Icons\notshared.webp" />
+	  <None Remove="Icons\PinButton.png" />
+	  <None Remove="Icons\PinButton_white.png" />
+	  <None Remove="Icons\PreviousButton.png" />
+	  <None Remove="Icons\PreviousButton_white.png" />
+	  <None Remove="Icons\StartShare.png" />
+	  <None Remove="Icons\StopShare.png" />
+	  <None Remove="Icons\tenor.gif" />
+	  <None Remove="Icons\UnpinButton.png" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -43,6 +55,7 @@
 	  <PackageReference Include="LiveCharts" Version="0.9.7" />
 	  <PackageReference Include="LiveCharts.Wpf" Version="0.9.7" />
 	  <PackageReference Include="Syncfusion.SfChart.WPF" Version="20.3.0.56" />
+	  <PackageReference Include="XamlAnimatedGif" Version="2.0.3" />
 	  <ProjectReference Include="..\PlexShareDashboard\PlexShareDashboard.csproj" />
 	</ItemGroup>
 
@@ -71,13 +84,21 @@
 		<None Remove="Resources\time_background.jpg" />
 		<None Remove="Resources\[removal.ai]_tmp-635051040cac5.png" />
 		<None Remove="Resources\[removal.ai]_tmp-6350549d077ef.png" />
-		<Compile Remove="Icons\**" />
-		<EmbeddedResource Remove="Icons\**" />
-		<None Remove="Icons\**" />
-		<Page Remove="Icons\**" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<Resource Include="Icons\NextButton_white.png" />
+		<Resource Include="Icons\notshared.webp" />
+		<Resource Include="Icons\main.jpeg" />
+		<Resource Include="Icons\NextButton.png" />
+		<Resource Include="Icons\PinButton.png" />
+		<Resource Include="Icons\PinButton_white.png" />
+		<Resource Include="Icons\PreviousButton.png" />
+		<Resource Include="Icons\PreviousButton_white.png" />
+		<Resource Include="Icons\StartShare.png" />
+		<Resource Include="Icons\StopShare.png" />
+		<Resource Include="Icons\tenor.gif" />
+		<Resource Include="Icons\UnpinButton.png" />
 		<Resource Include="Resources\497-4973038_profile-picture-circle-png-transparent-png.png" />
 		<Resource Include="Resources\AuthScreenImg.jpg" />
 		<Resource Include="Resources\GoogleSignIn.png" />
