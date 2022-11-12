@@ -37,7 +37,7 @@ namespace PlexShareApp
         
         public MainScreenView(string name, string email, string picPath, string url, string ip, string port)
         {
-            bool verified = true;
+            bool verified = false;
 
             IUXServerSessionManager serverSessionManager = SessionManagerFactory.GetServerSessionManager();
             IUXClientSessionManager clientSessionManafer = SessionManagerFactory.GetClientSessionManager();
