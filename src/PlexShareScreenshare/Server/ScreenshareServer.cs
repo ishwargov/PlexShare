@@ -20,7 +20,8 @@ namespace PlexShareScreenshare.Server
     /// </summary>
     public class ScreenshareServer :
         INotificationHandler, // To receive packets from the networking
-        ITimerManager         // Handles the timeout for screen sharing of clients
+        ITimerManager,        // Handles the timeout for screen sharing of clients
+        IDisposable           // Handle cleanup work for the allocated resources
     {
         /// <summary>
         /// The only singleton instance for this class.
@@ -42,13 +43,18 @@ namespace PlexShareScreenshare.Server
         /// The subscriber which should be notified when subscribers list change.
         /// Here it will be the view model.
         /// </summary>
-        private readonly IMessageListener listener;
+        private readonly IMessageListener _listener;
 
         /// <summary>
         /// The map between each client ID and their corresponding "SharedScreenObject"
         /// to keep track of all the active subscribers (screen sharers).
         /// </summary>
         private readonly Dictionary<string, SharedClientScreen> _subscribers;
+
+        /// <summary>
+        /// Track whether Dispose has been called.
+        /// </summary>
+        private bool _disposed;
 
         /// <summary>
         /// Creates an instance of "ScreenshareServer" which represents the
@@ -67,10 +73,24 @@ namespace PlexShareScreenshare.Server
 
             // Initialize the rest of the fields
             _subscribers = new Dictionary<string, SharedClientScreen>();
-            this.listener = listener;
+            _listener = listener;
             _serializer = new Serializer();
+            _disposed = false;
 
             Trace.WriteLine(Utils.GetDebugMessage("Successfully created an instance of ScreenshareServer", withTimeStamp: true));
+        }
+
+        /// <summary>
+        /// Destructor for the class that will perform some cleanup tasks.
+        /// This destructor will run only if the Dispose method does not get called.
+        /// It gives the class the opportunity to finalize.
+        /// </summary>
+        ~ScreenshareServer()
+        {
+            // Do not re-create Dispose clean-up code here.
+            // Calling Dispose(disposing: false) is optimal in terms of
+            // readability and maintainability.
+            Dispose(disposing: false);
         }
 
         /// <summary>
@@ -165,6 +185,21 @@ namespace PlexShareScreenshare.Server
         }
 
         /// <summary>
+        /// Implement "IDisposable". Disposes the managed and unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+
+            // This object will be cleaned up by the Dispose method.
+            // Therefore, we should call GC.SuppressFinalize to
+            // take this object off the finalization queue
+            // and prevent finalization code for this object
+            // from executing a second time
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
         /// Gets a singleton instance of "ScreenshareServer" class.
         /// </summary>
         /// <param name="listener">
@@ -226,6 +261,42 @@ namespace PlexShareScreenshare.Server
             foreach (string clientId in clientIds)
             {
                 _communicator.Send(serializedPacket, Utils.ModuleIdentifier, clientId);
+            }
+        }
+
+        /// <summary>
+        /// It executes in two distinct scenarios.
+        /// If disposing equals true, the method has been called directly
+        /// or indirectly by a user's code. Managed and unmanaged resources
+        /// can be disposed.
+        /// If disposing equals false, the method has been called by the
+        /// runtime from inside the destructor and we should not reference
+        /// other objects. Only unmanaged resources can be disposed.
+        /// </summary>
+        /// <param name="disposing">
+        /// Indicates if we are disposing this object
+        /// </param>
+        protected virtual void Dispose(bool disposing)
+        {
+            // Check to see if Dispose has already been called.
+            if (!_disposed)
+            {
+                // If disposing equals true, dispose all managed
+                // and unmanaged resources
+                if (disposing)
+                {
+                    foreach (SharedClientScreen client in _subscribers.Values.ToList())
+                    {
+                        DeregisterClient(client.Id);
+                    }
+                    _subscribers.Clear();
+                    _instance = null;
+                }
+
+                // Call the appropriate methods to clean up unmanaged resources here
+
+                // Now disposing has been done
+                _disposed = true;
             }
         }
 
@@ -360,8 +431,9 @@ namespace PlexShareScreenshare.Server
         private void NotifyUX()
         {
             Debug.Assert(_subscribers != null, Utils.GetDebugMessage("_subscribers is found null"));
+            Debug.Assert(_listener != null, Utils.GetDebugMessage("_listener is found null"));
 
-            listener.OnSubscribersChanged(_subscribers.Values.ToList());
+            _listener.OnSubscribersChanged(_subscribers.Values.ToList());
         }
     }
 }
