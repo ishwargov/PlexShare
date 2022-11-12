@@ -1,4 +1,7 @@
-﻿using PlexShareWhiteboard.BoardComponents;
+﻿using PlexShareNetwork.Communication;
+using PlexShareNetwork.Serialization;
+using PlexShareNetwork;
+using PlexShareWhiteboard.BoardComponents;
 using PlexShareWhiteboard.Client;
 using PlexShareWhiteboard.Client.Interfaces;
 using PlexShareWhiteboard.Server;
@@ -11,7 +14,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
- 
+using System.Configuration;
+
 namespace PlexShareWhiteboard
 {
     public partial class WhiteBoardViewModel
@@ -38,28 +42,47 @@ namespace PlexShareWhiteboard
         UndoStackElement stackElement;
         Boolean isServer=false;
 
-        public WhiteBoardViewModel()
+        private WhiteBoardViewModel()
         {
             // this will become client and server 
             Boolean isServer = true;
-            SetUserId(userId);
             
             ShapeItems = new ObservableCollection<ShapeItem>();
             highlightShapes = new List<ShapeItem>();
 
         }
-
-        public void SetUserId(string _userId)
+        private static WhiteBoardViewModel instance;
+        public static WhiteBoardViewModel Instance
         {
-            userId = _userId;
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new WhiteBoardViewModel();
+                }
+
+                return instance;
+            }
+        }
+
+        //public void SetUserId(string _userId)
+        public void SetUserId(int _userId)
+        {
+            String userId = _userId.ToString();
             currentId = "u" + userId + "_f" + currentIdVal;
             currentIdVal++;
 
             if (isServer)
+            {
                 machine = ServerSide.Instance;
+                machine.SetUserId(userId);
+            }
             else
+            {
                 machine = ClientSide.Instance;
-            machine.SetUserId(userId);
+                machine.SetUserId(userId);
+            }
+
         }
         public void IncrementId()
         {

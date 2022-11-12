@@ -31,7 +31,6 @@ namespace PlexShareWhiteboard.Client
         Serializer _serializer;
         ClientSnapshotHandler _snapshotHandler;
 
-        
         private static ClientSide instance;
 
         // To create only a single instance of ClientSide
@@ -54,6 +53,8 @@ namespace PlexShareWhiteboard.Client
         {
             userID = userId;
         }
+
+  
         private ClientSide()
         {
             _communicator = ClientCommunicator.Instance;

@@ -13,6 +13,7 @@ using PlexShareWhiteboard;
 using PlexShare.Dashboard.Client.SessionManagement;
 using PlexShare.Dashboard;
 using PlexShareNetwork.Communication;
+using Client.Models;
 
 namespace PlexShareDashboard.Dashboard.Client.SessionManagement
 {
@@ -292,13 +293,14 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
 
                     // upon successfull connection, the request to add the client is sent to the server side.
                     SendDataToServer("addClient", _user.username, _user.userID);
-                     // clientBoardStateManager.SetUser(_user.userID.ToString());
+                    // clientBoardStateManager.SetUser(_user.userID.ToString());
                     // Whiteboard's user ID set.;
-
+                    WhiteBoardViewModel WBviewModel = WhiteBoardViewModel.Instance;
+                    WBviewModel.SetUserId(_user.userID);
 
                     // ScreenShare's user ID and username set.
-                   // if (Environment.GetEnvironmentVariable("TEST_MODE") != "E2E")
-                     //   _screenShareClient.SetUser(_user.userID.ToString(), _user.username);
+                    // if (Environment.GetEnvironmentVariable("TEST_MODE") != "E2E")
+                    //   _screenShareClient.SetUser(_user.userID.ToString(), _user.username);
 
 
                     //  ContentClientFactory.SetUser(_user.userID);
