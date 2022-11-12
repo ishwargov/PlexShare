@@ -21,7 +21,7 @@ namespace PlexShareScreenshare.Server
     /// Represents the screen shared by a client along with some other client information.
     /// </summary>
     public class SharedClientScreen :
-        IDisposable     // Instances of this class allocate scarce resources.
+        IDisposable     // Handle cleanup work for the allocated resources
     {
         /// <summary>
         /// The timeout value in "milliseconds" defining the timeout for the timer in
@@ -314,8 +314,13 @@ namespace PlexShareScreenshare.Server
         public async void StopProcessing()
         {
             Debug.Assert(_stitcher != null, Utils.GetDebugMessage("_stitcher is found null"));
-            Debug.Assert(_tokenSource != null, Utils.GetDebugMessage("_tokenSource is found null"));
-            Debug.Assert(_imageSendTask != null, Utils.GetDebugMessage("_imageSendTask is found null"));
+
+            // Check if the task was started before
+            if (_tokenSource == null || _imageSendTask == null)
+            {
+                Trace.WriteLine(Utils.GetDebugMessage($"Trying to stop a task which was never started for the client with Id {this.Id}", withTimeStamp: true));
+                return;
+            }
 
             // Stop the stitcher
             _stitcher.StopStitching();
