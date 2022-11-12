@@ -34,7 +34,8 @@ namespace PlexShareApp
         private static ChatPageView chatPage;
         private static ScreenSharePage screenSharePage;
         public event PropertyChangingEventHandler? PropertyChanged;
-        
+ 
+
         public MainScreenView(string name, string email, string picPath, string url, string ip, string port)
         {
             bool verified = true;
@@ -65,6 +66,10 @@ namespace PlexShareApp
                 Main.Content = dashboardPage;
                 ServerIPandPort.Text = "Server IP : " + ip + " Port : " + port;
                 // ClientIPandPort.Text = "Client IP : " + meetingCredentials.ipAddress  + " Port : " + meetingCredentials.port;
+
+            }
+            else
+            {
 
             }
 

@@ -1,8 +1,21 @@
+/************************************************************
+ * Filename    = HomaPageView.xaml.cs
+ *
+ * Author      = Jasir
+ *
+ * Product     = PlexShare
+ * 
+ * Project     = UX Team
+ *
+ * Description = Interaction Logic for HomePageView.xaml
+ * 
+ ************************************************************/
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.IO.Packaging;
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -20,6 +33,7 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using System.Xml.Linq;
 
+
 namespace PlexShareApp
 {
     /// <summary>
@@ -31,7 +45,7 @@ namespace PlexShareApp
         string Email = "";
         string ImageLocation = "";
         string absolute_path = "";
-        public HomePageView(string name, string email, string imageLocation)
+        public HomePageView(string name, string email, string imageLocation,bool success=true)
         {
             InitializeComponent();
             DispatcherTimer timer = new DispatcherTimer(new TimeSpan(0, 0, 1), DispatcherPriority.Normal, delegate
@@ -63,11 +77,26 @@ namespace PlexShareApp
             {
                 return;
             }
-
-
             MainScreenView mainScreenView = new MainScreenView(this.Name_box.Text, this.Email_textbox.Text, this.absolute_path, this.ImageLocation, "-1", "0");
             mainScreenView.Show();
             this.Close();
+        }
+
+        private bool Validate_IP(string IP)
+        {
+            if (IP.Length == 0)
+                return false;
+            string[] IP_tokens = IP.Split('.');
+            if (IP_tokens.Length != 4)
+                return false;
+            foreach(string token in IP_tokens)
+            {
+                int token_value = Int32.Parse(token);
+                Console.WriteLine(token_value.ToString());
+                if (token_value < 0 || token_value > 255)
+                    return false;
+            }
+            return true;
         }
 
         private void Join_Meeting_Button_Click(object sender, RoutedEventArgs e)
@@ -79,10 +108,10 @@ namespace PlexShareApp
                 this.Name_block.Text = "Please Enter Name!!!";
                 invalid = true;
             }
-            if (string.IsNullOrEmpty(this.Server_IP.Text))
+            if (string.IsNullOrEmpty(this.Server_IP.Text) || Validate_IP(this.Server_IP.Text))
             {
                 this.Server_IP.Text = "";
-                this.Server_IP_textblock.Text = "Please Enter Server IP!!!";
+                this.Server_IP_textblock.Text = "Please Enter Valid Server IP!!!";
                 invalid = true;
             }
             if (string.IsNullOrEmpty(this.Server_PORT.Text))
@@ -91,6 +120,7 @@ namespace PlexShareApp
                 this.Server_PORT_textblock.Text = "Please Enter Server PORT!!!";
                 invalid=true;
             }
+
             if (invalid)
             {
                 return;
