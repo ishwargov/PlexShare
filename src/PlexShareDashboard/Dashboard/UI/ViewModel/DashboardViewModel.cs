@@ -286,6 +286,8 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             ////$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
             ////$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
             //UpdateButtonContent(currUser);
+
+            //hi this is development branch for this purpose 
             SummaryContentSetter = "This is summary of the session till now. Keep refreshing this page in order to see the updated summary till now of the session for this purpose. order to see the updated summary till now of the session for this purpose.order to see the updated summary till now of the session for this purpose.order to see the updated summary till now of the session for this purpose.order to see the updated summary till now of the session for this purpose.order to see the updated summary till now of the session for this purpose.order to see the updated summary till now of the session for this purpose.order to see the updated summary till now of the session for this purpose.order to see the updated summary till now of the session for this purpose.";
 
 
