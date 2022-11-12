@@ -6,6 +6,7 @@
 ///</summary>
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
@@ -29,10 +30,14 @@ namespace PlexShareScreenshare.Client
         // The screen capturer object
         private readonly ScreenCapturer _capturer;
 
-        // Old and the new resolutions 
-        private Resolution OldRes;
-        public Resolution NewRes { private get; set; }
+        // Current and the new resolutions 
+        private Resolution CurrentRes;
+        private Resolution NewRes;
         public readonly Object ResolutionLock;
+
+        // Height and Width of the images captured by the capturer
+        int CapturedImageHeight;
+        int CapturedImageWidth;
 
         // Tokens added to be able to stop the thread execution
         private bool _cancellationToken;
@@ -47,22 +52,21 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         public ScreenProcessor(ScreenCapturer Capturer)
         {
-            this._capturer = Capturer;
+            _capturer = Capturer;
             _processedFrame = new Queue<Frame>();
-            OldRes = new Resolution() { Height = 720, Width = 1280};
-            NewRes = new Resolution() { Height = 720, Width = 1280 };
-            prevImage = new Bitmap(720, 1280);
             ResolutionLock = new();
+            Trace.WriteLine(Utils.GetDebugMessage("Successfully created an instance of ScreenProcessor", withTimeStamp: true));
         }
 
         /// <summary>
         /// Pops and return the image from the queue
         /// </summary>
-        public Frame GetImage()
+        public Frame GetFrame()
         {
             while (_processedFrame.Count != 0) Thread.Sleep(100);
             lock (_processedFrame)
             {
+                Trace.WriteLine(Utils.GetDebugMessage("Successfully sent frame", withTimeStamp: true));
                 return _processedFrame.Dequeue();
             }
         }
@@ -71,6 +75,7 @@ namespace PlexShareScreenshare.Client
         {
             lock (_processedFrame)
             {
+                Trace.WriteLine(Utils.GetDebugMessage("Successfully sent frame length", withTimeStamp: true));
                 return _processedFrame.Count;
             }
         }
@@ -133,8 +138,8 @@ namespace PlexShareScreenshare.Client
                     if (oldBlue != newBlue || oldGreen != newGreen || oldRed != newRed)
                     {
                         Coordinates coordinates = new Coordinates() { X = x / bytesPerPixel, Y = y };
-                        RGB rgb = new RGB() { R = newRed, G = newGreen, B = newBlue};
-                        Pixel tmpVal = new Pixel() { Coordinates = coordinates, RGB = rgb }; 
+                        RGB rgb = new RGB() { R = newRed, G = newGreen, B = newBlue };
+                        Pixel tmpVal = new Pixel() { Coordinates = coordinates, RGB = rgb };
                         tmp.Add(tmpVal);
                         count++;
                     }
@@ -170,6 +175,15 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         public void StartProcessing()
         {
+            // dropping one frame to set the previous image value
+            Bitmap img = _capturer.GetImage();
+            CapturedImageHeight = img.Height;
+            CapturedImageHeight = img.Width;
+            NewRes = new() { Height = CapturedImageHeight, Width = CapturedImageWidth };
+            CurrentRes = NewRes;
+            prevImage = new Bitmap(NewRes.Height, NewRes.Width);
+            Trace.WriteLine(Utils.GetDebugMessage("Previous image set and" +
+                "going to start image processing", withTimeStamp: true));
             _processorTask = new Task(Processing);
             _processorTask.Start();
         }
@@ -201,22 +215,32 @@ namespace PlexShareScreenshare.Client
         public void StopProcessing()
         {
             _cancellationToken = true;
+            Debug.Assert(_processedFrame != null, Utils.GetDebugMessage("_processedTask is found null"));
             _processorTask?.Wait();
             _processedFrame.Clear();
+            Trace.WriteLine(Utils.GetDebugMessage("Successfully stopped image processing", withTimeStamp: true));
         }
 
         /// <summary>
         /// Setting new resolution for sending the image 
         /// </summary>
         /// <param name="res"> New resolution values </param>
-        public void SetNewResolution(Resolution res)
+        public void SetNewResolution(int windowCount)
         {
+            Debug.Assert(windowCount != 0, Utils.GetDebugMessage("windowCount is found 0"));
+            Resolution res = new()
+            {
+                Height = CapturedImageHeight / windowCount,
+                Width = CapturedImageWidth / windowCount
+            };
             // taking lock since newres is shared variable as it is
             // used even in Compress function
             lock (ResolutionLock)
             {
                 NewRes = res;
             }
+            Trace.WriteLine(Utils.GetDebugMessage("Successfully changed the rew resolution" +
+                " variable", withTimeStamp: true));
         }
 
         /// <summary>
@@ -228,10 +252,10 @@ namespace PlexShareScreenshare.Client
         {
             lock (ResolutionLock)
             {
-                if (NewRes != OldRes)
+                if (NewRes != CurrentRes)
                 {
                     prevImage = new Bitmap(NewRes.Height, NewRes.Width);
-                    OldRes = NewRes;
+                    CurrentRes = NewRes;
                 }
             }
             img = new Bitmap(img, NewRes.Height, NewRes.Width);
