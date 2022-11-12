@@ -26,7 +26,7 @@ namespace PlexShareApp
     {
         WhiteBoardViewModel viewModel;
         string currentTool;
-        public WhiteBoardPage()
+        public WhiteBoardPage(int serverID)
         {
             InitializeComponent();
             viewModel = new WhiteBoardViewModel();
