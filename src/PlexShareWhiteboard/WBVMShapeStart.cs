@@ -78,11 +78,11 @@ namespace PlexShareWhiteboard
 
                 Debug.WriteLine("In create text box mode\n");
 
-                text = "";
                 textBoxPoint = a;
                 ShapeItem curShape = CreateShape(textBoxPoint, textBoxPoint, "GeometryGroup", currentId, "");
                 IncrementId();
-                lastShape = curShape;
+                textBoxLastShape = curShape;
+                Debug.WriteLine("inside create text box " + textBoxLastShape);
                 ShapeItems.Add(curShape);
                 currentZIndex++;
             }
