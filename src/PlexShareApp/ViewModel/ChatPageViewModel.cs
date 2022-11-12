@@ -165,6 +165,27 @@ namespace PlexShareApp.ViewModel
         }
 
         /// <summary>
+        /// Updating the message Data of Message ID with the New Message
+        /// </summary>
+        /// <param name="msgID"> Message ID </param>
+        /// <param name="newMsg"> The updated Chat Message  </param>
+        public void EditChatMsg(int msgID, string newMsg)
+        {
+            Trace.WriteLine("Editing Chat Message");
+            _model.ClientEdit(msgID, newMsg);
+        }
+
+        /// <summary>
+        /// Updating the message Data of Message ID with the New Message
+        /// </summary>
+        /// <param name="msgID"> Message ID </param>
+        public void DeleteChatMsg(int msgID)
+        {
+            Trace.WriteLine("Deleting Chat Message");
+            _model.ClientDelete(msgID);
+        }
+
+        /// <summary>
         /// Star message for it to be included in the dashboard summary
         /// </summary>
         /// <param name="msgId"> Id of the message </param>
@@ -288,7 +309,7 @@ namespace PlexShareApp.ViewModel
                           {
                               if(contentData.Event == PlexShareContent.Enums.MessageEvent.New)
                               {
-                                  Trace.WriteLine("All messages have been received");
+                                  Trace.WriteLine("Messages has been received");
                                   Messages.Add(contentData.MessageID, contentData.Data);
                                   ThreadIds.Add(contentData.MessageID, contentData.ReplyThreadID);
 

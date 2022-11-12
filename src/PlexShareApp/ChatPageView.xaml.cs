@@ -176,6 +176,44 @@ namespace PlexShareApp
         }
 
         /// <summary>
+        /// Event Handler on Clicking Edit Button
+        /// </summary>
+        /// <param name="sender"> Notification Sender</param>
+        /// <param name="e"> Routed Event Data </param>
+        private void EditButtonClick(object sender, RoutedEventArgs e)
+        {
+            if(sender is Button)
+            {
+                Button senderButton = (Button)sender;
+                if(senderButton.DataContext is Message)
+                {
+                    var viewModel = DataContext as ChatPageViewModel;
+                    Message msg = (Message)senderButton.DataContext;
+                    viewModel.EditChatMsg(msg.MessageID, msg.IncomingMessage);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Event Handler on Clicking Delete Button
+        /// </summary>
+        /// <param name="sender"> Notification Sender</param>
+        /// <param name="e"> Routed Event Data </param>
+        private void DeleteButtonClick(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button)
+            {
+                Button senderButton = (Button)sender;
+                if (senderButton.DataContext is Message)
+                {
+                    var viewModel = DataContext as ChatPageViewModel;
+                    Message msg = (Message)senderButton.DataContext;
+                    viewModel.DeleteChatMsg(msg.MessageID);
+                }
+            }
+        }
+
+        /// <summary>
         /// Event Handler for Clicking on Star Radio Button
         /// </summary>
         /// <param name="sender"> Notification Sender </param>
