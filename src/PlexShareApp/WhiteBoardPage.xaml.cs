@@ -29,7 +29,8 @@ namespace PlexShareApp
         public WhiteBoardPage()
         {
             InitializeComponent();
-            viewModel = new WhiteBoardViewModel();
+            //viewModel = new WhiteBoardViewModel();
+            viewModel = WhiteBoardViewModel.Instance;
             viewModel.ShapeItems = new ObservableCollection<ShapeItem>();
             this.DataContext = viewModel;
             this.currentTool = "Select";
