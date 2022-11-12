@@ -60,13 +60,8 @@ namespace PlexShareApp
             {
                 return;
             }
-            
-
+      
             MainScreenView mainScreenView = new MainScreenView(this.Name_box.Text, this.Email_textbox.Text, absolute_path, ImageLocation, "-1", "0");
-
-            
-            //
-            //
 
             mainScreenView.Show();
             this.Close();

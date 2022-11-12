@@ -17,6 +17,8 @@ using PlexShareDashboard.Dashboard.Server.SessionManagement;
 using PlexShare.Dashboard;
 using PlexShareDashboard.Dashboard.Client.SessionManagement;
 using Dashboard;
+using PlexShareApp;
+using ScottPlot.Drawing.Colormaps;
 
 namespace PlexShareApp
 {
@@ -33,28 +35,38 @@ namespace PlexShareApp
         
         public MainScreenView(string name, string email, string picPath, string url, string ip, string port)
         {
-            InitializeComponent();
-            dashboardPage = new DashboardPage();
-            whiteBoardPage = new WhiteBoardPage();
-            chatPage = new ChatPageView();
-            screenSharePage = new ScreenSharePage();
 
             IUXServerSessionManager serverSessionManager = SessionManagerFactory.GetServerSessionManager();
             IUXClientSessionManager clientSessionManafer = SessionManagerFactory.GetClientSessionManager();
+
+            bool verified = false;
             if (ip == "-1")
             {
               MeetingCredentials meetingCredentials =  serverSessionManager.GetPortsAndIPAddress();
-                clientSessionManafer.AddClient(meetingCredentials.ipAddress, meetingCredentials.port, name);
+               verified = clientSessionManafer.AddClient(meetingCredentials.ipAddress, meetingCredentials.port, name);
             }
             else
             {
-                clientSessionManafer.AddClient(ip, int.Parse(port), name);
+                verified = clientSessionManafer.AddClient(ip, int.Parse(port), name);
             }
-            Main.Content = dashboardPage;
+
+            if (verified)
+            {
+
+                InitializeComponent();
+                dashboardPage = new DashboardPage();
+                whiteBoardPage = new WhiteBoardPage();
+                chatPage = new ChatPageView();
+                screenSharePage = new ScreenSharePage();
+                Main.Content = dashboardPage;
+
+            }
+
         }
 
         /// <summary>
         /// Transfer control to dashboard on click
+        /// 
         /// </summary>
         private void DashboardClick(object sender, RoutedEventArgs e)
         {
