@@ -19,6 +19,7 @@ using Dashboard;
 using PlexShareDashboard.Dashboard.Client.SessionManagement;
 using PlexShare.Dashboard;
 using System.Diagnostics;
+using System.Collections.ObjectModel;
 
 namespace PlexShareApp.ViewModel
 {
@@ -50,6 +51,8 @@ namespace PlexShareApp.ViewModel
         /// </summary>
         public IDictionary<int, int> ThreadIds;
 
+        private readonly ObservableCollection<Message> myMessages;
+
 
         public ChatPageViewModel(bool production = true)
         {
@@ -57,8 +60,9 @@ namespace PlexShareApp.ViewModel
             Messages = new Dictionary<int, string>();
             ThreadIds = new Dictionary<int, int>();
 
-            //if(production)
-            //{
+            ProductionMode = production;
+            if(ProductionMode)
+            {
                 // Getting Content Client model and subscribing to the content module
                 _model = ContentClientFactory.GetInstance();
                 _model.ClientSubscribe(this);
@@ -66,8 +70,8 @@ namespace PlexShareApp.ViewModel
                 // Get data model from Dashboard module and subscribe to them
                 _modelDb = SessionManagerFactory.GetClientSessionManager();
                 _modelDb.SubscribeSession(this);
-            //}
-            
+            }
+           
         }
 
         /// <summary>
@@ -86,14 +90,14 @@ namespace PlexShareApp.ViewModel
         public Message ReceivedMsg { get; private set; }
 
         /// <summary>
-        /// True means Productin mode
+        /// True means Production mode
         /// </summary>
         public bool ProductionMode { get; }
 
         /// <summary>
         /// Whenever a property changes, a Property Changed event is raised
         /// </summary>
-        public event PropertyChangedEventHandler? PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
         /// Handling the Property Changed event raised 
@@ -124,6 +128,8 @@ namespace PlexShareApp.ViewModel
             {
                 MsgToSend.Type = MessageType.Chat;
             }
+            //Messages.Add(, message);
+            //ThreadIds.Add(message.MessageID, message.ReplyThreadID);
 
             // Setting the remaining fields of the SendContentData object
             MsgToSend.ReplyMessageID = replyMsgId;
@@ -131,13 +137,20 @@ namespace PlexShareApp.ViewModel
             MsgToSend.ReplyThreadID = replyMsgId != -1 ? ThreadIds[replyMsgId] : -1;
 
             // Empty list denotes it's broadcast message
-            MsgToSend.ReceiverIDs = Array.Empty<int>();
+            MsgToSend.ReceiverIDs = new int[] { };//Array.Empty<int>();
 
-           // if (ProductionMode)
-            //{
-                Trace.WriteLine("UX: I am Sending a File Message");
+            if (ProductionMode)
+            {
+                if (messageType == "File")
+                {
+                    Trace.WriteLine("UX: I am Sending a File Message");
+                }
+                else if (messageType == "Chat")
+                {
+                    Trace.WriteLine("UX: I am Sending a Chat Message");
+                }
                 _model.ClientSendData(MsgToSend);
-            //}
+            }
         }
 
         /// <summary>
@@ -184,7 +197,7 @@ namespace PlexShareApp.ViewModel
             // Hence we may call the dispatcher's BeginInvoke method which kicks off
             // execution async as opposed to Invoke which does it synchronously.
 
-            _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
+            _ = ApplicationMainThreadDispatcher.BeginInvoke(
                       DispatcherPriority.Normal,
                       new Action<SessionData>(currentSession =>
                       {
@@ -192,6 +205,7 @@ namespace PlexShareApp.ViewModel
                           {
                               if(currentSession!= null)
                               {
+                                  Trace.WriteLine("Users List Receive");
                                   Users.Clear();
                                   foreach (var user in currentSession.users)
                                   {
@@ -216,7 +230,7 @@ namespace PlexShareApp.ViewModel
             // Hence we may call the dispatcher's BeginInvoke method which kicks off
             // execution async as opposed to Invoke which does it synchronously.
 
-            _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
+            _ = ApplicationMainThreadDispatcher.BeginInvoke(
                       DispatcherPriority.Normal,
                       new Action<List<ChatThread>>(allMessages =>
                       {
@@ -243,7 +257,8 @@ namespace PlexShareApp.ViewModel
                                       ReceivedMsg.MessageID = message.MessageID;
                                       ReceivedMsg.Type = message.Type == MessageType.Chat;
                                       ReceivedMsg.IncomingMessage = message.Data;
-                                      ReceivedMsg.Time = message.SentTime.ToString("hh:mm tt ddd"); // 11:09 AM Mon
+                                      //ReceivedMsg.Time = message.SentTime.ToString("hh:mm tt ddd"); // 11:09 AM Mon
+                                      ReceivedMsg.Time = message.SentTime.ToString("hh:mm tt"); 
                                       ReceivedMsg.Sender = Users.ContainsKey(message.SenderID) ? Users[message.SenderID] : "Anonymous";
                                       ReceivedMsg.ToFrom = UserId == message.SenderID;
                                       ReceivedMsg.ReplyMessage = message.ReplyMessageID == -1 ? "" : Messages[message.ReplyMessageID];
@@ -265,7 +280,7 @@ namespace PlexShareApp.ViewModel
             // Hence we may call the dispatcher's BeginInvoke method which kicks off
             // execution async as opposed to Invoke which does it synchronously.
 
-            _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
+            _ = ApplicationMainThreadDispatcher.BeginInvoke(
                       DispatcherPriority.Normal,
                       new Action<ReceiveContentData>(contentData =>
                       {
@@ -288,7 +303,8 @@ namespace PlexShareApp.ViewModel
                                   ReceivedMsg.MessageID = contentData.MessageID;
                                   ReceivedMsg.Type = contentData.Type == MessageType.Chat;
                                   ReceivedMsg.IncomingMessage = contentData.Data;
-                                  ReceivedMsg.Time = contentData.SentTime.ToString("hh:mm tt ddd"); // 11:09 AM Mon
+                                  //ReceivedMsg.Time = contentData.SentTime.ToString("hh:mm tt ddd"); // 11:09 AM Mon
+                                  ReceivedMsg.Time = contentData.SentTime.ToString("hh:mm tt");
                                   ReceivedMsg.Sender = Users.ContainsKey(contentData.SenderID) ? Users[contentData.SenderID] : "Anonymous";
                                   ReceivedMsg.ToFrom = UserId == contentData.SenderID;
                                   ReceivedMsg.ReplyMessage = contentData.ReplyMessageID == -1 ? "" : Messages[contentData.ReplyMessageID];

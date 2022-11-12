@@ -14,6 +14,13 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using Microsoft.Win32;
 using PlexShareApp.ViewModel;
+using PlexShareContent.DataModels;
+using System.Diagnostics;
+using Client.Models;
+using OxyPlot;
+using PlexShareContent;
+using SharpDX.Direct3D11;
+using ScottPlot.Renderable;
 
 namespace PlexShareApp
 {
@@ -24,6 +31,7 @@ namespace PlexShareApp
         /// All the messages upto now
         /// </summary>
         private readonly ObservableCollection<Message> _allMessages;
+        private Message addNewMessage;
 
         /// <summary>
         /// Creating an instance of our ChatPageView
@@ -32,7 +40,7 @@ namespace PlexShareApp
         {
             InitializeComponent();
 
-            var viewModel = new ChatPageViewModel();
+            var viewModel = new ChatPageViewModel(true);
 
             // Subscribed to the Property Changed Event
             viewModel.PropertyChanged += Listener;
@@ -50,7 +58,7 @@ namespace PlexShareApp
         public int ReplyMsgId { get; set; }
 
         /// <summary>
-        /// Property Changed Evenet in which the view gets updated with new messages
+        /// Property Changed Event in which the view gets updated with new messages
         /// </summary>
         /// <param name="sender"> Sender Notifying the event </param>
         /// <param name="e"> Property Changed Event </param>
@@ -59,9 +67,17 @@ namespace PlexShareApp
             var propertyName = e.PropertyName; ;
             var viewModel = DataContext as ChatPageViewModel;
 
-            if(propertyName == "ReceivedMsg" || propertyName == "ReceivedAllMsgs")
+            if(propertyName == "ReceivedMsg")
             {
                 _allMessages.Add(viewModel.ReceivedMsg);
+                Debug.WriteLine(_allMessages);
+                UpdateScrollBar(MainChat);
+            }
+            else if(propertyName == "ReceivedAllMsgs")
+            {
+                _allMessages.Add(viewModel.ReceivedMsg);
+                Debug.WriteLine(_allMessages);
+                //UpdateScrollBar(MainChat);
             }
         }
 
@@ -86,6 +102,19 @@ namespace PlexShareApp
                 {
                     viewModel.SendMessage(openFileDialog.FileName, ReplyMsgId, "File");
                 }
+                addNewMessage = new Message();
+                addNewMessage.MessageID = -1;
+                addNewMessage.Sender = null;
+                addNewMessage.Time = DateTime.Now.ToShortTimeString();
+                addNewMessage.Type = true;
+                addNewMessage.ReplyMessage = null;
+                addNewMessage.IncomingMessage = openFileDialog.FileName;
+                addNewMessage.ToFrom = true;
+                _allMessages.Add(addNewMessage);
+
+
+                SendTextBox.Text = string.Empty;
+                ReplyTextBox.Text = string.Empty;
                 ReplyTextBox.Text = "";
             }
         }
@@ -97,21 +126,33 @@ namespace PlexShareApp
         /// <param name="e"> Routed Event Data </param>
         private void SendButtonClick(object sender, RoutedEventArgs e)
         {
-            if(SendTextBox.Text != null && SendTextBox.Text != string.Empty)
+            if(!string.IsNullOrEmpty(SendTextBox.Text))
             {
                 var viewModel = DataContext as ChatPageViewModel;
 
-                if(ReplyTextBox.Text != null && ReplyTextBox.Text != string.Empty)
-                {
-                    viewModel.SendMessage(SendTextBox.Text, ReplyMsgId, "Chat");
-                }
-                else
+                if(string.IsNullOrEmpty(ReplyTextBox.Text))
                 {
                     viewModel.SendMessage(SendTextBox.Text, -1, "Chat");
                 }
+                else
+                {
+                    viewModel.SendMessage(SendTextBox.Text, ReplyMsgId, "Chat");
+                }
+                var chumma = SendTextBox.Text;
+                addNewMessage = new Message();
+                addNewMessage.MessageID = 2;
+                addNewMessage.Sender = null;
+                addNewMessage.Time = DateTime.Now.ToShortTimeString();
+                addNewMessage.Type = true;
+                addNewMessage.ReplyMessage = "Hey";
+                addNewMessage.IncomingMessage = chumma;//SendTextBox.Text;
+                addNewMessage.ToFrom = true;
+                _allMessages.Add(addNewMessage);
+
+
+                SendTextBox.Text = string.Empty;
+                ReplyTextBox.Text = string.Empty;
             }
-            SendTextBox.Text = string.Empty;
-            ReplyTextBox.Text = string.Empty;
         }
 
         // TODO: Implement ReplyButtonClick event
@@ -141,6 +182,7 @@ namespace PlexShareApp
         /// <param name="e"> Routed Event Data </param>
         private void StarButtonClick(object sender, RoutedEventArgs e)
         {
+            var viewModel = DataContext as ChatPageViewModel;
             if (sender is RadioButton)
             {
                 RadioButton senderRadioButton = (RadioButton)sender;
@@ -148,7 +190,7 @@ namespace PlexShareApp
                 if (senderRadioButton.DataContext is Message)
                 {
                     Message msg = (Message)senderRadioButton.DataContext;
-                    var viewModel = DataContext as ChatPageViewModel;
+                    //var viewModel = DataContext as ChatPageViewModel;
                     viewModel.StarChatMsg(msg.MessageID);
                 }
 
