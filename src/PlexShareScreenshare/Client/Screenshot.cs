@@ -19,8 +19,9 @@ namespace PlexShareScreenshare.Client
     /// <summary>
     /// Class contains the necessary functions for taking the screenshot of the current screen.
     /// </summary>
-    internal class Screenshot
+    public class Screenshot
     {
+        private static readonly object _lock = new();
         private static Screenshot? instance;
         public Boolean CaptureActive { get; private set; }
         private Factory1? Factory1;
@@ -47,11 +48,14 @@ namespace PlexShareScreenshare.Client
 
         public static Screenshot Instance()
         {
-            if (instance == null)
+            lock (_lock)
             {
-                instance = new Screenshot();
+                if (instance == null)
+                {
+                    instance = new Screenshot();
+                }
+                return instance;
             }
-            return instance;
         }
 
         /// <summary>

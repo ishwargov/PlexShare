@@ -7,6 +7,7 @@ using System.Windows.Media;
 using System.Diagnostics;
 using System.Windows;
 using PlexShareWhiteboard.BoardComponents;
+using System.Windows.Automation.Peers;
 
 namespace PlexShareWhiteboard
 {
@@ -15,21 +16,37 @@ namespace PlexShareWhiteboard
         // this is mouse up -> typically mouse release
         public void ShapeFinished(Point _)
         {
-            Debug.WriteLine("Entering Shape Finished..............\n");
-            if (mode == "create_rectangle" || mode == "create_ellipse" || mode == "create_freehand")
+            //Debug.WriteLine("Entering Shape Finished..............\n");
+            if (modeForUndo == "create" )
             {
+                Debug.WriteLine("passing into undo stack " + lastShape.Geometry.GetType().Name);
                 stackElement = new UndoStackElement(lastShape, lastShape, Operation.Creation);
                 InsertIntoStack(stackElement);
+
+                if (lastShape != null)
+                    machine.OnShapeReceived(lastShape, Operation.Creation);
+
             }
-            else if (mode == "delete_mode")
+            else if (modeForUndo == "delete" && lastShape != null)
             {
+
+                Debug.WriteLine("passing into undo stack " + lastShape.Geometry.GetType().Name);
                 stackElement = new UndoStackElement(lastShape, lastShape, Operation.Deletion);
                 InsertIntoStack(stackElement);
+                if (lastShape != null)
+                    machine.OnShapeReceived(lastShape, Operation.Deletion);
+
             }
-            else if (mode == "translate_mode" || mode == "transform_mode" || mode == "dimensionChange_mode")
+            else if (modeForUndo == "modify")
             {
+                Debug.WriteLine("passing into undo stack " + lastShape.Geometry.GetType().Name);
+                Debug.WriteLine(" inital bounding box" + select.initialSelectionObject.Geometry.Bounds.ToString() + "  final bounding box " + lastShape.Geometry.Bounds.ToString());
                 stackElement = new UndoStackElement(select.initialSelectionObject, lastShape, Operation.ModifyShape);
                 InsertIntoStack(stackElement);
+
+                if (lastShape != null)
+                    machine.OnShapeReceived(lastShape, Operation.ModifyShape);
+
             }
             else;
 
@@ -44,16 +61,14 @@ namespace PlexShareWhiteboard
 
             if (mode == "transform_mode" || mode == "dimensionChange_mode" || mode == "translate_mode")
                 mode = "select_mode";
-            /*
-            if (mode == "create_rectangle" || mode == "create_ellipse" || mode == "create_freehand")
-                undoredo.OnShapeReceiveFromVM(lastShape, lastShape, Operation.Creation);
-            if (mode == "delete_mode")
-                undoredo.OnShapeReceiveFromVM(lastShape,lastShape, Operation.Deletion);*/
-            /*if (mode == "transform_mode" || mode == "translate_mode")*/
 
-            lastShape = null;
+            
+            if (mode != "create_textbox")
+                lastShape = null;
 
-            Debug.WriteLine("Exiting Shape Finished........");
+            modeForUndo = "select";
+
+            //Debug.WriteLine("Exiting Shape Finished........");
         }
     }
 }

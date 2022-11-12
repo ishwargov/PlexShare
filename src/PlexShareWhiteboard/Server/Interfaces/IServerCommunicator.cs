@@ -1,4 +1,11 @@
-﻿using PlexShareWhiteboard.BoardComponents;
+﻿/**
+ * Owned By: Joel Sam Mathew
+ * Created By: Joel Sam Mathew
+ * Date Created: 22/10/2022
+ * Date Modified: 08/11/2022
+**/
+
+using PlexShareWhiteboard.BoardComponents;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +16,10 @@ namespace PlexShareWhiteboard.Server.Interfaces
 {
     internal interface IServerCommunicator
     {
-        void Broadcast(ShapeItem newShape, Operation op);
+        public void Broadcast(ShapeItem newShape, Operation op);
 
-        void Broadcast(List<ShapeItem> newShapes, Operation op);
+        public void Broadcast(List<ShapeItem> newShapes, Operation op);
+
+        public void Broadcast(WBServerShape clientUpdate, string? ipAddress);
     }
 }

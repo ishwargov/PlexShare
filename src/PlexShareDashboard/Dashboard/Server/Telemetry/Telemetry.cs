@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PlexShareDashboard;
+using PlexShareContent.DataModels;
 //using Dashboard.Server.Persistence;
 //using PlexShareDashboard.Dashboard.Server.Persistent;
 using Dashboard.Server.Persistence;
@@ -40,7 +41,7 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
 
 
         //function to fetch the telemetry analytics and then give it back to the session manager 
-        public SessionAnalytics GetTelemetryAnalytics(ChatThread[] allChatMessages)
+        public SessionAnalytics GetTelemetryAnalytics(PlexShareContent.DataModels.ChatThread[] allChatMessages)
         {
             DateTime currTime = DateTime.Now;
             GetUserIdVsChatCount(allChatMessages);
@@ -77,7 +78,7 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
 
 
         //function fetch the details from the chatcontext and then giving it to persistent to save the analytics on the server 
-        public void SaveAnalytics(ChatThread[] allChatMessages)
+        public void SaveAnalytics(PlexShareContent.DataModels.ChatThread[] allChatMessages)
         {
             DateTime currDateTime = DateTime.Now;
             GetUserIdVsChatCount(allChatMessages);
@@ -109,7 +110,7 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             return;
         }
 
-        public void GetUserIdVsChatCount(ChatThread[] allMessages)
+        public void GetUserIdVsChatCount(PlexShareContent.DataModels.ChatThread[] allMessages)
         {
             //we have to implement when we start integrating with the chat module 
             //we have to first clear this and then we have to again calculate the useridvschatcount 

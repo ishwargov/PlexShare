@@ -6,6 +6,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows;
@@ -63,7 +64,6 @@ namespace PlexShareApp
                 _allMessages.Add(viewModel.ReceivedMsg);
             }
         }
-
 
         private void UploadButtonClick(object sender, RoutedEventArgs e)
         {
@@ -124,28 +124,31 @@ namespace PlexShareApp
         {
             if(sender is Button)
             {
-                var cmd = (Button)sender;
-                if(cmd.DataContext is Message)
+                Button senderButton = (Button)sender;
+                if(senderButton.DataContext is Message)
                 {
-                    var msg = (Message)cmd.DataContext;
+                    Message msg = (Message)senderButton.DataContext;
                     ReplyTextBox.Text = msg.IncomingMessage;
                     ReplyMsgId = msg.MessageID;
                 }
             }
         }
 
-        // TODO: Implement StarButtonClick event
+        /// <summary>
+        /// Event Handler for Clicking on Star Radio Button
+        /// </summary>
+        /// <param name="sender"> Notification Sender </param>
+        /// <param name="e"> Routed Event Data </param>
         private void StarButtonClick(object sender, RoutedEventArgs e)
         {
-            var viewModel = DataContext as ChatPageViewModel;
-
-            if(sender is RadioButton)
+            if (sender is RadioButton)
             {
-                var cmd = (RadioButton)sender;
+                RadioButton senderRadioButton = (RadioButton)sender;
 
-                if(cmd.DataContext is Message)
+                if (senderRadioButton.DataContext is Message)
                 {
-                    var msg = (Message)cmd.DataContext;
+                    Message msg = (Message)senderRadioButton.DataContext;
+                    var viewModel = DataContext as ChatPageViewModel;
                     viewModel.StarChatMsg(msg.MessageID);
                 }
 
@@ -153,8 +156,55 @@ namespace PlexShareApp
 
         }
 
-        // TODO: Implement DownloadButtonClick event
+        /// <summary>
+        /// Event Handler on clicking Download Button
+        /// </summary>
+        /// <param name="sender"> Notification Sender </param>
+        /// <param name="e"> Routed Event Data </param>
+        private void DownloadButtonClick(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button)
+            {
+                var viewModel = DataContext as ChatPageViewModel;
 
-        // TODO: Implement UpdateScrollBar event
+                // Creating a SaveFileDialog
+                SaveFileDialog dailogFile = new SaveFileDialog();
+
+                Button senderButton = (Button)sender;
+                if (senderButton.DataContext is Message)
+                {
+                    // Getting the message through download button
+                    Message message = (Message)senderButton.DataContext;
+
+                    // Set the default file name and extension
+                    dailogFile.FileName = Path.GetFileNameWithoutExtension(message.IncomingMessage);
+                    dailogFile.DefaultExt = Path.GetExtension(message.IncomingMessage);
+
+                    // Display save file dialog box
+                    var result = dailogFile.ShowDialog();
+
+                    // if Download OK
+                    if (result == true)
+                    {
+                        viewModel.DownloadFile(dailogFile.FileName, message.MessageID);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Updates the Scrollbar to the bottom of the listbox
+        /// </summary>
+        /// <param name="listBox"> Listbox containing the scrollbar </param>
+        private void UpdateScrollBar(ListBox listBox)
+        {
+            if ((listBox != null) && (VisualTreeHelper.GetChildrenCount(listBox) != 0))
+            {
+                var border = (Border)VisualTreeHelper.GetChild(listBox, 0);
+                var scrollViewer = (ScrollViewer)VisualTreeHelper.GetChild(border, 0);
+                scrollViewer.ScrollToBottom();
+            }
+        }
+
     }
 }

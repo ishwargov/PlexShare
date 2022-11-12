@@ -57,8 +57,8 @@ namespace PlexShareApp.ViewModel
             Messages = new Dictionary<int, string>();
             ThreadIds = new Dictionary<int, int>();
 
-            if(production)
-            {
+            //if(production)
+            //{
                 // Getting Content Client model and subscribing to the content module
                 _model = ContentClientFactory.GetInstance();
                 _model.ClientSubscribe(this);
@@ -66,7 +66,7 @@ namespace PlexShareApp.ViewModel
                 // Get data model from Dashboard module and subscribe to them
                 _modelDb = SessionManagerFactory.GetClientSessionManager();
                 _modelDb.SubscribeSession(this);
-            }
+            //}
             
         }
 
@@ -133,11 +133,11 @@ namespace PlexShareApp.ViewModel
             // Empty list denotes it's broadcast message
             MsgToSend.ReceiverIDs = Array.Empty<int>();
 
-            if (ProductionMode)
-            {
+           // if (ProductionMode)
+            //{
                 Trace.WriteLine("UX: I am Sending a File Message");
                 _model.ClientSendData(MsgToSend);
-            }
+            //}
         }
 
         /// <summary>

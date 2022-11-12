@@ -73,7 +73,7 @@ namespace PlexShareApp
         }
         private void CanvasMouseEnter(object sender, MouseEventArgs e)
         {
-            Debug.WriteLine(this.currentTool + " Got it \n");
+            //Debug.WriteLine(this.currentTool + " Got it \n");
             if (this.currentTool != "Select")
                 viewModel.UnHighLightIt();
             switch (this.currentTool)
@@ -101,7 +101,7 @@ namespace PlexShareApp
 
         private void CanvasMouseLeave(object sender, MouseEventArgs e)
         {
-            Debug.WriteLine(this.currentTool + " Leave Got it \n");
+            //Debug.WriteLine(this.currentTool + " Leave Got it \n");
             if (this.currentTool != "Select")
                 viewModel.UnHighLightIt();
             Cursor = Cursors.Arrow;
@@ -134,6 +134,24 @@ namespace PlexShareApp
             this.currentTool = "Freehand";
 
             viewModel.ChangeMode("create_freehand");
+
+        }
+        private void Textbox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            Debug.WriteLine("Enter text mode");
+            Debug.WriteLine(e.Key);
+            viewModel.TextBoxStart(e.Key);
+        }
+
+        private void TextboxCreateMode(object sender, RoutedEventArgs e)
+        {
+            viewModel.UnHighLightIt();
+            Cursor = Cursors.Pen;
+            if (this.ShapeToolBar.Visibility == Visibility.Visible)
+                this.ShapeToolBar.Visibility = Visibility.Collapsed;
+            this.currentTool = "Textbox";
+
+            viewModel.ChangeMode("create_textbox");
 
         }
         private void ColorGreen(object sender, RoutedEventArgs e)
@@ -222,7 +240,33 @@ namespace PlexShareApp
             if (this.ShapeToolBar.Visibility == Visibility.Visible)
                 this.ShapeToolBar.Visibility = Visibility.Collapsed;
             viewModel.ClearAllShapes();
+
         }
 
+        private void LineMode(object sender, RoutedEventArgs e)
+        {
+            viewModel.UnHighLightIt();
+            if (this.ShapeToolBar.Visibility == Visibility.Visible)
+                this.ShapeToolBar.Visibility = Visibility.Collapsed;
+            viewModel.ChangeMode("create_line");
+        }
+
+        private void UndoMode(object sender, RoutedEventArgs e)
+        {
+            viewModel.UnHighLightIt();
+            if (this.ShapeToolBar.Visibility == Visibility.Visible)
+                this.ShapeToolBar.Visibility = Visibility.Collapsed;
+            viewModel.CallUndo();
+            Debug.WriteLine("Undo called xaml");
+        }
+
+        private void RedoMode(object sender, RoutedEventArgs e)
+        {
+            viewModel.UnHighLightIt();
+            if (this.ShapeToolBar.Visibility == Visibility.Visible)
+                this.ShapeToolBar.Visibility = Visibility.Collapsed;
+
+            viewModel.CallRedo();
+        }
     }
 }
