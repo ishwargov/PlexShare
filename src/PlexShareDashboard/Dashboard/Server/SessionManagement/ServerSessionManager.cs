@@ -60,7 +60,7 @@ namespace Dashboard.Server.SessionManagement
             _sessionData = new SessionData();
             _serializer = new DashboardSerializer();
             _telemetrySubscribers = new List<ITelemetryNotifications>();
-          //  _summarizer = SummarizerFactory.GetSummarizer();
+          //  _summarizer = SummarizerFactory.GetSummarizer();Get
 
             userCount = 0;
 

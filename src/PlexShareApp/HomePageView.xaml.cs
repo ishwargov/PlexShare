@@ -66,11 +66,6 @@ namespace PlexShareApp
             
 
             MainScreenView mainScreenView = new MainScreenView();
-
-            
-            //
-            //
-
             mainScreenView.Show();
             this.Close();
         }
@@ -108,8 +103,8 @@ namespace PlexShareApp
         private void Logout_button_Click(object sender, RoutedEventArgs e)
         {
             AuthenticationView authenticationView = new AuthenticationView();
-            this.Close();
             authenticationView.Show();
+            this.Close();
         }
 
         string DownloadImage(string url)
@@ -126,7 +121,7 @@ namespace PlexShareApp
             string absolute_path = System.IO.Path.Combine(dir, imageName);
             if(File.Exists(absolute_path))
             {
-                File.Delete(absolute_path);
+                return absolute_path;
             }
             using (WebClient webClient = new())
             { 

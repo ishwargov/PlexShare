@@ -1,28 +1,14 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Drawing;
 using System.Threading;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
 using System.Net;
-using System.Net.Sockets;
 using System.Text;
-using System.Windows;
 using System.Security.Cryptography;
-using System.Threading;
 using System.Threading.Tasks;
-using Google.Apis.PeopleService.v1.Data;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using PlexShareApp;
-using System.Text.Json.Nodes;
 using Newtonsoft.Json.Linq;
-using System.Windows.Controls;
 using System.Diagnostics;
-using System.Reflection;
 
 namespace AuthViewModel;
 
@@ -40,7 +26,6 @@ public class AuthenticationViewModel
 
     public AuthenticationViewModel()
     {
-       var  _ = new TraceFile();
     }
  
     /// <summary>
