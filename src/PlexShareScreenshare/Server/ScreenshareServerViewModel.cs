@@ -22,7 +22,8 @@ namespace PlexShareScreenshare.Server
     /// </summary>
     public class ScreenshareServerViewModel :
         INotifyPropertyChanged, // Notifies the UX that a property value has changed.
-        IMessageListener        // Notifies the UX that subscribers list has been updated.
+        IMessageListener,       // Notifies the UX that subscribers list has been updated.
+        IDisposable             // Handle cleanup work for the allocated resources
     {
         /// <summary>
         /// The maximum number of tiles of the shared screens
@@ -90,6 +91,11 @@ namespace PlexShareScreenshare.Server
         private List<SharedClientScreen> _subscribers;
 
         /// <summary>
+        /// Track whether Dispose has been called.
+        /// </summary>
+        private bool _disposed;
+
+        /// <summary>
         /// Creates an instance of the "ScreenshareServerViewModel" which represents the
         /// view model for screen sharing on the server side. It also instantiates the instance
         /// of the underlying data model.
@@ -104,12 +110,26 @@ namespace PlexShareScreenshare.Server
 
             // Initialize rest of the fields
             _subscribers = new List<SharedClientScreen>();
+            _disposed = false;
             this.CurrentWindowClients = new ObservableCollection<SharedClientScreen>();
 
             (this.CurrentPageRows, this.CurrentPageColumns) = NumRowsColumns[this.CurrentPage];
             this.CurrentPageResolution = Resolution[this.CurrentPage];
 
             Trace.WriteLine(Utils.GetDebugMessage("Successfully created an instance for the view model", withTimeStamp: true));
+        }
+
+        /// <summary>
+        /// Destructor for the class that will perform some cleanup tasks.
+        /// This destructor will run only if the Dispose method does not get called.
+        /// It gives the class the opportunity to finalize.
+        /// </summary>
+        ~ScreenshareServerViewModel()
+        {
+            // Do not re-create Dispose clean-up code here.
+            // Calling Dispose(disposing: false) is optimal in terms of
+            // readability and maintainability.
+            Dispose(disposing: false);
         }
 
         /// <summary>
@@ -141,6 +161,21 @@ namespace PlexShareScreenshare.Server
             RecomputeCurrentWindowClients();
 
             Trace.WriteLine(Utils.GetDebugMessage($"Successfully updated the subscribers list", withTimeStamp: true));
+        }
+
+        /// <summary>
+        /// Implement "IDisposable". Disposes the managed and unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+
+            // This object will be cleaned up by the Dispose method.
+            // Therefore, we should call GC.SuppressFinalize to
+            // take this object off the finalization queue
+            // and prevent finalization code for this object
+            // from executing a second time
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -369,6 +404,38 @@ namespace PlexShareScreenshare.Server
                 this.CurrentPage = Math.Max(1, this.CurrentPage - 1);
 
                 Trace.WriteLine(Utils.GetDebugMessage($"Successfully unpinned the client with id: {clientId}", withTimeStamp: true));
+            }
+        }
+
+        /// <summary>
+        /// It executes in two distinct scenarios.
+        /// If disposing equals true, the method has been called directly
+        /// or indirectly by a user's code. Managed and unmanaged resources
+        /// can be disposed.
+        /// If disposing equals false, the method has been called by the
+        /// runtime from inside the destructor and we should not reference
+        /// other objects. Only unmanaged resources can be disposed.
+        /// </summary>
+        /// <param name="disposing">
+        /// Indicates if we are disposing this object
+        /// </param>
+        protected virtual void Dispose(bool disposing)
+        {
+            // Check to see if Dispose has already been called.
+            if (!_disposed)
+            {
+                // If disposing equals true, dispose all managed
+                // and unmanaged resources
+                if (disposing)
+                {
+                    _subscribers.Clear();
+                    _instance = null;
+                }
+
+                // Call the appropriate methods to clean up unmanaged resources here
+
+                // Now disposing has been done
+                _disposed = true;
             }
         }
 
