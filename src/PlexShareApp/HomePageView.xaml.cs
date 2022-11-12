@@ -63,9 +63,15 @@ namespace PlexShareApp
             {
                 return;
             }
+<<<<<<< HEAD
             
 
             MainScreenView mainScreenView = new MainScreenView();
+=======
+      
+            MainScreenView mainScreenView = new MainScreenView(this.Name_box.Text, this.Email_textbox.Text, absolute_path, ImageLocation, "-1", "0");
+
+>>>>>>> 4e005eb785df81a0b96ad0d41b852ab3565e7338
             mainScreenView.Show();
             this.Close();
         }
@@ -85,7 +91,7 @@ namespace PlexShareApp
                 this.Server_IP_textblock.Text = "Please Enter Server IP!!!";
                 invalid = true;
             }
-            if (string.IsNullOrEmpty(this.Server_IP.Text))
+            if (string.IsNullOrEmpty(this.Server_PORT.Text))
             {
                 this.Server_PORT.Text = "";
                 this.Server_PORT_textblock.Text = "Please Enter Server PORT!!!";
@@ -95,7 +101,7 @@ namespace PlexShareApp
             {
                 return;
             }
-            MainScreenView mainScreenView = new MainScreenView();
+            MainScreenView mainScreenView = new MainScreenView(this.Name_box.Text, this.Email_textbox.Text, absolute_path, ImageLocation, this.Server_IP.Text, this.Server_PORT.Text);
             mainScreenView.Show();
             this.Close();
         }
