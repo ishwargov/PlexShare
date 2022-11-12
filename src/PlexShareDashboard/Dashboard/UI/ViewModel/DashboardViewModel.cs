@@ -209,17 +209,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             sessionData = new SessionData();
             //initialising ParticipantsList 
             ParticipantsList = new ObservableCollection<User>();
-            //User user1 = new User(1, "Rupesh Kumar", "Presenting");
-            //User user2 = new User(2, "Shubham Raj", "Presenting");
-            //User user3 = new User(3, "Hrishi Raaj", "Presenting");
-            //User user4 = new User(4, "Saurabh kumar", "Not Presenting");
-            //User user5 = new User(5, "Aditya Agarwal", "Not Presenting");
-
-            //ParticipantsList.Add(user1);
-            //ParticipantsList.Add(user2);
-            //ParticipantsList.Add(user3);
-            //ParticipantsList.Add(user4);
-            //ParticipantsList.Add(user5);
+        
             
 
 
@@ -228,38 +218,13 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             TimeStampsList = new ObservableCollection<string>();
 
 
-            
-            //UserCountList.Add(10);
-            //UserCountList.Add(20);
-            //UserCountList.Add(30);
-            //UserCountList.Add(40);
-
-            //TimeStampsList.Add("15");
-            //TimeStampsList.Add("20");
-            //TimeStampsList.Add("25");
-            //TimeStampsList.Add("35");
-
+      
 
 
             ChatCountList = new ChartValues<int>();
             UserIdList = new ObservableCollection<string>();
 
-            //initialising the uservschatcount collection 
-            //UserIdVsChatCounts = new ObservableCollection<UserIdVsChatCount>();
-
-            //UserIdVsChatCounts.Add(new UserIdVsChatCount(1, 10));
-            //UserIdVsChatCounts.Add(new UserIdVsChatCount(2, 12));
-            //UserIdVsChatCounts.Add(new UserIdVsChatCount(3, 13));
-            //UserIdVsChatCounts.Add(new UserIdVsChatCount(4, 4));
-            //ChatCountList.Add(10);
-            //ChatCountList.Add(12);
-            //ChatCountList.Add(13);
-            //ChatCountList.Add(4);
-
-            //UserIdList.Add("1");
-            //UserIdList.Add("2");
-            //UserIdList.Add("3");
-            //UserIdList.Add("4");
+         
 
             AttentiveUsersSetter = 100;
             NonAttentiveUsersSetter = 0;
@@ -278,14 +243,6 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             Trace.WriteLine("Initializing the dashboard viewmodel");
             ButtonContentSetter = "Switch Mode";
 
-            //UserData currUser = clientSessionManager.GetUser();
-            ////$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-            ////$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-            //UserData currU = new UserData("Rupesh", 1);
-            //currUser = currU;
-            ////$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-            ////$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-            //UpdateButtonContent(currUser);
 
             //hi this is development branch for this purpose 
             SummaryContentSetter = "This is summary of the session till now. Keep refreshing this page in order to see the updated summary till now of the session for this purpose. order to see the updated summary till now of the session for this purpose.order to see the updated summary till now of the session for this purpose.order to see the updated summary till now of the session for this purpose.order to see the updated summary till now of the session for this purpose.order to see the updated summary till now of the session for this purpose.order to see the updated summary till now of the session for this purpose.order to see the updated summary till now of the session for this purpose.order to see the updated summary till now of the session for this purpose.";
@@ -329,45 +286,6 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
 
 
-            //FOR TESTING PURPOSE 
-            //User user1 = new User(1, "Rupesh Kumar", "Presenting");
-            //User user2 = new User(2, "Shubham Raj", "Presenting");
-            //User user3 = new User(3, "Hrishi Raaj", "Presenting");
-            //User user4 = new User(4, "Saurabh kumar", "Not Presenting");
-            //User user5 = new User(5, "Aditya Agarwal", "Not Presenting");
-
-            //ParticipantsList.Add(user1);
-            //ParticipantsList.Add(user2);
-            //ParticipantsList.Add(user3);
-            //ParticipantsList.Add(user4);
-            //ParticipantsList.Add(user5);
-
-            //UserCountList.Add(10);
-            //UserCountList.Add(20);
-            //UserCountList.Add(30);
-            //UserCountList.Add(40);
-
-            //TimeStampsList.Add("15");
-            //TimeStampsList.Add("20");
-            //TimeStampsList.Add("25");
-            //TimeStampsList.Add("35");
-
-
-            //ChatCountList.Add(10);
-            //ChatCountList.Add(12);
-            //ChatCountList.Add(13);
-            //ChatCountList.Add(4);
-
-            //UserIdList.Add("1");
-            //UserIdList.Add("2");
-            //UserIdList.Add("3");
-            //UserIdList.Add("4");
-            //UserIdVsChatCounts.Add(new UserIdVsChatCount(5, 16));
-
-            //adding the new stuff into the usercount list and the participant list 
-            //UserCountList.Add(50);
-            //TimeStampsList.Add("35");
-            //string currDateTime = DateTime.Now.ToString("yyyyMMddHHmmss");
             DateTime currDateTime = DateTime.Now;
             string currHour = currDateTime.ToString("HH");
             string currSecond = currDateTime.ToString("mm");
@@ -376,24 +294,6 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             TimeStampsList.Add(finalTimeStamp);
 
 
-
-            //once got the sessionAnalytics 
-            //update the value of all the observable collections.
-
-            //update the total message count
-
-            //update total paritcipant count 
-            //TotalParticipantsCountSetter = 201;
-            //TotalMessageCountSetter = 120;
-            //EngagementRateSetter = "95%";
-            //NonAttentiveUsersSetter = 50;
-            //AttentiveUsersSetter = 50;
-            //SessionScoreSetter = 100;
-            //TotalParticipantsCount = 200;
-
-            //update the engagement rate 
-
-            //update attentive and non attentive users 
 
 
             return;
@@ -468,32 +368,13 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
                 //calling the toggle function to toggle the session for this particular meeting
                 clientSessionManager.ToggleSessionMode();
 
+                //show alert here to the users 
 
 
-                //code for testing purpose 
-                //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-                //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-                if (SessionModeSetter == "LabMode")
-                {
-                    SessionModeSetter = "ExamMode";
-
-
-                }
-                else
-                {
-                    SessionModeSetter = "LabMode";
-                }
-                UpdateButtonContent(currUser);
-                //UpdateButtonContent(currUser);
-
-                //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-                //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-
-                //buttonValue = "Switch Mode"
             }
             else
             {
-                //buttonValue = SessionMode;
+                //show alert here for this purpose on the UX 
             }
 
             //say everything went fine 
@@ -699,6 +580,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
                 UserData currUser = clientSessionManager.GetUser();
                 SessionModeSetter = newSessionData.sessionMode;
                 UpdateButtonContent(currUser);
+                //UpdateButtonContent(currUser);
                 TotalParticipantsCountSetter = ParticipantsList.Count;
 
             }
@@ -710,7 +592,12 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
         //defining the function to update the summary of the current session till now 
         public void OnSummaryChanged(string latestSummary)
-        { 
+        {
+            if (latestSummary == null)
+            {
+                //say everything went fine 
+                return;
+            }
             //updating the summary for this session 
             SummaryContentSetter = latestSummary;
 
@@ -723,6 +610,11 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         //implementing the onanalytics changed
         public void OnAnalyticsChanged(SessionAnalytics latestAnalytics)
         {
+            if (latestAnalytics == null)
+            {
+                //say everything went fine 
+                return;
+            }
             //update the analytics of this viewModel
             sessionAnalytics = latestAnalytics;
             var chatCount = sessionAnalytics.sessionSummary.chatCount;
@@ -733,9 +625,9 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
             //change the session score only then when the current session score is less 
             if (currScore > SessionScoreSetter)
-            { 
+            {
                 SessionScoreSetter = currScore;
-            
+
             }
 
             //we have to update all the lists so that we can show to the dahsboard
