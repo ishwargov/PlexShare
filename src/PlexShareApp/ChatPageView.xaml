@@ -291,10 +291,25 @@
                         <TextBlock Foreground="{DynamicResource DynamicTextClr}" Text="{Binding IncomingMessage, UpdateSourceTrigger=PropertyChanged}"
                                    x:Name="MainText" TextWrapping="Wrap" Grid.Row="0" Width="250" FontSize="16"
                                    Padding="8,5,8,5" Grid.Column="0" />
-                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
+                        <StackPanel Orientation="Horizontal" Grid.Column="1">
+                            <Button Background="DeepPink" BorderBrush="Transparent" HorizontalAlignment="Right"
+                                    Width="30" Height="20" Margin="0,0,0,0" Click="ReplyButtonClick">
+                                R
+                                <!--<Image Source="Icons/reply.png" Width="15" Height="15" />-->
+                            </Button>
+                            <!--<Button  Background="Violet" BorderBrush="Transparent" HorizontalAlignment="Right"
+                                    Width="30" Height="20" Margin="0,0,0,0" Click="EditButtonClick">
+                                E
+                            </Button>
+                            <Button Background="Red" BorderBrush="Transparent" HorizontalAlignment="Right"
+                                    Width="30" Height="20" Margin="0,0,0,0" Click="DeleteButtonClick">
+                                D
+                            </Button>-->
+                        </StackPanel>
+                        <!--<Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
                                 Width="30" Margin="0,0,0,0" Click="ReplyButtonClick">
                             <Image Source="Icons/reply.png" Width="15" Height="15" />
-                        </Button>
+                        </Button>-->
                     </Grid>
                     <Grid Grid.Row="3">
                         <Grid.ColumnDefinitions>
