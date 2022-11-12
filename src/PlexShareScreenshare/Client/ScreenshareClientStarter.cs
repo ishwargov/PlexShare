@@ -7,9 +7,7 @@
 
 using PlexShareNetwork;
 using PlexShareNetwork.Communication;
-using PlexShareNetwork.Serialization;
-using System;
-using System.Threading;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace PlexShareScreenshare.Client
@@ -35,9 +33,6 @@ namespace PlexShareScreenshare.Client
         private readonly ScreenCapturer _capturer;
         private readonly ScreenProcessor _processor;
 
-        // Serializer object from networking module
-        private readonly Serializer _serializer;
-
         // Name and Id of the current client user
         private string? _name;
         private string? _id;
@@ -60,7 +55,6 @@ namespace PlexShareScreenshare.Client
             _processor = new ScreenProcessor(_capturer);
             _communicator = CommunicationFactory.GetCommunicator();
             _communicator.Subscribe("ScreenShare", this, true);
-            _serializer = new();
         }
 
         /// <summary>
@@ -86,7 +80,7 @@ namespace PlexShareScreenshare.Client
             _isScreenSharing = true;
             // sending register packet
             DataPacket dataPacket = new(_id, _name, ClientDataHeader.Register.ToString(), "");
-            string serializedData = _serializer.Serialize(dataPacket);
+            string serializedData = JsonSerializer.Serialize<DataPacket>(dataPacket);
             _communicator.Send(serializedData, "ScreenShare", null);
 
             StartImageSending();
@@ -105,15 +99,15 @@ namespace PlexShareScreenshare.Client
         /// <param name="serializedData"> Serialized data from the network module </param>
         void INotificationHandler.OnDataReceived(string serializedData)
         {
-            DataPacket dataPacket = _serializer.Deserialize<DataPacket>(serializedData);
-            if (dataPacket.Header == ServerDataHeader.Send.ToString())
+            DataPacket? dataPacket = JsonSerializer.Deserialize<DataPacket>(serializedData);
+            if (dataPacket?.Header == ServerDataHeader.Send.ToString())
             {
                 if (!_isScreenSharing)
                 {
                     StartScreensharing();
                 }
-                Resolution res = _serializer.Deserialize<Resolution>(dataPacket.Data);
-                _processor.SetNewResolution(res);
+                Resolution? res = JsonSerializer.Deserialize<Resolution>(dataPacket.Data);
+                _processor.SetNewResolution((Resolution)res);
             }
             else
             {
@@ -132,9 +126,9 @@ namespace PlexShareScreenshare.Client
             {
                 Frame img = _processor.GetImage();
                 if (img.Pixels.Count == 0) continue;
-                string serializedImg = _serializer.Serialize(img);
+                string serializedImg = JsonSerializer.Serialize<Frame>(img);
                 DataPacket dataPacket = new(_id, _name, ClientDataHeader.Image.ToString(), serializedImg);
-                string serializedData = _serializer.Serialize(dataPacket);
+                string serializedData = JsonSerializer.Serialize<DataPacket>(dataPacket);
                 _communicator.Send(serializedData, "ScreenShare", null);
             }
         }
