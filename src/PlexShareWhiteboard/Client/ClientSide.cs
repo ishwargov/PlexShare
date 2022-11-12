@@ -20,6 +20,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PlexShareWhiteboard.Client.Interfaces;
+using PlexShareWhiteboard.Server;
 
 namespace PlexShareWhiteboard.Client
 {
@@ -29,6 +30,23 @@ namespace PlexShareWhiteboard.Client
         ClientCommunicator _communicator;
         Serializer _serializer;
         ClientSnapshotHandler _snapshotHandler;
+
+        
+        private static ClientSide instance;
+
+        // To create only a single instance of ClientSide
+        public static ClientSide Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new ClientSide(); 
+                }
+
+                return instance;
+            }
+        }
         public ClientSide()
         {
             _communicator = ClientCommunicator.Instance;
