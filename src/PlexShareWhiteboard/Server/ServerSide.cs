@@ -49,6 +49,19 @@ namespace PlexShareWhiteboard.Server
                 return instance;
             }
         }
+
+        string userID;
+
+        public void SetUserId(string userId)
+        {
+            userID = userId;
+        }
+        
+
+        public int GetServerListSize()
+        {
+            return objIdToObjectMap.Count();
+        }
         // An objectId to object map which contains all the ShapeItems in the WhiteBoard presently
         private Dictionary<string, ShapeItem> objIdToObjectMap = new Dictionary<string, ShapeItem>();
 
@@ -193,8 +206,8 @@ namespace PlexShareWhiteboard.Server
                 Operation.NewUser,
                 deserializedObject.UserID
             );
-            wBServerShape.IPAddress = deserializedObject.IPAddress;
-            _communicator.Broadcast(wBServerShape, deserializedObject.IPAddress);
+            
+            _communicator.Broadcast(wBServerShape, deserializedObject.UserID);
         }
     }
 }
