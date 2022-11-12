@@ -47,7 +47,6 @@ namespace PlexShareTests.WhiteboardTests
                 return false;
             for (var i = 0; i < shapeItems1.Count; i++)
             {
-                Console.WriteLine("i = ",i);
                 if (!CompareShapeItems(shapeItems1[i], shapeItems2[i]))
                     return false;
             }
@@ -57,8 +56,15 @@ namespace PlexShareTests.WhiteboardTests
         public static bool CompareBoardServerShapes(WBServerShape shape1, WBServerShape shape2)
         {
             Serializer serializer = new Serializer();
-            return serializer.SerializeWBServerShape(shape1)
-                == serializer.SerializeWBServerShape(shape2);
+            if (shape1 == null && shape2 == null)
+                return true;
+
+            if (shape1.UserID != shape2.UserID || shape1.Op != shape2.Op || shape1.SnapshotNumber != shape2.SnapshotNumber)
+                return false;
+            List<ShapeItem> shapeItems1 = serializer.ConvertToShapeItem(shape1.ShapeItems);
+            List<ShapeItem> shapeItems2 = serializer.ConvertToShapeItem(shape2.ShapeItems);
+            
+            return CompareShapeItems(shapeItems1, shapeItems2);
         }
 
         public static ShapeItem CreateShape(Point start, Point end, string name, String id, string textDataOpt = "")

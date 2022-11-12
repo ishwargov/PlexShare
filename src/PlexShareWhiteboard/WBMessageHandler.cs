@@ -86,9 +86,7 @@ namespace PlexShareWhiteboard
                 try
                 {
                     var deserializedShape = serializer.DeserializeWBServerShape(serializedData);
-                    List<ShapeItem> shapeItems = serializer.ConvertToShapeItem(
-                        deserializedShape.ShapeItems
-                    );
+                    List<ShapeItem> shapeItems = serializer.ConvertToShapeItem(deserializedShape.ShapeItems);
                     switch (deserializedShape.Op)
                     {
                         case Operation.RestoreSnapshot:

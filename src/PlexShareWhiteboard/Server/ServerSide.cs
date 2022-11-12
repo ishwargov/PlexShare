@@ -193,8 +193,7 @@ namespace PlexShareWhiteboard.Server
                 Operation.NewUser,
                 deserializedObject.UserID
             );
-            wBServerShape.IPAddress = deserializedObject.IPAddress;
-            _communicator.Broadcast(wBServerShape, deserializedObject.IPAddress);
+            _communicator.Broadcast(wBServerShape, deserializedObject.UserID);
         }
     }
 }
