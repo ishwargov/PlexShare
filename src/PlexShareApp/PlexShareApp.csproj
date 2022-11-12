@@ -123,5 +123,7 @@
 		<ProjectReference Include="..\PlexShareDashboard\PlexShareDashboard.csproj">
 			<ReferenceSourceTarget></ReferenceSourceTarget>
 		</ProjectReference>
+	  <ProjectReference Include="..\PlexShareCloudUX\PlexShareCloudUX.csproj" />
+	  <ProjectReference Include="..\PlexShareCloud\PlexShareCloud.csproj" />
 	</ItemGroup>
 </Project>
