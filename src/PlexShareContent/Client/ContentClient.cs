@@ -451,10 +451,10 @@ namespace PlexShareContent.Client
             }
             // check if thread exists
             var key = receivedMessage.ReplyThreadID;
-            if(key == -1)
-            {
-                throw new ArgumentException("Message has invalid reply thread ID");
-            }
+            //if(key == -1)
+            //{
+            //    throw new ArgumentException("Message has invalid reply thread ID");
+            //}
             // if message is a reply, check if message being replied to exists
             if(receivedMessage.ReplyMessageID != -1)
             {

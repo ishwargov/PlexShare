@@ -20,6 +20,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PlexShareWhiteboard.Client.Interfaces;
+using PlexShareWhiteboard.Server;
 
 namespace PlexShareWhiteboard.Client
 {
@@ -29,11 +30,35 @@ namespace PlexShareWhiteboard.Client
         ClientCommunicator _communicator;
         Serializer _serializer;
         ClientSnapshotHandler _snapshotHandler;
-        public ClientSide()
+
+        
+        private static ClientSide instance;
+
+        // To create only a single instance of ClientSide
+        public static ClientSide Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new ClientSide(); 
+                }
+
+                return instance;
+            }
+        }
+
+        string userID;
+
+        public void SetUserId(string userId)
+        {
+            userID = userId;
+        }
+        private ClientSide()
         {
             _communicator = ClientCommunicator.Instance;
             _serializer = new Serializer();
-            OnNewUserJoinMessage();
+            NewUserHandler();
         }
 
         /// <summary>
@@ -45,6 +70,7 @@ namespace PlexShareWhiteboard.Client
         /// <param name="op">Operation to be sent to Server</param>
         public void OnShapeReceived(ShapeItem boardShape, Operation op)
         {
+            
             List<ShapeItem> newShapes = new List<ShapeItem>();
             newShapes.Add(boardShape);
 
@@ -54,9 +80,9 @@ namespace PlexShareWhiteboard.Client
 
         }
 
-        public void OnNewUserJoinMessage()
+        public void NewUserHandler()
         {
-            WBServerShape wbShape = new WBServerShape(null, Operation.NewUser, null);
+            WBServerShape wbShape = new WBServerShape(null, Operation.NewUser, userID);
             _communicator.SendToServer(wbShape);
         }
 
