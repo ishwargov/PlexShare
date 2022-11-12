@@ -32,7 +32,7 @@ namespace PlexShareWhiteboard
         public void OnDataReceived(string serializedData)
         {
             Serializer serializer = new Serializer();
-            ServerSide serverSide = new ServerSide();
+            ServerSide serverSide = ServerSide.Instance;
             ServerCommunicator serverCommunicator = ServerCommunicator.Instance;
             if (IsServer())
             {

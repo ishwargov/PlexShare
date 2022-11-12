@@ -23,22 +23,17 @@ namespace PlexShareTests.WhiteboardTests
             if (shape1 == null && shape2 == null)
                 return true;
 
-            Debug.WriteLine(shape1);
-            Debug.WriteLine(shape2);
-            return shape1.Geometry.Equals(shape2.Geometry)
-                && shape1.GeometryString.Equals(shape2.GeometryString)
-                && shape1.TextString.Equals(shape2.TextString)
-                && shape1.Start.Equals(shape2.Start)
-                && shape1.End.Equals(shape2.End)
-                && shape1.Fill.Equals(shape2.Fill)
-                && shape1.Stroke.Equals(shape2.Stroke)
-                && shape1.ZIndex.Equals(shape2.ZIndex)
-                && shape1.FontSize.Equals(shape2.FontSize)
-                && shape1.StrokeThickness.Equals(shape2.StrokeThickness)
-                && shape1.Id.Equals(shape2.Id)
-                && shape1.User.Equals(shape2.User)
-                && shape1.TimeStamp.Equals(shape2.TimeStamp)
-                && shape1.AnchorPoint.Equals(shape2.AnchorPoint);
+            return shape1.GeometryString == shape2.GeometryString
+                && shape1.TextString == shape2.TextString
+                && shape1.Start == shape2.Start
+                && shape1.End == shape2.End
+                && shape1.ZIndex == shape2.ZIndex
+                && shape1.FontSize == shape2.FontSize
+                && shape1.StrokeThickness == shape2.StrokeThickness
+                && shape1.Id == shape2.Id
+                && shape1.User == shape2.User
+                && shape1.TimeStamp == shape2.TimeStamp
+                && shape1.AnchorPoint == shape2.AnchorPoint;
         }
 
         public static bool CompareShapeItems(
@@ -51,8 +46,11 @@ namespace PlexShareTests.WhiteboardTests
             if (shapeItems1.Count != shapeItems2.Count)
                 return false;
             for (var i = 0; i < shapeItems1.Count; i++)
+            {
+                Console.WriteLine("i = ",i);
                 if (!CompareShapeItems(shapeItems1[i], shapeItems2[i]))
                     return false;
+            }
             return true;
         }
 
@@ -93,6 +91,7 @@ namespace PlexShareTests.WhiteboardTests
             ShapeItem newShape = new ShapeItem
             {
                 Geometry = geometry,
+                GeometryString = name,
                 Start = start,
                 End = end,
                 Fill = Brushes.Azure,
