@@ -178,10 +178,10 @@ namespace PlexShareScreenshare.Client
             // dropping one frame to set the previous image value
             Bitmap img = _capturer.GetImage();
             CapturedImageHeight = img.Height;
-            CapturedImageHeight = img.Width;
+            CapturedImageWidth = img.Width;
             NewRes = new() { Height = CapturedImageHeight, Width = CapturedImageWidth };
             CurrentRes = NewRes;
-            prevImage = new Bitmap(NewRes.Height, NewRes.Width);
+            prevImage = new Bitmap(NewRes.Width, NewRes.Height);
             Trace.WriteLine(Utils.GetDebugMessage("Previous image set and" +
                 "going to start image processing", withTimeStamp: true));
             _processorTask = new Task(Processing);
