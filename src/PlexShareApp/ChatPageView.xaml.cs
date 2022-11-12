@@ -21,6 +21,9 @@ using OxyPlot;
 using PlexShareContent;
 using SharpDX.Direct3D11;
 using ScottPlot.Renderable;
+using System.Linq;
+using Microsoft.VisualBasic;
+using System.Windows.Interop;
 
 namespace PlexShareApp
 {
@@ -79,6 +82,37 @@ namespace PlexShareApp
                 Debug.WriteLine(_allMessages);
                 //UpdateScrollBar(MainChat);
             }
+            else if(propertyName == "EditOrDelete")
+            {
+                Message updatedMsg = null;
+                for (int i = 0; i < _allMessages.Count; i++)
+                {
+                    var message = _allMessages[i];
+                    if (message.MessageID == viewModel.ReceivedMsg.MessageID)
+                    {
+                        Message toUpd = new Message();
+                        toUpd.ToFrom = message.ToFrom;
+                        toUpd.ReplyMessage = message.ReplyMessage;
+                        toUpd.Sender = message.Sender;
+                        toUpd.Time = message.Time;
+                        toUpd.MessageID = message.MessageID;
+                        toUpd.Type = message.Type;
+                        toUpd.IncomingMessage = viewModel.ReceivedMsg.IncomingMessage;
+                        // updating
+                        _allMessages[i] = toUpd;
+                        updatedMsg = _allMessages[i];
+                    }
+                }
+                //var updatedMsg = _allMessages.FirstOrDefault(i => i.MessageID == viewModel.ReceivedMsg.MessageID);
+                //if(updatedMsg != null)
+                //{
+                //    updatedMsg.IncomingMessage = viewModel.ReceivedMsg.IncomingMessage;
+                //}
+                //_allMessages.Remove(_allMessages.Where(i => i.MessageID == viewModel.ReceivedMsg.MessageID).Single());
+                //_allMessages.Add(updatedMsg);
+                Debug.WriteLine($"Message ID {updatedMsg.MessageID} was updated with {updatedMsg.IncomingMessage}");
+                Debug.WriteLine(_allMessages);
+            }
         }
 
         private void UploadButtonClick(object sender, RoutedEventArgs e)
@@ -102,20 +136,20 @@ namespace PlexShareApp
                 {
                     viewModel.SendMessage(openFileDialog.FileName, ReplyMsgId, "File");
                 }
-                addNewMessage = new Message();
-                addNewMessage.MessageID = -1;
-                addNewMessage.Sender = null;
-                addNewMessage.Time = DateTime.Now.ToShortTimeString();
-                addNewMessage.Type = true;
-                addNewMessage.ReplyMessage = null;
-                addNewMessage.IncomingMessage = openFileDialog.FileName;
-                addNewMessage.ToFrom = true;
-                _allMessages.Add(addNewMessage);
+                //addNewMessage = new Message();
+                //addNewMessage.MessageID = -1;
+                //addNewMessage.Sender = null;
+                //addNewMessage.Time = DateTime.Now.ToShortTimeString();
+                //addNewMessage.Type = true;
+                //addNewMessage.ReplyMessage = null;
+                //addNewMessage.IncomingMessage = openFileDialog.FileName;
+                //addNewMessage.ToFrom = true;
+                //_allMessages.Add(addNewMessage);
 
 
                 SendTextBox.Text = string.Empty;
                 ReplyTextBox.Text = string.Empty;
-                ReplyTextBox.Text = "";
+                //ReplyTextBox.Text = "";
             }
         }
 
@@ -138,16 +172,16 @@ namespace PlexShareApp
                 {
                     viewModel.SendMessage(SendTextBox.Text, ReplyMsgId, "Chat");
                 }
-                var chumma = SendTextBox.Text;
-                addNewMessage = new Message();
-                addNewMessage.MessageID = 2;
-                addNewMessage.Sender = null;
-                addNewMessage.Time = DateTime.Now.ToShortTimeString();
-                addNewMessage.Type = true;
-                addNewMessage.ReplyMessage = "Hey";
-                addNewMessage.IncomingMessage = chumma;//SendTextBox.Text;
-                addNewMessage.ToFrom = true;
-                _allMessages.Add(addNewMessage);
+                //var chumma = SendTextBox.Text;
+                //addNewMessage = new Message();
+                //addNewMessage.MessageID = 2;
+                //addNewMessage.Sender = null;
+                //addNewMessage.Time = DateTime.Now.ToShortTimeString();
+                //addNewMessage.Type = true;
+                //addNewMessage.ReplyMessage = "Hey";
+                //addNewMessage.IncomingMessage = chumma;//SendTextBox.Text;
+                //addNewMessage.ToFrom = true;
+                //_allMessages.Add(addNewMessage);
 
 
                 SendTextBox.Text = string.Empty;
@@ -184,12 +218,14 @@ namespace PlexShareApp
         {
             if(sender is Button)
             {
-                Button senderButton = (Button)sender;
+                var senderButton = (Button)sender;
                 if(senderButton.DataContext is Message)
                 {
                     var viewModel = DataContext as ChatPageViewModel;
                     Message msg = (Message)senderButton.DataContext;
-                    viewModel.EditChatMsg(msg.MessageID, msg.IncomingMessage);
+                    var ourEditMessage = SendTextBox.Text;
+                    viewModel.EditChatMsg(msg.MessageID, ourEditMessage);
+                    SendTextBox.Text = string.Empty;
                 }
             }
         }

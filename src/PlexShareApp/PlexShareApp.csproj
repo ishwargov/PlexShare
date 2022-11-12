@@ -71,10 +71,6 @@
 		<None Remove="Resources\time_background.jpg" />
 		<None Remove="Resources\[removal.ai]_tmp-635051040cac5.png" />
 		<None Remove="Resources\[removal.ai]_tmp-6350549d077ef.png" />
-		<Compile Remove="Icons\**" />
-		<EmbeddedResource Remove="Icons\**" />
-		<None Remove="Icons\**" />
-		<Page Remove="Icons\**" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -20,6 +20,7 @@ using PlexShareDashboard.Dashboard.Client.SessionManagement;
 using PlexShare.Dashboard;
 using System.Diagnostics;
 using System.Collections.ObjectModel;
+using System.Windows.Documents;
 
 namespace PlexShareApp.ViewModel
 {
@@ -331,6 +332,34 @@ namespace PlexShareApp.ViewModel
                                   ReceivedMsg.ReplyMessage = contentData.ReplyMessageID == -1 ? "" : Messages[contentData.ReplyMessageID];
 
                                   OnPropertyChanged("ReceivedMsg");
+                              }
+                              else if(contentData.Event == PlexShareContent.Enums.MessageEvent.Edit || contentData.Event == PlexShareContent.Enums.MessageEvent.Delete)
+                              {
+                                  if(contentData.Event == PlexShareContent.Enums.MessageEvent.Edit)
+                                  {
+                                      Trace.WriteLine("Editing a message");
+                                  }
+                                  else
+                                  {
+                                      Trace.WriteLine("Deleting a message");
+                                  }
+
+                                  if (ProductionMode)
+                                  {
+                                      UserId = _model.GetUserID();
+                                  }
+
+                                  ReceivedMsg = new Message();
+                                  ReceivedMsg.MessageID = contentData.MessageID;
+                                  ReceivedMsg.Type = contentData.Type == MessageType.Chat;
+                                  ReceivedMsg.IncomingMessage = contentData.Data;
+                                  //ReceivedMsg.Time = contentData.SentTime.ToString("hh:mm tt ddd"); // 11:09 AM Mon
+                                  ReceivedMsg.Time = contentData.SentTime.ToString("hh:mm tt");
+                                  ReceivedMsg.Sender = Users.ContainsKey(contentData.SenderID) ? Users[contentData.SenderID] : "Anonymous";
+                                  ReceivedMsg.ToFrom = UserId == contentData.SenderID;
+                                  ReceivedMsg.ReplyMessage = contentData.ReplyMessageID == -1 ? "" : Messages[contentData.ReplyMessageID];
+
+                                  OnPropertyChanged("EditOrDelete");
                               }
                           }
                       }),
