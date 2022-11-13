@@ -61,20 +61,28 @@ namespace PlexShareNetwork.Communication
         /// </summary>
         public CommunicatorServer()
         {
-            // find ip address and port of the current machine
+            // find ip address and port of the current machine and
+            // initialize tcp client connect request listener on
+            // this ip address and port
             ip = IPAddress.Parse(FindIpAddress());
             port = FindFreePort(ip);
-
-            // initialize the tcp client connect request listener
             _tcpClientConnectRequestListener = new TcpListener(
                 IPAddress.Any, port);
-            
-            // initialize all threads
+
+            // SendQueueListenerServer listens to the sending queue and
+            // sends the packets whenever they comes into the queue
+            // it also notifies all modules when a client disconnects
             _sendQueueListenerServer = new SendQueueListenerServer(
                 _sendingQueue, _clientIdToClientSocket, 
                 _moduleToNotificationHanderMap);
+
+            // receive queue listener listens to the receiving queue
+            // and notifies the respective module whenever data for
+            // that module comes into the receiving queue
             _receiveQueueListener = new ReceiveQueueListener(
                 _moduleToNotificationHanderMap, _receivingQueue);
+
+            // this thread listens to connect requests from clients
             _clientConnectReuqestAcceptorThread = new Thread(
                 AcceptClientConnectRequests);
         }
@@ -97,8 +105,8 @@ namespace PlexShareNetwork.Communication
         public string Start(string? serverIP = null,
             string? serverPort = null)
 		{
-            Trace.WriteLine("[Networking] CommunicatorServer.Start()"
-                + " function called.");
+            Trace.WriteLine("[Networking] " +
+                "CommunicatorServer.Start() function called.");
             try
             {
                 // start the tcp client connect request listener
@@ -133,7 +141,7 @@ namespace PlexShareNetwork.Communication
                 " function called.");
             try
             {
-                // stop the accept client connect requests thread
+                // stop the client connect requests acceptor thread
                 _runClientConnectReuqestAcceptorThread = false;
 
                 // stop listening to the clients
@@ -171,8 +179,8 @@ namespace PlexShareNetwork.Communication
         /// </returns>
 		private static string FindIpAddress()
 		{
-            Trace.WriteLine("[Networking] CommunicatorServer." +
-                "FindIpAddress() function called.");
+            Trace.WriteLine("[Networking] " +
+                "CommunicatorServer.FindIpAddress() function called.");
             try
             {
                 // get the IP address of the machine
@@ -198,13 +206,14 @@ namespace PlexShareNetwork.Communication
             }
             catch (Exception e)
             {
-                Trace.WriteLine("[Networking] Error in Communicator" +
-                    "Server.FindIpAddress(): " + e.Message);
+                Trace.WriteLine("[Networking] Error in " +
+                    "CommunicatorServer.FindIpAddress(): " +
+                    e.Message);
                 return "null";
             }
-            throw new Exception("[Networking] Error in Communicator" +
-                "Server.FindIpAddress(): IPv4 address not found on " +
-                "this machine!");
+            throw new Exception("[Networking] Error in " +
+                "CommunicatorServer.FindIpAddress(): IPv4 address " +
+                "not found on this machine!");
 		}
 
         /// <summary>
@@ -217,8 +226,8 @@ namespace PlexShareNetwork.Communication
         /// <returns> The port number </returns>
         private static int FindFreePort(IPAddress ipAddress)
 		{
-            Trace.WriteLine("[Networking] CommunicatorServer." +
-                "FindFreePort() function called.");
+            Trace.WriteLine("[Networking] " +
+                "CommunicatorServer.FindFreePort() function called.");
             try
             {
                 // start a tcp listener on port = 0, the tcp listener
@@ -234,8 +243,9 @@ namespace PlexShareNetwork.Communication
             }
             catch (Exception e)
             {
-                Trace.WriteLine("[Networking] Error in Communicator" +
-                    "Server.FindFreePort(): " + e.Message);
+                Trace.WriteLine("[Networking] Error in " +
+                    "CommunicatorServer.FindFreePort(): " +
+                    e.Message);
                 return -1;
             }
         }
@@ -270,8 +280,9 @@ namespace PlexShareNetwork.Communication
                             moduleToNotificationHandler.Value;
                         notificationHandler.OnClientJoined(
                             clientSocket);
-                        Trace.WriteLine("[Networking] Notifed module: "
-                            + module + " that new client has joined.");
+                        Trace.WriteLine("[Networking] Notifed " +
+                            "module: " + module + " that new client" +
+                            " has joined.");
                     }
 				}
 				catch (SocketException e)
@@ -279,22 +290,25 @@ namespace PlexShareNetwork.Communication
                     if (e.SocketErrorCode == SocketError.Interrupted)
                     {
                         Trace.WriteLine("[Networking] Error in " +
-                            "CommunicatorServer.AcceptClientConnect" +
-                            "Requests(): client connect request " +
-                            "tcp listener socket has been closed.");
+                            "CommunicatorServer." +
+                            "AcceptClientConnectRequests(): client " +
+                            "connect request tcp listener socket " +
+                            "has been closed.");
                     }
                     else
                     {
                         Trace.WriteLine("[Networking] SocketException "
-                            + "in CommunicatorServer.AcceptClient" +
-                            "ConnectRequests(): " + e.Message);
+                            + "in CommunicatorServer." +
+                            "AcceptClientConnectRequests(): " + 
+                            e.Message);
                     }
 				}
 				catch (Exception e)
 				{
 					Trace.WriteLine("[Networking] Error in " +
-                        "CommunicatorServer.AcceptClientConnect" +
-                        "Requests(): " + e.Message);
+                        "CommunicatorServer." +
+                        "AcceptClientConnectRequests(): " + 
+                        e.Message);
 				}
 			}
 		}
@@ -311,8 +325,8 @@ namespace PlexShareNetwork.Communication
         /// <returns> void </returns>
         public void AddClient(string clientId, TcpClient socket)
 		{
-            Trace.WriteLine("[Networking] CommunicatorServer." +
-                "AddClient() function called.");
+            Trace.WriteLine("[Networking] " +
+                "CommunicatorServer.AddClient() function called.");
             try
             {
                 // store the socket of the client in the respective map
@@ -320,18 +334,18 @@ namespace PlexShareNetwork.Communication
                 // and add the socket listener to the respective map
                 // and start the socket listener
                 _clientIdToClientSocket[clientId] = socket;
-                SocketListener socketListener = new(_receivingQueue,
-                    socket);
+                SocketListener socketListener = new(
+                    _receivingQueue, socket);
                 _clientIdToSocketListener[clientId] = socketListener;
                 socketListener.Start();
             }
             catch (Exception e)
             {
-                Trace.WriteLine("[Networking] Error in Communicator" +
-                    "Server.AddClient(): " + e.Message);
+                Trace.WriteLine("[Networking] Error in " +
+                    "CommunicatorServer.AddClient(): " + e.Message);
             }
-            Trace.WriteLine("[Networking] Client added with clientID: "
-                + clientId);
+            Trace.WriteLine("[Networking] Client added with " +
+                "clientID: " + clientId);
         }
 
 		/// <summary>
@@ -343,13 +357,13 @@ namespace PlexShareNetwork.Communication
 		/// <returns> void </returns>
 		public void RemoveClient(string clientId)
 		{
-            Trace.WriteLine("[Networking] CommunicatorServer." +
-                "RemoveClient() function called.");
+            Trace.WriteLine("[Networking] " +
+                "CommunicatorServer.RemoveClient() function called.");
 
             // stop listening to this client and remove the client
             // socket listener from the respective map
-            SocketListener socketListener = _clientIdToSocketListener[
-                clientId];
+            SocketListener socketListener = 
+                _clientIdToSocketListener[clientId];
 			socketListener.Stop();
 			_clientIdToSocketListener.Remove(clientId);
 
@@ -399,8 +413,8 @@ namespace PlexShareNetwork.Communication
                     return;
                 }
             }
-            Packet packet = new(serializedData, destination, 
-                moduleName);
+            Packet packet = new(
+                serializedData, destination, moduleName);
             bool isEnqueued = _sendingQueue.Enqueue(packet);
             if (isEnqueued)
             {
@@ -410,8 +424,8 @@ namespace PlexShareNetwork.Communication
             }
             else
             {
-                Trace.WriteLine("[Networking] Packet not enqueued in "
-                    + "sending queue of the module: " + moduleName +
+                Trace.WriteLine("[Networking] Packet not enqueued " +
+                    "in sending queue of the module: " + moduleName +
                     " for destination: " + destination);
             }
         }
@@ -433,19 +447,19 @@ namespace PlexShareNetwork.Communication
         public void Subscribe(string moduleName, INotificationHandler 
             notificationHandler, bool isHighPriority)
 		{
-            Trace.WriteLine("[Networking] CommunicatorServer." +
-                "Subscribe() function called.");
+            Trace.WriteLine("[Networking] " +
+                "CommunicatorServer.Subscribe() function called.");
             try
             {
                 // store the notification handler of the module in our
                 // map
-                _moduleToNotificationHanderMap.Add(moduleName,
-                    notificationHandler);
+                _moduleToNotificationHanderMap.Add(
+                    moduleName, notificationHandler);
 
                 // sending queue implements priority queues so we need
                 // to register the priority of the module
-                _sendingQueue.RegisterModule(moduleName,
-                    isHighPriority);
+                _sendingQueue.RegisterModule(
+                    moduleName, isHighPriority);
 
                 Trace.WriteLine("[Networking] Module: " + moduleName +
                     " subscribed with priority [True for high/False" +

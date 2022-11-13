@@ -46,10 +46,12 @@ namespace PlexShareNetwork.Sockets
 		/// <returns> void </returns>
 		public void Start()
 		{
-            Trace.WriteLine("[Networking] SendQueueListenerClient.Start() function called.");
+            Trace.WriteLine("[Networking] " +
+                "SendQueueListenerClient.Start() function called.");
             _threadRun = true;
 			_thread.Start();
-			Trace.WriteLine("[Networking] SendQueueListenerClient thread started.");
+			Trace.WriteLine("[Networking] SendQueueListenerClient " +
+                "thread started.");
 		}
 
 		/// <summary>
@@ -58,9 +60,11 @@ namespace PlexShareNetwork.Sockets
 		/// <returns> void </returns>
 		public void Stop()
 		{
-            Trace.WriteLine("[Networking] SendQueueListenerClient.Stop() function called.");
+            Trace.WriteLine("[Networking] " +
+                "SendQueueListenerClient.Stop() function called.");
             _threadRun = false;
-            Trace.WriteLine("[Networking] SendQueueListenerClient thread stopped.");
+            Trace.WriteLine("[Networking] SendQueueListenerClient " +
+                "thread stopped.");
 		}
 
 		/// <summary>
@@ -70,7 +74,8 @@ namespace PlexShareNetwork.Sockets
 		/// <returns> void </returns>
 		private void Listen()
 		{
-            Trace.WriteLine("[Networking] SendQueueListenerClient.Listen() function called.");
+            Trace.WriteLine("[Networking] " +
+                "SendQueueListenerClient.Listen() function called.");
             while (_threadRun)
 			{
                 _sendingQueue.WaitForPacket();
@@ -79,11 +84,14 @@ namespace PlexShareNetwork.Sockets
                 try
 				{
                     _clientSocket.Client.Send(Encoding.ASCII.GetBytes(sendString));
-					Trace.WriteLine("[Networking] SendQueueListenerClient. Data sent from client to server by module: " + packet.moduleOfPacket);
+					Trace.WriteLine("[Networking] SendQueueListenerClient." +
+                        " Data sent from client to server by module: " +
+                        packet.moduleOfPacket);
 				}
 				catch (Exception e)
 				{
-					Trace.WriteLine("[Networking] Error in SendQueueListenerClient.Listen(): " + e.Message);
+					Trace.WriteLine("[Networking] Error in " +
+                        "SendQueueListenerClient.Listen(): " + e.Message);
 				}
 			}
 		}

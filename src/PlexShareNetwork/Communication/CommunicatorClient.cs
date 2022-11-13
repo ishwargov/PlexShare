@@ -43,11 +43,19 @@ namespace PlexShareNetwork.Communication
         /// </summary>
         public CommunicatorClient()
         {
-            // initialize all threads
-            _socketListener = new SocketListener(_receivingQueue,
-                _clientSocket);
+            // SocketListener listens to the socket and enqueues 
+            // received packets in the receiving queue
+            _socketListener = new SocketListener(
+                _receivingQueue, _clientSocket);
+
+            // SendQueueListenerClient listens to the sending queue and
+            // sends the packets whenever they comes into the queue
             _sendQueueListenerClient = new SendQueueListenerClient(
                 _sendingQueue, _clientSocket);
+
+            // ReceiveQueueListener listens to the receiving queue
+            // and notifies the respective module whenever data for
+            // that module comes into the receiving queue
             _receiveQueueListener = new ReceiveQueueListener(
                 _moduleToNotificationHanderMap, _receivingQueue);
         }
@@ -75,8 +83,8 @@ namespace PlexShareNetwork.Communication
                 _clientSocket.Client.SetSocketOption(
                     SocketOptionLevel.Socket,
                     SocketOptionName.DontLinger, true);
-                _clientSocket.Connect(ParseIP(serverIP),
-                    int.Parse(serverPort));
+                _clientSocket.Connect(
+                    ParseIPstring(serverIP), int.Parse(serverPort));
 
                 // start all threads
 				_socketListener.Start();
@@ -140,10 +148,10 @@ namespace PlexShareNetwork.Communication
         /// <returns>
         /// IP address of type "IPAddress"
         /// </returns>
-        private static IPAddress ParseIP(string IPstring)
+        private static IPAddress ParseIPstring(string IPstring)
 		{
-            Trace.WriteLine("[Networking] CommunicatorClient.ParseIP()"
-                + " function called.");
+            Trace.WriteLine("[Networking] " +
+                "CommunicatorClient.ParseIP() function called.");
             try
             {
 				Trace.WriteLine("[Networking] Parsing IP address: " +
@@ -203,8 +211,8 @@ namespace PlexShareNetwork.Communication
             }
             else
             {
-                Trace.WriteLine("[Networking] Packet not enqueued in "
-                    + "sending queue of the module: " + moduleName);
+                Trace.WriteLine("[Networking] Packet not enqueued " +
+                    "in sending queue of the module: " + moduleName);
             }
 		}
 
@@ -225,19 +233,19 @@ namespace PlexShareNetwork.Communication
         public void Subscribe(string moduleName, INotificationHandler
             notificationHandler, bool isHighPriority)
 		{
-            Trace.WriteLine("[Networking] CommunicatorClient." +
-                "Subscribe() function called.");
+            Trace.WriteLine("[Networking] " +
+                "CommunicatorClient.Subscribe() function called.");
             try
             {
                 // store the notification handler of the module in our
                 // map
-                _moduleToNotificationHanderMap.Add(moduleName,
-                    notificationHandler);
+                _moduleToNotificationHanderMap.Add(
+                    moduleName, notificationHandler);
                 
                 // sending queue implements priority queues so we need
                 // to register the priority of the module
-                _sendingQueue.RegisterModule(moduleName,
-                    isHighPriority);
+                _sendingQueue.RegisterModule(
+                    moduleName, isHighPriority);
 
                 Trace.WriteLine("[Networking] Module: " + moduleName +
                     " subscribed with priority [True for high/False" +
