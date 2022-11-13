@@ -46,6 +46,7 @@
     <None Remove="Icons\upload-file.png" />
     <None Remove="Icons\delete.png" />
     <None Remove="Icons\edit.png" />
+    <None Remove="Icons\undo.png" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -93,6 +94,7 @@
 		<Resource Include="Icons\upload-file.png" />
     <Resource Include="Icons\delete.png" />
     <Resource Include="Icons\edit.png" />
+    <Resource Include="Icons\undo.png" />
 		<Resource Include="Resources\497-4973038_profile-picture-circle-png-transparent-png.png" />
 		<Resource Include="Resources\AuthScreenImg.jpg" />
 		<Resource Include="Resources\GoogleSignIn.png" />
