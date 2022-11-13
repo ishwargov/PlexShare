@@ -1,10 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿/// <author>Ishwar Govind</author>
+/// <summary>
+/// Trace Configuration
+/// Trace to a new file on every run
+/// </summary>
+
+using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PlexShareApp
 {
