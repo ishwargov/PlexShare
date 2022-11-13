@@ -1,5 +1,5 @@
-/// <author>Mohammad Umar Sultan</author>
-/// <created>16/10/2022</created>
+/// <author> Mohammad Umar Sultan </author>
+/// <created> 16/10/2022 </created>
 /// <summary>
 /// This file contains the class definition of SendQueueListenerClient.
 /// </summary>
@@ -79,11 +79,11 @@ namespace PlexShareNetwork.Sockets
                 try
 				{
                     _clientSocket.Client.Send(Encoding.ASCII.GetBytes(sendString));
-					Trace.WriteLine($"[Networking] SendQueueListenerClient. Data sent from client to server by module: {packet.moduleOfPacket}.");
+					Trace.WriteLine("[Networking] SendQueueListenerClient. Data sent from client to server by module: " + packet.moduleOfPacket);
 				}
 				catch (Exception e)
 				{
-					Trace.WriteLine($"[Networking] SendQueueListenerClient. Error in sending data: {e.Message}");
+					Trace.WriteLine("[Networking] Error in SendQueueListenerClient.Listen(): " + e.Message);
 				}
 			}
 		}

@@ -1,5 +1,5 @@
-/// <author>Mohammad Umar Sultan</author>
-/// <created>16/10/2022</created>
+/// <author> Mohammad Umar Sultan </author>
+/// <created> 16/10/2022 </created>
 /// <summary>
 /// This file contains the class definition of SocketListener.
 /// </summary>
@@ -62,7 +62,7 @@ namespace PlexShareNetwork.Sockets
             }
             catch(Exception e)
             {
-                Trace.WriteLine($"[Networking] Error in starting the thread: {e.Message}.");
+                Trace.WriteLine("[Networking] Error in SocketListener.Start(): " + e.Message);
             }
 		}
 
@@ -100,7 +100,7 @@ namespace PlexShareNetwork.Sockets
                 }
                 catch (Exception e)
                 {
-                    Trace.WriteLine($"[Networking] Error in SocketListener.ReceiveCallback(): {e.Message}");
+                    Trace.WriteLine("[Networking] Error in SocketListener.ReceiveCallback(): " + e.Message);
                 }
             }
 		}
@@ -128,7 +128,7 @@ namespace PlexShareNetwork.Sockets
                 Packet packet = SendString.SendStringToPacket(receivedString[packetBegin..packetEnd]);
                 _receivingQueue.Enqueue(packet);
                 receivedString = receivedString[(packetEnd + 3)..]; // remove the first packet from the string
-                Trace.WriteLine($"[Networking] Received data from module: {packet.moduleOfPacket}.");
+                Trace.WriteLine("[Networking] Received data from module: " + packet.moduleOfPacket);
             }
             Trace.WriteLine("[Networking] SocketListener.ProcessReceivedString() function exited.");
             return receivedString; // return the remaining string

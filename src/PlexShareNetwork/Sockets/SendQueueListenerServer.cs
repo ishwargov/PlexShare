@@ -1,5 +1,5 @@
-/// <author>Mohammad Umar Sultan</author>
-/// <created>16/10/2022</created>
+/// <author> Mohammad Umar Sultan </author>
+/// <created> 16/10/2022 </created>
 /// <summary>
 /// This file contains the class definition of SendQueueListenerServer.
 /// </summary>
@@ -98,7 +98,7 @@ namespace PlexShareNetwork.Sockets
 						if (!(clientSocket.Client.Poll(1, SelectMode.SelectRead) && clientSocket.Client.Available == 0))
 						{
                             clientSocket.Client.Send(bytes);
-							Trace.WriteLine($"[Networking] Data sent from server to client by module: {packet.moduleOfPacket}.");
+							Trace.WriteLine("[Networking] Data sent from server to client by module: " + packet.moduleOfPacket);
 						}
 						else // else the client is disconnected so we try to reconnect
 						{
@@ -108,7 +108,7 @@ namespace PlexShareNetwork.Sockets
 					}
 					catch (Exception e)
 					{
-						Trace.WriteLine($"[Networking] Error in SendQueueListenerServer thread: {e.Message}");
+						Trace.WriteLine("[Networking] Error in SendQueueListenerServer.Listen(): " + e.Message);
 					}
 				}
 			}
@@ -138,7 +138,7 @@ namespace PlexShareNetwork.Sockets
                     {
                         Trace.WriteLine("[Networking] Client reconnected.");
                         clientSocket.Client.Send(bytes);
-                        Trace.WriteLine($"[Networking] Data sent from server to client by {packet.moduleOfPacket}.");
+                        Trace.WriteLine("[Networking] Data sent from server to client by " + packet.moduleOfPacket);
                         isSent = true;
                     }
                 }
@@ -151,7 +151,7 @@ namespace PlexShareNetwork.Sockets
                     foreach (var moduleToNotificationHandler in _moduleToNotificationHandlerMap)
                     {
                         moduleToNotificationHandler.Value.OnClientLeft(clientId);
-                        Trace.WriteLine($"[Networking] Notifed module:{moduleToNotificationHandler.Key} that the client has left.");
+                        Trace.WriteLine("[Networking] Notifed module: " + moduleToNotificationHandler.Key + " that the client has left.");
                     }
                     // here we dont need to remove the client socket from the _clientIdToClientSocketMap, it will
                     // be done when the CommunicatorServer.RemoveClient() function will be called by the Dashboard
@@ -159,7 +159,7 @@ namespace PlexShareNetwork.Sockets
             }
             catch (Exception e)
             {
-                Trace.WriteLine($"[Networking] Error in SendQueueListenerServer thread: {e.Message}");
+                Trace.WriteLine("[Networking] Error in SendQueueListenerServer.TryReconnectingToClient(): " + e.Message);
 
             }
         }

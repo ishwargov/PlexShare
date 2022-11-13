@@ -1,7 +1,8 @@
-/// <author>Mohammad Umar Sultan</author>
-/// <created>16/10/2022</created>
+/// <author> Mohammad Umar Sultan </author>
+/// <created> 16/10/2022 </created>
 /// <summary>
-/// This file contains the class definition of CommunicatorClient.
+/// This file contains the class definition of CommunicatorClient
+/// which is the communicator for the client side.
 /// </summary>
 
 using PlexShareNetwork.Queues;
@@ -19,20 +20,23 @@ namespace PlexShareNetwork.Communication
 {
 	public class CommunicatorClient : ICommunicator
 	{
-		// initialize the send queue and receive queue
+		// initialize the sending queue and receiving queue
 		private readonly SendingQueue _sendingQueue = new();
 		private readonly ReceivingQueue _receivingQueue = new();
 
         // declare all the threads
         private readonly SocketListener _socketListener;
-        private readonly SendQueueListenerClient _sendQueueListener;
+        private readonly SendQueueListenerClient
+            _sendQueueListenerClient;
 		private readonly ReceiveQueueListener _receiveQueueListener;
 
 		// declare the socket variable for the client
+        // this will be used for communication with the server
 		private readonly TcpClient _socket = new();
 
 		// map to store the notification handlers of subscribed modules
-		private readonly Dictionary<string, INotificationHandler> _moduleToNotificationHanderMap = new();
+		private readonly Dictionary<string, INotificationHandler>
+            _moduleToNotificationHanderMap = new();
 
         /// <summary>
         /// Constructor initializes all threads.
@@ -40,94 +44,116 @@ namespace PlexShareNetwork.Communication
         public CommunicatorClient()
         {
             // initialize all threads
-            _socketListener = new SocketListener(_receivingQueue, _socket);
-            _sendQueueListener = new SendQueueListenerClient(_sendingQueue, _socket);
-            _receiveQueueListener = new ReceiveQueueListener(_moduleToNotificationHanderMap, _receivingQueue);
+            _socketListener = new SocketListener(_receivingQueue,
+                _socket);
+            _sendQueueListenerClient = new SendQueueListenerClient(
+                _sendingQueue, _socket);
+            _receiveQueueListener = new ReceiveQueueListener(
+                _moduleToNotificationHanderMap, _receivingQueue);
         }
 
         /// <summary>
-        /// This function connects the client to the server. And starts all threads. The
-        /// function arguments are needed only on the client side to connect to the server.
+        /// Connects the client to the server. And starts all threads.
+        /// The function arguments are needed only on the client side.
         /// </summary>
-        /// <param name="serverIP"> IP Address of the server. Required only on client side. </param>
-        /// <param name="serverPort"> Port no. of the server. Required only on client side. </param>
+        /// <param name="serverIP">
+        /// IP Address of the server. Required only on client side.
+        /// </param>
+        /// <param name="serverPort">
+        /// Port no. of the server. Required only on client side.
+        /// </param>
         /// <returns>
-        ///  string "success" if success, "failure" if failure
+        /// string "success" if success, "failure" if failure.
         /// </returns>
         public string Start(string serverIP, string serverPort)
 		{
-            Trace.WriteLine("[Networking] CommunicatorClient.Start() function called.");
+            Trace.WriteLine("[Networking] CommunicatorClient.Start()" +
+                "function called.");
             try
 			{
                 // connect to the server
-				_socket.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, true);
-				_socket.Connect(ParseIP(serverIP), int.Parse(serverPort));
+				_socket.Client.SetSocketOption(
+                    SocketOptionLevel.Socket,
+                    SocketOptionName.DontLinger, true);
+				_socket.Connect(ParseIP(serverIP),
+                    int.Parse(serverPort));
 
                 // start all threads
-				_socketListener.Start();				
-				_sendQueueListener.Start();
+				_socketListener.Start();
+                _sendQueueListenerClient.Start();
 				_receiveQueueListener.Start();
 
-                Trace.WriteLine("[Networking] CommunicatorClient started.");
+                Trace.WriteLine("[Networking] CommunicatorClient" +
+                    "started.");
                 return "success";
 			}
 			catch(Exception e)
 			{
-				Trace.WriteLine($"[Networking] Error in CommunicatorClient.Start(): {e.Message}");
+				Trace.WriteLine("[Networking] Error in " +
+                    "CommunicatorClient.Start(): " + e.Message);
 				return "failure";
 			}
 		}
 
         /// <summary>
-        /// Stops all running threads, clears queues and closes the socket.
+        /// Stops all threads, clears queues and closes the socket.
         /// </summary>
         /// <returns> void </returns>
         public void Stop()
 		{
-            Trace.WriteLine("[Networking] CommunicatorClient.Stop() function called.");
+            Trace.WriteLine("[Networking] CommunicatorClient.Stop() " +
+                "function called.");
             try
             {
                 // stop all threads
                 _socketListener.Stop();
-                _sendQueueListener.Stop();
+                _sendQueueListenerClient.Stop();
                 _receiveQueueListener.Stop();
 
                 // clear the queues
                 _sendingQueue.Clear();
                 _receivingQueue.Clear();
 
-                // if socket is connected then close the socket stream and socket
+                // if socket is connected then close it
                 if (_socket.Connected)
                 {
                     _socket.GetStream().Close();
                     _socket.Close();
                 }
-                Trace.WriteLine("[Networking] CommunicatorClient stopped.");
+                Trace.WriteLine("[Networking] CommunicatorClient " +
+                    "stopped.");
             }
             catch (Exception e)
             {
-                Trace.WriteLine($"[Networking] Error in CommunicatorClient.Stop(): {e.Message}");
+                Trace.WriteLine("[Networking] Error in " +
+                    "CommunicatorClient.Stop(): " + e.Message);
             }
         }
 
-		/// <summary>
-		/// This function parses the IP address given as string and returns the IPAddress.
-		/// </summary>
-		/// <param name="IPstring"> IP address string. </param>
-		/// <returns>
-		///  The "IPAddress" type IP address
-		/// </returns>
-		private static IPAddress ParseIP(string IPstring)
+        /// <summary>
+        /// Parses IP address given as a string and 
+        /// returns IP address of type "IPAddress".
+        /// </summary>
+        /// <param name="IPstring">
+        /// IP address as a string.
+        /// </param>
+        /// <returns>
+        /// IP address of type "IPAddress"
+        /// </returns>
+        private static IPAddress ParseIP(string IPstring)
 		{
-            Trace.WriteLine("[Networking] CommunicatorClient.ParseIP() function called.");
+            Trace.WriteLine("[Networking] CommunicatorClient.ParseIP()"
+                + " function called.");
             try
             {
-				Trace.WriteLine($"[Networking] Parsing IP address: {IPstring}.");
+				Trace.WriteLine("[Networking] Parsing IP address: " +
+                    IPstring);
 				return IPAddress.Parse(IPstring);
 			}
 			catch
 			{
-				Trace.WriteLine($"[Networking] Parsing DNS name: {IPstring}.");
+				Trace.WriteLine("[Networking] Parsing DNS name: " +
+                    IPstring);
 				return Dns.GetHostAddresses(IPstring).Last();
 			}
 		}
@@ -151,34 +177,73 @@ namespace PlexShareNetwork.Communication
 		}
 
         /// <summary>
-        /// This function sends data to the server.
+        /// Sends data to the server.
         /// </summary>
-        /// <param name="serializedData"> The serialized data to be sent. </param>
-        /// <param name="moduleName"> Module sending the data. </param>
-        /// <param name="destination"> Destination not required to send from client to server. </param>
+        /// <param name="serializedData">
+        /// The serialized data to be sent to the server.
+        /// </param>
+        /// <param name="moduleName">
+        /// Name of module sending the data.
+        /// </param>
+        /// <param name="destination">
+        /// Not required on client side, give null.
+        /// </param>
         /// <returns> void </returns>
-        public void Send(string serializedData, string moduleName, string? destination = null)
+        public void Send(string serializedData, string moduleName,
+            string? destination = null)
 		{
-            Trace.WriteLine("[Networking] CommunicatorClient.Send() function called.");
+            Trace.WriteLine("[Networking] CommunicatorClient.Send() " +
+                "function called.");
             Packet packet = new(serializedData, null, moduleName);
-			_sendingQueue.Enqueue(packet);
-			Trace.WriteLine($"[Networking] Enqueued packet in send queue of the module: {moduleName}");
+			bool isEnqueued = _sendingQueue.Enqueue(packet);
+            if (isEnqueued)
+            {
+                Trace.WriteLine("[Networking] Enqueued packet in " +
+                    "sending queue of the module: " + moduleName);
+            }
+            else
+            {
+                Trace.WriteLine("[Networking] Packet not enqueued in "
+                    + "sending queue of the module: " + moduleName);
+            }
 		}
 
         /// <summary>
-        /// Other modules can subscribe using this function to be notified when 
-        /// data is received, and when a client joins, and when a client leaves.
+        /// Other modules can subscribe using this function to be able
+        /// to send data. And be notified when data is received, and
+        /// when a client joins, and when a client leaves.
         /// </summary>
-        /// <param name="moduleName"> Name of the module. </param>
-        /// <param name="notificationHandler"> Module implementation of the INotificationHandler. </param>
-        /// <param name="isHighPriority"> Boolean telling whether module's data is high priority or low priority. </param>
+        /// <param name="moduleName">
+        /// Name of the module.
+        /// </param>
+        /// <param name="notificationHandler"> 
+        /// Module implementation of the INotificationHandler.
+        /// </param>
+        /// <param name="isHighPriority">
+        /// Boolean telling whether module's data is high priority
+        /// or low priority.
+        /// </param>
         /// <returns> void </returns>
-        public void Subscribe(string moduleName, INotificationHandler notificationHandler, bool isHighPriority)
+        public void Subscribe(string moduleName, INotificationHandler
+            notificationHandler, bool isHighPriority)
 		{
-            Trace.WriteLine("[Networking] CommunicatorClient.Subscribe() function called.");
-            _moduleToNotificationHanderMap.Add(moduleName, notificationHandler);
-			_sendingQueue.RegisterModule(moduleName, isHighPriority); // sending queue implements priority queues
-            Trace.WriteLine($"[Networking] Module: {moduleName} subscribed with priority is high: {isHighPriority}");
-		}
+            Trace.WriteLine("[Networking] CommunicatorClient." +
+                "Subscribe() function called.");
+            try
+            {
+                _moduleToNotificationHanderMap.Add(moduleName,
+                    notificationHandler);
+                _sendingQueue.RegisterModule(moduleName,
+                    isHighPriority);
+                Trace.WriteLine("[Networking] Module: " + moduleName +
+                    " subscribed with priority [True for high/False" +
+                    "for low]: " + isHighPriority.ToString());
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine("[Networking] Error in " +
+                    "CommunicatorClient.Subscribe(): " + e.Message);
+            }
+        }
 	}
 }

@@ -1,6 +1,6 @@
 ﻿/// <author> Mohammad Umar Sultan </author>
 /// <summary>
-/// This file contains all the global constants used by testing files
+/// This file contains all the common functions used by network tests
 /// </summary>
 
 using PlexShareNetwork.Communication;
@@ -34,6 +34,8 @@ namespace PlexShareNetwork
         /// <summary>
         /// Returns a randomly generated alphanumeric string
         /// </summary>
+        /// <param name="length"> Length of the string. </param>
+        /// <returns> Randomly generated string. </returns>
         public static string RandomString(int length)
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
