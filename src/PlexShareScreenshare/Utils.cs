@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace PlexShareScreenshare
 {
@@ -18,6 +19,10 @@ namespace PlexShareScreenshare
     {
         public int X { get; set; }
         public int Y { get; set; }
+
+        public bool Equals(Coordinates p) => X == p.X && Y == p.Y;
+        public static bool operator ==(Coordinates lhs, Coordinates rhs) => lhs.Equals(rhs);
+        public static bool operator !=(Coordinates lhs, Coordinates rhs) => !(lhs == rhs);
     }
 
     /// <summary>
@@ -28,6 +33,10 @@ namespace PlexShareScreenshare
         public int R { get; set; }
         public int G { get; set; }
         public int B { get; set; }
+
+        public bool Equals(RGB p) => R == p.R && G == p.G && B == p.B;
+        public static bool operator ==(RGB lhs, RGB rhs) => lhs.Equals(rhs);
+        public static bool operator !=(RGB lhs, RGB rhs) => !(lhs == rhs);
     }
 
     /// <summary>
@@ -37,6 +46,10 @@ namespace PlexShareScreenshare
     {
         public Coordinates Coordinates { get; set; }
         public RGB RGB { get; set; }
+
+        public bool Equals(Pixel p) => Coordinates == p.Coordinates && RGB == p.RGB;
+        public static bool operator ==(Pixel lhs, Pixel rhs) => lhs.Equals(rhs);
+        public static bool operator !=(Pixel lhs, Pixel rhs) => !(lhs == rhs);
     }
 
     /// <summary>
@@ -60,6 +73,10 @@ namespace PlexShareScreenshare
     {
         public Resolution Resolution { get; set; }
         public List<Pixel> Pixels { get; set; }
+
+        public bool Equals(Frame p) => Resolution == p.Resolution && Pixels.SequenceEqual(p.Pixels);
+        public static bool operator ==(Frame lhs, Frame rhs) => lhs.Equals(rhs);
+        public static bool operator !=(Frame lhs, Frame rhs) => !(lhs == rhs);
     }
 
     /// <summary>
