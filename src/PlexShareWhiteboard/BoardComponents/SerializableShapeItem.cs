@@ -9,7 +9,7 @@ using System.Windows;
 
 namespace PlexShareWhiteboard.BoardComponents
 {
-    public class SerialisableShapeItem
+    public class SerializableShapeItem
     {
         public string GeometryString { get; set; }
         public string TextString { get; set; }
@@ -26,13 +26,15 @@ namespace PlexShareWhiteboard.BoardComponents
         public string TimeStamp { get; set; }
         public Point AnchorPoint { get; set; }
 
-        public SerialisableShapeItem()
+        public SerializableShapeItem()
         {
             ;
         }
 
-        public ShapeItem ConvertToShapeItem(SerialisableShapeItem x)
+        public ShapeItem ConvertToShapeItem(SerializableShapeItem x)
         {
+            if (x == null)
+                return null;
             Geometry g = null;
 
             if (x.GeometryString == "EllipseGeometry")

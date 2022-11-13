@@ -11,11 +11,6 @@ using PlexShareNetwork.Serialization;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-// Each frame consists of the resolution of the image and the ImageDiffList
-using Frame = System.Tuple<System.Tuple<int, int>,
-                        System.Collections.Generic.List<System.Tuple<System.Tuple<int, int>,
-                        System.Tuple<int, int, int>>>>;
-
 
 namespace PlexShareScreenshare.Client
 {
@@ -48,8 +43,8 @@ namespace PlexShareScreenshare.Client
         private string? _id;
 
         // Tokens added to be able to stop the thread execution
-        private CancellationTokenSource? _confirmationCancellationTokenSource;
-        private CancellationTokenSource? _imageCancellationTokenSource;
+        private bool _confirmationCancellationToken;
+        private bool _imageCancellationToken;
 
         // Varible to store if screen share is active
         private bool _isScreenSharing = false;
@@ -72,7 +67,7 @@ namespace PlexShareScreenshare.Client
         /// Gives an instance of ScreenshareClient class and that instance is always 
         /// the same i.e. singleton pattern.
         /// </summary>
-        public ScreenshareClient GetInstance()
+        public static ScreenshareClient GetInstance()
         {
             if (_screenShareClient == null)
             {
@@ -86,7 +81,7 @@ namespace PlexShareScreenshare.Client
         /// start capturer, processor, image sending function and 
         /// the confirmation sending function.
         /// </summary>
-        public void StartScreenSharing()
+        public void StartScreensharing()
         {
             _isScreenSharing = true;
             // sending register packet
@@ -115,9 +110,9 @@ namespace PlexShareScreenshare.Client
             {
                 if (!_isScreenSharing)
                 {
-                    StartScreenSharing();
+                    StartScreensharing();
                 }
-                Tuple<int, int> res = _serializer.Deserialize<Tuple<int, int>>(dataPacket.Data);
+                Resolution res = _serializer.Deserialize<Resolution>(dataPacket.Data);
                 _processor.SetNewResolution(res);
             }
             else
@@ -133,10 +128,10 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         private void ImageSending()
         {
-            while (!_imageCancellationTokenSource.IsCancellationRequested)
+            while (!_imageCancellationToken)
             {
                 Frame img = _processor.GetImage();
-                if (img.Item2.Count == 0) continue;
+                if (img.Pixels.Count == 0) continue;
                 string serializedImg = _serializer.Serialize(img);
                 DataPacket dataPacket = new(_id, _name, ClientDataHeader.Image.ToString(), serializedImg);
                 string serializedData = _serializer.Serialize(dataPacket);
@@ -149,9 +144,8 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         private void StartImageSending()
         {
-            _imageCancellationTokenSource = new CancellationTokenSource();
-            CancellationToken token = _imageCancellationTokenSource.Token;
-            _sendImageTask = new Task(ImageSending, token);
+            _imageCancellationToken = false;
+            _sendImageTask = new Task(ImageSending);
             _sendImageTask.Start();
         }
 

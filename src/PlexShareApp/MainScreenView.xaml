@@ -4,95 +4,200 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PlexShareApp"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         Title="PlexShare"
         MinHeight= "800"
         MinWidth="1500"
-        Background="MediumPurple"
-        >
+        AllowsTransparency="True"
+        ShowInTaskbar="False"
+        Background="Transparent"
+        ResizeMode="CanResize"
+        WindowStyle="None"
+        SizeChanged="Window_SizeChanged"
+    >
 
-    <Grid>
+    <Window.Resources>
+        <Style x:Key="FocusVisual">
+            <Setter Property="Control.Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Rectangle Margin="2" StrokeDashArray="1 2" Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" SnapsToDevicePixels="true" StrokeThickness="1"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <SolidColorBrush x:Key="Button.Static.Background" Color="#FFDDDDDD"/>
+        <SolidColorBrush x:Key="Button.Static.Border" Color="#FF707070"/>
+        <SolidColorBrush x:Key="Button.MouseOver.Background" Color="SlateGray"/>
+        <SolidColorBrush x:Key="Button.MouseOver.Foregorund" Color="Black"/>
+        <SolidColorBrush x:Key="Button.MouseOver.Border" Color="Black"/>
+        <SolidColorBrush x:Key="Button.Pressed.Background" Color="#FFC4E5F6"/>
+        <SolidColorBrush x:Key="Button.Pressed.Border" Color="#FF2C628B"/>
+        <SolidColorBrush x:Key="Button.Disabled.Background" Color="#FFF4F4F4"/>
+        <SolidColorBrush x:Key="Button.Disabled.Border" Color="#FFADB2B5"/>
+        <SolidColorBrush x:Key="Button.Disabled.Foreground" Color="#FF838383"/>
+        <Style x:Key="RoundedButtonStyle" TargetType="{x:Type Button}">
+            <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
+            <Setter Property="Background" Value="{StaticResource Button.Static.Background}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Button.Static.Border}"/>
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="true">
+                            <ContentPresenter x:Name="contentPresenter" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource Button.MouseOver.Background}"/>
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource Button.MouseOver.Border}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
 
-        <Grid>
 
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="15*"/>
-                <ColumnDefinition Width="15*"/>
-                <ColumnDefinition Width="15*"/>
-                <ColumnDefinition Width="15*"/>
-                <ColumnDefinition Width="10*"/>
-                <ColumnDefinition Width="20*"/>
+    <Border BorderThickness="0">
+        <Grid Background="White">
+            <Grid>
 
-                <ColumnDefinition Width="1.5*"/>
-            </Grid.ColumnDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.5*"/>
+                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition Width="0.25*"/>
+                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition Width="0.25*"/>
+                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition Width="11*"/>
+                    <ColumnDefinition Width="5*"/>
+                    <ColumnDefinition Width="1.5*"/>
+                    <ColumnDefinition Width="0.25*"/>
+                    <ColumnDefinition Width="0.25*"/>
 
-            <Grid.RowDefinitions>
-                <RowDefinition Height="35" />
-                <RowDefinition />
-            </Grid.RowDefinitions>
+                </Grid.ColumnDefinitions>
 
-            <Button Name="Dashboard" Grid.Column="0" Grid.ColumnSpan="2" Click="DashboardClick" Background="#3C4048">Dashboard</Button>
-            <Button Name="Whiteboard"  Grid.Column="2" Grid.ColumnSpan="2" Grid.Row="0" Click="WhiteboardClick" Background="#3C4048">Whiteboard</Button>
-            <Button Name="Screenshare"  Grid.Column="4" Grid.Row="0" Grid.ColumnSpan="3" Click="ScreenShareClick" Background="#3C4048">Screenshare</Button>
-            <Button Name="ChatWindow"  Grid.Column="6" Grid.Row="1" Click="ChatButtonClick" Background="#3C4048">Chat</Button>
-            <Frame x:Name="Main" NavigationUIVisibility="Hidden" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="6"/>
-            <Frame x:Name="ScreenWithChat" Grid.Column="5" Grid.Row="1" Grid.ColumnSpan="1" NavigationUIVisibility="Hidden"></Frame>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="20" />
+                    <RowDefinition Height="35" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+
+                <!--Title Bar-->
+                <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="100" MouseDown="TitleBarDrag" Background="White"/>
+                <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="10" FontFamily="Cascadia Mono" FontSize="15"  
+                               VerticalAlignment="Center" Foreground="Black"> PlexShare
+                </TextBlock>
+                <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="8" Grid.ColumnSpan="2" HorizontalAlignment="Right">
+                    <!--Maximize Button-->
+                    <Button Width="25"  Height="20" Click="MinimizeApp"
+                                Background="Transparent" ToolTip="Maximise"
+                                BorderBrush="Transparent">
+                        <materialDesign:PackIcon Kind="WindowMinimize" Width="16" Height="16" VerticalAlignment="Center"/>
+                    </Button>
+
+                    <!--Minimize Button-->
+                    <Button Width="25" Height="20" Click="MaximizeApp" Background="Transparent" BorderBrush="Transparent">
+                        <materialDesign:PackIcon Kind="WindowMaximize" Width="16" Height="16" VerticalAlignment="Center"/>
+                    </Button>
+
+                    <!--Close Button-->
+                    <Button Width="25" Background="Transparent" BorderThickness="0"
+                                Height="20" Click="CloseApp">
+                        <materialDesign:PackIcon Kind="WindowClose" Width="16" Height="16" VerticalAlignment="Center"/>
+                    </Button>
+
+                </StackPanel>
+
+                <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="100" Background="DarkSlateGray" />
+                
+                <!--Dashboard Tab-->
+                <Button  Style="{DynamicResource RoundedButtonStyle}" Name="Dashboard" Grid.Column="1" Grid.Row="1" Click="DashboardClick"
+                    Background="DarkCyan" Height="27" VerticalAlignment="Center" BorderThickness="0"
+                    FontFamily="Cascadia Mono" FontSize="12"
+                    Content="Dashboard" Foreground="WhiteSmoke">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="15,15,15,15"/>
+                        </Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Text" Value="Dashboard"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+
+                <!--Whiteboard Tab-->
+                <Button Style="{DynamicResource RoundedButtonStyle}" Name="Whiteboard" Grid.Column="3" Grid.Row="1" Click="WhiteboardClick"
+                    Background="Transparent" Height="27" VerticalAlignment="Center" BorderThickness="0"
+                    FontFamily="Cascadia Mono" FontSize="12"
+                    Content="Whiteboard" Foreground="WhiteSmoke">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="15,15,15,15"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+
+                <!--Screenshare Tab-->
+                <Button Style="{DynamicResource RoundedButtonStyle}" Name="Screenshare" Grid.Column="5" Grid.Row="1" Click="ScreenShareClick"
+                    FontFamily="Cascadia Mono" FontSize="12"
+                    Background="Transparent" Height="27" VerticalAlignment="Center" BorderThickness="0" 
+                    Content="Screenshare" Foreground="WhiteSmoke">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="15,15,15,15"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+
+                <!--Chat Tab-->
+                <Button  Style="{DynamicResource RoundedButtonStyle}" Name="Chat" Grid.Column="8" Grid.Row="1" Click="ChatButtonClick"
+                    Background="Transparent" Height="27" VerticalAlignment="Center" BorderThickness="0"
+                    FontFamily="Cascadia Mono" FontSize="12"
+                    Content="Chat" Foreground="WhiteSmoke">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="15,15,15,15"/>
+                        </Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Text" Value="Dashboard"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+
+                <TextBlock x:Name="ServerIPandPort"  FontFamily="Cascadia Mono" FontSize="8"
+                           Grid.Column="7" Grid.Row ="1" HorizontalAlignment="Right" Text="IP : PORT : "
+                           Foreground="WhiteSmoke" VerticalAlignment="Bottom">
+                </TextBlock>
+
+                
+
+            </Grid>
+
+            <Grid Margin="0,55,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="191*"/>
+                    <ColumnDefinition Width="59*"/>
+                </Grid.ColumnDefinitions>
+                <!--Frame Definitions-->
+                <!--Main Frame-->
+                <Frame x:Name="Main" NavigationUIVisibility="Hidden" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="1000"/>
+                <!--Chat Frame-->
+                <Frame x:Name="ScreenWithChat" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="1" NavigationUIVisibility="Hidden"></Frame>
+            </Grid>
+
+
         </Grid>
-
-
-
-        <!--<Grid>
-            <Grid.ColumnDefinitions>
-
-                <ColumnDefinition />
-                <ColumnDefinition />
-                <ColumnDefinition />
-                <ColumnDefinition />
-
-            </Grid.ColumnDefinitions>
-
-            <Grid.RowDefinitions>
-                <RowDefinition Height="70" />
-                <RowDefinition Height="5*"/>
-                <RowDefinition Height="10" />
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="100" />
-
-            </Grid.RowDefinitions>
-
-            <Frame Grid.Row="1" Grid.Column="3" x:Name="ChatWindow" NavigationUIVisibility="Hidden"></Frame>
-            
-        </Grid>-->
-
-        <!--<Grid>
-            <Grid.ColumnDefinitions>
-
-                <ColumnDefinition Width="16*"/>
-                <ColumnDefinition />
-                <ColumnDefinition Width="10"/>
-
-
-            </Grid.ColumnDefinitions>
-
-            <Grid.RowDefinitions>
-                <RowDefinition Height="70" />
-                <RowDefinition Height="7*"/>
-                <RowDefinition Height="10" />
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="100" />
-
-            </Grid.RowDefinitions>
-            <Canvas></Canvas>
-            
-            <Button Name ="ChatButton" Grid.Column="1" Grid.Row="3" Click="openChat"> Chat </Button>
-
-
-        </Grid>-->
-
-
-
-    </Grid>
+    </Border>
 
 
 </Window>

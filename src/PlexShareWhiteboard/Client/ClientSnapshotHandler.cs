@@ -1,4 +1,11 @@
-﻿using PlexShareWhiteboard.BoardComponents;
+﻿/**
+ * Owned By: Joel Sam Mathew
+ * Created By: Joel Sam Mathew
+ * Date Created: 22/10/2022
+ * Date Modified: 08/11/2022
+**/
+
+using PlexShareWhiteboard.BoardComponents;
 using PlexShareWhiteboard.Client.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -21,10 +28,10 @@ namespace PlexShareWhiteboard.Client
                 if (snapshotNumber <= SnapshotNumber)
                 {
                     //creating boardServerShape object with FetchCheckpoint object
-                    List<ShapeItem> boardShape = null;
+                    //List<ShapeItem> boardShape = null;
 
                     //sending boardServerShape object to _clientBoardCommunicator
-                    WBServerShape wBServerShape = new WBServerShape(boardShape, Operation.RestoreSnapshot, UserId, snapshotNumber);
+                    WBServerShape wBServerShape = new WBServerShape(null, Operation.RestoreSnapshot, UserId, snapshotNumber);
                     _clientCommunicator.SendToServer(wBServerShape);
                 }
                 else
@@ -34,7 +41,7 @@ namespace PlexShareWhiteboard.Client
             }
             catch (Exception e)
             {
-                Trace.WriteLine("ClientCheckPointHandler.FetchCheckPoint: An exception occured.");
+                Trace.WriteLine("[Whiteboard] ClientSnapshotHandler.RestoreSnapshot: An exception occured.");
                 Trace.WriteLine(e.Message);
             }
         }
@@ -47,18 +54,23 @@ namespace PlexShareWhiteboard.Client
                 SnapshotNumber++;
 
                 //creating boardServerShape object with CreateCheckpoint object
-                List<ShapeItem> boardShape = null;
+                //List<ShapeItem> boardShape = null;
 
                 //sending boardServerShape object to _clientBoardCommunicator
-                WBServerShape wBServerShape = new WBServerShape(boardShape, Operation.CreateSnapshot, UserId, SnapshotNumber);
+                WBServerShape wBServerShape = new WBServerShape(null, Operation.CreateSnapshot, UserId, SnapshotNumber);
                 _clientCommunicator.SendToServer(wBServerShape);
             }
 
             catch (Exception e)
             {
-                Trace.WriteLine("ClientCheckPointHandler.SaveCheckPoint: An exception occured.");
+                Trace.WriteLine("[Whiteboard] ClientSnapshotHandler.SaveSnapshot: An exception occured.");
                 Trace.WriteLine(e.Message);
             }
+        }
+
+        public void SetCommunicator(IClientCommunicator communicator)
+        {
+            _clientCommunicator = communicator;
         }
     }
 }
