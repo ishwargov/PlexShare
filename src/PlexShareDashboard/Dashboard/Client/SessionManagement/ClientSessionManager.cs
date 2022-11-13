@@ -322,7 +322,7 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
                     //   _screenShareClient.SetUser(_user.userID.ToString(), _user.username);
 
 
-                    //  ContentClientFactory.SetUser(_user.userID);
+                      ContentClientFactory.SetUser(_user.userID);
                     // Content's user ID set. 
                 }
             }

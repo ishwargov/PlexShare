@@ -20,6 +20,7 @@ using PlexShareContent.Server;
 //using PlexShareNetwork.Serialization;
 using PlexShareDashboard.Dashboard;
 using PlexShareNetwork;
+using System.Threading;
 
 namespace Dashboard.Server.SessionManagement
 {
@@ -299,11 +300,11 @@ namespace Dashboard.Server.SessionManagement
             {
                 // fetching all the chats from the content module.
                 PlexShareContent.DataModels.ChatThread[] allChatsTillNow;
-                //allChatsTillNow = _contentServer.GetAllMessages().ToArray();
+                allChatsTillNow = _contentServer.GetAllMessages().ToArray();
 
                 // creating the summary from the chats
-                //  _sessionSummary = _summarizer.GetSummary(allChatsTillNow);
-                _sessionSummary = "This is temporary Summary";
+                  _sessionSummary = _summarizer.GetSummary(allChatsTillNow);
+                //_sessionSummary = "This is temporary Summary";
 
                 // returning the summary
                 return new SummaryData(_sessionSummary);
@@ -352,7 +353,7 @@ namespace Dashboard.Server.SessionManagement
                 // The user is notified about this
                 SendDataToClient("endMeet", _sessionData, null, null, null);
             }
-
+            Thread.Sleep(2000);
             // stopping the communicator and notifying UX server about the End Meet event.
             _communicator.Stop();
             //   _screenShareServer.Dispose();
@@ -378,8 +379,8 @@ namespace Dashboard.Server.SessionManagement
             try
             {
                 // Fetching the chats and creating analytics on them
-                //   var allChats = _contentServer.GetAllMessages().ToArray();
-                //   _sessionAnalytics = _telemetry.GetTelemetryAnalytics(allChats);
+                   var allChats = _contentServer.GetAllMessages().ToArray();
+                   _sessionAnalytics = _telemetry.GetTelemetryAnalytics(allChats);
                 SendDataToClient("getAnalytics", null, null, _sessionAnalytics, user);
             }
             catch (Exception e)
