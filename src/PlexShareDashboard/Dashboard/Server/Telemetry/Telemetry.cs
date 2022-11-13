@@ -32,6 +32,15 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
 
         private DateTime sessionStartTime;
 
+
+
+        //adding dictionary to store the userid and email id 
+        public Dictionary<int, string> userIdVsEmailId = new Dictionary<int, string>();
+
+        //Dictionary to store the emailidvsusername 
+        public Dictionary<string, string> emailIdVsUserName = new Dictionary<string, string>();
+
+
         //constructor for telemetry module 
         
         public Telemetry()
@@ -161,10 +170,34 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             return;
         }
 
+
+
+        public void UpdateEmailIdVsUserName(SessionData newSession)
+        {
+            //using the for loop for this purpose 
+            foreach (var currUser in newSession.users)
+            {
+                //using the if else statement for this purpose 
+                if (userIdVsEmailId.ContainsKey(currUser.userID) == false)
+                {
+                    //this means that this is new userid hence we have to store the email correspoding to this for this purpose 
+                    userIdVsEmailId[currUser.userID] = currUser.userEmail;
+                }
+            }
+
+            //say everything went fine 
+            return;
+        
+        }
+
         //this function will be called whenever the session analytics will be changed at the server side session manager using publisher subscriber model 
         public void OnAnalyticsChanged(SessionData newSession)
         {
             var currTime = DateTime.Now;
+
+            //we have to update the useidvsemail and emailvsusername 
+            UpdateUserIdVsEamilId(newSession);
+            UpdateEmailIdVsUserName(newSession);
             //we have to recalculate and  update the telemetric analytics
             CalculateUserCountVsTimeStamp(newSession, currTime);
             CalculateArrivalExitTimeOfUser(newSession, currTime);
