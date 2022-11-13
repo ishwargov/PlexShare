@@ -567,6 +567,7 @@ namespace PlexShareTests.DashboardTests.Telemetry
        
         }
 
+        [Fact]
         public void SaveAnalytics_Test()
         {
 
@@ -611,7 +612,11 @@ namespace PlexShareTests.DashboardTests.Telemetry
             telemetryInstance.eachUserEnterTimeInMeeting.Clear();
             telemetryInstance.eachUserExitTime.Clear();
             telemetryInstance.listOfInSincereMembers.Clear();
+            telemetryInstance.userIdVsEmailId[1] = "111901045@smail.iitpkd.ac.in";
+            telemetryInstance.userIdVsEmailId[2] = "111901054@smail.iitpkd.ac.in";
 
+            telemetryInstance.emailIdVsUserName["111901045@smail.iitpkd.ac.in"] = "Rupesh Kumar";
+            telemetryInstance.emailIdVsUserName["111901054@smail.iitpkd.ac.in"] = "Hrishi Raaj";
             telemetryInstance.SaveAnalytics(allMessages);
 
             Assert.Equal(1, 1);

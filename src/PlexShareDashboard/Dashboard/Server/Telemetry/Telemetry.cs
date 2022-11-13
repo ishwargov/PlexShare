@@ -140,8 +140,10 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             finalSessionAnalyticsToSave.listOfInSincereMembers = listOfInSincereMembers;
             finalSessionAnalyticsToSave.userCountVsTimeStamp = userCountVsEachTimeStamp;
             finalSessionAnalyticsToSave.userNameVsChatCount = userNameVsChatCount;
-            finalSessionAnalyticsToSave.sessionSummary.chatCount = currTotalChatCount;
-            finalSessionAnalyticsToSave.sessionSummary.userCount = currTotalUser;
+            SessionSummary sessionSummary = new SessionSummary();
+            sessionSummary.chatCount = currTotalChatCount;
+            sessionSummary.userCount = currTotalUser;
+            finalSessionAnalyticsToSave.sessionSummary = sessionSummary;
 
 
             //calling the persistent module to save these analytics 
