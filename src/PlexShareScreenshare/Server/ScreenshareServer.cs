@@ -229,7 +229,7 @@ namespace PlexShareScreenshare.Server
         /// <param name="resolution">
         /// Resolution of the image to send if asking the clients to send image packet
         /// </param>
-        public void BroadcastClients(List<string> clientIds, string headerVal, (int, int) resolution)
+        public void BroadcastClients(List<string> clientIds, string headerVal, (int Height, int Width) resolution)
         {
             Debug.Assert(_communicator != null, Utils.GetDebugMessage("_communicator is found null"));
 
@@ -247,8 +247,8 @@ namespace PlexShareScreenshare.Server
             // Serialize the data to send
             try
             {
-                JsonSerializerOptions options = new() { IncludeFields = true };
-                string serializedData = JsonSerializer.Serialize(resolution, options);
+                Resolution resolutionToSend = new() { Height = resolution.Height, Width = resolution.Width };
+                string serializedData = JsonSerializer.Serialize(resolutionToSend);
 
                 // Create the data packet to send
                 DataPacket packet = new("1", "Server", headerVal, serializedData);
