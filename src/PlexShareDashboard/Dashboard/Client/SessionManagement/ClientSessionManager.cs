@@ -14,6 +14,7 @@ using PlexShare.Dashboard.Client.SessionManagement;
 using PlexShare.Dashboard;
 using PlexShareNetwork.Communication;
 using System.Windows;
+using System.Threading;
 
 namespace PlexShareDashboard.Dashboard.Client.SessionManagement
 {
@@ -234,6 +235,8 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
         {
             // Asking the server to remove client from the server side.
             SendDataToServer("removeClient", _user.username, _user.userID);
+
+            Thread.Sleep(2000);
 
             // Stopping the network communicator.
             _communicator.Stop();
