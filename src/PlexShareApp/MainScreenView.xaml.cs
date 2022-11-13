@@ -1,4 +1,17 @@
-﻿using System;
+﻿/******************************************************************************
+ * Filename    = MainScreenView.xaml.cs
+ *
+ * Author      = Neel Kabra
+ *
+ * Product     = PlexShare
+ * 
+ * Project     = PlexShareApp
+ *
+ * Description = This is main view of the application. It is responsible for starting all the other modules.
+ *               The view instantiates a server or a client using the IP given by the HomeScreenView.
+ * 
+ *****************************************************************************/
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,11 +33,12 @@ using Dashboard;
 using PlexShareApp;
 using ScottPlot.Drawing.Colormaps;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace PlexShareApp
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for MainScreenView.xaml
     /// </summary>
     public partial class MainScreenView : Window
     {
@@ -39,64 +53,67 @@ namespace PlexShareApp
         
         public MainScreenView(string name, string email, string picPath, string url, string ip, string port)
         {
-            bool verified = false;
-            IUXServerSessionManager serverSessionManager = SessionManagerFactory.GetServerSessionManager();
-            IUXClientSessionManager clientSessionManager = SessionManagerFactory.GetClientSessionManager();
 
-            if (ip == "-1")
-            {
-                MeetingCredentials meetingCredentials = serverSessionManager.GetPortsAndIPAddress();
-                verified = clientSessionManager.AddClient(meetingCredentials.ipAddress, meetingCredentials.port, name);
-                ip = meetingCredentials.ipAddress;
-                port = meetingCredentials.port.ToString();
-                isServer = true;
-            }
-            else
-            {
-                verified = clientSessionManager.AddClient(ip, int.Parse(port), name);
-                isServer = false;
-            }
+            MainScreenViewModel viewModel = new();
+            this.DataContext = viewModel;
 
-            if (verified)
+            List<string> verified = viewModel.VerifyCredentials(name, ip, port);
+            Trace.WriteLine(verified[0]);
+
+            if (verified[0] == "True") 
             {
+                // The client/server was verified to be correct.
+                // We can add the client to meeting, and instantiate all modules.
                 InitializeComponent();
+
                 dashboardPage = new DashboardPage();
+                Trace.WriteLine("[UX] The Dashboard has started");
                 chatPage = new ChatPageView();
+                Trace.WriteLine("[UX] The ChatPage has started");
+
                 if (isServer)
                 {
                     whiteBoardPage = new WhiteBoardPage(0);
+                    Trace.WriteLine("[UX] The Whiteboard Server has started");
+                    screenshareServerView = new ScreenshareServerView();
+                    Trace.WriteLine("[UX] The Screenshare Server has started");
                 }
                 else
                 {
                     whiteBoardPage = new WhiteBoardPage(1);
+                    Trace.WriteLine("[UX] The Whiteboard Client has started");
+                    screenshareClientView = new ScreenshareClientView();
+                    Trace.WriteLine("[UX] The Screenshare Client has started");
                 }
-                screenshareServerView = new ScreenshareServerView();
-                screenshareClientView = new ScreenshareClientView();
 
                 Main.Content = dashboardPage;
-                ServerIPandPort.Text = "Server IP : " + ip + " Port : " + port;
-                // ClientIPandPort.Text = "Client IP : " + meetingCredentials.ipAddress  + " Port : " + meetingCredentials.port;
+                Trace.WriteLine("[UX] Setting the content to the dashboard");
 
+                Trace.WriteLine("[UX] Setting the IP:Port");
+                ServerIPandPort.Text = "Server IP : " + verified[1] + " Port : " + verified[2];
+            }
+
+            else
+            {
+                Trace.WriteLine("[UX] The verifiation failed, calling the HomeSceeenView() again");
+                HomePageView homePageView = new HomePageView(name, email, picPath);
+                homePageView.Show();
+                this.Close();
+                
             }
         }
 
         /// <summary>
-        /// Transfer control to dashboard on click
-        /// 
+        /// Transfer control to dashboard on click 
         /// </summary>
         private void DashboardClick(object sender, RoutedEventArgs e)
         {
+            Trace.WriteLine("[UX] Redering Dashboard");
             Dashboard.Background = Brushes.DarkCyan;
             Whiteboard.Background = Brushes.DarkSlateGray;
             Screenshare.Background = Brushes.DarkSlateGray;
 
-            //Dashboard.Foreground = Brushes.Black;
-            //Whiteboard.Foreground = Brushes.SeaShell;
-            //Screenshare.Foreground = Brushes.SeaShell;
-
-            Debug.WriteLine("DashBoardUX");
             Main.Content = dashboardPage;
-
         }
 
         /// <summary>
@@ -110,18 +127,14 @@ namespace PlexShareApp
             Whiteboard.Background = Brushes.DarkSlateGray;
             Screenshare.Background = Brushes.DarkCyan;
 
-            //Dashboard.Foreground = Brushes.SeaShell;
-            //Whiteboard.Foreground = Brushes.SeaShell;
-            //Screenshare.Foreground = Brushes.Black;
-
-            System.Console.WriteLine("ScreenShareUX");
-
             if(isServer == true)
             {
+                Trace.WriteLine("[UX] Rendering Client Screenshare");
                 Main.Content = screenshareClientView;
             }
             else
             {
+                Trace.WriteLine("[UX] Rendering Server Screenshare");
                 Main.Content = screenshareServerView;
             }
         }
@@ -131,12 +144,11 @@ namespace PlexShareApp
         /// </summary>
         private void WhiteboardClick(object sender, RoutedEventArgs e)
         {
+            Trace.WriteLine("[UX] Rendering Whiteboard");
             Dashboard.Background = Brushes.DarkSlateGray;
             Whiteboard.Background = Brushes.DarkCyan;
             Screenshare.Background = Brushes.DarkSlateGray;
 
-
-            System.Console.WriteLine("Whiteboard UX");
             Main.Content = whiteBoardPage;
         }
 
@@ -147,11 +159,13 @@ namespace PlexShareApp
         {
             if (chatOn == false)
             {
+                Trace.WriteLine("[UX] Rendering Chat");
                 chatOn = true;
                 ScreenWithChat.Content = chatPage;
             }
             else
             {
+                Trace.WriteLine("[UX] Removing Chat");
                 chatOn=false;
                 ScreenWithChat.Content = null;
             }
@@ -182,9 +196,13 @@ namespace PlexShareApp
         private void MinimizeApp(object sender, RoutedEventArgs e)
         {
             if (WindowState == WindowState.Normal || WindowState == WindowState.Maximized)
+            {
                 WindowState = WindowState.Minimized;
+            }
             else
+            {
                 WindowState = WindowState.Normal;
+            }
         }
 
         ///<summary>
