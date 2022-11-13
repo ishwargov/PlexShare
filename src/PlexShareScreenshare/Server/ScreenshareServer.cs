@@ -283,25 +283,24 @@ namespace PlexShareScreenshare.Server
         protected virtual void Dispose(bool disposing)
         {
             // Check to see if Dispose has already been called.
-            if (!_disposed)
+            if (_disposed) return;
+
+            // If disposing equals true, dispose all managed
+            // and unmanaged resources
+            if (disposing)
             {
-                // If disposing equals true, dispose all managed
-                // and unmanaged resources
-                if (disposing)
+                foreach (SharedClientScreen client in _subscribers.Values.ToList())
                 {
-                    foreach (SharedClientScreen client in _subscribers.Values.ToList())
-                    {
-                        DeregisterClient(client.Id);
-                    }
-                    _subscribers.Clear();
-                    _instance = null;
+                    DeregisterClient(client.Id);
                 }
-
-                // Call the appropriate methods to clean up unmanaged resources here
-
-                // Now disposing has been done
-                _disposed = true;
+                _subscribers.Clear();
+                _instance = null;
             }
+
+            // Call the appropriate methods to clean up unmanaged resources here
+
+            // Now disposing has been done
+            _disposed = true;
         }
 
         /// <summary>
@@ -362,6 +361,10 @@ namespace PlexShareScreenshare.Server
             try
             {
                 client.StopProcessing();
+            }
+            catch (OperationCanceledException e)
+            {
+                Trace.WriteLine(Utils.GetDebugMessage($"Task canceled for the client with id {clientId}: {e.Message}", withTimeStamp: true));
             }
             catch (Exception e)
             {

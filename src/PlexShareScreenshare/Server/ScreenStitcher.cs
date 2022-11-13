@@ -1,11 +1,13 @@
 ﻿///<author>Aditya Agarwal</author>
-///<summary> 
+///<summary>
 ///This file contains the ScreenStitcher Class that implements the
-///screen stitching functionality. It is used by ScreenshareServer. 
+///screen stitching functionality. It is used by ScreenshareServer.
 ///</summary>
 
+using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Threading;
 using System.Threading.Tasks;
 
 
@@ -24,7 +26,7 @@ namespace PlexShareScreenshare.Server
         private Resolution? _resolution;
 
         // Token for killing the task
-        private bool _stitcherCancellationToken;
+        private CancellationTokenSource? _tokenSource;
 
         // Called by the `SharedClientScreen`
         public ScreenStitcher(SharedClientScreen scs)
@@ -41,16 +43,18 @@ namespace PlexShareScreenshare.Server
         /// </summary>
         public void StartStitching()
         {
-            _stitcherCancellationToken = false;
+            _tokenSource = new();
 
             if (_stitchTask == null)
             {
+                _tokenSource.Token.ThrowIfCancellationRequested();
 
                 _stitchTask = new Task(() =>
                 {
-                    while (!_stitcherCancellationToken)
+                    while (!_tokenSource.Token.IsCancellationRequested)
                     {
-                        Frame? newFrame = _sharedClientScreen.GetImage();
+                        _tokenSource.Token.ThrowIfCancellationRequested();
+                        Frame? newFrame = _sharedClientScreen.GetImage(_tokenSource.Token);
                         if (newFrame == null)
                         {
                             Trace.WriteLine($"[ScreenSharing] New frame returned by _sharedClientScreen is null.");
@@ -60,19 +64,35 @@ namespace PlexShareScreenshare.Server
                         _oldImage = stichedImage;
                         _sharedClientScreen.PutFinalImage(stichedImage);
                     }
-                });
+                }, _tokenSource.Token);
+
+                _stitchTask.Start();
             }
-
-            _stitchTask.Start();
-
         }
 
         // Kills the task `_stitchTask`
-        public void StopStitching()
+        public async void StopStitching()
         {
-            _stitcherCancellationToken = true;
-            _stitchTask?.Wait();
-            _stitchTask = null;
+            try
+            {
+                _tokenSource!.Cancel();
+                await _stitchTask!;
+                _stitchTask = null;
+            }
+            catch (OperationCanceledException e)
+            {
+                Trace.WriteLine(Utils.GetDebugMessage($"Task canceled for the client: {e.Message}", withTimeStamp: true));
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine(Utils.GetDebugMessage($"Failed to start the processing: {e.Message}", withTimeStamp: true));
+            }
+            finally
+            {
+                _tokenSource!.Dispose();
+                _tokenSource = null;
+                _stitchTask = null;
+            }
         }
 
         /// <summary>
