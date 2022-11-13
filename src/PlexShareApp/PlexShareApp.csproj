@@ -36,9 +36,36 @@
 		<None Remove="Assets\TextTool.png" />
 		<None Remove="Assets\UndoTool.png" />
 		<None Remove="Assets\ZIndexTool.png" />
+	  <None Remove="Icons\924-100x100.jpg" />
+	  <None Remove="Icons\main.jpeg" />
+	  <None Remove="Icons\NextButton.png" />
+	  <None Remove="Icons\NextButton_white.png" />
+	  <None Remove="Icons\notshared.webp" />
+	  <None Remove="Icons\PinButton.png" />
+	  <None Remove="Icons\PinButton_white.png" />
+	  <None Remove="Icons\playbutton.jpeg" />
+	  <None Remove="Icons\playbutton.png" />
+	  <None Remove="Icons\playbutton2.jpeg" />
+	  <None Remove="Icons\playbutton2_white.png" />
+	  <None Remove="Icons\playbutton3.png" />
+	  <None Remove="Icons\playbutton_white.png" />
+	  <None Remove="Icons\PreviousButton.png" />
+	  <None Remove="Icons\PreviousButton_white.png" />
+	  <None Remove="Icons\red_eyes.jpg" />
+	  <None Remove="Icons\StartShare.png" />
+	  <None Remove="Icons\stopbutton.png" />
+	  <None Remove="Icons\stopbutton_white.png" />
+	  <None Remove="Icons\StopShare.png" />
+	  <None Remove="Icons\tenor.gif" />
+	  <None Remove="Icons\UnpinButton.png" />
+	  <None Remove="Icons\UnpinButton_white.png" />
 	</ItemGroup>
 
 	<ItemGroup>
+	  <PackageReference Include="LiveCharts" Version="0.9.7" />
+	  <PackageReference Include="LiveCharts.Wpf" Version="0.9.7" />
+	  <PackageReference Include="Syncfusion.SfChart.WPF" Version="20.3.0.56" />
+	  <PackageReference Include="XamlAnimatedGif" Version="2.0.3" />
 		<ProjectReference Include="..\PlexShareWhiteboard\PlexShareWhiteboard.csproj" />
 		<PackageReference Include="LiveCharts" Version="0.9.7" />
 		<PackageReference Include="LiveCharts.Wpf" Version="0.9.7" />
@@ -71,13 +98,28 @@
 		<None Remove="Resources\time_background.jpg" />
 		<None Remove="Resources\[removal.ai]_tmp-635051040cac5.png" />
 		<None Remove="Resources\[removal.ai]_tmp-6350549d077ef.png" />
-		<Compile Remove="Icons\**" />
-		<EmbeddedResource Remove="Icons\**" />
-		<None Remove="Icons\**" />
-		<Page Remove="Icons\**" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<Resource Include="Icons\924-100x100.jpg" />
+		<Resource Include="Icons\NextButton_white.png" />
+		<Resource Include="Icons\notshared.webp" />
+		<Resource Include="Icons\main.jpeg" />
+		<Resource Include="Icons\NextButton.png" />
+		<Resource Include="Icons\PinButton.png" />
+		<Resource Include="Icons\PinButton_white.png" />
+		<Resource Include="Icons\playbutton.jpeg" />
+		<Resource Include="Icons\playbutton2_white.png" />
+		<Resource Include="Icons\playbutton_white.png" />
+		<Resource Include="Icons\PreviousButton.png" />
+		<Resource Include="Icons\PreviousButton_white.png" />
+		<Resource Include="Icons\red_eyes.jpg" />
+		<Resource Include="Icons\StartShare.png" />
+		<Resource Include="Icons\stopbutton.png" />
+		<Resource Include="Icons\StopShare.png" />
+		<Resource Include="Icons\tenor.gif" />
+		<Resource Include="Icons\UnpinButton.png" />
+		<Resource Include="Icons\UnpinButton_white.png" />
 		<Resource Include="Resources\497-4973038_profile-picture-circle-png-transparent-png.png" />
 		<Resource Include="Resources\AuthScreenImg.jpg" />
 		<Resource Include="Resources\GoogleSignIn.png" />
@@ -108,21 +150,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\PlexShareCloud\PlexShareCloud.csproj">
-			<ReferenceSourceTarget></ReferenceSourceTarget>
-		</ProjectReference>
-		<ProjectReference Include="..\PlexShareContent\PlexShareContent.csproj">
-			<ReferenceSourceTarget></ReferenceSourceTarget>
-		</ProjectReference>
+		<ProjectReference Include="..\PlexShareContent\PlexShareContent.csproj" />
+		<ProjectReference Include="..\PlexShareDashboard\PlexShareDashboard.csproj" />
+		<ProjectReference Include="..\PlexShareNetwork\PlexShareNetwork.csproj" />
 		<ProjectReference Include="..\PlexShareScreenshare\PlexShareScreenshare.csproj">
 			<ReferenceSourceTarget></ReferenceSourceTarget>
 		</ProjectReference>
-		<ProjectReference Include="..\PlexShareWhiteboard\PlexShareWhiteboard.csproj">
-			<ReferenceSourceTarget></ReferenceSourceTarget>
-		</ProjectReference>
-		<ProjectReference Include="..\PlexShareDashboard\PlexShareDashboard.csproj">
-			<ReferenceSourceTarget></ReferenceSourceTarget>
-		</ProjectReference>
+		<ProjectReference Include="..\PlexShareWhiteboard\PlexShareWhiteboard.csproj" />
 		<ProjectReference Include="..\PlexShareCloudUX\PlexShareCloudUX.csproj" />
 		<ProjectReference Include="..\PlexShareCloud\PlexShareCloud.csproj" />
 	</ItemGroup>
