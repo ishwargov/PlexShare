@@ -13,7 +13,9 @@ using PlexShareWhiteboard;
 using PlexShare.Dashboard.Client.SessionManagement;
 using PlexShare.Dashboard;
 using PlexShareNetwork.Communication;
+using Client.Models;
 using System.Windows;
+using System.Threading;
 
 namespace PlexShareDashboard.Dashboard.Client.SessionManagement
 {
@@ -132,12 +134,12 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
                 case "endMeet":
                     _communicator.Stop();
                     // _screenShareClient.Dispose();
-                    MeetingEnded?.Invoke();
+                  //  MeetingEnded?.Invoke();
 
-                    /*    Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
+                        Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
                         {
                             Application.Current.Shutdown();
-                        });*/
+                        });
                     return;
 
                 case "newID":
@@ -235,12 +237,19 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
             // Asking the server to remove client from the server side.
             SendDataToServer("removeClient", _user.username, _user.userID);
 
+            Thread.Sleep(2000);
+
             // Stopping the network communicator.
             _communicator.Stop();
 
+            Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
+            {
+                Application.Current.Shutdown();
+            });
+
             // Disposing the Screen Share Client.
             // _screenShareClient.Dispose();  
-            Application.Current.Shutdown();
+
             //Removed the client from the client side.
         }
 
@@ -300,7 +309,8 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
                     SendDataToServer("addClient", _user.username, _user.userID);
                     // clientBoardStateManager.SetUser(_user.userID.ToString());
                     // Whiteboard's user ID set.;
-
+                    WhiteBoardViewModel WBviewModel = WhiteBoardViewModel.Instance;
+                    WBviewModel.SetUserId(_user.userID);
 
                     // ScreenShare's user ID and username set.
                     // if (Environment.GetEnvironmentVariable("TEST_MODE") != "E2E")
