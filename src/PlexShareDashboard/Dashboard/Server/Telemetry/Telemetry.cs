@@ -172,7 +172,7 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
 
 
 
-        public void UpdateEmailIdVsUserName(SessionData newSession)
+        public void UpdateUserIdVsEamilId(SessionData newSession)
         {
             //using the for loop for this purpose 
             foreach (var currUser in newSession.users)
@@ -189,6 +189,25 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             return;
         
         }
+
+        public void UpdateEmailIdVsUserName(SessionData newSession)
+        {
+            foreach (var currUser in newSession.users)
+            {
+                //applying the if else statement whether this email id has already stored the username or not for this purpose 
+                if (emailIdVsUserName.ContainsKey(currUser.userEmail) == false)
+                {
+                    //this email is not present in the dictionary hence we have to store this 
+                    emailIdVsUserName[currUser.userEmail] = currUser.username;
+                }
+            }
+
+            //say everything went fine 
+            return;
+        
+        }
+
+
 
         //this function will be called whenever the session analytics will be changed at the server side session manager using publisher subscriber model 
         public void OnAnalyticsChanged(SessionData newSession)
