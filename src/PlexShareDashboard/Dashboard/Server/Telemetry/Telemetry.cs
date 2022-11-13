@@ -1,5 +1,5 @@
 ﻿using Client.Models;
-using PlexShare.Dashboard.Server.SessionManagement;
+using PlexShareDashboard.Dashboard.Server.SessionManagement;
 using PlexShare.Dashboard;
 using System;
 using System.Collections.Generic;
