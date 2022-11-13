@@ -428,6 +428,13 @@ namespace PlexShareScreenshare.Server
             {
                 SharedClientScreen client = _subscribers[clientId];
                 client.UpdateTimer();
+
+                // Send Confirmation packet back to the client
+                List<string> clientIds = new()
+                {
+                    clientId
+                };
+                BroadcastClients(clientIds, nameof(ServerDataHeader.Confirmation), (0, 0));
             }
             catch (Exception e)
             {
