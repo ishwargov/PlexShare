@@ -7,9 +7,8 @@
 
 using PlexShareNetwork;
 using PlexShareNetwork.Communication;
-using PlexShareNetwork.Serialization;
-using System;
-using System.Threading;
+using System.Diagnostics;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace PlexShareScreenshare.Client
@@ -35,9 +34,6 @@ namespace PlexShareScreenshare.Client
         private readonly ScreenCapturer _capturer;
         private readonly ScreenProcessor _processor;
 
-        // Serializer object from networking module
-        private readonly Serializer _serializer;
-
         // Name and Id of the current client user
         private string? _name;
         private string? _id;
@@ -59,8 +55,8 @@ namespace PlexShareScreenshare.Client
             _capturer = new ScreenCapturer();
             _processor = new ScreenProcessor(_capturer);
             _communicator = CommunicationFactory.GetCommunicator();
-            _communicator.Subscribe("ScreenShare", this, true);
-            _serializer = new();
+            _communicator.Subscribe(Utils.ModuleIdentifier, this, true);
+            Trace.WriteLine(Utils.GetDebugMessage("Successfully stopped image processing", withTimeStamp: true));
         }
 
         /// <summary>
@@ -73,6 +69,7 @@ namespace PlexShareScreenshare.Client
             {
                 _screenShareClient = new ScreenshareClient();
             }
+            Trace.WriteLine(Utils.GetDebugMessage("Successfully created an instance of ScreenshareClient", withTimeStamp: true));
             return _screenShareClient;
         }
 
@@ -84,16 +81,25 @@ namespace PlexShareScreenshare.Client
         public void StartScreensharing()
         {
             _isScreenSharing = true;
+            Debug.Assert(_id != null, Utils.GetDebugMessage("_id property found null", withTimeStamp: true));
+            Debug.Assert(_name != null, Utils.GetDebugMessage("_name property found null", withTimeStamp: true));
+
             // sending register packet
             DataPacket dataPacket = new(_id, _name, ClientDataHeader.Register.ToString(), "");
-            string serializedData = _serializer.Serialize(dataPacket);
-            _communicator.Send(serializedData, "ScreenShare", null);
+            string serializedData = JsonSerializer.Serialize(dataPacket);
+            _communicator.Send(serializedData, Utils.ModuleIdentifier, null);
+            Trace.WriteLine(Utils.GetDebugMessage("Successfully sent REGISTER packet to server", withTimeStamp: true));
 
+            // starting capturer, processor, Image Sending and Confirmation Packet Sending
+            Trace.WriteLine(Utils.GetDebugMessage("Started capturer and processor", withTimeStamp: true));
+            _capturer.StartCapture();
+            _processor.StartProcessing();
+
+
+            Trace.WriteLine(Utils.GetDebugMessage("Started image sending and confirmation packet sending", withTimeStamp: true));
             StartImageSending();
             SendConfirmationPacket();
 
-            _capturer.StartCapture();
-            _processor.StartProcessing();
         }
 
         /// <summary>
@@ -105,18 +111,29 @@ namespace PlexShareScreenshare.Client
         /// <param name="serializedData"> Serialized data from the network module </param>
         void INotificationHandler.OnDataReceived(string serializedData)
         {
-            DataPacket dataPacket = _serializer.Deserialize<DataPacket>(serializedData);
-            if (dataPacket.Header == ServerDataHeader.Send.ToString())
+            // Deserializing data packet received from server
+            Debug.Assert(serializedData != "", Utils.GetDebugMessage("Message from serve found null", withTimeStamp: true));
+            DataPacket? dataPacket = JsonSerializer.Deserialize<DataPacket>(serializedData);
+            Debug.Assert(dataPacket != null, Utils.GetDebugMessage("Unable to deserialize datapacket from server", withTimeStamp: true));
+            Trace.WriteLine(Utils.GetDebugMessage("Successfully received packet from server", withTimeStamp: true));
+
+            if (dataPacket?.Header == ServerDataHeader.Send.ToString())
             {
+                // if it is SEND packet then start image sending (if not already started) and 
+                // set the resolution as in the packet
+                Trace.WriteLine(Utils.GetDebugMessage("Got SEND packet from server", withTimeStamp: true));
                 if (!_isScreenSharing)
                 {
                     StartScreensharing();
                 }
-                Resolution res = _serializer.Deserialize<Resolution>(dataPacket.Data);
-                _processor.SetNewResolution(res);
+                int windowCount = int.Parse(dataPacket.Data);
+                _processor.SetNewResolution(windowCount);
+                Trace.WriteLine(Utils.GetDebugMessage("Successfully set the new resolution", withTimeStamp: true));
             }
             else
             {
+                // else if it was a STOP packet then stop image sending
+                Trace.WriteLine(Utils.GetDebugMessage("Got STOP packet from server", withTimeStamp: true));
                 StopScreensharing();
             }
         }
@@ -130,12 +147,19 @@ namespace PlexShareScreenshare.Client
         {
             while (!_imageCancellationToken)
             {
-                Frame img = _processor.GetImage();
+                Frame img = _processor.GetFrame();
+                // if the difference between the current and the new image is nothing then
+                // dont send a packet to the server
                 if (img.Pixels.Count == 0) continue;
-                string serializedImg = _serializer.Serialize(img);
+
+                // else serialize the processed frame and send it to the server
+                string serializedImg = JsonSerializer.Serialize(img);
+                Debug.Assert(_id != null, Utils.GetDebugMessage("_id property found null", withTimeStamp: true));
+                Debug.Assert(_name != null, Utils.GetDebugMessage("_name property found null", withTimeStamp: true));
                 DataPacket dataPacket = new(_id, _name, ClientDataHeader.Image.ToString(), serializedImg);
-                string serializedData = _serializer.Serialize(dataPacket);
-                _communicator.Send(serializedData, "ScreenShare", null);
+                string serializedData = JsonSerializer.Serialize(dataPacket);
+                _communicator.Send(serializedData, Utils.ModuleIdentifier, null);
+                Trace.WriteLine(Utils.GetDebugMessage("Sent Image packet to server", withTimeStamp: true));
             }
         }
 
@@ -147,6 +171,7 @@ namespace PlexShareScreenshare.Client
             _imageCancellationToken = false;
             _sendImageTask = new Task(ImageSending);
             _sendImageTask.Start();
+            Trace.WriteLine(Utils.GetDebugMessage("Successfully started image sending", withTimeStamp: true));
         }
 
     }

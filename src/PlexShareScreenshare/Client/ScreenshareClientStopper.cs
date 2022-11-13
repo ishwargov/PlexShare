@@ -1,4 +1,6 @@
 ﻿using PlexShareNetwork;
+using System.Diagnostics;
+using System.Text.Json;
 using System.Threading;
 ///<author>Rudr Tiwari</author>
 ///<summary>
@@ -20,8 +22,10 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         public void StopScreensharing()
         {
-            DataPacket deregisterPacket = new DataPacket(_id, _name, ClientDataHeader.Deregister.ToString(), "");
-            var serializedDeregisterPacket = _serializer.Serialize(deregisterPacket);
+            Debug.Assert(_id != null, Utils.GetDebugMessage("_id property found null", withTimeStamp: true));
+            Debug.Assert(_name != null, Utils.GetDebugMessage("_name property found null", withTimeStamp: true));
+            DataPacket deregisterPacket = new(_id, _name, ClientDataHeader.Deregister.ToString(), "");
+            var serializedDeregisterPacket = JsonSerializer.Serialize(deregisterPacket);
             StopImageSending();
             // Stops sending confirmation token
             _confirmationCancellationToken = true;
@@ -30,7 +34,8 @@ namespace PlexShareScreenshare.Client
             _processor.StopProcessing();
             _capturer.StopCapture();
             // Sending de-rgister request to server
-            _communicator.Send(serializedDeregisterPacket, "ScreenShare", null);
+            _communicator.Send(serializedDeregisterPacket, Utils.ModuleIdentifier, null);
+            Trace.WriteLine(Utils.GetDebugMessage("Successfully sent DEREGISTER packet to server", withTimeStamp: true));
         }
 
         /// <summary>
@@ -50,18 +55,21 @@ namespace PlexShareScreenshare.Client
         private void SendConfirmationPacket()
         {
             _confirmationCancellationToken = false;
-            DataPacket confirmationPacket = new DataPacket(_id, _name, ClientDataHeader.Confirmation.ToString(), "");
-            var serializedConfirmationPacket = _serializer.Serialize(confirmationPacket);
+            Debug.Assert(_id != null, Utils.GetDebugMessage("_id property found null", withTimeStamp: true));
+            Debug.Assert(_name != null, Utils.GetDebugMessage("_name property found null", withTimeStamp: true));
+            DataPacket confirmationPacket = new(_id, _name, ClientDataHeader.Confirmation.ToString(), "");
+            var serializedConfirmationPacket = JsonSerializer.Serialize(confirmationPacket);
 
             _sendConfirmationTask = new Task(() =>
             {
                 while (!_confirmationCancellationToken)
                 {
-                    _communicator.Send(serializedConfirmationPacket, "ScreenShare", null);
+                    _communicator.Send(serializedConfirmationPacket, Utils.ModuleIdentifier, null);
                     Thread.Sleep(1000);
                 }
             });
 
+            Trace.WriteLine(Utils.GetDebugMessage("Starting Confirmation packet sending", withTimeStamp: true));
             _sendConfirmationTask.Start();
         }
 
@@ -74,6 +82,7 @@ namespace PlexShareScreenshare.Client
         {
             _id = id;
             _name = name;
+            Trace.WriteLine(Utils.GetDebugMessage("Successfully set client name and id", withTimeStamp: true));
         }
     }
 }

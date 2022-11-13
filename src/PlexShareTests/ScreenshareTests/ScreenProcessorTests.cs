@@ -1,7 +1,5 @@
-﻿using PlexShareScreenshare.Client;
-using PlexShareScreenshare;
-using PlexShareTests.ScreenshareTests;
-using System.Diagnostics;
+﻿using PlexShareScreenshare;
+using PlexShareScreenshare.Client;
 using System.Drawing;
 
 namespace PlexShareTests.ScreenshareTests
