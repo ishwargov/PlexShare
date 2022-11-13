@@ -22,6 +22,7 @@ using System.Diagnostics;
 using LiveCharts.Wpf;
 using LiveCharts;
 using System.Windows;
+using System.Data.Entity.Core.Metadata.Edm;
 
 namespace PlexShareDashboard.Dashboard.UI.ViewModel
 {
@@ -462,14 +463,38 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             });
             //ParticipantsList.Clear();
 
+            //first we have to insert the instructor 
+            //the instructor should be at the top 
+            //using the for loop for this purpose 
+            foreach (var currUser in users)
+            {
+                int currUserId = currUser.userID;
+                if (currUserId == 1)
+                {
+                    //int currUserId = currUser.userID;
+                    string currUserName = currUser.username + "  (Instructor)";
+                    string currUserStatus = "Presenting";
+                    User newUser = new User(currUserId, currUserName, currUserStatus);
+                    Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
+                    {
+                        ParticipantsList.Add(newUser);
+                    });
+                    break;
+                }
+            }
+
             //using the for loop to push the updated list of the users into participants list 
             foreach (var currUser in users)
             {
                 int currUserId = currUser.userID;
+                if (currUserId == 1)
+                {
+                    continue;
+                }
                 string currUserName = currUser.username;
                 string currUserStatus = "Presenting";
                 User newUser = new User(currUserId, currUserName, currUserStatus);
-
+                
 
                 Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
                 {
