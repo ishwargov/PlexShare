@@ -361,6 +361,14 @@ namespace PlexShareApp.ViewModel
 
                                   OnPropertyChanged("EditOrDelete");
                               }
+                              //else if(contentData.Event == PlexShareContent.Enums.MessageEvent.Star)
+                              //{
+                              //    // since we are only interested in changing the star property of the message with MessageID,
+                              //    // we shall ignore the the remaining property
+                              //    ReceivedMsg = new Message();
+                              //    ReceivedMsg.MessageID = contentData.MessageID;
+                              //    OnPropertyChanged("StarMessage");
+                              //}
                           }
                       }),
                       contentData);

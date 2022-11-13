@@ -103,16 +103,19 @@ namespace PlexShareApp
                         updatedMsg = _allMessages[i];
                     }
                 }
-                //var updatedMsg = _allMessages.FirstOrDefault(i => i.MessageID == viewModel.ReceivedMsg.MessageID);
-                //if(updatedMsg != null)
-                //{
-                //    updatedMsg.IncomingMessage = viewModel.ReceivedMsg.IncomingMessage;
-                //}
-                //_allMessages.Remove(_allMessages.Where(i => i.MessageID == viewModel.ReceivedMsg.MessageID).Single());
-                //_allMessages.Add(updatedMsg);
                 Debug.WriteLine($"Message ID {updatedMsg.MessageID} was updated with {updatedMsg.IncomingMessage}");
                 Debug.WriteLine(_allMessages);
             }
+            //else if (propertyName == "StarMessage")
+            //{
+            //    for (int i = 0; i < _allMessages.Count; i++)
+            //    {
+            //        if (_allMessages[i].MessageID == viewModel.ReceivedMsg.MessageID)
+            //        {
+            //            _allMessages[i].
+            //        }
+            //    }
+            //}
         }
 
         private void UploadButtonClick(object sender, RoutedEventArgs e)
