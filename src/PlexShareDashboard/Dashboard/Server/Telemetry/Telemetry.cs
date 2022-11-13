@@ -12,6 +12,7 @@ using PlexShareContent.DataModels;
 //using PlexShareDashboard.Dashboard.Server.Persistent;
 using Dashboard.Server.Persistence;
 using Dashboard;
+using System.Runtime.InteropServices;
 
 namespace PlexShareDashboard.Dashboard.Server.Telemetry
 {
@@ -40,6 +41,8 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
         //Dictionary to store the emailidvsusername 
         public Dictionary<string, string> emailIdVsUserName = new Dictionary<string, string>();
 
+        //Dictionary to store the value of the username vs chat count
+        Dictionary<string, int> userNameVsChatCount = new Dictionary<string, int>();
 
         //constructor for telemetry module 
         
@@ -51,12 +54,34 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             
         }
 
+        //function to find the username vs chat count to show on the UX 
+        public void UpdateUserNameVsChatCount()
+        {
+            userNameVsChatCount.Clear();
+            //using the for loop for this purpose 
+            foreach (var currUserChatCount in userIdVsChatCount)
+            {
+                //we have to update the value of the chat count correspoding to the username for this purpose 
+                string currEmailId = userIdVsEmailId[currUserChatCount.Key];
+                string currUserName = emailIdVsUserName[currEmailId];
+                userNameVsChatCount[currUserName] = currUserChatCount.Value;
+            
+            }
+
+            //say everything went fine 
+            return;
+        }
 
         //function to fetch the telemetry analytics and then give it back to the session manager 
         public SessionAnalytics GetTelemetryAnalytics(PlexShareContent.DataModels.ChatThread[] allChatMessages)
         {
             DateTime currTime = DateTime.Now;
             GetUserIdVsChatCount(allChatMessages);
+
+            //Calling the function to update the username vs chatcount value for this purpose 
+            UpdateUserNameVsChatCount();
+
+
             GetListOfInsincereMembers(currTime);
 
             var currTotalChatCount = 0;
@@ -77,6 +102,7 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             currSessionAnalytics.chatCountForEachUser = userIdVsChatCount;
             currSessionAnalytics.listOfInSincereMembers = listOfInSincereMembers;
             currSessionAnalytics.userCountVsTimeStamp = userCountVsEachTimeStamp;
+            currSessionAnalytics.userNameVsChatCount = userNameVsChatCount;
             SessionSummary sessionSummary = new SessionSummary();
             sessionSummary.userCount = currTotalUser;
             sessionSummary.chatCount = currTotalChatCount;
@@ -94,6 +120,9 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
         {
             DateTime currDateTime = DateTime.Now;
             GetUserIdVsChatCount(allChatMessages);
+
+            //updating the username vs the chat count to be able to save in persistent for this purpose 
+            UpdateUserNameVsChatCount();
             GetListOfInsincereMembers(currDateTime);
             var currTotalUser = 0;
             var currTotalChatCount = 0;
@@ -110,6 +139,7 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             finalSessionAnalyticsToSave.chatCountForEachUser = userIdVsChatCount;
             finalSessionAnalyticsToSave.listOfInSincereMembers = listOfInSincereMembers;
             finalSessionAnalyticsToSave.userCountVsTimeStamp = userCountVsEachTimeStamp;
+            finalSessionAnalyticsToSave.userNameVsChatCount = userNameVsChatCount;
             finalSessionAnalyticsToSave.sessionSummary.chatCount = currTotalChatCount;
             finalSessionAnalyticsToSave.sessionSummary.userCount = currTotalUser;
 
