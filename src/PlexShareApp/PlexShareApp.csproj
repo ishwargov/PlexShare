@@ -105,16 +105,10 @@
 		<Resource Include="Icons\NextButton_white.png" />
 		<Resource Include="Icons\notshared.webp" />
 		<Resource Include="Icons\main.jpeg" />
-		<Resource Include="Icons\NextButton.png" />
-		<Resource Include="Icons\PinButton.png" />
 		<Resource Include="Icons\PinButton_white.png" />
-		<Resource Include="Icons\PreviousButton.png" />
 		<Resource Include="Icons\PreviousButton_white.png" />
 		<Resource Include="Icons\red_eyes.jpg" />
-		<Resource Include="Icons\StartShare.png" />
-		<Resource Include="Icons\StopShare.png" />
 		<Resource Include="Icons\tenor.gif" />
-		<Resource Include="Icons\UnpinButton.png" />
 		<Resource Include="Icons\UnpinButton_white.png" />
 		<Resource Include="Resources\497-4973038_profile-picture-circle-png-transparent-png.png" />
 		<Resource Include="Resources\AuthScreenImg.jpg" />
