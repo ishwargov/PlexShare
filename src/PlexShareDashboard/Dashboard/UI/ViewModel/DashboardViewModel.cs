@@ -630,6 +630,28 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         }
 
 
+        //overloading function to test it 
+        public void OnClientSessionChanged(SessionData newSessionData, int testingGateway)
+        {
+
+            if (newSessionData != null)
+            {
+                //we have to update the participants list and SessionMode
+                UpdateParticipantsList(newSessionData.users);
+                UserData currUser = clientSessionManager.GetUser();
+                //SetLeaveButtonAccordingToUser();
+                SessionModeSetter = newSessionData.sessionMode;
+                UpdateButtonContent(currUser);
+                //UpdateButtonContent(currUser);
+                TotalParticipantsCountSetter = ParticipantsList.Count;
+
+            }
+
+
+            return;
+        }
+
+
         //defining the function to update the summary of the current session till now 
         public void OnSummaryChanged(string latestSummary)
         {

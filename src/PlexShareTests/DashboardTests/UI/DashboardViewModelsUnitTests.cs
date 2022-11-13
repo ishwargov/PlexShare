@@ -18,9 +18,15 @@ namespace PlexShareTests.DashboardTests.UI
         //first doing the set up for testing purpose 
         private DashboardViewModel DashboardViewModelForTest = new();
         //test for doing the setup 
+        //private SystemStartUp = new
         [Fact]
         public void SetUpTest()
-        { 
+        {
+            if (null == System.Windows.Application.Current)
+            {
+                new System.Windows.Application();
+            }
+            //new System.Windows.Application();
             Assert.NotNull(DashboardViewModelForTest);
             Assert.IsType<DashboardViewModel>(DashboardViewModelForTest);
             Assert.NotNull(DashboardViewModelForTest.GetClientSessionManager());
@@ -109,6 +115,12 @@ namespace PlexShareTests.DashboardTests.UI
         //writing the function to test the update participant list 
         public void UpdateParticipantsList_Test()
         {
+            //new System.Windows.Application();
+            if (null == System.Windows.Application.Current)
+            {
+                new System.Windows.Application();
+            }
+
             List<UserData> newParticipantsList = new List<UserData>();
             UserData user1 = new UserData("Rupesh kumar", 1);
             UserData user2 = new UserData("Saurabh Kumar", 2);
@@ -148,6 +160,11 @@ namespace PlexShareTests.DashboardTests.UI
         [Fact]
         public void UpdateUserCountVsTimeStamp_Test()
         {
+            //new System.Windows.Application();
+            if (null == System.Windows.Application.Current)
+            {
+                new System.Windows.Application();
+            }
 
             DateTime currDateTime1 = new DateTime(2021, 11, 23, 1, 15, 0);
             DateTime currDateTime2 = new DateTime(2021, 11, 23, 1, 25, 0);
@@ -164,6 +181,10 @@ namespace PlexShareTests.DashboardTests.UI
             //calling the function to update these participants count according to the time stamp 
             DashboardViewModelForTest.UpdateUserCountVsTimeStamp(currUserCountVsTimeStamp);
             //checking the final answer that is stored in the corresponding arrays for this purpose 
+            //we also have to end the current application thread 
+            //System.Windows.Application.Current.Shutdown();
+
+
             Assert.Equal(10, DashboardViewModelForTest.UserCountList[0]);
             Assert.Equal(20, DashboardViewModelForTest.UserCountList[1]);
             Assert.Equal(30, DashboardViewModelForTest.UserCountList[2]);
@@ -175,7 +196,6 @@ namespace PlexShareTests.DashboardTests.UI
             Assert.Equal("01:45", DashboardViewModelForTest.TimeStampsList[3]);
 
 
-
             //say everything went fine 
             return;
         
@@ -184,6 +204,12 @@ namespace PlexShareTests.DashboardTests.UI
         [Fact]
         public void UpdateUserIdVsChatCount_Test()
         {
+            //new System.Windows.Application();
+            if (null == System.Windows.Application.Current)
+            {
+                new System.Windows.Application();
+            }
+
             Dictionary<int, int> currUserIdVsChatCount = new Dictionary<int, int>();
             currUserIdVsChatCount[1] = 10;
             currUserIdVsChatCount[2] = 20;
@@ -191,6 +217,9 @@ namespace PlexShareTests.DashboardTests.UI
 
             //calling the function to update the values 
             DashboardViewModelForTest.UpdateUserIdVsChatCount(currUserIdVsChatCount);
+
+
+            //System.Windows.Application.Current.Shutdown();
 
             //now asserting the values for this purpose 
             Assert.Equal("1", DashboardViewModelForTest.UserIdList[0]);
@@ -228,6 +257,11 @@ namespace PlexShareTests.DashboardTests.UI
         [Fact]
         public void OnClientSessionChanged_Test()
         {
+            //new System.Windows.Application();
+            if (null == System.Windows.Application.Current)
+            {
+                new System.Windows.Application();
+            }
             UserData user1 = new UserData("Rupesh kumar", 1);
             UserData user2 = new UserData("Saurabh Kumar", 2);
             UserData user3 = new UserData("Hrishi Raaj", 3);
@@ -241,7 +275,8 @@ namespace PlexShareTests.DashboardTests.UI
             sessionData.sessionId = 1;
 
             //calling the function 
-            DashboardViewModelForTest.OnClientSessionChanged(sessionData);
+            DashboardViewModelForTest.OnClientSessionChanged(sessionData, 1);
+            //System.Windows.Application.Current.Shutdown();
 
             //now asserting the values for this purpose 
             Assert.Equal("ExamMode", DashboardViewModelForTest.SessionModeSetter);
@@ -256,6 +291,11 @@ namespace PlexShareTests.DashboardTests.UI
         [Fact]
         public void OnAnalyticsChanged_Test()
         {
+            //new System.Windows.Application();
+            if (null == System.Windows.Application.Current)
+            {
+                new System.Windows.Application();
+            }
             Dictionary<int, int> currUserIdVsChatCount = new Dictionary<int, int>();
             currUserIdVsChatCount[1] = 10;
             currUserIdVsChatCount[2] = 20;
@@ -291,6 +331,8 @@ namespace PlexShareTests.DashboardTests.UI
 
             //now the analytics is set we have to call the function onanalytics changed 
             DashboardViewModelForTest.OnAnalyticsChanged(sessionAnalytics);
+
+            //System.Windows.Application.Current.Shutdown();
 
             //asserting the result values
             Assert.Equal(10, DashboardViewModelForTest.UserCountList[0]);
