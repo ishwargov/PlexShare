@@ -27,6 +27,23 @@ namespace PlexShareTests.ScreenshareTests
         }
 
         [Fact]
+        public void TestCleanup()
+        {
+            ScreenCapturer screenCapturer = new();
+            ScreenProcessor screenProcessor = new(screenCapturer);
+
+            screenProcessor.StartProcessing();
+            screenCapturer.StartCapture();
+
+            Thread.Sleep(1000);
+
+            screenCapturer.StopCapture();
+            screenProcessor.StopProcessing();
+
+            Assert.True(screenProcessor.GetProcessedFrameLength() == 0);
+        }
+
+        [Fact]
         public void TestSameImagePixelDiffZero()
         {
             ScreenCapturer screenCapturer = new();

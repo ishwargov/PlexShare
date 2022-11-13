@@ -5,12 +5,6 @@
 /// are implemented
 /// </summary>
 
-using PlexShareNetwork;
-using System;
-using System.Diagnostics;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace PlexShareScreenshare.Client
 {
@@ -71,6 +65,10 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         private async void StopImageSending()
         {
+            _capturer.StartCapture();
+            _processor.StartProcessing();
+            Trace.WriteLine(Utils.GetDebugMessage("Successfully stopped capturer and processor"));
+
             Debug.Assert(_imageCancellationTokenSource != null,
                 Utils.GetDebugMessage("_imageCancellationTokenSource is not null, cannot stop image sending"));
             Debug.Assert(_sendImageTask != null,
@@ -129,7 +127,7 @@ namespace PlexShareScreenshare.Client
         {
             _id = id;
             _name = name;
-            Trace.WriteLine(Utils.GetDebugMessage("Successfully set client name and id", withTimeStamp: true));
+            Trace.WriteLine(Utils.GetDebugMessage("Successfully set client name and id"));
         }
     }
 }

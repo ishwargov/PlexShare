@@ -4,14 +4,6 @@
 /// processing the image from ScreenCapturer class and calculating
 /// the image bits that are different from the previous image
 ///</summary>
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace PlexShareScreenshare.Client
 {
