@@ -725,7 +725,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
                 Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
                 {
                     //we have to add  the new element into the chart values 
-                    UserIdList.Add(currUserName);
+                    UserNameList.Add(currUserName);
                     ChatCountList.Add(currChatCount);
                     //ParticipantsList.Clear();
                     //_matchObsCollection.Add(match);
