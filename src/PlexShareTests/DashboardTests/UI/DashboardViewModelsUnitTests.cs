@@ -34,7 +34,8 @@ namespace PlexShareTests.DashboardTests.UI
             Assert.NotNull(DashboardViewModelForTest.GetSessionAnalytics());
             Assert.NotNull(DashboardViewModelForTest.ParticipantsList);
             Assert.NotNull(DashboardViewModelForTest.UserCountList);
-            Assert.NotNull(DashboardViewModelForTest.ChatCountList);
+            Assert.NotNull(DashboardViewModelForTest.ChatCountListForUserId);
+            Assert.NotNull(DashboardViewModelForTest.ChatCountListForUserName);
             Assert.NotNull(DashboardViewModelForTest.UserIdList);
             Assert.NotNull(DashboardViewModelForTest.TimeStampsList);
 
@@ -315,11 +316,15 @@ namespace PlexShareTests.DashboardTests.UI
             currUserCountVsTimeStamp[currDateTime2] = 20;
             currUserCountVsTimeStamp[currDateTime3] = 30;
 
+            Dictionary<string, int> userNameVsChatCount = new Dictionary<string, int>();
+            userNameVsChatCount["Rupesh Kumar"] = 10;
+            userNameVsChatCount["Hrishi Raaj"] = 20;
 
             SessionAnalytics sessionAnalytics = new SessionAnalytics();
             sessionAnalytics.chatCountForEachUser = currUserIdVsChatCount;
             sessionAnalytics.listOfInSincereMembers = array;
             sessionAnalytics.userCountVsTimeStamp = currUserCountVsTimeStamp;
+            sessionAnalytics.userNameVsChatCount = userNameVsChatCount;
 
             SessionSummary sessionSummary = new SessionSummary();
             sessionSummary.userCount = 10;
@@ -345,8 +350,9 @@ namespace PlexShareTests.DashboardTests.UI
             Assert.Equal(30, DashboardViewModelForTest.ChatCountList[2]);
 
             Assert.Equal(200, DashboardViewModelForTest.SessionScoreSetter);
-                
-            
+            Assert.Equal(10, DashboardViewModelForTest.UserNameList[0]);
+            Assert.Equal(20, DashboardViewModelForTest.UserNameList[1]);
+
             //say everything went fine 
             return;
         }

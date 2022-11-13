@@ -50,12 +50,15 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
         //ObservableCollection for storing the number of chat count for each user 
         //public ObservableCollection<UserIdVsChatCount> UserIdVsChatCounts { get; set; }
-        public ChartValues<int> ChatCountList { get; set; }
+        public ChartValues<int> ChatCountListForUserId { get; set; }
+        public ChartValues<int> ChatCountListForUserName { get; set; }
+
         public ObservableCollection<string> UserIdList { get; set; }
 
         //defining the observable collection to store the username 
         public ObservableCollection<string> UserNameList { get; set; }
 
+        
 
 
         //debug.assert 
@@ -243,7 +246,8 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
       
 
 
-            ChatCountList = new ChartValues<int>();
+            ChatCountListForUserId = new ChartValues<int>();
+            ChatCountListForUserName = new ChartValues<int>();
             UserIdList = new ObservableCollection<string>();
 
             UserNameList = new ObservableCollection<string>();
@@ -579,7 +583,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             {
                 //we have to clear the array of the userid list and 
                 UserIdList.Clear();
-                ChatCountList.Clear();
+                ChatCountListForUserId.Clear();
                 //ParticipantsList.Clear();
                 //_matchObsCollection.Add(match);
             });
@@ -601,7 +605,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
                 {
                     //we have to add  the new element into the chart values 
                     UserIdList.Add(currUserid.ToString());
-                    ChatCountList.Add(currChatCount);
+                    ChatCountListForUserId.Add(currChatCount);
                     //ParticipantsList.Clear();
                     //_matchObsCollection.Add(match);
                 });
@@ -707,7 +711,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             {
                 //we have to clear the array of the userid list and 
                 UserNameList.Clear();
-                ChatCountList.Clear();
+                ChatCountListForUserName.Clear();
                 //ParticipantsList.Clear();
                 //_matchObsCollection.Add(match);
             });
@@ -726,7 +730,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
                 {
                     //we have to add  the new element into the chart values 
                     UserNameList.Add(currUserName);
-                    ChatCountList.Add(currChatCount);
+                    ChatCountListForUserName.Add(currChatCount);
                     //ParticipantsList.Clear();
                     //_matchObsCollection.Add(match);
                 });
@@ -766,7 +770,10 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
             //we have to update all the lists so that we can show to the dahsboard
             UpdateUserCountVsTimeStamp(sessionAnalytics.userCountVsTimeStamp);
+            //this is am calculating to be able to be used in future.
             UpdateUserIdVsChatCount(sessionAnalytics.chatCountForEachUser);
+
+            //calculating the engagement rate 
             CalculateEngagementRate(sessionAnalytics.chatCountForEachUser);
 
             //calling the function to update and show the username vs chat count 

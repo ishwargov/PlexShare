@@ -142,7 +142,7 @@
 
             <lvc:CartesianChart Grid.Column="1" Grid.Row="0" >
                 <lvc:CartesianChart.Series>
-                    <lvc:ColumnSeries d:DataContext="{d:DesignInstance Type=viewmodel:DashboardViewModel}" Title="Chat Count" Values="{Binding ChatCountList}"/>
+                    <lvc:ColumnSeries d:DataContext="{d:DesignInstance Type=viewmodel:DashboardViewModel}" Title="Chat Count" Values="{Binding ChatCountListForUserName}"/>
                 </lvc:CartesianChart.Series>
                 <lvc:CartesianChart.AxisX>
                     <lvc:Axis Title="Users"  Labels="{Binding UserNameList}">
