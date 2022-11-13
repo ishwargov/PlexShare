@@ -216,16 +216,19 @@ namespace PlexShareApp
         /// <param name="e"> Routed Event Data </param>
         private void EditButtonClick(object sender, RoutedEventArgs e)
         {
-            if(sender is Button)
+            if (!string.IsNullOrEmpty(SendTextBox.Text))
             {
-                var senderButton = (Button)sender;
-                if(senderButton.DataContext is Message)
+                if (sender is Button)
                 {
-                    var viewModel = DataContext as ChatPageViewModel;
-                    Message msg = (Message)senderButton.DataContext;
-                    var ourEditMessage = SendTextBox.Text;
-                    viewModel.EditChatMsg(msg.MessageID, ourEditMessage);
-                    SendTextBox.Text = string.Empty;
+                    var senderButton = (Button)sender;
+                    if (senderButton.DataContext is Message)
+                    {
+                        var viewModel = DataContext as ChatPageViewModel;
+                        Message msg = (Message)senderButton.DataContext;
+                        var ourEditMessage = SendTextBox.Text;
+                        viewModel.EditChatMsg(msg.MessageID, ourEditMessage);
+                        SendTextBox.Text = string.Empty;
+                    }
                 }
             }
         }
