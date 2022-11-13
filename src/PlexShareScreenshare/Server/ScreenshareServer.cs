@@ -6,11 +6,11 @@
 
 using PlexShareNetwork;
 using PlexShareNetwork.Communication;
-using PlexShareNetwork.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.Json;
 using System.Timers;
 
 namespace PlexShareScreenshare.Server
@@ -33,11 +33,6 @@ namespace PlexShareScreenshare.Server
         /// and to send the packets to the clients.
         /// </summary>
         private readonly ICommunicator _communicator;
-
-        /// <summary>
-        /// The serializer object used to serialize and deserialize data.
-        /// </summary>
-        private readonly ISerializer _serializer;
 
         /// <summary>
         /// The subscriber which should be notified when subscribers list change.
@@ -74,7 +69,6 @@ namespace PlexShareScreenshare.Server
             // Initialize the rest of the fields
             _subscribers = new Dictionary<string, SharedClientScreen>();
             _listener = listener;
-            _serializer = new Serializer();
             _disposed = false;
 
             Trace.WriteLine(Utils.GetDebugMessage("Successfully created an instance of ScreenshareServer", withTimeStamp: true));
@@ -103,12 +97,15 @@ namespace PlexShareScreenshare.Server
         /// </param>
         public void OnDataReceived(string serializedData)
         {
-            Debug.Assert(_serializer != null, Utils.GetDebugMessage("_serializer is found null"));
-
             try
             {
-                // Deserialize the data to get the "DataPacket" object back
-                DataPacket packet = _serializer.Deserialize<DataPacket>(serializedData);
+                DataPacket? packet = JsonSerializer.Deserialize<DataPacket>(serializedData); ;
+
+                if (packet == null)
+                {
+                    Trace.WriteLine(Utils.GetDebugMessage($"Not able to deserialize data packet: {serializedData}", withTimeStamp: true));
+                    return;
+                }
 
                 // Extract different fields from the object of the "DataPacket"
                 string clientId = packet.Id;
@@ -232,9 +229,8 @@ namespace PlexShareScreenshare.Server
         /// <param name="resolution">
         /// Resolution of the image to send if asking the clients to send image packet
         /// </param>
-        public void BroadcastClients(List<string> clientIds, string headerVal, (int, int) resolution)
+        public void BroadcastClients(List<string> clientIds, string headerVal, (int Height, int Width) resolution)
         {
-            Debug.Assert(_serializer != null, Utils.GetDebugMessage("_serializer is found null"));
             Debug.Assert(_communicator != null, Utils.GetDebugMessage("_communicator is found null"));
 
             // Validate header value
@@ -249,18 +245,26 @@ namespace PlexShareScreenshare.Server
             }
 
             // Serialize the data to send
-            string serializedData = _serializer.Serialize(resolution);
-
-            // Create the data packet to send
-            DataPacket packet = new("1", "Server", headerVal, serializedData);
-
-            // Serialize the data packet to send to clients
-            string serializedPacket = _serializer.Serialize(packet);
-
-            // Send data packet to all the clients mentioned
-            foreach (string clientId in clientIds)
+            try
             {
-                _communicator.Send(serializedPacket, Utils.ModuleIdentifier, clientId);
+                Resolution resolutionToSend = new() { Height = resolution.Height, Width = resolution.Width };
+                string serializedData = JsonSerializer.Serialize(resolutionToSend);
+
+                // Create the data packet to send
+                DataPacket packet = new("1", "Server", headerVal, serializedData);
+
+                // Serialize the data packet to send to clients
+                string serializedPacket = JsonSerializer.Serialize(packet);
+
+                // Send data packet to all the clients mentioned
+                foreach (string clientId in clientIds)
+                {
+                    _communicator.Send(serializedPacket, Utils.ModuleIdentifier, clientId);
+                }
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine(Utils.GetDebugMessage($"Exception while sending the packet to the client: {e.Message}", withTimeStamp: true));
             }
         }
 
@@ -381,7 +385,6 @@ namespace PlexShareScreenshare.Server
         private void PutImage(string clientId, string data)
         {
             Debug.Assert(_subscribers != null, Utils.GetDebugMessage("_subscribers is found null"));
-            Debug.Assert(_serializer != null, Utils.GetDebugMessage("_serializer is found null"));
 
             // Check if the clientId is present in the screen sharers list
             if (!_subscribers.ContainsKey(clientId))
@@ -391,9 +394,16 @@ namespace PlexShareScreenshare.Server
             }
 
             // Put the image to the client's image queue
-            Frame frame = _serializer.Deserialize<Frame>(data);
-            SharedClientScreen client = _subscribers[clientId];
-            client.PutImage(frame);
+            try
+            {
+                Frame frame = JsonSerializer.Deserialize<Frame>(data);
+                SharedClientScreen client = _subscribers[clientId];
+                client.PutImage(frame);
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine(Utils.GetDebugMessage($"Exception while processing the received frame: {e.Message}", withTimeStamp: true));
+            }
         }
 
         /// <summary>
@@ -418,6 +428,13 @@ namespace PlexShareScreenshare.Server
             {
                 SharedClientScreen client = _subscribers[clientId];
                 client.UpdateTimer();
+
+                // Send Confirmation packet back to the client
+                List<string> clientIds = new()
+                {
+                    clientId
+                };
+                BroadcastClients(clientIds, nameof(ServerDataHeader.Confirmation), (0, 0));
             }
             catch (Exception e)
             {
