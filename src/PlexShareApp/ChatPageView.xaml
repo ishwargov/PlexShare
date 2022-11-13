@@ -23,7 +23,7 @@
         <SolidColorBrush x:Key="DynamicSentReplyMsg" Color="YellowGreen" />
 
 
-       
+
         <!--Custom style trigger for determining action when mouse is and not over the textbox-->
 
         <!--Setting the visibility of the reply text box as collapsed when its empty or null-->
@@ -62,9 +62,9 @@
 
         <!--Customizing the Button type-->
         <Style TargetType="{x:Type Button}">
-            <Setter Property="Background" Value="{DynamicResource DynamicButtonBack}" />
+            <!--<Setter Property="Background" Value="{DynamicResource DynamicButtonBack}" />
             <Setter Property="BorderBrush" Value="{DynamicResource DynamicButtonBack}" />
-            <Setter Property="Foreground" Value="{DynamicResource DynamicButtonFore}" />
+            <Setter Property="Foreground" Value="{DynamicResource DynamicButtonFore}" />-->
             <Setter Property="FontSize" Value="14" />
             <Setter Property="Width" Value="90" />
             <Setter Property="Margin" Value="10" />
@@ -81,7 +81,7 @@
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Effect">
                         <Setter.Value>
-                            <DropShadowEffect ShadowDepth="0" Color="White" Opacity="1" BlurRadius="20" />
+                            <DropShadowEffect ShadowDepth="0" Color="White" Opacity="10" BlurRadius="20" />
                         </Setter.Value>
                     </Setter>
                 </Trigger>
@@ -128,7 +128,7 @@
                                     BorderThickness="5" Background="{DynamicResource DynamicSentFile}" Opacity="0.5">
                                 <TextBlock Style="{StaticResource ReplyText}"
                                            Foreground="{DynamicResource DynamicTextClr}" Text="{Binding ReplyMessage, UpdateSourceTrigger=PropertyChanged}"
-                                           TextWrapping="Wrap" Width="250" FontSize="14" Padding="8,5,8,5" />
+                                           TextWrapping="Wrap" Width="250" FontSize="14" Padding="8,5,8,5" FontStyle="Italic"/>
                             </Border>
                         </Grid>
                         <Grid Grid.Row="1">
@@ -196,7 +196,7 @@
                                     BorderThickness="5" Background="{DynamicResource DynamicSentFile}" Opacity="0.5">
                                 <TextBlock Style="{StaticResource ReplyText}"
                                            Foreground="{DynamicResource DynamicTextClr}" Text="{Binding ReplyMessage, UpdateSourceTrigger=PropertyChanged}"
-                                           TextWrapping="Wrap" Width="250" FontSize="14" Padding="8,5,8,5" />
+                                           TextWrapping="Wrap" Width="250" FontSize="14" Padding="8,5,8,5" FontStyle="Italic"/>
                             </Border>
                         </Grid>
                         <Grid Grid.Row="1">
@@ -289,9 +289,9 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Foreground="{DynamicResource DynamicTextClr}" Text="{Binding IncomingMessage, UpdateSourceTrigger=PropertyChanged}"
                                    x:Name="MainText" TextWrapping="Wrap" Grid.Row="0" Width="250" FontSize="16"
-                                   Padding="8,5,8,5" Grid.Column="0" />
+                                   Padding="8,5,8,5" Grid.Column="0"/>
                         <StackPanel Orientation="Horizontal" Grid.Column="1">
-                            <Button Background="DeepPink" BorderBrush="Transparent" HorizontalAlignment="Right"
+                            <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
                                     Width="30" Height="20" Margin="0,0,0,0" Click="ReplyButtonClick">
                                 <Image Source="Icons/reply.png" Width="15" Height="15" />
                             </Button>
@@ -409,16 +409,11 @@
             </Border.Effect>
         </Border>
         <StackPanel>
-            <Grid Height="30" VerticalAlignment="Top" Background="{DynamicResource DynamicHeader}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                    <!--<ColumnDefinition Width="Auto" />-->
-                </Grid.ColumnDefinitions>
-                <Image Grid.Column="0" Width="20" Height="20" Margin="4" Source="Icons/online-chat.png" />
-                <TextBlock Foreground="White" Grid.Column="1" Margin="4 0 0 0" VerticalAlignment="Center" FontSize="20"
-                           Text="Chat" />
-            </Grid>
+            <StackPanel Orientation="Horizontal" Background="{DynamicResource DynamicHeader}" HorizontalAlignment="Stretch">
+                <Image Width="20" Height="20" Margin="4" Source="Icons/online-chat.png" />
+                <TextBlock Foreground="White" Grid.Column="1" Margin="4 0 0 0" FontSize="20"
+                           Text="Welcome to Chat Page" />
+            </StackPanel>
 
             <!--Grid layout for listbox and textbox-->
             <Grid>
@@ -428,7 +423,7 @@
                 </Grid.RowDefinitions>
 
                 <!--ListBox-->
-                <Grid Grid.Row="0" Margin="5,5,5,0">
+                <Grid Grid.Row="0" Margin="5,5,5,0" Grid.ColumnSpan="2">
                     <ListBox Background="{DynamicResource DynamicChatBackGrd}" HorizontalAlignment="Stretch"
                              BorderBrush="{DynamicResource DynamicChatBackGrd}"
                              ScrollViewer.VerticalScrollBarVisibility="Auto" x:Name="MainChat"
@@ -453,7 +448,7 @@
                 </Grid>
 
                 <!--TextBox-->
-                <Grid Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
+                <Grid Grid.Row="1" VerticalAlignment="Bottom" Margin="0,0,0,10" Grid.ColumnSpan="2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="6*" />
                         <ColumnDefinition Width="1*" />
@@ -475,7 +470,7 @@
                                                    Width="425" FontSize="16" Padding="8,5,8,5" />
                                     </Border>
                                 </Grid>
-                                <TextBox Grid.Row="1" Name="SendTextBox" Foreground="White" Background="Transparent"
+                                <TextBox Grid.Row="1" Name="SendTextBox" Foreground="White" SpellCheck.IsEnabled="True" Background="Transparent"
                                          BorderThickness="0" Height="30" FontSize="15" VerticalAlignment="Bottom"
                                          Text="" AcceptsReturn="True"/>
                             </Grid>
