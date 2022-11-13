@@ -132,12 +132,12 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
                 case "endMeet":
                     _communicator.Stop();
                     // _screenShareClient.Dispose();
-                    MeetingEnded?.Invoke();
+                  //  MeetingEnded?.Invoke();
 
-                    /*    Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
+                        Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
                         {
                             Application.Current.Shutdown();
-                        });*/
+                        });
                     return;
 
                 case "newID":
@@ -238,9 +238,14 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
             // Stopping the network communicator.
             _communicator.Stop();
 
+            Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
+            {
+                Application.Current.Shutdown();
+            });
+
             // Disposing the Screen Share Client.
             // _screenShareClient.Dispose();  
-            Application.Current.Shutdown();
+
             //Removed the client from the client side.
         }
 
