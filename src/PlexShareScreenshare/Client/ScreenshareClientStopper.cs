@@ -51,6 +51,7 @@ namespace PlexShareScreenshare.Client
             try
             {
                 _confirmationCancellationTokenSource.Cancel();
+                await _sendConfirmationTask;
             }
             catch (OperationCanceledException e)
             {
@@ -61,7 +62,6 @@ namespace PlexShareScreenshare.Client
                 Trace.WriteLine(Utils.GetDebugMessage($"Unable to cancel confirmation sending task: {e.Message}", withTimeStamp: true));
             }
 
-            await _sendConfirmationTask;
             _sendConfirmationTask = null;
         }
 
@@ -79,6 +79,7 @@ namespace PlexShareScreenshare.Client
             try
             {
                 _imageCancellationTokenSource.Cancel();
+                await _sendImageTask;
             }
             catch (OperationCanceledException e)
             {
@@ -89,7 +90,6 @@ namespace PlexShareScreenshare.Client
                 Trace.WriteLine(Utils.GetDebugMessage($"Unable to cancel image sending task: {e.Message}", withTimeStamp: true));
             }
 
-            await _sendImageTask;
             _sendImageTask = null;
         }
 

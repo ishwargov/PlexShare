@@ -127,6 +127,7 @@ namespace PlexShareScreenshare.Client
             try
             {
                 _cancellationTokenSource.Cancel();
+                await _captureTask;
             }
             catch (OperationCanceledException e)
             {
@@ -137,7 +138,6 @@ namespace PlexShareScreenshare.Client
                 Trace.WriteLine(Utils.GetDebugMessage($"Unable to stop capture: {e.Message}", withTimeStamp: true));
             }
 
-            await _captureTask;
             _capturedFrame.Clear();
         }
     }

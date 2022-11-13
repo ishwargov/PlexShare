@@ -231,6 +231,7 @@ namespace PlexShareScreenshare.Client
             try
             {
                 _cancellationTokenSource.Cancel();
+                await _processorTask;
             }
             catch (OperationCanceledException e)
             {
@@ -240,8 +241,6 @@ namespace PlexShareScreenshare.Client
             {
                 Trace.WriteLine(Utils.GetDebugMessage($"Failed to cancel processor task: {e.Message}", withTimeStamp: true));
             }
-
-            await _processorTask;
 
             Debug.Assert(_processedFrame != null, Utils.GetDebugMessage("_processedTask is found null"));
             _processedFrame.Clear();
