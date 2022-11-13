@@ -46,14 +46,14 @@ namespace PlexShareApp
             if (ip == "-1")
             {
                 MeetingCredentials meetingCredentials = serverSessionManager.GetPortsAndIPAddress();
-                verified = clientSessionManager.AddClient(meetingCredentials.ipAddress, meetingCredentials.port, name);
+                verified = clientSessionManager.AddClient(meetingCredentials.ipAddress, meetingCredentials.port, name,email,url);
                 ip = meetingCredentials.ipAddress;
                 port = meetingCredentials.port.ToString();
                 isServer = true;
             }
             else
             {
-                verified = clientSessionManager.AddClient(ip, int.Parse(port), name);
+                verified = clientSessionManager.AddClient(ip, int.Parse(port), name,email, url);
                 isServer = false;
             }
 
