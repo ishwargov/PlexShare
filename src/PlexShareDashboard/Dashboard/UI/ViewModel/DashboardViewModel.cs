@@ -51,6 +51,12 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         //public ObservableCollection<UserIdVsChatCount> UserIdVsChatCounts { get; set; }
         public ChartValues<int> ChatCountList { get; set; }
         public ObservableCollection<string> UserIdList { get; set; }
+
+        //defining the observable collection to store the username 
+        public ObservableCollection<string> UserNameList { get; set; }
+
+
+
         //debug.assert 
         //checkbills & free 
         //Trace  
@@ -239,6 +245,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             ChatCountList = new ChartValues<int>();
             UserIdList = new ObservableCollection<string>();
 
+            UserNameList = new ObservableCollection<string>();
          
 
             AttentiveUsersSetter = 100;
@@ -667,7 +674,47 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             return;
         }
 
+        public void UpdateUserNameVsChatCount(Dictionary<string, int> currUserNameVsChatCount)
+        {
 
+           
+            Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
+            {
+                //we have to clear the array of the userid list and 
+                UserNameList.Clear();
+                ChatCountList.Clear();
+                //ParticipantsList.Clear();
+                //_matchObsCollection.Add(match);
+            });
+
+            int chatCount = 0;
+            //using the for loop to add the username vs userid 
+            foreach (var currUserChatCount in currUserNameVsChatCount)
+            {
+                var currUserName = currUserChatCount.Key;
+                var currChatCount = currUserChatCount.Value;
+
+                //UserIdVsChatCount currUserIdChatCount = new UserIdVsChatCount(currUserid, currChatCount);
+
+                //UserIdVsChatCounts.Add(currUserIdChatCount);
+                Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
+                {
+                    //we have to add  the new element into the chart values 
+                    UserIdList.Add(currUserName);
+                    ChatCountList.Add(currChatCount);
+                    //ParticipantsList.Clear();
+                    //_matchObsCollection.Add(match);
+                });
+
+                chatCount = chatCount + currChatCount;
+
+            }
+
+            TotalMessageCountSetter = chatCount;
+
+            //say everything went fine 
+            return;
+        }
         //##################################################################################
         //implementing the onanalytics changed
         public void OnAnalyticsChanged(SessionAnalytics latestAnalytics)
@@ -697,6 +744,8 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             UpdateUserIdVsChatCount(sessionAnalytics.chatCountForEachUser);
             CalculateEngagementRate(sessionAnalytics.chatCountForEachUser);
 
+            //calling the function to update and show the username vs chat count 
+            UpdateUserNameVsChatCount(sessionAnalytics.userNameVsChatCount);
 
             int currNonAttentiveUsers = sessionAnalytics.listOfInSincereMembers.Count;
             int currAttentiveUsers = TotalParticipantsCountSetter - currNonAttentiveUsers;
