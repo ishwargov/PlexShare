@@ -1,0 +1,212 @@
+﻿<Page x:Class="PlexShareApp.ScreenshareServerView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:gif="https://github.com/XamlAnimatedGif/XamlAnimatedGif"
+      xmlns:local="clr-namespace:PlexShareApp"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="ScreenSharePage">
+
+    <!-- Create a grid to show everything within it-->
+    <Grid Background = "#202124">
+
+        <!-- Divide the grid into 2 rows of 16:1 ratio -->
+        <Grid.RowDefinitions >
+            <RowDefinition Height = "16*" />
+            <RowDefinition/>
+        </Grid.RowDefinitions >
+
+        <!-- Create a dock panel at the bottom of the screen -->
+        <DockPanel Grid.Row = "1" HorizontalAlignment = "Center" VerticalAlignment = "Stretch" >
+            
+            <!-- Create a button for previous page functionality -->
+            <Button Click = "OnPreviousPageButtonClicked" ToolTip = "Previous Page" 
+                    Width = "40" Height = "40" BorderThickness="0" Cursor="Hand" Background="Transparent">
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <!-- Make the button rounded-->
+                        <Setter Property="CornerRadius" Value="50"/>
+                        <Style.Triggers>
+                            <!-- Collapse the button if the current page is 1 -->
+                            <DataTrigger Binding = "{Binding CurrentPage}" Value = "1">
+                                <Setter Property = "Visibility" Value = "Collapsed" />
+                            </DataTrigger>
+                            <!-- Decrease the opacity when hovered on the button -->
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Opacity" Value="0.4"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Resources>
+                <!-- Give an image to the button -->
+                <Image Source = "\Icons\PreviousButton_white.png" Height="15"/>
+            </Button>
+            
+            <!-- Create a Textblock to write the current page number-->
+            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent" 
+                       Foreground="White" Margin="20,0,20,0" FontWeight="DemiBold" FontSize="14" >
+                <Run Text ="{Binding CurrentPage}"/>
+                <Run Text=" of "/>
+                <Run Text="{Binding TotalPages}"/>
+            </TextBlock>
+
+            <!-- Create a button for next page functionality -->
+            <Button Click = "OnNextPageButtonClicked" ToolTip = "Next Page" Width = "40" 
+                    Height = "40" Background = "Transparent" BorderThickness="0" Cursor="Hand">
+                <!-- Style the button -->
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <!-- Make the button rounded-->
+                        <Setter Property="CornerRadius" Value="50"/>
+                        <Style.Triggers>
+                            <!-- Collapse the button when on last page -->
+                            <DataTrigger Binding = "{Binding IsLastPage}" Value = "True">
+                                <Setter Property = "Visibility" Value = "Collapsed" />
+                            </DataTrigger>
+                            <!-- Decrease the opacity when hovered on the button -->
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Opacity" Value="0.4"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Resources>
+                <!-- Give an image to the button -->
+                <Image Source = "\Icons\NextButton_white.png" Height="15"/>
+            </Button >
+        </DockPanel >
+
+        <!-- Create a stack panel for the screen when no client is sharing screen -->
+        <StackPanel Orientation="Vertical" Grid.Row="0">
+            
+            <!-- Give an animated GIF -->
+            <Image gif:AnimationBehavior.SourceUri="Icons/tenor.gif" Height="300" VerticalAlignment="Center" 
+                   HorizontalAlignment="Center" Margin="0,200,0,20"/>
+
+            <!-- Create a textblock to write a msg -->
+            <TextBlock Text="No One's Here" Foreground="IndianRed" FontSize="60" FontFamily="Comic Sans MS" 
+                       TextWrapping="WrapWithOverflow" HorizontalAlignment="Center"/>
+            
+            <!-- Make this stack panel visible only when no client is sharing their screen -->
+            <StackPanel.Resources>
+                <Style TargetType="{x:Type StackPanel}">
+                    <Setter Property="Visibility" Value="Hidden"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding = "{Binding CurrentWindowClients.Count}" Value = "0">
+                            <Setter Property = "Visibility" Value = "Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Resources>
+
+        </StackPanel>
+
+        <!-- Make a stack panel to show the tiles of clients -->
+        <StackPanel Orientation="Vertical" Grid.Row="0">
+
+            <!-- Create an ItemsControl which will show all the images in the client list -->
+            <ItemsControl x:Name ="Items" ItemsSource="{Binding CurrentWindowClients}">
+
+                <!-- This panel will be used to hold the items -->
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Rows="{Binding CurrentPageRows}" Columns="{Binding CurrentPageColumns}" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+                <!-- Each item will be drawn using this template -->
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Vertical">
+                            <!-- Create a grid to hold the Image, caption, pin and unpin buttons -->
+                            <Grid HorizontalAlignment="Center" VerticalAlignment="Center"
+                                  Width="{Binding TileWidth}" Height="{Binding TileHeight}">
+
+                                <!-- Create a border and put the image inside it -->
+                                <Border BorderThickness="2" CornerRadius="5" Background="#3C4043" Margin="0,10,0,0">
+                                    <Image Source="{Binding CurrentImage}" Stretch="Uniform"/>
+                                </Border>
+
+                                <!-- Create a Pin Button -->
+                                <Button CommandParameter="{Binding Id}" Width="30" Height="30" Opacity ="0.5" Click="OnPinButtonClicked" 
+                                        ToolTip="Pin this user" Background="#3C4043" BorderThickness="0" Cursor="Hand">
+                                    
+                                    <!-- Assign an icon to it-->
+                                    <Image Source="Icons/PinButton_white.png" Width="18" Margin="0,3,0,0"/>
+                                    
+                                    <!-- This button will be shown only when mouse is hovered over the tile -->
+                                    <!-- And the tile should be in unpin state -->
+                                    <Button.Resources>
+                                        <Style TargetType="{x:Type Button}">
+                                            <Setter Property="Visibility" Value="Hidden" />
+                                            <Style.Triggers>
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Grid}},Path=IsMouseOver}" Value="True" />
+                                                        <Condition Binding="{Binding Pinned}" Value="False" />
+                                                    </MultiDataTrigger.Conditions>
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </MultiDataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                        <!-- Make the button rounded and change opacity on hovering -->
+                                        <Style TargetType="Border">
+                                            <Setter Property="CornerRadius" Value="50"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Opacity" Value="0.4"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Resources>
+                                </Button>
+                                
+                                <!-- Create an unpin button -->
+                                <Button Width="30" Height="30" Opacity ="0.5" HorizontalAlignment="Center" Cursor="Hand"
+                                        Click="OnUnpinButtonClicked" ToolTip="Unpin this user" Background="#3C4043" BorderThickness="0" 
+                                        CommandParameter ="{Binding Id}">
+                                    
+                                    <!-- Assign an icon to the button -->
+                                    <Image Source="Icons/UnpinButton_white.png"/>
+                                    <!-- This button which will be shown only on hovering over the tile-->
+                                    <!-- The tile should be in pinned state-->
+                                    <Button.Resources>
+                                        <Style TargetType="{x:Type Button}">
+                                            <Setter Property="Visibility" Value="Hidden" />
+                                            <Style.Triggers>
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Grid}},Path=IsMouseOver}" Value="True" />
+                                                        <Condition Binding="{Binding Pinned}" Value="True" />
+                                                    </MultiDataTrigger.Conditions>
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </MultiDataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                        <!-- Make the button rounded and change opacity on hovering -->
+                                        <Style TargetType="Border">
+                                            <Setter Property="CornerRadius" Value="50"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="Green"/>
+                                                    <Setter Property="Opacity" Value="0.4"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Resources>
+                                </Button>
+
+                                <!-- Create a textblock to show the name of the client on the bottom of the tile -->
+                                <TextBlock Text="{Binding Name}" Foreground="AntiqueWhite" FontWeight="SemiBold" Background="Transparent" 
+                                           VerticalAlignment="Bottom" Padding="11,0,0,7" FontSize="11.5"/>
+
+                            <!-- Close all the open components -->
+                            </Grid>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+    </Grid >
+</Page>
