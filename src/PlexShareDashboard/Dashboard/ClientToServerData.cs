@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PlexShare.Dashboard
+namespace PlexShareDashboard.Dashboard
 {
     public class ClientToServerData
     {
