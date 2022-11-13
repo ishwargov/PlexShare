@@ -11,7 +11,7 @@ using PlexShareDashboard.Dashboard.Client.SessionManagement;
 using PlexShareScreenshare;
 using PlexShareWhiteboard;
 using PlexShare.Dashboard.Client.SessionManagement;
-using PlexShare.Dashboard;
+using PlexShareDashboard.Dashboard;
 using PlexShareNetwork.Communication;
 using Client.Models;
 using System.Windows;
