@@ -1,4 +1,17 @@
-﻿using System;
+﻿/******************************************************************************
+ * Filename    = AuthenticationView.xaml.cs
+ *
+ * Author      = Parichita Das
+ *
+ * Product     = PlexShare
+ * 
+ * Project     = PlexShareApp
+ *
+ * Description = View for the Authentication Module which will authenticate user's google account and
+ *               use their profile information
+ *****************************************************************************/
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -23,14 +36,16 @@ namespace PlexShareApp
     /// </summary>
     public partial class AuthenticationView : Window
     {
+        bool stopAnimation = false;
         public AuthenticationView()
         {
             InitializeComponent();
             AuthenticationViewModel viewModel = new();
             this.DataContext = viewModel;
             this.Show();
+            Trace.WriteLine("[UX] Entering Authentication View");
 
-            // Animate_Auth_Screen(this);
+            Animate_Auth_Screen(this);
         }
 
         /// <summary>
@@ -39,11 +54,12 @@ namespace PlexShareApp
         /// <param name="obj"></param>
         void Animate_Auth_Screen(AuthenticationView obj)
         {
+            Trace.WriteLine("[UX] Starting Animation");
             int v = 0;
             int direction = 1;
 
             // Making animation run forever
-            while (true)
+            while (stopAnimation == false)
             {
                 if(v == 0)
                 {
@@ -55,6 +71,8 @@ namespace PlexShareApp
                 }
 
                 v += direction;
+
+                // Adding value to all the objects
                 obj.pb1.Dispatcher.Invoke(() => pb1.Value = v, System.Windows.Threading.DispatcherPriority.Background);
                 obj.pb2.Dispatcher.Invoke(() => pb2.Value = v, System.Windows.Threading.DispatcherPriority.Background);
                 obj.pb3.Dispatcher.Invoke(() => pb3.Value = v, System.Windows.Threading.DispatcherPriority.Background);
@@ -62,8 +80,10 @@ namespace PlexShareApp
                 obj.pb5.Dispatcher.Invoke(() => pb5.Value = v, System.Windows.Threading.DispatcherPriority.Background);
                 obj.pb6.Dispatcher.Invoke(() => pb6.Value = v, System.Windows.Threading.DispatcherPriority.Background);
 
-                Thread.Sleep(40);
+                Thread.Sleep(40);  
             }
+
+            Trace.WriteLine("[UX] Stopping Animation");
         }
 
         ///<summary>
@@ -132,19 +152,31 @@ namespace PlexShareApp
         /// <param name="e"></param>
         private async void Home_Click(object sender, RoutedEventArgs e)
         {
+            stopAnimation = true;
             AuthenticationViewModel viewModel = this.DataContext as AuthenticationViewModel;
             var returnVal = await viewModel.AuthenticateUser();
 
             // Brings back the app to the forefront 
             this.Activate();
-            
+
+            Trace.WriteLine("[UX] Authentiation Completed");
+
             // There were no errors in authentication
             if (returnVal[0] == "true")
             {
+                Trace.WriteLine("[UX] Authentication Successful");
+                // Creating Home Page and moving forward
                 var homePage = new HomePageView(returnVal[1], returnVal[2], returnVal[3]);
 
                 homePage.Show();
                 this.Close(); 
+            } 
+            else
+            {
+                Trace.WriteLine("[UX] Authentication Unsuccessful");
+                // Re-initiaiting the animation
+                stopAnimation = false;
+                Animate_Auth_Screen(this);
             }        
         }
     }
