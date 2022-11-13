@@ -1,4 +1,7 @@
-﻿using PlexShareWhiteboard.BoardComponents;
+﻿using PlexShareNetwork.Communication;
+using PlexShareNetwork.Serialization;
+using PlexShareNetwork;
+using PlexShareWhiteboard.BoardComponents;
 using PlexShareWhiteboard.Client;
 using PlexShareWhiteboard.Client.Interfaces;
 using PlexShareWhiteboard.Server;
@@ -11,7 +14,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
- 
+using System.Configuration;
+
 namespace PlexShareWhiteboard
 {
     public partial class WhiteBoardViewModel
@@ -22,7 +26,7 @@ namespace PlexShareWhiteboard
 
         String currentId = "u0_f0";
         int currentIdVal = 0;
-        int userId = 0;
+        string userId = "0";
         int currentZIndex = 0;
         string text = "";
         Point textBoxPoint = new (100, 100);
@@ -36,24 +40,50 @@ namespace PlexShareWhiteboard
         int blobSize = 12;
         IShapeListener machine;
         UndoStackElement stackElement;
+        Boolean isServer=false;
 
-        public WhiteBoardViewModel()
+        private WhiteBoardViewModel()
         {
             // this will become client and server 
             Boolean isServer = true;
-            if (isServer)
-                //machine = new ServerSide();
-                machine = ServerSide.Instance;
-            else
-                machine = new ClientSide();
+            
             ShapeItems = new ObservableCollection<ShapeItem>();
             highlightShapes = new List<ShapeItem>();
-            
-            // this is a new user
-            machine.OnShapeReceived(lastShape, Operation.NewUser);
 
         }
+        private static WhiteBoardViewModel instance;
+        public static WhiteBoardViewModel Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new WhiteBoardViewModel();
+                }
 
+                return instance;
+            }
+        }
+
+        //public void SetUserId(string _userId)
+        public void SetUserId(int _userId)
+        {
+            String userId = _userId.ToString();
+            currentId = "u" + userId + "_f" + currentIdVal;
+            currentIdVal++;
+
+            if (isServer)
+            {
+                machine = ServerSide.Instance;
+                machine.SetUserId(userId);
+            }
+            else
+            {
+                machine = ClientSide.Instance;
+                machine.SetUserId(userId);
+            }
+
+        }
         public void IncrementId()
         {
             currentIdVal++;
