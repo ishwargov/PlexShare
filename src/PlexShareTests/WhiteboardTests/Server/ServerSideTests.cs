@@ -12,6 +12,11 @@ namespace PlexShareTests.WhiteboardTests.Server
 
     public class ServerSideTests
     {
+        private ServerSide server;
+        public ServerSideTests()
+        {
+            server = ServerSide.Instance;
+        }
         [Fact]
         public void Instance_Always_ReturnsSameInstance()
         {
@@ -20,12 +25,9 @@ namespace PlexShareTests.WhiteboardTests.Server
             Assert.Equal(server1, server2);
         }
 
-
-
         [Fact]
         public void CreateTwoShapes_ServerListSizeIncrease()
         {
-            ServerSide server = ServerSide.Instance;
             Point start = new Point(1, 1);
             Point end = new Point(2, 2);
             server.OnShapeReceived(Utility.CreateShape(start, end, "EllipseGeometry", "u0_f0"), Operation.Creation);
@@ -35,5 +37,11 @@ namespace PlexShareTests.WhiteboardTests.Server
 
         }
 
+        [Fact]
+        public void Clear_ServerListSizeZero()
+        {
+            server.OnShapeReceived(null, Operation.Clear);
+            Assert.Equal(server.GetServerListSize(), 0);
+        }   
     }
 }
