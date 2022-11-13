@@ -120,39 +120,42 @@ namespace PlexShareApp
 
         private void UploadButtonClick(object sender, RoutedEventArgs e)
         {
-            var viewModel = DataContext as ChatPageViewModel;
-
-            // Create OpenFileDialog
-            var openFileDialog = new OpenFileDialog();
-
-            // Launch OpenFileDialog by calling ShowDialog method
-            var result = openFileDialog.ShowDialog();
-
-            // Process open file dialog box results
-            if(result == true)
+            if(ReplyTextBox.Text == String.Empty)
             {
-                if(string.IsNullOrEmpty(ReplyTextBox.Text))
+                var viewModel = DataContext as ChatPageViewModel;
+
+                // Create OpenFileDialog
+                var openFileDialog = new OpenFileDialog();
+
+                // Launch OpenFileDialog by calling ShowDialog method
+                var result = openFileDialog.ShowDialog();
+
+                // Process open file dialog box results
+                if (result == true)
                 {
-                    viewModel.SendMessage(openFileDialog.FileName, -1, "File");
-                }
-                else
-                {
-                    viewModel.SendMessage(openFileDialog.FileName, ReplyMsgId, "File");
-                }
-                //addNewMessage = new Message();
-                //addNewMessage.MessageID = -1;
-                //addNewMessage.Sender = null;
-                //addNewMessage.Time = DateTime.Now.ToShortTimeString();
-                //addNewMessage.Type = true;
-                //addNewMessage.ReplyMessage = null;
-                //addNewMessage.IncomingMessage = openFileDialog.FileName;
-                //addNewMessage.ToFrom = true;
-                //_allMessages.Add(addNewMessage);
+                    if (string.IsNullOrEmpty(ReplyTextBox.Text))
+                    {
+                        viewModel.SendMessage(openFileDialog.FileName, -1, "File");
+                    }
+                    else
+                    {
+                        viewModel.SendMessage(openFileDialog.FileName, ReplyMsgId, "File");
+                    }
+                    //addNewMessage = new Message();
+                    //addNewMessage.MessageID = -1;
+                    //addNewMessage.Sender = null;
+                    //addNewMessage.Time = DateTime.Now.ToShortTimeString();
+                    //addNewMessage.Type = true;
+                    //addNewMessage.ReplyMessage = null;
+                    //addNewMessage.IncomingMessage = openFileDialog.FileName;
+                    //addNewMessage.ToFrom = true;
+                    //_allMessages.Add(addNewMessage);
 
 
-                SendTextBox.Text = string.Empty;
-                ReplyTextBox.Text = string.Empty;
-                //ReplyTextBox.Text = "";
+                    SendTextBox.Text = string.Empty;
+                    ReplyTextBox.Text = string.Empty;
+                    //ReplyTextBox.Text = "";
+                }
             }
         }
 
@@ -209,6 +212,15 @@ namespace PlexShareApp
                     ReplyTextBox.Text = msg.IncomingMessage;
                     ReplyMsgId = msg.MessageID;
                 }
+            }
+        }
+
+        private void ClearReplyBox(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button)
+            {
+                Button senderButton = (Button)sender;
+                ReplyTextBox.Text = null;
             }
         }
 
