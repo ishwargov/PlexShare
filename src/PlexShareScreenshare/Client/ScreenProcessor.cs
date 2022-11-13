@@ -40,15 +40,14 @@ namespace PlexShareScreenshare.Client
         int CapturedImageWidth;
 
         // Tokens added to be able to stop the thread execution
-        private bool _cancellationToken;
+        private CancellationTokenSource? _cancellationTokenSource;
 
         // Storing the previous frame
-        Bitmap prevImage;
+        Bitmap? prevImage;
 
         /// <summary>
-        /// Called by ScreenshareClient
-        /// Initialize queue, oldRes, newRes,
-        /// cancellation token and the previous image
+        /// Called by ScreenshareClient.
+        /// Initializes queue, oldRes, newRes, cancellation token and the previous image.
         /// </summary>
         public ScreenProcessor(ScreenCapturer Capturer)
         {
@@ -61,9 +60,13 @@ namespace PlexShareScreenshare.Client
         /// <summary>
         /// Pops and return the image from the queue
         /// </summary>
-        public Frame GetFrame()
+        public Frame GetFrame(CancellationToken token)
         {
-            while (_processedFrame.Count != 0) Thread.Sleep(100);
+            while (_processedFrame.Count == 0 && !token.IsCancellationRequested)
+            {
+                token.ThrowIfCancellationRequested();
+                Thread.Sleep(100);
+            }
             lock (_processedFrame)
             {
                 Trace.WriteLine(Utils.GetDebugMessage("Successfully sent frame", withTimeStamp: true));
@@ -107,13 +110,10 @@ namespace PlexShareScreenshare.Client
             BitmapData bitmapData1 = processedBitmap1.LockBits(new Rectangle(0, 0, processedBitmap1.Width, processedBitmap1.Height), ImageLockMode.ReadWrite, processedBitmap1.PixelFormat);
 
             // Flattening of image into an array
-            // int bytesPerPixel1 = Bitmap.GetPixelFormatSize(processedBitmap1.PixelFormat) / 8;
             int byteCount1 = bitmapData1.Stride * processedBitmap1.Height;
             byte[] pixels1 = new byte[byteCount1];
             IntPtr ptrFirstPixel1 = bitmapData1.Scan0;
             Marshal.Copy(ptrFirstPixel1, pixels1, 0, pixels1.Length);
-            // int heightInPixels1 = bitmapData1.Height;
-            // int widthInBytes1 = bitmapData1.Width * bytesPerPixel1;
             processedBitmap1.UnlockBits(bitmapData1);
 
             // Now iterating over the image array and checking the difference 
@@ -148,18 +148,20 @@ namespace PlexShareScreenshare.Client
             // returning these pixel details
             return tmp;
         }
+
         /// <summary>
         /// Main function which will run in loop and capture the image
         /// calculate the image bits differences and append it in the array
         /// </summary>
         private void Processing()
         {
-            _cancellationToken = false;
-            while (!_cancellationToken)
+            _cancellationTokenSource!.Token.ThrowIfCancellationRequested();
+            while (!_cancellationTokenSource.Token.IsCancellationRequested)
             {
-                Bitmap img = _capturer.GetImage();
+                _cancellationTokenSource.Token.ThrowIfCancellationRequested();
+                Bitmap img = _capturer.GetImage(_cancellationTokenSource.Token);
                 img = Compress(img);
-                List<Pixel> DiffList = ProcessUsingLockbits(prevImage, img);
+                List<Pixel> DiffList = ProcessUsingLockbits(prevImage!, img);
                 lock (_processedFrame)
                 {
                     _processedFrame.Enqueue(new Frame() { Resolution = NewRes, Pixels = DiffList });
@@ -169,60 +171,86 @@ namespace PlexShareScreenshare.Client
         }
 
         /// <summary>
-        /// Called by ScreenshareClient when the client starts screen sharing
-        /// Will have a lambda function - Process and pushes to the queue
-        /// Create the task for the lambda function 
+        /// Called by ScreenshareClient when the client starts screen sharing.
+        /// Creates a task for the Processing function.
         /// </summary>
         public void StartProcessing()
         {
             // dropping one frame to set the previous image value
-            Bitmap img = _capturer.GetImage();
+            _cancellationTokenSource = new();
+            Bitmap? img = null;
+            try
+            {
+                img = _capturer.GetImage(_cancellationTokenSource.Token);
+            }
+            catch (OperationCanceledException e)
+            {
+                Trace.WriteLine(Utils.GetDebugMessage($"Processor task cancelled: {e.Message}", withTimeStamp: true));
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine(Utils.GetDebugMessage($"Failed to cancel processor task: {e.Message}", withTimeStamp: true));
+            }
+
+            Debug.Assert(img != null, Utils.GetDebugMessage("img is null"));
             CapturedImageHeight = img.Height;
             CapturedImageWidth = img.Width;
+
             NewRes = new() { Height = CapturedImageHeight, Width = CapturedImageWidth };
             CurrentRes = NewRes;
             prevImage = new Bitmap(NewRes.Width, NewRes.Height);
+
             Trace.WriteLine(Utils.GetDebugMessage("Previous image set and" +
                 "going to start image processing", withTimeStamp: true));
-            _processorTask = new Task(Processing);
-            _processorTask.Start();
-        }
 
-        /// <summary>
-        /// Called when the server asks to stop
-        /// Kill the task
-        /// Empty the queue
-        /// </summary>
-        public void SuspendProcessing()
-        {
-            StopProcessing();
-        }
-
-        /// <summary>
-        /// Called when the server asks to send
-        /// Resume the thread
-        /// </summary>
-        public void ResumeProcessing()
-        {
-            StartProcessing();
+            try
+            {
+                _processorTask = new Task(Processing, _cancellationTokenSource.Token);
+                _processorTask.Start();
+            }
+            catch (OperationCanceledException e)
+            {
+                Trace.WriteLine(Utils.GetDebugMessage($"Processor task cancelled: {e.Message}", withTimeStamp: true));
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine(Utils.GetDebugMessage($"Failed to cancel processor task: {e.Message}", withTimeStamp: true));
+            }
         }
 
         /// <summary>
         /// Called by ScreenshareClient when the client stops screen sharing
         /// kill the processor task and make the processor task variable null
-        /// Empty the Queue
+        /// Empty the Queue.
         /// </summary>
-        public void StopProcessing()
+        public async void StopProcessing()
         {
-            _cancellationToken = true;
+            Debug.Assert(_processorTask != null, Utils.GetDebugMessage("_processorTask was null, cannot call cancel."));
+            Debug.Assert(_cancellationTokenSource != null, Utils.GetDebugMessage("_cancellationTokenSource was null, cannot call cancel."));
+
+            try
+            {
+                _cancellationTokenSource.Cancel();
+            }
+            catch (OperationCanceledException e)
+            {
+                Trace.WriteLine(Utils.GetDebugMessage($"Processor task cancelled: {e.Message}", withTimeStamp: true));
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine(Utils.GetDebugMessage($"Failed to cancel processor task: {e.Message}", withTimeStamp: true));
+            }
+
+            await _processorTask;
+
             Debug.Assert(_processedFrame != null, Utils.GetDebugMessage("_processedTask is found null"));
-            _processorTask?.Wait();
             _processedFrame.Clear();
+
             Trace.WriteLine(Utils.GetDebugMessage("Successfully stopped image processing", withTimeStamp: true));
         }
 
         /// <summary>
-        /// Setting new resolution for sending the image 
+        /// Setting new resolution for sending the image. 
         /// </summary>
         /// <param name="res"> New resolution values </param>
         public void SetNewResolution(int windowCount)
@@ -244,9 +272,8 @@ namespace PlexShareScreenshare.Client
         }
 
         /// <summary>
-        /// Called by StartProcessing
-        /// if the image resolution has changed then set the 
-        /// new image resolution and inititalise prevImage variable
+        /// Called by StartProcessing if the image resolution has changed then set
+        /// the new image resolution and inititalise prevImage variable.
         /// </summary>
         public Bitmap Compress(Bitmap img)
         {

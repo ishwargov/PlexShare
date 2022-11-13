@@ -13,8 +13,9 @@ namespace PlexShareTests.ScreenshareTests
             ScreenCapturer screenCapturer = new();
             ScreenProcessor screenProcessor = new(screenCapturer);
 
-            screenProcessor.StartProcessing();
+            // Capturer must be called before Processor
             screenCapturer.StartCapture();
+            screenProcessor.StartProcessing();
 
             Thread.Sleep(1000);
 
@@ -29,9 +30,10 @@ namespace PlexShareTests.ScreenshareTests
         public void TestSameImagePixelDiffZero()
         {
             ScreenCapturer screenCapturer = new();
+            CancellationTokenSource source = new();
 
             screenCapturer.StartCapture();
-            Bitmap img = screenCapturer.GetImage();
+            Bitmap img = screenCapturer.GetImage(source.Token);
             screenCapturer.StopCapture();
 
             List<Pixel> tmp = ScreenProcessor.ProcessUsingLockbits(img, img);

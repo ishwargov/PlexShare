@@ -7,9 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,7 +24,7 @@ namespace PlexShareScreenshare.Client
         public const int MaxQueueLength = 50;
 
         // Token and its source for killing the task
-        private bool _cancellationToken;
+        private CancellationTokenSource? _cancellationTokenSource;
 
         private Task? _captureTask;
 
@@ -42,14 +40,14 @@ namespace PlexShareScreenshare.Client
         /// Returns the bitmap image at the front of _capturedFrame queue. 
         /// </summary>
         /// <returns>Bitmap image of 720p dimension</returns>
-        public Bitmap GetImage()
+        public Bitmap GetImage(CancellationToken token)
         {
-            while (_capturedFrame.Count == 0)
+            while (_capturedFrame.Count == 0 && !token.IsCancellationRequested)
             {
+                token.ThrowIfCancellationRequested();
                 Thread.Sleep(100);
             }
 
-            // TODO : check if lock is freed after returning
             lock (_capturedFrame)
             {
                 return _capturedFrame.Dequeue();
@@ -73,12 +71,13 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         public void StartCapture()
         {
-         
-            _cancellationToken = false;
+
+            _cancellationTokenSource = new();
             _captureTask = new Task(() =>
             {
-                while (!_cancellationToken)
+                while (!_cancellationTokenSource.Token.IsCancellationRequested)
                 {
+                    _cancellationTokenSource.Token.ThrowIfCancellationRequested();
                     if (_capturedFrame.Count < MaxQueueLength)
                     {
                         lock (_capturedFrame)
@@ -101,7 +100,7 @@ namespace PlexShareScreenshare.Client
                         Thread.Sleep(100);
                     }
                 }
-            });
+            }, _cancellationTokenSource.Token);
 
             _captureTask.Start();
         }
@@ -119,14 +118,27 @@ namespace PlexShareScreenshare.Client
         /// <summary>
         /// Stops the capturing by Cancelling the task and clears the _capturedFrame queue.
         /// </summary>
-        public void StopCapture()
+        public async void StopCapture()
         {
-            _cancellationToken = true;
-            _captureTask?.Wait();
-            lock (_capturedFrame)
+            Debug.Assert(_cancellationTokenSource != null,
+                Utils.GetDebugMessage("_cancellationTokenSource is null, cannot stop image capture"));
+            Debug.Assert(_captureTask != null,
+                Utils.GetDebugMessage("_cancellationTask is null, cannot stop image capture"));
+            try
             {
-                _capturedFrame.Clear();
+                _cancellationTokenSource.Cancel();
             }
+            catch (OperationCanceledException e)
+            {
+                Trace.WriteLine(Utils.GetDebugMessage($"Capturer task cancelled: {e.Message}", withTimeStamp: true));
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine(Utils.GetDebugMessage($"Unable to stop capture: {e.Message}", withTimeStamp: true));
+            }
+
+            await _captureTask;
+            _capturedFrame.Clear();
         }
     }
 }
