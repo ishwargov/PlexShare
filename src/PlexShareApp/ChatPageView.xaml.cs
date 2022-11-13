@@ -240,9 +240,12 @@ namespace PlexShareApp
                     {
                         var viewModel = DataContext as ChatPageViewModel;
                         Message msg = (Message)senderButton.DataContext;
-                        var ourEditMessage = SendTextBox.Text;
-                        viewModel.EditChatMsg(msg.MessageID, ourEditMessage);
-                        SendTextBox.Text = string.Empty;
+                        if (msg.IncomingMessage != "Message Deleted.")
+                        {
+                            var ourEditMessage = SendTextBox.Text;
+                            viewModel.EditChatMsg(msg.MessageID, ourEditMessage);
+                            SendTextBox.Text = string.Empty;
+                        }
                     }
                 }
             }
