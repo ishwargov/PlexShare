@@ -137,14 +137,7 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
                     return;
 
                 case "endMeet":
-                    _communicator.Stop();
-                    // _screenShareClient.Dispose();
-                  //  MeetingEnded?.Invoke();
-
-                        Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
-                        {
-                            Application.Current.Shutdown();
-                        });
+                    CloseProgram();
                     return;
 
                 case "newID":
@@ -159,12 +152,12 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
 
         //     A helper function that sends data from Client to the server side. The data consists
         //     of the event type and the user who requested for that event.
-        private void SendDataToServer(string eventName, string username, int userID = -1)
+        private void SendDataToServer(string eventName, string username, int userID = -1, string userEmail = null, string photoUrl = null)
         {
             ClientToServerData clientToServerData;
             lock (this)
             {
-                clientToServerData = new ClientToServerData(eventName, username, userID);
+                clientToServerData = new ClientToServerData(eventName, username, userID, userEmail, photoUrl);
                 var serializedData = _serializer.Serialize(clientToServerData);
                 _communicator.Send(serializedData, moduleIdentifier, null);
             }
@@ -172,7 +165,7 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
 
 
         //     Adds a user to the meeting.
-        public bool AddClient(string ipAddress, int port, string username)  //added
+        public bool AddClient(string ipAddress, int port, string username, string email = null, string photoUrl = null)  //added
         {
             // Null or whitespace named users are not allowed
             if (string.IsNullOrWhiteSpace(username))
@@ -194,7 +187,7 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
                 }
             }
 
-            _user = new(username, -1);
+            _user = new(username, -1, email, photoUrl);
             return true;
         }
 
@@ -311,7 +304,7 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
                     _user.userID = receivedData._user.userID;
 
                     // upon successfull connection, the request to add the client is sent to the server side.
-                    SendDataToServer("addClient", _user.username, _user.userID);
+                    SendDataToServer("addClient", _user.username, _user.userID, _user.userEmail, _user.userPhotoUrl);
                     // clientBoardStateManager.SetUser(_user.userID.ToString());
                     // Whiteboard's user ID set.;
                     WhiteBoardViewModel WBviewModel = WhiteBoardViewModel.Instance;
@@ -329,9 +322,9 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
         }
 
         //for testing we will be adding setuser
-        public void SetUser(string userName, int userID = 1)
+        public void SetUser(string userName, int userID = 1, string userEmail = null, string photoUrl = null)
         {
-            _user = new UserData(userName, userID);
+            _user = new UserData(userName, userID, userEmail, photoUrl);
         }
 
         //for testing we will add set session data
@@ -432,6 +425,18 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
             }
 
             NotifyUXSession();
+        }
+
+        public void CloseProgram()
+        {
+            _communicator.Stop();
+            // _screenShareClient.Dispose();
+            //  MeetingEnded?.Invoke();
+
+            Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
+            {
+                Application.Current.Shutdown();
+            });
         }
 
     }

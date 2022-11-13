@@ -109,7 +109,7 @@ namespace Dashboard.Server.SessionManagement
                 userCount += 1;
                 if (userCount == 1)
                     _telemetry = testmode ? new Telemetry() : TelemetryFactory.GetTelemetryInstance();
-                UserData tempUser = new("dummy", userCount);
+                UserData tempUser = new("dummy", userCount,null,null);
                 _communicator.AddClient(userCount.ToString(), socketObject);
                 SendDataToClient("newID", null, null, null, tempUser, userCount);
             }
@@ -163,7 +163,6 @@ namespace Dashboard.Server.SessionManagement
                 case "getAnalytics":
                     GetAnalyticsProcedure(deserializedObj);
                     return;
-
 
 
                 case "removeClient":
@@ -234,7 +233,7 @@ namespace Dashboard.Server.SessionManagement
             _sessionData.ToggleMode();
 
             // Notify Telemetry about the change in the session object.
-            NotifyTelemetryModule();
+          //  NotifyTelemetryModule();
 
             // serialize and broadcast the data back to the client side.
             SendDataToClient("toggleSessionMode", _sessionData, null, null, null);
@@ -247,7 +246,8 @@ namespace Dashboard.Server.SessionManagement
         private void ClientArrivalProcedure(ClientToServerData arrivedClient)
         {
             // create a new user and add it to the session. 
-            var user = new UserData(arrivedClient.username, arrivedClient.userID);
+            var user = CreateUser(arrivedClient.userID, arrivedClient.username, arrivedClient.userEmail, arrivedClient.photoUrl);
+                //new UserData(arrivedClient.username, arrivedClient.userID, arrivedClient.userEmail, arrivedClient.photoUrl);
             AddUserToSession(user);
 
             // Notify Telemetry about the change in the session object.
@@ -261,7 +261,7 @@ namespace Dashboard.Server.SessionManagement
         public void FakeClientArrivalProcedure(ClientToServerData arrivedClient)
         {
             // create a new user and add it to the session. 
-            var user = new UserData(arrivedClient.username, arrivedClient.userID);
+            var user = new UserData(arrivedClient.username, arrivedClient.userID, arrivedClient.userEmail, arrivedClient.photoUrl);
             AddUserToSession(user);
 
             // Notify Telemetry about the change in the session object.
@@ -273,12 +273,12 @@ namespace Dashboard.Server.SessionManagement
 
         //     Creates a new user based on the data arrived from the
         //     client side.
-        private UserData CreateUser(string username, int userID)
+        private UserData CreateUser(int userID, string username,string userEmail , string photoUrl  )
         {
             lock (this)
             {
 
-                UserData user = new(username, userID);
+                UserData user = new(username, userID, userEmail,photoUrl);
                 return user;
             }
         }
@@ -366,7 +366,7 @@ namespace Dashboard.Server.SessionManagement
         //     The analytics created are then sent to the client side again.
         private void GetAnalyticsProcedure(ClientToServerData receivedObject)
         {
-            UserData user = new(receivedObject.username, receivedObject.userID);
+            UserData user = new(receivedObject.username, receivedObject.userID, receivedObject.userEmail, receivedObject.photoUrl);
 
             if (testmode == true)
             {
@@ -415,7 +415,7 @@ namespace Dashboard.Server.SessionManagement
         private void GetSummaryProcedure(ClientToServerData receivedObject)
         {
             var summaryData = CreateSummary();
-            UserData user = new(receivedObject.username, receivedObject.userID);
+            UserData user = new(receivedObject.username, receivedObject.userID, receivedObject.userEmail, receivedObject.photoUrl);
             SendDataToClient("getSummary", null, summaryData, null, user);
         }
 
