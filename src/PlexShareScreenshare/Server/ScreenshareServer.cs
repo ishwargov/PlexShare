@@ -32,7 +32,7 @@ namespace PlexShareScreenshare.Server
         /// The networking object used to subscribe to the networking module
         /// and to send the packets to the clients.
         /// </summary>
-        private readonly ICommunicator _communicator;
+        private readonly ICommunicator? _communicator;
 
         /// <summary>
         /// The subscriber which should be notified when subscribers list change.
@@ -58,13 +58,19 @@ namespace PlexShareScreenshare.Server
         /// <param name="listener">
         /// The subscriber which should be notified when subscribers list change
         /// </param>
-        protected ScreenshareServer(IMessageListener listener)
+        /// <param name="isDebugging">
+        /// If we are in debugging mode
+        /// </param>
+        protected ScreenshareServer(IMessageListener listener, bool isDebugging)
         {
-            // Get an instance of a communicator object
-            _communicator = CommunicationFactory.GetCommunicator(isClientSide: false);
+            if (!isDebugging)
+            {
+                // Get an instance of a communicator object
+                _communicator = CommunicationFactory.GetCommunicator(isClientSide: false);
 
-            // Subscribe to the networking module for packets
-            _communicator.Subscribe(Utils.ModuleIdentifier, this);
+                // Subscribe to the networking module for packets
+                _communicator.Subscribe(Utils.ModuleIdentifier, this, isHighPriority: true);
+            }
 
             // Initialize the rest of the fields
             _subscribers = new Dictionary<string, SharedClientScreen>();
@@ -196,21 +202,24 @@ namespace PlexShareScreenshare.Server
             GC.SuppressFinalize(this);
         }
 
-        /// <summary>
+        /// /// <summary>
         /// Gets a singleton instance of "ScreenshareServer" class.
         /// </summary>
         /// <param name="listener">
         /// The subscriber which should be notified when subscribers list change
         /// </param>
+        /// <param name="isDebugging">
+        /// If we are in debugging mode or not
+        /// </param>
         /// <returns>
         /// A singleton instance of "ScreenshareServer"
         /// </returns>
-        public static ScreenshareServer GetInstance(IMessageListener listener)
+        public static ScreenshareServer GetInstance(IMessageListener listener, bool isDebugging = false)
         {
             Debug.Assert(listener != null, Utils.GetDebugMessage("listener is found null"));
 
             // Create a new instance if it was null before
-            _instance ??= new(listener);
+            _instance ??= new(listener, isDebugging);
             return _instance;
         }
 
