@@ -71,7 +71,7 @@ namespace Dashboard.Server.SessionManagement
             //------------------------------------_telemetry = new Telemetry.Telemetry();
             //  _ = ServerBoardCommunicator.Instance;
             //  _screenShareServer = ScreenShareFactory.GetScreenShareServer();
-            //  _contentServer = ContentServerFactory.GetInstance();
+              _contentServer = ContentServerFactory.GetInstance();
         }
 
 

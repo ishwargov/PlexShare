@@ -15,6 +15,8 @@ using PlexShare.Dashboard;
 using PlexShareNetwork.Communication;
 using Client.Models;
 using System.Windows;
+using System.Threading;
+using PlexShareContent.Client;
 
 namespace PlexShareDashboard.Dashboard.Client.SessionManagement
 {
@@ -33,7 +35,7 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
     {
         private readonly List<IClientSessionNotifications> _clients;
         private readonly ICommunicator _communicator;
-        //  private readonly IContentClient _contentClient;
+          private readonly IContentClient _contentClient;
         private readonly IDashboardSerializer _serializer;
         // private readonly IClientBoardStateManager clientBoardStateManager;
         private readonly string moduleIdentifier;
@@ -55,7 +57,11 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
             _serializer = new DashboardSerializer();
             _communicator = CommunicationFactory.GetCommunicator();
             _communicator.Subscribe(moduleIdentifier, this);
-            //   _contentClient = ContentClientFactory.GetInstance();
+            
+            
+            
+            
+               _contentClient = ContentClientFactory.GetInstance();
             //  clientBoardStateManager = ClientBoardStateManager.Instance;
             //  clientBoardStateManager.Start();
 
@@ -133,12 +139,12 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
                 case "endMeet":
                     _communicator.Stop();
                     // _screenShareClient.Dispose();
-                    MeetingEnded?.Invoke();
+                  //  MeetingEnded?.Invoke();
 
-                    /*    Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
+                        Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
                         {
                             Application.Current.Shutdown();
-                        });*/
+                        });
                     return;
 
                 case "newID":
@@ -236,12 +242,19 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
             // Asking the server to remove client from the server side.
             SendDataToServer("removeClient", _user.username, _user.userID);
 
+            Thread.Sleep(2000);
+
             // Stopping the network communicator.
             _communicator.Stop();
 
+            Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
+            {
+                Application.Current.Shutdown();
+            });
+
             // Disposing the Screen Share Client.
             // _screenShareClient.Dispose();  
-            Application.Current.Shutdown();
+
             //Removed the client from the client side.
         }
 

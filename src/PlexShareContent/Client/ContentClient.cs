@@ -451,12 +451,12 @@ namespace PlexShareContent.Client
             }
             // check if thread exists
             var key = receivedMessage.ReplyThreadID;
-            //if(key == -1)
-            //{
-            //    throw new ArgumentException("Message has invalid reply thread ID");
-            //}
+            if (key == -1)
+            {
+                throw new ArgumentException("Message has invalid reply thread ID");
+            }
             // if message is a reply, check if message being replied to exists
-            if(receivedMessage.ReplyMessageID != -1)
+            if (receivedMessage.ReplyMessageID != -1)
             {
                 ValidateReplyMessageID(receivedMessage.ReplyMessageID, receivedMessage.ReplyThreadID);
             }
@@ -500,10 +500,10 @@ namespace PlexShareContent.Client
             ReceiveContentData receivedMessage = message;
             var messageID = receivedMessage.MessageID;
             // check if message ID is unique 
-            if (_messageIDMap.ContainsKey(messageID))
-            {
-                throw new ArgumentException("Message ID is not unique");
-            }
+            //if (_messageIDMap.ContainsKey(messageID))
+            //{
+            //    throw new ArgumentException("Message ID is not unique");
+            //}
             // get thread index and check if thread exists
             var threadID = _messageIDMap[messageID];
             if (!_threadIDMap.ContainsKey(threadID))
@@ -536,10 +536,10 @@ namespace PlexShareContent.Client
             ReceiveContentData receivedMessage = message;
             var messageID = receivedMessage.MessageID;
             // check if message ID is unique 
-            if (_messageIDMap.ContainsKey(messageID))
-            {
-                throw new ArgumentException("Message ID is not unique");
-            }
+            //if (_messageIDMap.ContainsKey(messageID))
+            //{
+            //    throw new ArgumentException("Message ID is not unique");
+            //}
             // get thread index and check if thread exists
             var threadID = _messageIDMap[messageID];
             if (!_threadIDMap.ContainsKey(threadID))
@@ -571,10 +571,10 @@ namespace PlexShareContent.Client
             ReceiveContentData receivedMessage = message;
             var messageID = receivedMessage.MessageID;
             // check if message ID is unique 
-            if (_messageIDMap.ContainsKey(messageID))
-            {
-                throw new ArgumentException("Message ID is not unique");
-            }
+            //if (_messageIDMap.ContainsKey(messageID))
+            //{
+            //    throw new ArgumentException("Message ID is not unique");
+            //}
             // get thread index and check if thread exists
             var threadID = _messageIDMap[messageID];
             if (!_threadIDMap.ContainsKey(threadID))
