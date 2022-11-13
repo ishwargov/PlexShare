@@ -32,7 +32,7 @@ namespace PlexShareNetwork.Communication
 
 		// declare the socket variable for the client
         // this will be used for communication with the server
-		private readonly TcpClient _socket = new();
+		private readonly TcpClient _clientSocket = new();
 
 		// map to store the notification handlers of subscribed modules
 		private readonly Dictionary<string, INotificationHandler>
@@ -45,9 +45,9 @@ namespace PlexShareNetwork.Communication
         {
             // initialize all threads
             _socketListener = new SocketListener(_receivingQueue,
-                _socket);
+                _clientSocket);
             _sendQueueListenerClient = new SendQueueListenerClient(
-                _sendingQueue, _socket);
+                _sendingQueue, _clientSocket);
             _receiveQueueListener = new ReceiveQueueListener(
                 _moduleToNotificationHanderMap, _receivingQueue);
         }
@@ -68,14 +68,14 @@ namespace PlexShareNetwork.Communication
         public string Start(string serverIP, string serverPort)
 		{
             Trace.WriteLine("[Networking] CommunicatorClient.Start()" +
-                "function called.");
+                " function called.");
             try
 			{
                 // connect to the server
-				_socket.Client.SetSocketOption(
+                _clientSocket.Client.SetSocketOption(
                     SocketOptionLevel.Socket,
                     SocketOptionName.DontLinger, true);
-				_socket.Connect(ParseIP(serverIP),
+                _clientSocket.Connect(ParseIP(serverIP),
                     int.Parse(serverPort));
 
                 // start all threads
@@ -84,7 +84,7 @@ namespace PlexShareNetwork.Communication
 				_receiveQueueListener.Start();
 
                 Trace.WriteLine("[Networking] CommunicatorClient" +
-                    "started.");
+                    " started.");
                 return "success";
 			}
 			catch(Exception e)
@@ -115,10 +115,10 @@ namespace PlexShareNetwork.Communication
                 _receivingQueue.Clear();
 
                 // if socket is connected then close it
-                if (_socket.Connected)
+                if (_clientSocket.Connected)
                 {
-                    _socket.GetStream().Close();
-                    _socket.Close();
+                    _clientSocket.GetStream().Close();
+                    _clientSocket.Close();
                 }
                 Trace.WriteLine("[Networking] CommunicatorClient " +
                     "stopped.");
@@ -231,10 +231,16 @@ namespace PlexShareNetwork.Communication
                 "Subscribe() function called.");
             try
             {
+                // store the notification handler of the module in our
+                // map
                 _moduleToNotificationHanderMap.Add(moduleName,
                     notificationHandler);
+                
+                // sending queue implements priority queues so we need
+                // to register the priority of the module
                 _sendingQueue.RegisterModule(moduleName,
                     isHighPriority);
+
                 Trace.WriteLine("[Networking] Module: " + moduleName +
                     " subscribed with priority [True for high/False" +
                     "for low]: " + isHighPriority.ToString());
