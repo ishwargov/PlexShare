@@ -91,7 +91,7 @@ namespace PlexShareScreenshare.Server
         /// The timer manager implementing the callback for the timer object.
         /// </param>
         /// <exception cref="ArgumentNullException"></exception>
-        /// <exception cref="OperationCanceledException"></exception>
+        /// <exception cref="Exception"></exception>
         public SharedClientScreen(string clientId, string clientName, ITimerManager server)
         {
             this.Id = clientId ?? throw new ArgumentNullException(nameof(clientId));
@@ -131,7 +131,7 @@ namespace PlexShareScreenshare.Server
             catch (Exception e)
             {
                 Trace.WriteLine(Utils.GetDebugMessage($"Failed to create the timer: {e.Message}", withTimeStamp: true));
-                throw new OperationCanceledException("Failed to create the timer", e);
+                throw new Exception("Failed to create the timer", e);
             }
 
             Trace.WriteLine(Utils.GetDebugMessage($"Successfully created client with id: {this.Id} and name: {this.Name}", withTimeStamp: true));
@@ -191,12 +191,20 @@ namespace PlexShareScreenshare.Server
         /// <returns>
         /// The received Frame that is removed from the beginning.
         /// </returns>
-        public Frame? GetImage()
+        public Frame? GetImage(CancellationToken token)
         {
             Debug.Assert(_imageQueue != null, Utils.GetDebugMessage("_imageQueue is found null"));
 
-            // Wait until the queue is not empty
-            while (_imageQueue.Count != 0) Thread.Sleep(100);
+            token.ThrowIfCancellationRequested();
+
+            // Wait until the queue is empty
+            while (_imageQueue.Count == 0 && !token.IsCancellationRequested)
+            {
+                token.ThrowIfCancellationRequested();
+                Thread.Sleep(100);
+            }
+
+            token.ThrowIfCancellationRequested();
 
             lock (_imageQueue)
             {
@@ -234,12 +242,20 @@ namespace PlexShareScreenshare.Server
         /// <returns>
         /// The final image to be displayed that is removed from the beginning.
         /// </returns>
-        public Bitmap? GetFinalImage()
+        public Bitmap? GetFinalImage(CancellationToken token)
         {
             Debug.Assert(_finalImageQueue != null, Utils.GetDebugMessage("_finalImageQueue is found null"));
 
+            token.ThrowIfCancellationRequested();
+
             // Wait until the queue is not empty
-            while (_finalImageQueue.Count != 0) Thread.Sleep(100);
+            while (_finalImageQueue.Count == 0 && !token.IsCancellationRequested)
+            {
+                token.ThrowIfCancellationRequested();
+                Thread.Sleep(100);
+            }
+
+            token.ThrowIfCancellationRequested();
 
             lock (_finalImageQueue)
             {
@@ -277,29 +293,33 @@ namespace PlexShareScreenshare.Server
         /// images and notify the UX.
         /// </summary>
         /// <param name="task"></param>
-        /// <exception cref="OperationCanceledException"></exception>
+        /// <exception cref="Exception"></exception>
         public void StartProcessing(Action<CancellationToken> task)
         {
             Debug.Assert(_stitcher != null, Utils.GetDebugMessage("_stitcher is found null"));
 
-            // Start the stitcher
-            _stitcher.StartStitching();
+            if (_imageSendTask != null) return;
 
-            if (_imageSendTask == null)
+            // Create a new cancellation token
+            _tokenSource = new CancellationTokenSource();
+
+            try
             {
-                // Create a new cancellation token
-                _tokenSource = new CancellationTokenSource();
-                try
-                {
-                    // Create and start a new task
-                    _imageSendTask = new Task(() => task(_tokenSource.Token), _tokenSource.Token);
-                    _imageSendTask.Start();
-                }
-                catch (Exception e)
-                {
-                    Trace.WriteLine(Utils.GetDebugMessage($"Failed to start the task: {e.Message}", withTimeStamp: true));
-                    throw new OperationCanceledException("Failed to start the task", e);
-                }
+                // Start the stitcher
+                _stitcher.StartStitching();
+
+                // Create and start a new task
+                _imageSendTask = new Task(() => task(_tokenSource.Token), _tokenSource.Token);
+                _imageSendTask.Start();
+            }
+            catch (OperationCanceledException e)
+            {
+                Trace.WriteLine(Utils.GetDebugMessage($"Task canceled for the client with id {Id}: {e.Message}", withTimeStamp: true));
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine(Utils.GetDebugMessage($"Failed to start the task: {e.Message}", withTimeStamp: true));
+                throw new Exception("Failed to start the task", e);
             }
 
             Trace.WriteLine(Utils.GetDebugMessage($"Successfully created the processing task for the client with id {this.Id}", withTimeStamp: true));
@@ -310,7 +330,7 @@ namespace PlexShareScreenshare.Server
         /// Cancels the task for updating the displayed images and clear the queues
         /// containing frames and images.
         /// </summary>
-        /// <exception cref="OperationCanceledException"></exception>
+        /// <exception cref="Exception"></exception>
         public async void StopProcessing()
         {
             Debug.Assert(_stitcher != null, Utils.GetDebugMessage("_stitcher is found null"));
@@ -322,37 +342,42 @@ namespace PlexShareScreenshare.Server
                 return;
             }
 
-            // Stop the stitcher
-            _stitcher.StopStitching();
-
             try
             {
+                // Stop the stitcher
+                _stitcher.StopStitching();
+
                 // Cancel the task and wait for it to finish
                 _tokenSource.Cancel();
                 await _imageSendTask;
                 _imageSendTask = null;
             }
+            catch (OperationCanceledException e)
+            {
+                Trace.WriteLine(Utils.GetDebugMessage($"Task canceled for the client with id {Id}: {e.Message}", withTimeStamp: true));
+            }
             catch (Exception e)
             {
                 Trace.WriteLine(Utils.GetDebugMessage($"Failed to cancel the task: {e.Message}", withTimeStamp: true));
-                throw new OperationCanceledException("Failed to cancel the task", e);
+                throw new Exception("Failed to start the task", e);
             }
             finally
             {
                 // Dispose of the token
                 _tokenSource.Dispose();
                 _tokenSource = null;
-            }
+                _imageSendTask = null;
 
-            // Clear both the queues
-            lock (_imageQueue)
-            {
-                _imageQueue.Clear();
-            }
+                // Clear both the queues
+                lock (_imageQueue)
+                {
+                    _imageQueue.Clear();
+                }
 
-            lock (_finalImageQueue)
-            {
-                _finalImageQueue.Clear();
+                lock (_finalImageQueue)
+                {
+                    _finalImageQueue.Clear();
+                }
             }
 
             Trace.WriteLine(Utils.GetDebugMessage($"Successfully stopped the processing task for the client with id {this.Id}", withTimeStamp: true));
@@ -361,7 +386,7 @@ namespace PlexShareScreenshare.Server
         /// <summary>
         /// Resets the time of the timer object.
         /// </summary>
-        /// <exception cref="OperationCanceledException"></exception>
+        /// <exception cref="Exception"></exception>
         public void UpdateTimer()
         {
             Debug.Assert(_timer != null, Utils.GetDebugMessage("_timer is found null"));
@@ -374,7 +399,7 @@ namespace PlexShareScreenshare.Server
             catch (Exception e)
             {
                 Trace.WriteLine(Utils.GetDebugMessage($"Failed to reset the timer: {e.Message}", withTimeStamp: true));
-                throw new OperationCanceledException("Failed to reset the timer", e);
+                throw new Exception("Failed to reset the timer", e);
             }
         }
 
@@ -393,22 +418,21 @@ namespace PlexShareScreenshare.Server
         protected virtual void Dispose(bool disposing)
         {
             // Check to see if Dispose has already been called.
-            if (!_disposed)
+            if (_disposed) return;
+
+            // If disposing equals true, dispose all managed
+            // and unmanaged resources
+            if (disposing)
             {
-                // If disposing equals true, dispose all managed
-                // and unmanaged resources
-                if (disposing)
-                {
-                    // Stop and dispose the timer object
-                    _timer.Enabled = false;
-                    _timer.Dispose();
-                }
-
-                // Call the appropriate methods to clean up unmanaged resources here
-
-                // Now disposing has been done
-                _disposed = true;
+                // Stop and dispose the timer object
+                _timer.Enabled = false;
+                _timer.Dispose();
             }
+
+            // Call the appropriate methods to clean up unmanaged resources here
+
+            // Now disposing has been done
+            _disposed = true;
         }
     }
 }
