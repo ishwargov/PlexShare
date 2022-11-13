@@ -45,14 +45,14 @@ namespace PlexShareApp
             this.Show();
             Trace.WriteLine("[UX] Entering Authentication View");
 
-            Animate_Auth_Screen(this);
+            AnimateAuthScreen(this);
         }
 
         /// <summary>
         /// Shows the animation of the Authentication Screen
         /// </summary>
         /// <param name="obj"></param>
-        void Animate_Auth_Screen(AuthenticationView obj)
+        void AnimateAuthScreen(AuthenticationView obj)
         {
             Trace.WriteLine("[UX] Starting Animation");
             int v = 0;
@@ -176,7 +176,7 @@ namespace PlexShareApp
                 Trace.WriteLine("[UX] Authentication Unsuccessful");
                 // Re-initiaiting the animation
                 stopAnimation = false;
-                Animate_Auth_Screen(this);
+                AnimateAuthScreen(this);
             }        
         }
     }
