@@ -30,10 +30,13 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
         public Dictionary<int, int> userIdVsChatCount = new Dictionary<int, int>();
         public List<int> listOfInSincereMembers = new List<int>();
 
+        private DateTime sessionStartTime;
+
         //constructor for telemetry module 
         
         public Telemetry()
         {
+            sessionStartTime = DateTime.Now;
             //we have to subscribe to the ITelemetryNotifications 
             serverSessionManager.Subscribe(this);
             
@@ -140,6 +143,8 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             //clearing the list to recalculate the insincere members whenever the 
             listOfInSincereMembers.Clear();
 
+            //we have to calculate the threshold time here to find the attentie and non attentive users for this purpose 
+
             //using the for loop to find who all users are insincere 
             foreach (var currElelement in eachUserEnterTimeInMeeting)
             {
@@ -196,6 +201,7 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
         {
             foreach (var currUser in newSession.users)
             {
+                //if the user is not present in the entertimemeeting dictionary then this is joining again 
                 if (eachUserEnterTimeInMeeting.ContainsKey(currUser) == false)
                     eachUserEnterTimeInMeeting[currUser] = currTime;
 
