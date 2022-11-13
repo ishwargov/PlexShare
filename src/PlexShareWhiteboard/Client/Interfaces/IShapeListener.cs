@@ -27,5 +27,6 @@ namespace PlexShareWhiteboard.Client.Interfaces
     {
         void OnShapeReceived(ShapeItem newShape, Operation op);
 
+        void SetUserId(string userId);
     }
 }

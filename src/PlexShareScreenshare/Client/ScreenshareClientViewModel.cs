@@ -5,7 +5,7 @@ using System.Windows.Threading;
 
 namespace PlexShareScreenshare.Client
 {
-    public class ScreenShareClientViewModel :
+    public class ScreenshareClientViewModel :
     INotifyPropertyChanged
     {
         // Whether the client is sharing screen or not
@@ -62,7 +62,7 @@ namespace PlexShareScreenshare.Client
             }
         }
 
-        ScreenShareClientViewModel()
+        public ScreenshareClientViewModel()
         {
             _model = ScreenshareClient.GetInstance();
         }

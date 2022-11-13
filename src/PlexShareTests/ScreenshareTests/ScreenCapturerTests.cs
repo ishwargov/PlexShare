@@ -1,8 +1,5 @@
 ﻿using PlexShareScreenshare.Client;
-using System.Diagnostics;
 using System.Drawing;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace PlexShareTests.ScreenshareTests
 {
@@ -21,9 +18,10 @@ namespace PlexShareTests.ScreenshareTests
             screenCapturer.StartCapture();
             Thread.Sleep(1000);
             int count = 0;
+            CancellationTokenSource source = new();
             for (int i = 0; i < 50; i++)
             {
-                Bitmap frame = screenCapturer.GetImage();
+                Bitmap frame = screenCapturer.GetImage(source.Token);
                 if (frame != null)
                     count++;
             }
@@ -38,7 +36,7 @@ namespace PlexShareTests.ScreenshareTests
         [Fact]
         public void Test2()
         {
-            Task<ScreenCapturer> task = Task.Run(() => { ScreenCapturer screenCapturer = new ScreenCapturer(); return screenCapturer;  });
+            Task<ScreenCapturer> task = Task.Run(() => { ScreenCapturer screenCapturer = new ScreenCapturer(); return screenCapturer; });
             task.Wait();
             var screenCapturer = task.Result;
             screenCapturer.StartCapture();

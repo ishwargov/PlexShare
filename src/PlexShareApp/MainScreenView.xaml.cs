@@ -13,7 +13,13 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Diagnostics;
-
+using PlexShareDashboard.Dashboard.Server.SessionManagement;
+using PlexShare.Dashboard;
+using PlexShareDashboard.Dashboard.Client.SessionManagement;
+using Dashboard;
+using PlexShareApp;
+using ScottPlot.Drawing.Colormaps;
+using System.ComponentModel;
 
 namespace PlexShareApp
 {
@@ -26,30 +32,67 @@ namespace PlexShareApp
         private static DashboardPage dashboardPage;
         private static WhiteBoardPage whiteBoardPage;
         private static ChatPageView chatPage;
-        private static ScreenSharePage screenSharePage;
-        public MainScreenView()
+        private static ScreenshareServerView screenshareServerView;
+        private static ScreenshareClientView screenshareClientView;
+        public event PropertyChangingEventHandler? PropertyChanged;
+        private bool isServer;
+        
+        public MainScreenView(string name, string email, string picPath, string url, string ip, string port)
         {
-            InitializeComponent();
-            dashboardPage = new DashboardPage();
-            whiteBoardPage = new WhiteBoardPage();
-            chatPage = new ChatPageView();
-            screenSharePage = new ScreenSharePage();
-            Main.Content = dashboardPage;
+            bool verified = false;
+            IUXServerSessionManager serverSessionManager = SessionManagerFactory.GetServerSessionManager();
+            IUXClientSessionManager clientSessionManager = SessionManagerFactory.GetClientSessionManager();
+
+            if (ip == "-1")
+            {
+                MeetingCredentials meetingCredentials = serverSessionManager.GetPortsAndIPAddress();
+                verified = clientSessionManager.AddClient(meetingCredentials.ipAddress, meetingCredentials.port, name);
+                ip = meetingCredentials.ipAddress;
+                port = meetingCredentials.port.ToString();
+                isServer = true;
+            }
+            else
+            {
+                verified = clientSessionManager.AddClient(ip, int.Parse(port), name);
+                isServer = false;
+            }
+
+            if (verified)
+            {
+                InitializeComponent();
+                dashboardPage = new DashboardPage();
+                chatPage = new ChatPageView();
+                if (isServer)
+                {
+                    whiteBoardPage = new WhiteBoardPage(0);
+                }
+                else
+                {
+                    whiteBoardPage = new WhiteBoardPage(1);
+                }
+                screenshareServerView = new ScreenshareServerView();
+                screenshareClientView = new ScreenshareClientView();
+
+                Main.Content = dashboardPage;
+                ServerIPandPort.Text = "Server IP : " + ip + " Port : " + port;
+                // ClientIPandPort.Text = "Client IP : " + meetingCredentials.ipAddress  + " Port : " + meetingCredentials.port;
+
+            }
         }
 
         /// <summary>
         /// Transfer control to dashboard on click
+        /// 
         /// </summary>
         private void DashboardClick(object sender, RoutedEventArgs e)
         {
-            Dashboard.Background = Brushes.PeachPuff;
+            Dashboard.Background = Brushes.DarkCyan;
             Whiteboard.Background = Brushes.DarkSlateGray;
             Screenshare.Background = Brushes.DarkSlateGray;
 
-            Dashboard.Foreground = Brushes.Black;
-            Whiteboard.Foreground = Brushes.SeaShell;
-            Screenshare.Foreground = Brushes.SeaShell;
-
+            //Dashboard.Foreground = Brushes.Black;
+            //Whiteboard.Foreground = Brushes.SeaShell;
+            //Screenshare.Foreground = Brushes.SeaShell;
 
             Debug.WriteLine("DashBoardUX");
             Main.Content = dashboardPage;
@@ -65,14 +108,22 @@ namespace PlexShareApp
         {
             Dashboard.Background = Brushes.DarkSlateGray;
             Whiteboard.Background = Brushes.DarkSlateGray;
-            Screenshare.Background = Brushes.PeachPuff;
+            Screenshare.Background = Brushes.DarkCyan;
 
-            Dashboard.Foreground = Brushes.SeaShell;
-            Whiteboard.Foreground = Brushes.SeaShell;
-            Screenshare.Foreground = Brushes.Black;
+            //Dashboard.Foreground = Brushes.SeaShell;
+            //Whiteboard.Foreground = Brushes.SeaShell;
+            //Screenshare.Foreground = Brushes.Black;
 
             System.Console.WriteLine("ScreenShareUX");
-            Main.Content = screenSharePage;
+
+            if(isServer == true)
+            {
+                Main.Content = screenshareClientView;
+            }
+            else
+            {
+                Main.Content = screenshareServerView;
+            }
         }
 
         /// <summary>
@@ -81,12 +132,9 @@ namespace PlexShareApp
         private void WhiteboardClick(object sender, RoutedEventArgs e)
         {
             Dashboard.Background = Brushes.DarkSlateGray;
-            Whiteboard.Background = Brushes.PeachPuff;
+            Whiteboard.Background = Brushes.DarkCyan;
             Screenshare.Background = Brushes.DarkSlateGray;
 
-            Dashboard.Foreground = Brushes.SeaShell;
-            Whiteboard.Foreground = Brushes.Black;
-            Screenshare.Foreground = Brushes.SeaShell;
 
             System.Console.WriteLine("Whiteboard UX");
             Main.Content = whiteBoardPage;
@@ -100,15 +148,11 @@ namespace PlexShareApp
             if (chatOn == false)
             {
                 chatOn = true;
-                ChatWindow.Background = Brushes.PeachPuff;
-                ChatIcon.Foreground = Brushes.Black;
                 ScreenWithChat.Content = chatPage;
             }
             else
             {
                 chatOn=false;
-                ChatWindow.Background = Brushes.DarkSlateGray;
-                ChatIcon.Foreground = Brushes.White;
                 ScreenWithChat.Content = null;
             }
         }
@@ -126,7 +170,10 @@ namespace PlexShareApp
         ///</summary>
         private void CloseApp(object sender, RoutedEventArgs e)
         {
-            Application.Current.Shutdown();
+            Application.Current.Dispatcher.Invoke((Action)delegate
+            {
+                Application.Current.Shutdown();
+            });
         }
 
         ///<summary>

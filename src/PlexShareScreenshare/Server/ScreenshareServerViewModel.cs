@@ -369,15 +369,14 @@ namespace PlexShareScreenshare.Server
 
             Debug.Assert(pinnedScreenIdx != -1, Utils.GetDebugMessage($"Client Id: {clientId} not found in the subscribers list"));
 
-            if (pinnedScreenIdx != -1)
-            {
-                // Mark the client as pinned and switch to the page of the client
-                SharedClientScreen pinnedScreen = _subscribers[pinnedScreenIdx];
-                pinnedScreen.Pinned = true;
-                this.CurrentPage = GetClientPage(pinnedScreen.Id);
+            if (pinnedScreenIdx == -1) return;
 
-                Trace.WriteLine(Utils.GetDebugMessage($"Successfully pinned the client with id: {clientId}", withTimeStamp: true));
-            }
+            // Mark the client as pinned and switch to the page of the client
+            SharedClientScreen pinnedScreen = _subscribers[pinnedScreenIdx];
+            pinnedScreen.Pinned = true;
+            this.CurrentPage = GetClientPage(pinnedScreen.Id);
+
+            Trace.WriteLine(Utils.GetDebugMessage($"Successfully pinned the client with id: {clientId}", withTimeStamp: true));
         }
 
         /// <summary>
@@ -396,15 +395,14 @@ namespace PlexShareScreenshare.Server
 
             Debug.Assert(unpinnedScreenIdx != -1, Utils.GetDebugMessage($"Client Id: {clientId} not found in the subscribers list"));
 
-            if (unpinnedScreenIdx != -1)
-            {
-                // Mark the client as unpinned and switch to the previous (or the first) page
-                SharedClientScreen unpinnedScreen = _subscribers[unpinnedScreenIdx];
-                unpinnedScreen.Pinned = false;
-                this.CurrentPage = Math.Max(1, this.CurrentPage - 1);
+            if (unpinnedScreenIdx != -1) return;
 
-                Trace.WriteLine(Utils.GetDebugMessage($"Successfully unpinned the client with id: {clientId}", withTimeStamp: true));
-            }
+            // Mark the client as unpinned and switch to the previous (or the first) page
+            SharedClientScreen unpinnedScreen = _subscribers[unpinnedScreenIdx];
+            unpinnedScreen.Pinned = false;
+            this.CurrentPage = Math.Max(1, this.CurrentPage - 1);
+
+            Trace.WriteLine(Utils.GetDebugMessage($"Successfully unpinned the client with id: {clientId}", withTimeStamp: true));
         }
 
         /// <summary>
@@ -422,21 +420,20 @@ namespace PlexShareScreenshare.Server
         protected virtual void Dispose(bool disposing)
         {
             // Check to see if Dispose has already been called.
-            if (!_disposed)
+            if (_disposed) return;
+
+            // If disposing equals true, dispose all managed
+            // and unmanaged resources
+            if (disposing)
             {
-                // If disposing equals true, dispose all managed
-                // and unmanaged resources
-                if (disposing)
-                {
-                    _subscribers.Clear();
-                    _instance = null;
-                }
-
-                // Call the appropriate methods to clean up unmanaged resources here
-
-                // Now disposing has been done
-                _disposed = true;
+                _subscribers.Clear();
+                _instance = null;
             }
+
+            // Call the appropriate methods to clean up unmanaged resources here
+
+            // Now disposing has been done
+            _disposed = true;
         }
 
         /// <summary>
@@ -461,38 +458,61 @@ namespace PlexShareScreenshare.Server
                                     .Select(client => client.Id)
                                     .ToList(), nameof(ServerDataHeader.Send), resolution);
 
-            // Ask all the current window clients to start processing their images
-            foreach (SharedClientScreen client in currentWindowClients)
+            try
             {
-                // The lambda function takes the final image from the final image queue
-                // of the client and set it as the "CurrentImage" variable for the client
-                // and notify the UX about the same
-                client.StartProcessing(new Action<CancellationToken>((token) =>
+                // Ask all the current window clients to start processing their images
+                foreach (SharedClientScreen client in currentWindowClients)
                 {
-                    // If the task was already canceled
-                    token.ThrowIfCancellationRequested();
-
-                    // Loop till the task is not canceled
-                    while (!token.IsCancellationRequested)
+                    // The lambda function takes the final image from the final image queue
+                    // of the client and set it as the "CurrentImage" variable for the client
+                    // and notify the UX about the same
+                    client.StartProcessing(new Action<CancellationToken>((token) =>
                     {
-                        // End the task when cancellation is requested
+                        // If the task was already canceled
                         token.ThrowIfCancellationRequested();
 
-                        // Update the current image of the client on the screen
-                        // by taking the processed images from its final image queue
-                        _ = ApplicationMainThreadDispatcher.BeginInvoke(
-                                DispatcherPriority.Normal,
-                                new Action<Bitmap>((image) =>
-                                {
-                                    lock (client)
-                                    {
-                                        client.CurrentImage = image;
-                                        this.OnPropertyChanged(nameof(this.CurrentWindowClients));
-                                    }
-                                }),
-                                client.GetFinalImage());
-                    }
-                }));
+                        // Loop till the task is not canceled
+                        while (!token.IsCancellationRequested)
+                        {
+                            // End the task when cancellation is requested
+                            token.ThrowIfCancellationRequested();
+
+                            try
+                            {
+                                // Update the current image of the client on the screen
+                                // by taking the processed images from its final image queue
+                                _ = ApplicationMainThreadDispatcher.BeginInvoke(
+                                        DispatcherPriority.Normal,
+                                        new Action<Bitmap>((image) =>
+                                        {
+                                            lock (client)
+                                            {
+                                                client.CurrentImage = image;
+                                                this.OnPropertyChanged(nameof(this.CurrentWindowClients));
+                                            }
+                                        }),
+                                        client.GetFinalImage(token));
+                            }
+                            catch (OperationCanceledException e)
+                            {
+                                Trace.WriteLine(Utils.GetDebugMessage($"Task canceled for the client with id {client.Id}: {e.Message}", withTimeStamp: true));
+                            }
+                            catch (Exception e)
+                            {
+                                Trace.WriteLine(Utils.GetDebugMessage($"Failed to update the view: {e.Message}", withTimeStamp: true));
+                            }
+
+                        }
+                    }));
+                }
+            }
+            catch (OperationCanceledException e)
+            {
+                Trace.WriteLine(Utils.GetDebugMessage($"Task canceled for the client: {e.Message}", withTimeStamp: true));
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine(Utils.GetDebugMessage($"Failed to start the processing: {e.Message}", withTimeStamp: true));
             }
 
             Trace.WriteLine(Utils.GetDebugMessage("Successfully notified the new current window clients", withTimeStamp: true));
@@ -505,7 +525,18 @@ namespace PlexShareScreenshare.Server
             // Ask all the previous window clients to stop processing their images
             foreach (SharedClientScreen client in prevWindowClients)
             {
-                client.StopProcessing();
+                try
+                {
+                    client.StopProcessing();
+                }
+                catch (OperationCanceledException e)
+                {
+                    Trace.WriteLine(Utils.GetDebugMessage($"Task canceled for the client: {e.Message}", withTimeStamp: true));
+                }
+                catch (Exception e)
+                {
+                    Trace.WriteLine(Utils.GetDebugMessage($"Failed to stop the processing: {e.Message}", withTimeStamp: true));
+                }
             }
 
             Trace.WriteLine(Utils.GetDebugMessage("Successfully notified the previous window clients", withTimeStamp: true));

@@ -24,6 +24,7 @@ namespace PlexShareTests.ContentTests.Client
 
             Assert.Same(ref1, ref2);
         }
+
         [Fact]
         public void GetInstance_MultiThread_ReturnsSingleInstance()
         {
@@ -36,6 +37,7 @@ namespace PlexShareTests.ContentTests.Client
 
             Assert.Same(ref1, ref2);
         }
+
         [Fact]
         public void SetUser_MultipleInstances_ReturnsSingleUserID()
         {
