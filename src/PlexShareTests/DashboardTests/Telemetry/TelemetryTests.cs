@@ -660,11 +660,20 @@ namespace PlexShareTests.DashboardTests.Telemetry
             allMessages[0] = chat1;
             allMessages[1] = chat2;
 
+
+
             var telemetryInstance = TelemetryFactory.GetTelemetryInstance();
             telemetryInstance.userIdVsChatCount.Clear();
             telemetryInstance.eachUserEnterTimeInMeeting.Clear();
             telemetryInstance.eachUserExitTime.Clear();
             telemetryInstance.listOfInSincereMembers.Clear();
+
+            telemetryInstance.userIdVsEmailId[1] = "111901045@smail.iitpkd.ac.in";
+            telemetryInstance.userIdVsEmailId[2] = "111901054@smail.iitpkd.ac.in";
+
+            telemetryInstance.emailIdVsUserName["111901045@smail.iitpkd.ac.in"] = "Rupesh Kumar";
+            telemetryInstance.emailIdVsUserName["111901054@smail.iitpkd.ac.in"] = "Hrishi Raaj";
+
 
             telemetryInstance.GetTelemetryAnalytics(allMessages);
 
