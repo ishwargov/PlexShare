@@ -16,6 +16,7 @@ using PlexShareNetwork.Communication;
 using Client.Models;
 using System.Windows;
 using System.Threading;
+using PlexShareContent.Client;
 
 namespace PlexShareDashboard.Dashboard.Client.SessionManagement
 {
@@ -34,7 +35,7 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
     {
         private readonly List<IClientSessionNotifications> _clients;
         private readonly ICommunicator _communicator;
-        //  private readonly IContentClient _contentClient;
+          private readonly IContentClient _contentClient;
         private readonly IDashboardSerializer _serializer;
         // private readonly IClientBoardStateManager clientBoardStateManager;
         private readonly string moduleIdentifier;
@@ -56,7 +57,11 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
             _serializer = new DashboardSerializer();
             _communicator = CommunicationFactory.GetCommunicator();
             _communicator.Subscribe(moduleIdentifier, this);
-            //   _contentClient = ContentClientFactory.GetInstance();
+            
+            
+            
+            
+               _contentClient = ContentClientFactory.GetInstance();
             //  clientBoardStateManager = ClientBoardStateManager.Instance;
             //  clientBoardStateManager.Start();
 
