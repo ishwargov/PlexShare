@@ -16,6 +16,10 @@ namespace Dashboard
 
         public string? username;
 
+        public string userEmail;
+
+        public string userPhotoUrl;
+
 
 
         public UserData()
@@ -24,15 +28,17 @@ namespace Dashboard
         }
 
         //parametrized constructor
-        public UserData( string clientName, int clientID)
+        public UserData( string clientName, int clientID, string clientEmail = null , string clientPhotoUrl = null )
         {
             userID = clientID;
             username = clientName;
+            userEmail = clientEmail;
+            userPhotoUrl = clientPhotoUrl;
         }
 
         public override string ToString()
         {
-            return "UserName: " + username + "\n UserID: " + userID + "\n ";
+            return "UserName: " + username + "\n UserID: " + userID + "\n " + userEmail + "\n";
         }
 
         public bool Equals(UserData other)
