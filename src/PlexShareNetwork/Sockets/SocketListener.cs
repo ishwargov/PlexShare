@@ -5,7 +5,6 @@
 /// </summary>
 
 using PlexShareNetwork.Queues;
-using PlexShareNetwork.Serialization;
 using System;
 using System.Diagnostics;
 using System.Net.Sockets;
@@ -16,9 +15,8 @@ namespace PlexShareNetwork.Sockets
 {
 	public class SocketListener
 	{
-		// max size of the send buffer
+		// set the max size of buffer and initialize the buffer
 		private const int bufferSize = 1000000;
-		// create the buffer
 		private readonly byte[] buffer = new byte[bufferSize];
 
         // StringBuilder string to store the the received message
@@ -30,10 +28,8 @@ namespace PlexShareNetwork.Sockets
 		// boolean to tell whether the thread is running or stopped
 		private bool _runSocketListenerThread;
 
-		// variable to store the receive queue
+		// declare the receiving queue and socket
 		private readonly ReceivingQueue _receivingQueue;
-
-		// variable to store the socket
 		private readonly Socket _socket;
 
         /// <summary>
@@ -41,7 +37,8 @@ namespace PlexShareNetwork.Sockets
         /// and the socket listener thread.
         /// </summary>
         /// <param name="receivingQueue"> The receiving queue. </param>
-        /// <param name="socket"> The socket on which to listen.
+        /// <param name="socket">
+        /// The socket on which to listen.
         /// </param>
         public SocketListener(ReceivingQueue receivingQueue, 
             TcpClient socket)
@@ -93,8 +90,8 @@ namespace PlexShareNetwork.Sockets
 
         /// <summary>
         /// This is the AsyncCallback function which is passed to
-        /// socket.BeginReceive() as an argument. It reads the received 
-        /// bytes and converts them back to string and then calls
+        /// socket.BeginReceive() as an argument. It reads the 
+        /// received bytes, converts them back to string and calls
         /// ProcessReceivedString() to process the received string.
         /// </summary>
         /// <returns> void </returns>
@@ -158,24 +155,50 @@ namespace PlexShareNetwork.Sockets
                 "ProcessReceivedString() function called.");
             while (true)
             {
-                int packetBegin = receivedString.IndexOf("BEGIN", StringComparison.Ordinal) + 5;
-                int packetEnd = receivedString.IndexOf("END", StringComparison.Ordinal);
-                while (packetEnd != -1 && receivedString[(packetEnd - 3)..(packetEnd + 3)] == "NOTEND")
+                // find index of "BEGIN" string in the received string
+                // "BEGIN" marks the beginning of the packet
+                int packetBegin = receivedString.IndexOf(
+                    "BEGIN", StringComparison.Ordinal);
+
+                // find index of "END" string in the received string
+                // "END" marks the end of the packet
+                int packetEnd = receivedString.IndexOf(
+                    "END", StringComparison.Ordinal);
+
+                // while index of "END" is not -1 and the "END" was
+                // actually "NOTEND" then find the next "END"
+                while (packetEnd != -1 && receivedString[
+                    (packetEnd - 3)..(packetEnd + 3)] == "NOTEND")
                 {
-                    packetEnd = receivedString.IndexOf("END", packetEnd + 3, StringComparison.Ordinal);
+                    // find the index of next "END"
+                    packetEnd = receivedString.IndexOf("END", 
+                        packetEnd + 3, StringComparison.Ordinal);
                 }
-                if (packetBegin == -1 || packetEnd == -1)
+
+                // if packet end was not found that means we have not
+                // yet received the full packet, so break
+                if (packetEnd == -1)
                 {
                     break;
                 }
-                Packet packet = SendString.SendStringToPacket(
-                    receivedString[packetBegin..packetEnd]);
+                // the below code will run only if we dont break in 
+                // the above if statement, that is when we have
+                // found the packetEnd
+
+                // get the packet string from the received string and
+                // convert it back to packet and enqueue the packet
+                // to receiving queue
+                string packetString = receivedString[
+                    packetBegin..(packetEnd + 3)];
+                Packet packet = PacketString.PacketStringToPacket(
+                    packetString);
                 _receivingQueue.Enqueue(packet);
-                
-                // remove the first packet from the string
+
+                // remove the first packet from the received string
                 receivedString = receivedString[(packetEnd + 3)..];
-                Trace.WriteLine("[Networking] SocketListener." +
-                    " Received data from module: " 
+
+                Trace.WriteLine("[Networking] SocketListener:" +
+                    " Received data from module: "
                     + packet.moduleOfPacket);
             }
             Trace.WriteLine("[Networking] SocketListener." +

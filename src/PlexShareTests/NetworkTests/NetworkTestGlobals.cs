@@ -57,7 +57,7 @@ namespace PlexShareNetwork
         {
             for (var i = 0; i < count; i++)
             {
-                string sendString = SendString.PacketToSendString(sendPackets[i]);
+                string sendString = PacketString.PacketToPacketString(sendPackets[i]);
                 byte[] bytes = Encoding.ASCII.GetBytes(sendString);
                 socket.Client.Send(bytes);
             }

@@ -5,93 +5,99 @@
 /// </summary>
 
 using PlexShareNetwork.Queues;
-using PlexShareNetwork.Serialization;
 using System;
 using System.Diagnostics;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace PlexShareNetwork.Sockets
 {
 	public class SendQueueListenerClient
 	{
 		// the thread which will be running
-		private readonly Thread _thread;
+		private readonly Thread _sendQueueListenerThread;
 		// boolean to tell whether thread is running or stopped
-		private bool _threadRun;
+		private bool _runSendQueueListenerThread;
 
-		// variable to store the send queue
+		// declare the sending queue and client socket
 		private readonly SendingQueue _sendingQueue;
-
-		// variable to store the socket
 		private readonly TcpClient _clientSocket;
 
         /// <summary>
-        /// It is the Constructor which initializes the queue and socket
+        /// Constructor initializes the queue and socket.
         /// </summary>
         /// <param name="sendingQueue"> The the send queue. </param>
-        /// <param name="clientSocket"> The socket object to send the data. </param>
-        public SendQueueListenerClient(SendingQueue sendingQueue, TcpClient clientSocket)
+        /// <param name="clientSocket">
+        /// The socket object which is connected to the server.
+        /// </param>
+        public SendQueueListenerClient(SendingQueue sendingQueue,
+            TcpClient clientSocket)
 		{
             _sendingQueue = sendingQueue;
             _clientSocket = clientSocket;
-            _thread = new Thread(Listen);
+            _sendQueueListenerThread = new Thread(Listen);
         }
 
 		/// <summary>
-		/// This function starts the thread.
+		/// Starts the send queue listener client thread.
 		/// </summary>
 		/// <returns> void </returns>
 		public void Start()
 		{
             Trace.WriteLine("[Networking] " +
                 "SendQueueListenerClient.Start() function called.");
-            _threadRun = true;
-			_thread.Start();
+            _runSendQueueListenerThread = true;
+            _sendQueueListenerThread.Start();
 			Trace.WriteLine("[Networking] SendQueueListenerClient " +
                 "thread started.");
 		}
 
-		/// <summary>
-		/// This function stops the thread.
-		/// </summary>
-		/// <returns> void </returns>
-		public void Stop()
+        /// <summary>
+        /// Stops the send queue listener client thread.
+        /// </summary>
+        /// <returns> void </returns>
+        public void Stop()
 		{
             Trace.WriteLine("[Networking] " +
                 "SendQueueListenerClient.Stop() function called.");
-            _threadRun = false;
+            _runSendQueueListenerThread = false;
             Trace.WriteLine("[Networking] SendQueueListenerClient " +
                 "thread stopped.");
 		}
 
 		/// <summary>
-		/// This function listens to the send queue and when some packet comes in the queue then
-		/// it sends the packet to the server. The thread will be running this function.
-		/// </summary>
+		/// Listens to the send queue and when some packet comes
+        /// in the queue then it sends the packet to the server.
+        /// </summary>
 		/// <returns> void </returns>
 		private void Listen()
 		{
             Trace.WriteLine("[Networking] " +
                 "SendQueueListenerClient.Listen() function called.");
-            while (_threadRun)
+            while (_runSendQueueListenerThread)
 			{
                 _sendingQueue.WaitForPacket();
-				Packet packet = _sendingQueue.Dequeue();
-                string sendString = SendString.PacketToSendString(packet);
+                Packet packet = _sendingQueue.Dequeue();
+
+                // convert packet to string as string can be sent
+                string packetString =
+                    PacketString.PacketToPacketString(packet);
+
+                // convert the string to bytes and send the bytes
+                byte[] bytes = Encoding.ASCII.GetBytes(packetString);
                 try
 				{
-                    _clientSocket.Client.Send(Encoding.ASCII.GetBytes(sendString));
-					Trace.WriteLine("[Networking] SendQueueListenerClient." +
-                        " Data sent from client to server by module: " +
-                        packet.moduleOfPacket);
+                    _clientSocket.Client.Send(bytes);
+					Trace.WriteLine("[Networking] SendQueueListener" +
+                        "Client: Data sent from client to server by" +
+                        " module: " + packet.moduleOfPacket);
 				}
 				catch (Exception e)
 				{
 					Trace.WriteLine("[Networking] Error in " +
-                        "SendQueueListenerClient.Listen(): " + e.Message);
+                        "SendQueueListenerClient.Listen(): " +
+                        e.Message);
 				}
 			}
 		}
