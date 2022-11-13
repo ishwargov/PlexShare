@@ -124,7 +124,7 @@ namespace PlexShareNetwork.Communication
 
 		/// <summary>
 		/// Stops listening to client connect requests and
-        /// stops all running threads. And clears the queues.
+        /// stops all threads. And clears the queues.
 		/// </summary>
 		/// <returns> void </returns>
 		public void Stop()
@@ -304,8 +304,7 @@ namespace PlexShareNetwork.Communication
         /// the server side when a new client joins. It adds the client
         /// socket to the map and starts listening to the client.
         /// </summary>
-        /// <param name="clientId"> The client Id.
-        /// </param>
+        /// <param name="clientId"> The client Id. </param>
         /// <param name="socket">
         /// The socket which is connected to the client.
         /// </param>
@@ -340,8 +339,7 @@ namespace PlexShareNetwork.Communication
         /// the server side when a client leaves. It will remove the 
         /// client from the networking modules map on the server.
 		/// </summary>
-		/// <param name="clientId"> The client Id.
-        /// </param>
+		/// <param name="clientId"> The client Id. </param>
 		/// <returns> void </returns>
 		public void RemoveClient(string clientId)
 		{
@@ -367,8 +365,9 @@ namespace PlexShareNetwork.Communication
         }
 
         /// <summary>
-        /// Sends data to a particular client of destination is given
-        /// or to all clients of destination null.
+        /// Sends data to a particular client if client id given in
+        /// the destination argument, otherwise broadcasts data to
+        /// all clients if destination null.
         /// </summary>
         /// <param name="serializedData">
         /// The serialzed data to be sent to the client(s).
@@ -422,13 +421,12 @@ namespace PlexShareNetwork.Communication
         /// to send data. And be notified when data is received, and
         /// when a client joins, and when a client leaves.
         /// </summary>
-        /// <param name="moduleName"> Name of the module
-        /// </param>
+        /// <param name="moduleName"> Name of the module. </param>
         /// <param name="notificationHandler">
         /// Module implementation of the INotificationHandler.
         /// </param>
         /// <param name="isHighPriority">
-        /// Boolean which tells whether module's data is high priority
+        /// Boolean telling whether module's data is high priority
         /// or low priority.
         /// </param>
         /// <returns> void </returns>

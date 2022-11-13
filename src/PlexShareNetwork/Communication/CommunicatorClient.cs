@@ -213,9 +213,7 @@ namespace PlexShareNetwork.Communication
         /// to send data. And be notified when data is received, and
         /// when a client joins, and when a client leaves.
         /// </summary>
-        /// <param name="moduleName">
-        /// Name of the module.
-        /// </param>
+        /// <param name="moduleName"> Name of the module. </param>
         /// <param name="notificationHandler"> 
         /// Module implementation of the INotificationHandler.
         /// </param>
