@@ -15,7 +15,7 @@
         <Grid.ColumnDefinitions>
             <!--this column to show the participants list currently in the meeting-->
             <!--<ColumnDefinition Width="3*"/>-->
-            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="2.2*"/>
             <!--this column is to show the graphs or the main content of the dahsboard view -->
             <!--<ColumnDefinition Width="10*"/>-->
             <ColumnDefinition Width="10*"/>
@@ -43,15 +43,27 @@
                             <ColumnDefinition Width="1*"/>
                             <ColumnDefinition Width="1*"/>
                         </Grid.ColumnDefinitions>
-                        <Image Grid.Column="0"  Grid.RowSpan="2" Source="../Assets/profilepic1.PNG"
-                        Height="32"  HorizontalAlignment="Center" VerticalAlignment="Center" ></Image>
+                        <!--<Border CornerRadius="100,100,100,100" Grid.Column="0" BorderBrush="White" BorderThickness="8"  Grid.RowSpan="2">
+                            <Border.Background>
+                                <ImageBrush x:Name="profile_picture" ImageSource="{Binding UserProfilePicPath}" Stretch="UniformToFill"/>
+                            </Border.Background>
+                            
+                        </Border>-->
+
+                        <Ellipse Width="30" Height="30">
+                            <Ellipse.Fill>
+                                <ImageBrush ImageSource="{Binding UserProfilePicPath}" />
+                            </Ellipse.Fill>
+                        </Ellipse>
+                        <!--<Image Grid.Column="0"  Grid.RowSpan="2" Source="{Binding UserProfilePicPath}"
+                        Height="32"  HorizontalAlignment="Center" VerticalAlignment="Center" ></Image>-->
                         <Grid Grid.Column="1">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="1*"/>
-                                <RowDefinition Height="1*"/>
+                                <!--<RowDefinition Height="1*"/>-->
                             </Grid.RowDefinitions>
                             <!--<TextBlock Grid.Row="0" TextWrapping="WrapWithOverflow"         Background="LightBlue" Text="{Binding userName}" Margin="12,6,0,0" Padding="10, 0, 10, 0"  TextAlignment="center" FontSize="15"/>-->
-                            <TextBlock TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" Background="WhiteSmoke" Text="{Binding UserName}"  TextAlignment="center" FontSize="15"/>
+                            <TextBlock TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" Background="WhiteSmoke" Text="{Binding UserName}" VerticalAlignment="Center" TextAlignment="center" FontSize="15" Margin="5, 0, 0, 0"/>
                             <!--<TextBlock TextWrapping="WrapWithOverflow" Grid.Row="1" Background="LightBlue" Text="{Binding status}" Margin="12,0,0,6" Padding="10, 0, 10, 0"  TextAlignment="center" />-->
                             <!--<TextBlock TextWrapping="WrapWithOverflow" Grid.Row="1" Background="WhiteSmoke" Text="{Binding Status}" HorizontalAlignment="Center" VerticalAlignment="Center"  TextAlignment="center" />-->
                         </Grid>
@@ -142,7 +154,7 @@
 
             <lvc:CartesianChart Grid.Column="1" Grid.Row="0" >
                 <lvc:CartesianChart.Series>
-                    <lvc:ColumnSeries d:DataContext="{d:DesignInstance Type=viewmodel:DashboardViewModel}" Title="Chat Count" Values="{Binding ChatCountList}"/>
+                    <lvc:ColumnSeries d:DataContext="{d:DesignInstance Type=viewmodel:DashboardViewModel}" Title="Chat Count" Values="{Binding ChatCountListForUserName}"/>
                 </lvc:CartesianChart.Series>
                 <lvc:CartesianChart.AxisX>
                     <lvc:Axis Title="Users"  Labels="{Binding UserNameList}">
@@ -184,7 +196,7 @@
                     <RowDefinition Height="1*"/>
                     <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>-->
-                <Grid Grid.Column="0">
+                <!--<Grid Grid.Column="0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="1*"/>
                         <RowDefinition Height="1*"/>
@@ -206,8 +218,8 @@
                         <TextBlock Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Text=" Non Attentive Users"></TextBlock>
                         <ProgressBar Grid.Row="1"  Margin="10,10,0,13" Name="PBar2" HorizontalAlignment="Center" VerticalAlignment="Center" Width="150" Height="15" Foreground="Red" Value="{Binding NonAttentiveUsersSetter}" ></ProgressBar>
                     </Grid>
-                </Grid>
-                <Grid Grid.Column="1">
+                </Grid>-->
+                <Grid Grid.ColumnSpan="3">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="1*"/>
                         <RowDefinition Height="5*"/>
@@ -217,7 +229,9 @@
                         
                     </Grid>
                     <Grid Grid.Row="1">
-                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Text="{Binding SummaryContentSetter}" TextWrapping="WrapWithOverflow"></TextBlock>
+                        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Height="150" Width="950" >
+                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Text="{Binding SummaryContentSetter}" TextWrapping="Wrap"  ></TextBlock>
+                        </ScrollViewer>
 
                     </Grid>
                 </Grid>

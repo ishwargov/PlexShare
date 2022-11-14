@@ -34,7 +34,8 @@ namespace PlexShareTests.DashboardTests.UI
             Assert.NotNull(DashboardViewModelForTest.GetSessionAnalytics());
             Assert.NotNull(DashboardViewModelForTest.ParticipantsList);
             Assert.NotNull(DashboardViewModelForTest.UserCountList);
-            Assert.NotNull(DashboardViewModelForTest.ChatCountList);
+            Assert.NotNull(DashboardViewModelForTest.ChatCountListForUserId);
+            Assert.NotNull(DashboardViewModelForTest.ChatCountListForUserName);
             Assert.NotNull(DashboardViewModelForTest.UserIdList);
             Assert.NotNull(DashboardViewModelForTest.TimeStampsList);
 
@@ -49,7 +50,8 @@ namespace PlexShareTests.DashboardTests.UI
             Assert.Empty(DashboardViewModelForTest.UserCountList);
             Assert.Empty(DashboardViewModelForTest.UserIdList);
             Assert.Empty(DashboardViewModelForTest.TimeStampsList);
-            Assert.Empty(DashboardViewModelForTest.ChatCountList);
+            Assert.Empty(DashboardViewModelForTest.ChatCountListForUserId);
+            Assert.Empty(DashboardViewModelForTest.ChatCountListForUserName);
 
             //say everything went fine 
             return;
@@ -132,7 +134,7 @@ namespace PlexShareTests.DashboardTests.UI
 
             DashboardViewModelForTest.UpdateParticipantsList(newParticipantsList);
 
-            Assert.Equal("Rupesh kumar", DashboardViewModelForTest.ParticipantsList[0].UserName);
+            Assert.Equal("Rupesh kumar  (Instructor)", DashboardViewModelForTest.ParticipantsList[0].UserName);
             Assert.Equal("Saurabh Kumar", DashboardViewModelForTest.ParticipantsList[1].UserName);
             Assert.Equal("Hrishi Raaj", DashboardViewModelForTest.ParticipantsList[2].UserName);
             Assert.Equal(3, DashboardViewModelForTest.ParticipantsList.Count);
@@ -226,9 +228,9 @@ namespace PlexShareTests.DashboardTests.UI
             Assert.Equal("2", DashboardViewModelForTest.UserIdList[1]);
             Assert.Equal("4", DashboardViewModelForTest.UserIdList[2]);
 
-            Assert.Equal(10, DashboardViewModelForTest.ChatCountList[0]);
-            Assert.Equal(20, DashboardViewModelForTest.ChatCountList[1]);
-            Assert.Equal(30, DashboardViewModelForTest.ChatCountList[2]);
+            Assert.Equal(10, DashboardViewModelForTest.ChatCountListForUserId[0]);
+            Assert.Equal(20, DashboardViewModelForTest.ChatCountListForUserId[1]);
+            Assert.Equal(30, DashboardViewModelForTest.ChatCountListForUserId[2]);
 
 
             //say everything went fine 
@@ -315,11 +317,15 @@ namespace PlexShareTests.DashboardTests.UI
             currUserCountVsTimeStamp[currDateTime2] = 20;
             currUserCountVsTimeStamp[currDateTime3] = 30;
 
+            Dictionary<string, int> userNameVsChatCount = new Dictionary<string, int>();
+            userNameVsChatCount["Rupesh Kumar"] = 10;
+            userNameVsChatCount["Hrishi Raaj"] = 20;
 
             SessionAnalytics sessionAnalytics = new SessionAnalytics();
             sessionAnalytics.chatCountForEachUser = currUserIdVsChatCount;
             sessionAnalytics.listOfInSincereMembers = array;
             sessionAnalytics.userCountVsTimeStamp = currUserCountVsTimeStamp;
+            sessionAnalytics.userNameVsChatCount = userNameVsChatCount;
 
             SessionSummary sessionSummary = new SessionSummary();
             sessionSummary.userCount = 10;
@@ -340,13 +346,16 @@ namespace PlexShareTests.DashboardTests.UI
             Assert.Equal(30, DashboardViewModelForTest.UserCountList[2]);
 
 
-            Assert.Equal(10, DashboardViewModelForTest.ChatCountList[0]);
-            Assert.Equal(20, DashboardViewModelForTest.ChatCountList[1]);
-            Assert.Equal(30, DashboardViewModelForTest.ChatCountList[2]);
+            Assert.Equal(10, DashboardViewModelForTest.ChatCountListForUserId[0]);
+            Assert.Equal(20, DashboardViewModelForTest.ChatCountListForUserId[1]);
+            Assert.Equal(30, DashboardViewModelForTest.ChatCountListForUserId[2]);
 
             Assert.Equal(200, DashboardViewModelForTest.SessionScoreSetter);
-                
-            
+            Assert.Equal("Rupesh Kumar", DashboardViewModelForTest.UserNameList[0]);
+            Assert.Equal("Hrishi Raaj", DashboardViewModelForTest.UserNameList[1]);
+            Assert.Equal(10, DashboardViewModelForTest.ChatCountListForUserName[0]);
+            Assert.Equal(20, DashboardViewModelForTest.ChatCountListForUserName[1]);
+
             //say everything went fine 
             return;
         }

@@ -23,6 +23,10 @@ using LiveCharts.Wpf;
 using LiveCharts;
 using System.Windows;
 using System.Data.Entity.Core.Metadata.Edm;
+using System.Windows.Media.Imaging;
+using System.Drawing;
+using System.Net;
+using System.IO;
 
 namespace PlexShareDashboard.Dashboard.UI.ViewModel
 {
@@ -50,12 +54,16 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
         //ObservableCollection for storing the number of chat count for each user 
         //public ObservableCollection<UserIdVsChatCount> UserIdVsChatCounts { get; set; }
-        public ChartValues<int> ChatCountList { get; set; }
+        public ChartValues<int> ChatCountListForUserId { get; set; }
+        public ChartValues<int> ChatCountListForUserName { get; set; }
+
         public ObservableCollection<string> UserIdList { get; set; }
 
         //defining the observable collection to store the username 
         public ObservableCollection<string> UserNameList { get; set; }
 
+        //public 
+        
 
 
         //debug.assert 
@@ -68,6 +76,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         private int TotalMessageCount { get; set; }
 
         private int TotalParticipantsCount { get; set; }
+        private int MaxTotalParticipantsCount { get; set; }
 
         private string EngagementRate { get; set; }
 
@@ -83,6 +92,16 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
         //adding the new variable to store the value of the summary 
         private string SummaryContent { get; set; }
+        //public string ReceivedImage { get; set; }
+        public Bitmap ReceivedImage
+        {
+            get;  set;
+        }
+
+        public string DisplayedImage
+        {
+            get { return "./Assets/FillTool.png"; }
+        }
 
         /// <summary>
         /// Total number of messages sent in chat during the session
@@ -113,6 +132,19 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             }
         }
 
+        public int MaxTotalParticipantsCountSetter
+        {
+            get { return MaxTotalParticipantsCount; }
+            set
+            {
+                if (MaxTotalParticipantsCount != value)
+                {
+                    MaxTotalParticipantsCount = value;
+                    OnPropertyChanged("MaxTotalParticipantsCountSetter");
+                }
+            }
+        }
+
 
         public string EngagementRateSetter
         {
@@ -126,6 +158,19 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
                 }
             }
         }
+
+        //public string ReceivedImageSetter
+        //{
+        //    get { return ReceivedImage; }
+        //    set
+        //    {
+        //        if (ReceivedImage != value)
+        //        {
+        //            ReceivedImage = value;
+        //            OnPropertyChanged("ReceivedImageSetter");
+        //        }
+        //    }
+        //}
 
         public int AttentiveUsersSetter
         {
@@ -227,6 +272,8 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         //constructor for view model 
         public DashboardViewModel()
         {
+            //Bitmap bitmap = (Bitmap)Bitmap.FromFile(@"c:\dump\bulb.png", true);
+            //_bitmapSource = BitmapConversion.BitmapToBitmapSource(bitmap);
 
             sessionData = new SessionData();
             //initialising ParticipantsList 
@@ -243,7 +290,8 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
       
 
 
-            ChatCountList = new ChartValues<int>();
+            ChatCountListForUserId = new ChartValues<int>();
+            ChatCountListForUserName = new ChartValues<int>();
             UserIdList = new ObservableCollection<string>();
 
             UserNameList = new ObservableCollection<string>();
@@ -253,11 +301,16 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             NonAttentiveUsersSetter = 0;
 
             TotalParticipantsCountSetter = 1;
+            MaxTotalParticipantsCountSetter = 1;
             TotalMessageCountSetter = 0;
             EngagementRateSetter = "0";
             //TotalParticipantsCountSetter = 1;
             SessionModeSetter = "LabMode";
             SessionScoreSetter = 0;
+            //ReceivedImage = "./Assets/FillTool.png";
+            //Bitmap image = new Bitmap("./Assets/FillTool.png");
+            //ReceivedImage = image; 
+
 
             clientSessionManager = SessionManagerFactory.GetClientSessionManager();
             //we also have to subscribe to the IClientSessionNotifications if any session data changes 
@@ -272,7 +325,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
 
             //hi this is development branch for this purpose 
-            SummaryContentSetter = "This is summary of the session till now. Keep refreshing this page in order to see the updated summary till now of the session for this purpose. order to see the updated summary till now of the session for this purpose.order to see the updated summary till now of the session for this purpose.order to see the updated summary till now of the session for this purpose.order to see the updated summary till now of the session for this purpose.order to see the updated summary till now of the session for this purpose.order to see the updated summary till now of the session for this purpose.order to see the updated summary till now of the session for this purpose.order to see the updated summary till now of the session for this purpose.";
+            SummaryContentSetter = "";
 
 
 
@@ -293,6 +346,18 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
         }
 
+
+        public static class BitmapConversion
+        {
+            public static BitmapSource BitmapToBitmapSource(Bitmap source)
+            {
+                return System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
+                              source.GetHbitmap(),
+                              IntPtr.Zero,
+                              Int32Rect.Empty,
+                              BitmapSizeOptions.FromEmptyOptions());
+            }
+        }
 
         public void SetLeaveButtonAccordingToUser()
         {
@@ -458,6 +523,37 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         }
 
 
+        //string DownloadImage(string url, string userEmail)
+        //{
+        //    string imageName = "";
+        //    int len_email = userEmail.Length;
+        //    for (int i = 0; i < len_email; i++)
+        //    {
+        //        if (userEmail[i] == '@')
+        //            break;
+        //        imageName += userEmail[i];
+        //    }
+
+        //    string dir = Environment.GetEnvironmentVariable("temp", EnvironmentVariableTarget.User);
+        //    string absolute_path = System.IO.Path.Combine(dir, imageName);
+        //    //if (File.Exists(absolute_path))
+        //    //{
+        //    //    var image = Image.FromFile(absolute_path);
+
+        //    //    image.Dispose(); // this removes all resources
+
+        //    //    //later...
+
+        //    //    File.Delete(absolute_path); //now works
+        //    //    //File.Delete(absolute_path);
+        //    //}
+        //    using (WebClient webClient = new())
+        //    {
+        //        webClient.DownloadFile(url, absolute_path);
+        //    }
+        //    return absolute_path;
+        //}
+
 
         //function to update the ParticipantsList of viewmodel 
         public void UpdateParticipantsList(List<UserData> users)
@@ -481,7 +577,9 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
                     //int currUserId = currUser.userID;
                     string currUserName = currUser.username + "  (Instructor)";
                     string currUserStatus = "Presenting";
-                    User newUser = new User(currUserId, currUserName, currUserStatus);
+                    //string currProfilePath = DownloadImage(currUser.userPhotoUrl, currUser.userEmail);
+                    string currProfilePath = currUser.userPhotoUrl;
+                    User newUser = new User(currUserId, currUserName, currUserStatus, currProfilePath);
                     Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
                     {
                         ParticipantsList.Add(newUser);
@@ -500,7 +598,11 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
                 }
                 string currUserName = currUser.username;
                 string currUserStatus = "Presenting";
-                User newUser = new User(currUserId, currUserName, currUserStatus);
+
+                //string currProfilePath = DownloadImage(currUser.userPhotoUrl, currUser.userEmail);
+                string currProfilePath = currUser.userPhotoUrl;
+                
+                User newUser = new User(currUserId, currUserName, currUserStatus, currProfilePath);
                 
 
                 Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
@@ -579,7 +681,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             {
                 //we have to clear the array of the userid list and 
                 UserIdList.Clear();
-                ChatCountList.Clear();
+                ChatCountListForUserId.Clear();
                 //ParticipantsList.Clear();
                 //_matchObsCollection.Add(match);
             });
@@ -601,7 +703,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
                 {
                     //we have to add  the new element into the chart values 
                     UserIdList.Add(currUserid.ToString());
-                    ChatCountList.Add(currChatCount);
+                    ChatCountListForUserId.Add(currChatCount);
                     //ParticipantsList.Clear();
                     //_matchObsCollection.Add(match);
                 });
@@ -634,6 +736,14 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             return;
         }
 
+        public void SetMaxTotalParticipantsCount()
+        {
+            if (TotalParticipantsCountSetter > MaxTotalParticipantsCountSetter)
+            {
+                MaxTotalParticipantsCountSetter = TotalParticipantsCountSetter;
+            }
+        }
+
 
 
 
@@ -654,6 +764,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
                 UpdateButtonContent(currUser);
                 //UpdateButtonContent(currUser);
                 TotalParticipantsCountSetter = ParticipantsList.Count;
+                SetMaxTotalParticipantsCount();
 
             }
 
@@ -676,6 +787,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
                 UpdateButtonContent(currUser);
                 //UpdateButtonContent(currUser);
                 TotalParticipantsCountSetter = ParticipantsList.Count;
+                SetMaxTotalParticipantsCount();
 
             }
 
@@ -707,7 +819,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             {
                 //we have to clear the array of the userid list and 
                 UserNameList.Clear();
-                ChatCountList.Clear();
+                ChatCountListForUserName.Clear();
                 //ParticipantsList.Clear();
                 //_matchObsCollection.Add(match);
             });
@@ -726,7 +838,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
                 {
                     //we have to add  the new element into the chart values 
                     UserNameList.Add(currUserName);
-                    ChatCountList.Add(currChatCount);
+                    ChatCountListForUserName.Add(currChatCount);
                     //ParticipantsList.Clear();
                     //_matchObsCollection.Add(match);
                 });
@@ -766,7 +878,10 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
             //we have to update all the lists so that we can show to the dahsboard
             UpdateUserCountVsTimeStamp(sessionAnalytics.userCountVsTimeStamp);
+            //this is am calculating to be able to be used in future.
             UpdateUserIdVsChatCount(sessionAnalytics.chatCountForEachUser);
+
+            //calculating the engagement rate 
             CalculateEngagementRate(sessionAnalytics.chatCountForEachUser);
 
             //calling the function to update and show the username vs chat count 
@@ -788,7 +903,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         {
             int activeMembers = currChatCountForEachUser.Count;
 
-            float EngagementRate = (float)(activeMembers*100) / TotalParticipantsCountSetter;
+            float EngagementRate = (float)(activeMembers*100) / MaxTotalParticipantsCountSetter;
             EngagementRateSetter = EngagementRate.ToString("0") + "%";
 
 
