@@ -47,7 +47,7 @@ namespace PlexShareWhiteboard
         private WhiteBoardViewModel()
         {
             // this will become client and server 
-            //isServer = true;
+            
 
             //ShapeItems = new AsyncObservableCollection<ShapeItem>();
             ShapeItems = new ObservableCollection<ShapeItem>();
@@ -87,6 +87,7 @@ namespace PlexShareWhiteboard
             {
                 machine = ServerSide.Instance;
                 machine.SetUserId(userId);
+                isServer = true;
             }
             else
             {
