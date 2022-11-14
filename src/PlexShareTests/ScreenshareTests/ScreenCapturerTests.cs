@@ -26,7 +26,7 @@ namespace PlexShareTests.ScreenshareTests
                     count++;
             }
 
-            screenCapturer.StopCapture();
+            screenCapturer.StopCapture().Wait();
             Assert.Equal(50, count);
         }
 
@@ -44,7 +44,7 @@ namespace PlexShareTests.ScreenshareTests
             Thread.Sleep(1000);
             int framesCaptured = screenCapturer.GetCapturedFrameLength();
 
-            screenCapturer.StopCapture();
+            screenCapturer.StopCapture().Wait();
             Thread.Sleep(1);
             Assert.True(framesCaptured is > 0 and <= ScreenCapturer.MaxQueueLength);
         }
