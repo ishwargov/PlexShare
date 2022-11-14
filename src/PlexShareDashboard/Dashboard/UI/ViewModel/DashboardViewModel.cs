@@ -23,6 +23,10 @@ using LiveCharts.Wpf;
 using LiveCharts;
 using System.Windows;
 using System.Data.Entity.Core.Metadata.Edm;
+using System.Windows.Media.Imaging;
+using System.Drawing;
+using System.Net;
+using System.IO;
 
 namespace PlexShareDashboard.Dashboard.UI.ViewModel
 {
@@ -57,7 +61,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
         //defining the observable collection to store the username 
         public ObservableCollection<string> UserNameList { get; set; }
-
+        //public 
         
 
 
@@ -86,6 +90,16 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
         //adding the new variable to store the value of the summary 
         private string SummaryContent { get; set; }
+        //public string ReceivedImage { get; set; }
+        public Bitmap ReceivedImage
+        {
+            get;  set;
+        }
+
+        public string DisplayedImage
+        {
+            get { return "./Assets/FillTool.png"; }
+        }
 
         /// <summary>
         /// Total number of messages sent in chat during the session
@@ -129,6 +143,19 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
                 }
             }
         }
+
+        //public string ReceivedImageSetter
+        //{
+        //    get { return ReceivedImage; }
+        //    set
+        //    {
+        //        if (ReceivedImage != value)
+        //        {
+        //            ReceivedImage = value;
+        //            OnPropertyChanged("ReceivedImageSetter");
+        //        }
+        //    }
+        //}
 
         public int AttentiveUsersSetter
         {
@@ -230,6 +257,8 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         //constructor for view model 
         public DashboardViewModel()
         {
+            //Bitmap bitmap = (Bitmap)Bitmap.FromFile(@"c:\dump\bulb.png", true);
+            //_bitmapSource = BitmapConversion.BitmapToBitmapSource(bitmap);
 
             sessionData = new SessionData();
             //initialising ParticipantsList 
@@ -262,6 +291,10 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             //TotalParticipantsCountSetter = 1;
             SessionModeSetter = "LabMode";
             SessionScoreSetter = 0;
+            //ReceivedImage = "./Assets/FillTool.png";
+            //Bitmap image = new Bitmap("./Assets/FillTool.png");
+            //ReceivedImage = image; 
+
 
             clientSessionManager = SessionManagerFactory.GetClientSessionManager();
             //we also have to subscribe to the IClientSessionNotifications if any session data changes 
@@ -297,6 +330,18 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
         }
 
+
+        public static class BitmapConversion
+        {
+            public static BitmapSource BitmapToBitmapSource(Bitmap source)
+            {
+                return System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
+                              source.GetHbitmap(),
+                              IntPtr.Zero,
+                              Int32Rect.Empty,
+                              BitmapSizeOptions.FromEmptyOptions());
+            }
+        }
 
         public void SetLeaveButtonAccordingToUser()
         {
@@ -462,6 +507,37 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         }
 
 
+        //string DownloadImage(string url, string userEmail)
+        //{
+        //    string imageName = "";
+        //    int len_email = userEmail.Length;
+        //    for (int i = 0; i < len_email; i++)
+        //    {
+        //        if (userEmail[i] == '@')
+        //            break;
+        //        imageName += userEmail[i];
+        //    }
+
+        //    string dir = Environment.GetEnvironmentVariable("temp", EnvironmentVariableTarget.User);
+        //    string absolute_path = System.IO.Path.Combine(dir, imageName);
+        //    //if (File.Exists(absolute_path))
+        //    //{
+        //    //    var image = Image.FromFile(absolute_path);
+
+        //    //    image.Dispose(); // this removes all resources
+
+        //    //    //later...
+
+        //    //    File.Delete(absolute_path); //now works
+        //    //    //File.Delete(absolute_path);
+        //    //}
+        //    using (WebClient webClient = new())
+        //    {
+        //        webClient.DownloadFile(url, absolute_path);
+        //    }
+        //    return absolute_path;
+        //}
+
 
         //function to update the ParticipantsList of viewmodel 
         public void UpdateParticipantsList(List<UserData> users)
@@ -485,7 +561,9 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
                     //int currUserId = currUser.userID;
                     string currUserName = currUser.username + "  (Instructor)";
                     string currUserStatus = "Presenting";
-                    User newUser = new User(currUserId, currUserName, currUserStatus);
+                    //string currProfilePath = DownloadImage(currUser.userPhotoUrl, currUser.userEmail);
+                    string currProfilePath = currUser.userPhotoUrl;
+                    User newUser = new User(currUserId, currUserName, currUserStatus, currProfilePath);
                     Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
                     {
                         ParticipantsList.Add(newUser);
@@ -504,7 +582,11 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
                 }
                 string currUserName = currUser.username;
                 string currUserStatus = "Presenting";
-                User newUser = new User(currUserId, currUserName, currUserStatus);
+
+                //string currProfilePath = DownloadImage(currUser.userPhotoUrl, currUser.userEmail);
+                string currProfilePath = currUser.userPhotoUrl;
+                
+                User newUser = new User(currUserId, currUserName, currUserStatus, currProfilePath);
                 
 
                 Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE

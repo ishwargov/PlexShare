@@ -30,13 +30,13 @@ namespace PlexShareApp
         public DashboardPage()
         {
             InitializeComponent();
-
+            //this.DataContext = 
             //here i can initialise the dashboard view model to be able to use 
             //and to be able to utilise the functionality to update the vm whenever the refresh button is clicked for this purpose 
 
             this.DashboardViewModelInstance = new DashboardViewModel();
             this.DataContext = DashboardViewModelInstance;
-        }
+                    }
 
         //private void InitializeComponent()
         //{

@@ -44,6 +44,15 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
         //Dictionary to store the value of the username vs chat count
         Dictionary<string, int> userNameVsChatCount = new Dictionary<string, int>();
 
+
+        //it will store the recent entry time of the user 
+        Dictionary<string, DateTime> listOfCurrUserWithEntryTime = new Dictionary<string, DateTime>();
+
+
+        //this will store the time for which the user was present throughout the session 
+        Dictionary<string, int> eachUserMeetingDurationTime = new Dictionary<string, int>();
+
+
         //constructor for telemetry module 
         
         public Telemetry()
@@ -294,16 +303,41 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             }
             //checking for the left users 
             foreach (var currUser in eachUserEnterTimeInMeeting)
-            { 
+            {
                 if (newSession.users.Contains(currUser.Key) == false && eachUserExitTime.ContainsKey(currUser.Key) == false)
                     eachUserExitTime[currUser.Key] = currTime;
-            
+
             }
 
             //say everything went fine 
             return;
         }
 
+        //public void CalculateArrivalExitTimeOfUser(SessionData newSession, DateTime currTime)
+        //{
+        //    //using the for loop for this purpose 
+        //    foreach (var currUser in newSession.users)
+        //    {
+        //        //if new user comes 
+        //        if (listOfCurrUserWithEntryTime.ContainsKey(currUser.userEmail) == false)
+        //        {
+        //            //then we have to update the entry time in this
+        //            listOfCurrUserWithEntryTime[currUser.userEmail] = currTime;
+
+        //            //if there is no entry has been made in the duration dictionary then add this user with duration time 0 
+        //            if (eachUserMeetingDurationTime.ContainsKey(currUser.userEmail) == false)
+        //            {
+        //                eachUserMeetingDurationTime[currUser.userEmail] = 0;
+
+        //            }
+        //            else
+        //            { 
+        //                //if entry is already there then we do not need to do anything 
+        //            }
+        //        }
+        //    }
+
+        //}
 
 
 

@@ -43,8 +43,20 @@
                             <ColumnDefinition Width="1*"/>
                             <ColumnDefinition Width="1*"/>
                         </Grid.ColumnDefinitions>
-                        <Image Grid.Column="0"  Grid.RowSpan="2" Source="../Assets/profilepic1.PNG"
-                        Height="32"  HorizontalAlignment="Center" VerticalAlignment="Center" ></Image>
+                        <!--<Border CornerRadius="100,100,100,100" Grid.Column="0" BorderBrush="White" BorderThickness="8"  Grid.RowSpan="2">
+                            <Border.Background>
+                                <ImageBrush x:Name="profile_picture" ImageSource="{Binding UserProfilePicPath}" Stretch="UniformToFill"/>
+                            </Border.Background>
+                            
+                        </Border>-->
+
+                        <Ellipse Width="30" Height="30">
+                            <Ellipse.Fill>
+                                <ImageBrush ImageSource="{Binding UserProfilePicPath}" />
+                            </Ellipse.Fill>
+                        </Ellipse>
+                        <!--<Image Grid.Column="0"  Grid.RowSpan="2" Source="{Binding UserProfilePicPath}"
+                        Height="32"  HorizontalAlignment="Center" VerticalAlignment="Center" ></Image>-->
                         <Grid Grid.Column="1">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="1*"/>
