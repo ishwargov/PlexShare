@@ -21,7 +21,7 @@
         <!-- Create a stack panel which will contain the controls shown when the screen is being shared -->
         <StackPanel Name ="SharedScreen" Orientation="Vertical" Grid.Row="0" Visibility="Hidden">
 
-            <Image Source="Icons/main.jpeg" Height="300" Margin="0,100,0,20"/>
+            <Image Source="Icons/SharedScreenBackground.jpeg" Height="300" Margin="0,100,0,20"/>
 
             <TextBlock Text="You are being watched!" Foreground="IndianRed" 
                    FontSize="60" FontFamily="Comic Sans MS" TextWrapping="WrapWithOverflow" HorizontalAlignment="Center"/>
@@ -31,7 +31,7 @@
         <!-- Create a stack panel which will contain the controls shown when the screen is not being shared -->
         <StackPanel Name="NotSharedScreen" Orientation="Vertical" Grid.Row="0">
 
-            <Image gif:AnimationBehavior.SourceUri="Icons/notshared.webp" Name="Main" Height="400" Margin="0,100,0,20"/>
+            <Image gif:AnimationBehavior.SourceUri="Icons/NotSharedScreenBackground.webp" Name="Main" Height="400" Margin="0,100,0,20"/>
 
             <TextBlock Name="MainText" Text="You are not sharing your screen" Foreground="IndianRed" 
                    FontSize="60" FontFamily="Comic Sans MS" TextWrapping="WrapWithOverflow" HorizontalAlignment="Center"/>
@@ -46,7 +46,7 @@
                     Grid.Row="1" BorderThickness="0" VerticalAlignment="Top" Cursor="Hand">
 
                 <!-- Assign an icon to it -->
-                <Image Source = "\Icons\playbutton2_white.png" Width="60"/>
+                <Image Source = "\Icons\StartShare.png" Width="60"/>
                 <!-- Style the button -->
                 <Button.Resources>
                     <!-- When the button is active, it will have certain colour -->
@@ -80,7 +80,7 @@
                     Height="60" Width="60" VerticalAlignment="Top" Cursor="Hand">
 
                 <!-- Assign an icon to it -->
-                <Image Source = "\Icons\stopbutton.png" Height="27"/>
+                <Image Source = "\Icons\StopShare.png" Height="27"/>
                 <!-- Style the button -->
                 <Button.Resources>
                     <!-- When the button is active, it will have certain colour -->

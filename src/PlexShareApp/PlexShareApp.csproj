@@ -36,11 +36,13 @@
 		<None Remove="Assets\TextTool.png" />
 		<None Remove="Assets\UndoTool.png" />
 		<None Remove="Assets\ZIndexTool.png" />
+		<None Remove="Icons\.png" />
 	  <None Remove="Icons\924-100x100.jpg" />
 	  <None Remove="Icons\main.jpeg" />
 	  <None Remove="Icons\NextButton.png" />
-	  <None Remove="Icons\NextButton_white.png" />
+	  <None Remove="Icons\NoClient.gif" />
 	  <None Remove="Icons\notshared.webp" />
+	  <None Remove="Icons\NotSharedScreenBackground.webp" />
 	  <None Remove="Icons\PinButton.png" />
 	  <None Remove="Icons\PinButton_white.png" />
 	  <None Remove="Icons\playbutton.jpeg" />
@@ -52,6 +54,7 @@
 	  <None Remove="Icons\PreviousButton.png" />
 	  <None Remove="Icons\PreviousButton_white.png" />
 	  <None Remove="Icons\red_eyes.jpg" />
+	  <None Remove="Icons\SharedScreenBackground.jpeg" />
 	  <None Remove="Icons\StartShare.png" />
 	  <None Remove="Icons\stopbutton.png" />
 	  <None Remove="Icons\stopbutton_white.png" />
@@ -101,15 +104,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Resource Include="Icons\924-100x100.jpg" />
-		<Resource Include="Icons\NextButton_white.png" />
-		<Resource Include="Icons\notshared.webp" />
-		<Resource Include="Icons\main.jpeg" />
-		<Resource Include="Icons\PinButton_white.png" />
-		<Resource Include="Icons\PreviousButton_white.png" />
-		<Resource Include="Icons\red_eyes.jpg" />
-		<Resource Include="Icons\tenor.gif" />
-		<Resource Include="Icons\UnpinButton_white.png" />
+		<Resource Include="Icons\NextButton.png" />
+		<Resource Include="Icons\NoClient.gif" />
+		<Resource Include="Icons\NotSharedScreenBackground.webp" />
+		<Resource Include="Icons\PinButton.png" />
+		<Resource Include="Icons\PreviousButton.png" />
+		<Resource Include="Icons\SharedScreenBackground.jpeg" />
+		<Resource Include="Icons\StartShare.png" />
+		<Resource Include="Icons\StopShare.png" />
+		<Resource Include="Icons\UnpinButton.png" />
 		<Resource Include="Resources\497-4973038_profile-picture-circle-png-transparent-png.png" />
 		<Resource Include="Resources\AuthScreenImg.jpg" />
 		<Resource Include="Resources\GoogleSignIn.png" />

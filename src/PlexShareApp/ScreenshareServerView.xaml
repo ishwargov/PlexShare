@@ -41,7 +41,7 @@
                     </Style>
                 </Button.Resources>
                 <!-- Give an image to the button -->
-                <Image Source = "\Icons\PreviousButton_white.png" Height="15"/>
+                <Image Source = "\Icons\PreviousButton.png" Height="15"/>
             </Button>
             
             <!-- Create a Textblock to write the current page number-->
@@ -73,7 +73,7 @@
                     </Style>
                 </Button.Resources>
                 <!-- Give an image to the button -->
-                <Image Source = "\Icons\NextButton_white.png" Height="15"/>
+                <Image Source = "\Icons\NextButton.png" Height="15"/>
             </Button >
         </DockPanel >
 
@@ -81,7 +81,7 @@
         <StackPanel Orientation="Vertical" Grid.Row="0">
             
             <!-- Give an animated GIF -->
-            <Image gif:AnimationBehavior.SourceUri="Icons/tenor.gif" Height="300" VerticalAlignment="Center" 
+            <Image gif:AnimationBehavior.SourceUri="Icons/NoClient.gif" Height="300" VerticalAlignment="Center" 
                    HorizontalAlignment="Center" Margin="0,200,0,20"/>
 
             <!-- Create a textblock to write a msg -->
@@ -133,7 +133,7 @@
                                         ToolTip="Pin this user" Background="#3C4043" BorderThickness="0" Cursor="Hand">
                                     
                                     <!-- Assign an icon to it-->
-                                    <Image Source="Icons/PinButton_white.png" Width="18" Margin="0,3,0,0"/>
+                                    <Image Source="Icons/PinButton.png" Width="18" Margin="0,3,0,0"/>
                                     
                                     <!-- This button will be shown only when mouse is hovered over the tile -->
                                     <!-- And the tile should be in unpin state -->
@@ -168,7 +168,7 @@
                                         CommandParameter ="{Binding Id}">
                                     
                                     <!-- Assign an icon to the button -->
-                                    <Image Source="Icons/UnpinButton_white.png"/>
+                                    <Image Source="Icons/UnpinButton.png"/>
                                     <!-- This button which will be shown only on hovering over the tile-->
                                     <!-- The tile should be in pinned state-->
                                     <Button.Resources>
