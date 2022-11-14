@@ -363,19 +363,19 @@ namespace PlexShareTests.DashboardTests.UI
         [Fact]
         public void CalculateEngagementRate_Test()
         {
-            Dictionary<int, int> currUserIdVsChatCount = new Dictionary<int, int>();
-            currUserIdVsChatCount[1] = 10;
-            currUserIdVsChatCount[2] = 20;
-            currUserIdVsChatCount[4] = 30;
+            Dictionary<string, int> userNameVsChatCount = new Dictionary<string, int>();
+            userNameVsChatCount["Rupesh Kumar"] = 10;
+            userNameVsChatCount["Hrishi RAaaj"] = 10;
 
             DashboardViewModelForTest.TotalParticipantsCountSetter = 10;
+            DashboardViewModelForTest.MaxTotalParticipantsCountSetter = 20;
 
 
             //calling the function 
-            DashboardViewModelForTest.CalculateEngagementRate(currUserIdVsChatCount);
+            DashboardViewModelForTest.CalculateEngagementRate(userNameVsChatCount);
 
             //asserting the values 
-            Assert.Equal("30%", DashboardViewModelForTest.EngagementRateSetter);
+            Assert.Equal("10%", DashboardViewModelForTest.EngagementRateSetter);
 
 
             //say everything went fine 
