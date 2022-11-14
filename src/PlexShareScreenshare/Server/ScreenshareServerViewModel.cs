@@ -487,8 +487,11 @@ namespace PlexShareScreenshare.Server
                                         {
                                             lock (client)
                                             {
-                                                client.CurrentImage = image;
-                                                this.OnPropertyChanged(nameof(this.CurrentWindowClients));
+                                                if (image != null)
+                                                {
+                                                    client.CurrentImage = Utils.BitmapToBitmapImage(image);
+                                                    this.OnPropertyChanged(nameof(this.CurrentWindowClients));
+                                                }
                                             }
                                         }),
                                         client.GetFinalImage(token));

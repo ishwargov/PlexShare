@@ -11,6 +11,8 @@ using System.Drawing;
 using System.Text.Json;
 using System.Timers;
 
+using SSUtils = PlexShareScreenshare.Utils;
+
 namespace PlexShareTests.ScreenshareTests
 {
     /// <summary>
@@ -257,7 +259,13 @@ namespace PlexShareTests.ScreenshareTests
                     // End the task when cancellation is requested
                     token.ThrowIfCancellationRequested();
 
-                    client.CurrentImage = client.GetFinalImage(token);
+                    Bitmap? finalImage = client.GetFinalImage(token);
+
+                    if (finalImage != null)
+                    {
+                        client.CurrentImage = SSUtils.BitmapToBitmapImage(finalImage);
+                    }
+
                 }
             }));
 

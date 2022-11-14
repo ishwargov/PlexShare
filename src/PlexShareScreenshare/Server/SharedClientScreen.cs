@@ -11,6 +11,7 @@ using System.Drawing;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
+using System.Windows.Media.Imaging;
 
 // The Timer class object
 using Timer = System.Timers.Timer;
@@ -181,7 +182,7 @@ namespace PlexShareScreenshare.Server
         /// <summary>
         /// Gets the current screen image of the client being displayed.
         /// </summary>
-        public Bitmap? CurrentImage { get; set; }
+        public BitmapImage? CurrentImage { get; set; }
 
         /// <summary>
         /// Gets whether the client is marked as pinned or not.
