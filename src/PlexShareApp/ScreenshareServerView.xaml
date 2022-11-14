@@ -30,7 +30,7 @@
                         <Setter Property="CornerRadius" Value="50"/>
                         <Style.Triggers>
                             <!-- Collapse the button if the current page is 1 -->
-                            <DataTrigger Binding = "{Binding CurrentPage}" Value = "1">
+                            <DataTrigger Binding = "{Binding CurrentPage, Mode=OneWay}" Value = "1">
                                 <Setter Property = "Visibility" Value = "Collapsed" />
                             </DataTrigger>
                             <!-- Decrease the opacity when hovered on the button -->
@@ -47,9 +47,9 @@
             <!-- Create a Textblock to write the current page number-->
             <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent" 
                        Foreground="White" Margin="20,0,20,0" FontWeight="DemiBold" FontSize="14" >
-                <Run Text ="{Binding CurrentPage}"/>
+                <Run Text ="{Binding CurrentPage, Mode=OneWay}"/>
                 <Run Text=" of "/>
-                <Run Text="{Binding TotalPages}"/>
+                <Run Text="{Binding TotalPages, Mode=OneWay}"/>
             </TextBlock>
 
             <!-- Create a button for next page functionality -->
@@ -62,7 +62,7 @@
                         <Setter Property="CornerRadius" Value="50"/>
                         <Style.Triggers>
                             <!-- Collapse the button when on last page -->
-                            <DataTrigger Binding = "{Binding IsLastPage}" Value = "True">
+                            <DataTrigger Binding = "{Binding IsLastPage, Mode=OneWay}" Value = "True">
                                 <Setter Property = "Visibility" Value = "Collapsed" />
                             </DataTrigger>
                             <!-- Decrease the opacity when hovered on the button -->
@@ -93,7 +93,7 @@
                 <Style TargetType="{x:Type StackPanel}">
                     <Setter Property="Visibility" Value="Hidden"/>
                     <Style.Triggers>
-                        <DataTrigger Binding = "{Binding CurrentWindowClients.Count}" Value = "0">
+                        <DataTrigger Binding = "{Binding CurrentWindowClients.Count, Mode=OneWay}" Value = "0">
                             <Setter Property = "Visibility" Value = "Visible" />
                         </DataTrigger>
                     </Style.Triggers>
@@ -106,12 +106,12 @@
         <StackPanel Orientation="Vertical" Grid.Row="0">
 
             <!-- Create an ItemsControl which will show all the images in the client list -->
-            <ItemsControl x:Name ="Items" ItemsSource="{Binding CurrentWindowClients}">
+            <ItemsControl x:Name ="Items" ItemsSource="{Binding CurrentWindowClients, Mode=OneWay}">
 
                 <!-- This panel will be used to hold the items -->
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <UniformGrid Rows="{Binding CurrentPageRows}" Columns="{Binding CurrentPageColumns}" />
+                        <UniformGrid Rows="{Binding CurrentPageRows, Mode=OneWay}" Columns="{Binding CurrentPageColumns, Mode=OneWay}" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
 
@@ -121,15 +121,15 @@
                         <StackPanel Orientation="Vertical">
                             <!-- Create a grid to hold the Image, caption, pin and unpin buttons -->
                             <Grid HorizontalAlignment="Center" VerticalAlignment="Center"
-                                  Width="{Binding TileWidth}" Height="{Binding TileHeight}">
+                                  Width="{Binding TileWidth, Mode=OneWay}" Height="{Binding TileHeight, Mode=OneWay}">
 
                                 <!-- Create a border and put the image inside it -->
                                 <Border BorderThickness="2" CornerRadius="5" Background="#3C4043" Margin="0,10,0,0">
-                                    <Image Source="{Binding CurrentImage}" Stretch="Uniform"/>
+                                    <Image Source="{Binding CurrentImage, Mode=OneWay}" Stretch="Uniform"/>
                                 </Border>
 
                                 <!-- Create a Pin Button -->
-                                <Button CommandParameter="{Binding Id}" Width="30" Height="30" Opacity ="0.5" Click="OnPinButtonClicked" 
+                                <Button CommandParameter="{Binding Id, Mode=OneWay}" Width="30" Height="30" Opacity ="0.5" Click="OnPinButtonClicked" 
                                         ToolTip="Pin this user" Background="#3C4043" BorderThickness="0" Cursor="Hand">
                                     
                                     <!-- Assign an icon to it-->
@@ -144,7 +144,7 @@
                                                 <MultiDataTrigger>
                                                     <MultiDataTrigger.Conditions>
                                                         <Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Grid}},Path=IsMouseOver}" Value="True" />
-                                                        <Condition Binding="{Binding Pinned}" Value="False" />
+                                                        <Condition Binding="{Binding Pinned,Mode=OneWay}" Value="False" />
                                                     </MultiDataTrigger.Conditions>
                                                     <Setter Property="Visibility" Value="Visible" />
                                                 </MultiDataTrigger>
@@ -165,7 +165,7 @@
                                 <!-- Create an unpin button -->
                                 <Button Width="30" Height="30" Opacity ="0.5" HorizontalAlignment="Center" Cursor="Hand"
                                         Click="OnUnpinButtonClicked" ToolTip="Unpin this user" Background="#3C4043" BorderThickness="0" 
-                                        CommandParameter ="{Binding Id}">
+                                        CommandParameter ="{Binding Id, Mode=OneWay}">
                                     
                                     <!-- Assign an icon to the button -->
                                     <Image Source="Icons/UnpinButton.png"/>
@@ -178,7 +178,7 @@
                                                 <MultiDataTrigger>
                                                     <MultiDataTrigger.Conditions>
                                                         <Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Grid}},Path=IsMouseOver}" Value="True" />
-                                                        <Condition Binding="{Binding Pinned}" Value="True" />
+                                                        <Condition Binding="{Binding Pinned,Mode=OneWay}" Value="True" />
                                                     </MultiDataTrigger.Conditions>
                                                     <Setter Property="Visibility" Value="Visible" />
                                                 </MultiDataTrigger>
@@ -198,7 +198,7 @@
                                 </Button>
 
                                 <!-- Create a textblock to show the name of the client on the bottom of the tile -->
-                                <TextBlock Text="{Binding Name}" Foreground="AntiqueWhite" FontWeight="SemiBold" Background="Transparent" 
+                                <TextBlock Text="{Binding Name, Mode=OneWay}" Foreground="AntiqueWhite" FontWeight="SemiBold" Background="Transparent" 
                                            VerticalAlignment="Bottom" Padding="11,0,0,7" FontSize="11.5"/>
 
                             <!-- Close all the open components -->

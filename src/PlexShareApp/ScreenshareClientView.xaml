@@ -54,7 +54,7 @@
                     <Style TargetType="Button">
                         <Setter Property="Background" Value="ForestGreen"/>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding SharingScreen}" Value="True">
+                            <DataTrigger Binding="{Binding SharingScreen, Mode=OneWay}" Value="True">
                                 <Setter Property="IsHitTestVisible" Value="False" />
                                 <Setter Property="Background" Value="LightSlateGray"/>
                             </DataTrigger>
@@ -97,7 +97,7 @@
                     <Style TargetType="Button">
                         <Setter Property="Background" Value="Red"/>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding SharingScreen}" Value="False">
+                            <DataTrigger Binding="{Binding SharingScreen, Mode=OneWay}" Value="False">
                                 <Setter Property="IsHitTestVisible" Value="False" />
                                 <Setter Property="Background" Value="LightSlateGray"/>
                             </DataTrigger>
