@@ -206,7 +206,7 @@ namespace PlexShareWhiteboard.Server
                 Operation.NewUser,
                 deserializedObject.UserID
             );
-            
+
             _communicator.Broadcast(wBServerShape, deserializedObject.UserID);
         }
     }

@@ -32,7 +32,7 @@ namespace PlexShareWhiteboard
         public void OnDataReceived(string serializedData)
         {
             Serializer serializer = new Serializer();
-            ServerSide serverSide = new ServerSide();
+            ServerSide serverSide = ServerSide.Instance;
             ServerCommunicator serverCommunicator = ServerCommunicator.Instance;
             if (IsServer())
             {
@@ -86,9 +86,7 @@ namespace PlexShareWhiteboard
                 try
                 {
                     var deserializedShape = serializer.DeserializeWBServerShape(serializedData);
-                    List<ShapeItem> shapeItems = serializer.ConvertToShapeItem(
-                        deserializedShape.ShapeItems
-                    );
+                    List<ShapeItem> shapeItems = serializer.ConvertToShapeItem(deserializedShape.ShapeItems);
                     switch (deserializedShape.Op)
                     {
                         case Operation.RestoreSnapshot:
