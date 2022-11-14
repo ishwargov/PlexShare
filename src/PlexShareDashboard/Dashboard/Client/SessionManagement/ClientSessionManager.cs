@@ -35,7 +35,7 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
     {
         private readonly List<IClientSessionNotifications> _clients;
         private readonly ICommunicator _communicator;
-          private readonly IContentClient _contentClient;
+        private readonly IContentClient _contentClient;
         private readonly IDashboardSerializer _serializer;
         // private readonly IClientBoardStateManager clientBoardStateManager;
         private readonly string moduleIdentifier;
@@ -322,7 +322,7 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
                     //   _screenShareClient.SetUser(_user.userID.ToString(), _user.username);
 
 
-                    //  ContentClientFactory.SetUser(_user.userID);
+                    ContentClientFactory.SetUser(_user.userID);
                     // Content's user ID set. 
                 }
             }
