@@ -25,6 +25,11 @@ namespace PlexShareWhiteboard
             }
             if(flag == 0)
                 ShapeItems.Add(newShape);
+            else
+            {
+                ShapeItems.RemoveAt(i); 
+                ShapeItems.Add(newShape);
+            }
         }
 
         public void ModifyIncomingShape(ShapeItem newShape)
