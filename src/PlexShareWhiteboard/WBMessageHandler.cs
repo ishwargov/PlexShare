@@ -117,10 +117,7 @@ namespace PlexShareWhiteboard
                                              DisplayMessage(deserializedShape.UserID, deserializedShape.SnapshotNumber); //message that board number is saved
                                              break;
                                          case Operation.Creation:
-
                                              CreateIncomingShape(shapeItems[0]);
-
-
                                              break;
                                          case Operation.Deletion:
                                              DeleteIncomingShape(shapeItems[0]);
