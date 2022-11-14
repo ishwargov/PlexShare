@@ -8,9 +8,11 @@ namespace PlexShareNetwork.Communication.Test
 {
     public class CommunicatorTests
     {
+        // variables to be used in tests
         private static readonly string _module = "Test Module";
         private static readonly bool _modulePriority = true;
         private static readonly string _clientId = "Client Id";
+        private static readonly int _multipleClientsCount = 10;
 
         /// <summary>
         /// Creates server and "numClients" number of clients and
@@ -49,7 +51,7 @@ namespace PlexShareNetwork.Communication.Test
         [Fact]
         public void ServerAndMultipleClientsStartAndStopTest()
         {
-            ServerAndClientsStartAndStopTest(10);
+            ServerAndClientsStartAndStopTest(_multipleClientsCount);
         }
 
         /// <summary>
@@ -62,14 +64,16 @@ namespace PlexShareNetwork.Communication.Test
             // start server and clients
             CommunicatorServer communicatorServer = new();
             CommunicatorClient[] communicatorsClient = 
-                NetworkTestGlobals.GetCommunicatorsClient(10);
+                NetworkTestGlobals.GetCommunicatorsClient(
+                    _multipleClientsCount);
             NetworkTestGlobals.StartServerAndClients(
                 communicatorServer, communicatorsClient, _clientId);
 
             // create notification handlers
             TestNotificationHandler notificationHandlerServer = new();
             TestNotificationHandler[] notificationHandlersClient = 
-                NetworkTestGlobals.GetTestNotificationHandlers(10);
+                NetworkTestGlobals.GetTestNotificationHandlers(
+                    _multipleClientsCount);
             
             // subscribe on client and server
             NetworkTestGlobals.SubscribeOnServerAndClient(
@@ -101,7 +105,8 @@ namespace PlexShareNetwork.Communication.Test
             // create notification handlers
             TestNotificationHandler notificationHandlerServer = new();
             TestNotificationHandler[] notificationHandlersClient = 
-                NetworkTestGlobals.GetTestNotificationHandlers(10);
+                NetworkTestGlobals.GetTestNotificationHandlers(
+                    _multipleClientsCount);
 
             // subscribe on client and server
             NetworkTestGlobals.SubscribeOnServerAndClient(
@@ -146,7 +151,7 @@ namespace PlexShareNetwork.Communication.Test
         [Fact]
         public void MultipleClientsSendDataToServerTest()
         {
-            ClientsSendDataToServerTest(10);
+            ClientsSendDataToServerTest(_multipleClientsCount);
         }
 
         /// <summary>
@@ -241,7 +246,7 @@ namespace PlexShareNetwork.Communication.Test
         [Fact]
         public void ServerUnicastDataToMultipleClientsTest()
         {
-            ServerSendDataToClientsTest(10, false);
+            ServerSendDataToClientsTest(_multipleClientsCount, false);
         }
 
         /// <summary>
@@ -251,7 +256,7 @@ namespace PlexShareNetwork.Communication.Test
         [Fact]
         public void ServerBroadcastDataToClientsTest()
         {
-            ServerSendDataToClientsTest(10, true);
+            ServerSendDataToClientsTest(_multipleClientsCount, true);
         }
 
         [Fact]
@@ -259,15 +264,17 @@ namespace PlexShareNetwork.Communication.Test
         {
             // start server and clients
             CommunicatorServer communicatorServer = new();
-            CommunicatorClient[] communicatorsClient =
-                NetworkTestGlobals.GetCommunicatorsClient(10);
+            CommunicatorClient[] communicatorsClient = 
+                NetworkTestGlobals.GetCommunicatorsClient(
+                    _multipleClientsCount);
             NetworkTestGlobals.StartServerAndClients(
                 communicatorServer, communicatorsClient, _clientId);
 
             // create notification handlers
             TestNotificationHandler notificationHandlerServer = new();
             TestNotificationHandler[] notificationHandlersClient =
-                NetworkTestGlobals.GetTestNotificationHandlers(10);
+                NetworkTestGlobals.GetTestNotificationHandlers(
+                    _multipleClientsCount);
 
             // subscribe on client and server
             NetworkTestGlobals.SubscribeOnServerAndClient(

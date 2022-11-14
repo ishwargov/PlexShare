@@ -101,7 +101,7 @@ namespace PlexShareNetwork.Sockets
                 "SocketListener.ReceiveCallback() function called.");
             try
             {
-                // get the count of received bytes 
+                // get the count of received bytes
                 int bytesCount = _socket.EndReceive(ar);
 
                 // if count of received bytes is greater than 0 and
@@ -123,6 +123,8 @@ namespace PlexShareNetwork.Sockets
                     // remaining string to it
                     _receivedString.Clear();
                     _receivedString.Append(remainingString);
+
+                    // continue the receive
                     _socket.BeginReceive(buffer, 0, bufferSize, 0,
                         ReceiveCallback, null);
                 }
