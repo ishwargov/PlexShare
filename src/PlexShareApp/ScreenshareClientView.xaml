@@ -46,7 +46,7 @@
                     Grid.Row="1" BorderThickness="0" VerticalAlignment="Top" Cursor="Hand">
 
                 <!-- Assign an icon to it -->
-                <Image Source = "\Icons\StartShare.png" Width="60"/>
+                <Image Source = "\Icons\StartShare.png" Width="63"/>
                 <!-- Style the button -->
                 <Button.Resources>
                     <!-- When the button is active, it will have certain colour -->
