@@ -75,60 +75,26 @@ namespace PlexShareWhiteboard
                                              //sugu
                                              //1. get element ready 
                                              // shapeItems[0]
-                                             sugu = new ShapeItem
-                                             {
-                                                 Geometry = shapeItems[0].Geometry.Clone(),
-                                                 GeometryString = shapeItems[0].GeometryString,
-                                                 Start = shapeItems[0].Start,
-                                                 End = shapeItems[0].End,
-                                                 Fill = shapeItems[0].Fill,
-                                                 Stroke = shapeItems[0].Stroke,
-                                                 ZIndex = shapeItems[0].ZIndex,
-                                                 AnchorPoint = shapeItems[0].AnchorPoint,
-                                                 Id = shapeItems[0].Id,
-                                                 StrokeThickness = shapeItems[0].StrokeThickness,
-                                             };
-                                             //2. store it locally here
-                                             //3. xaml.cs can call t
-                                             //OnPropertyChanged("sugu1");
-                                             ShapeItems.Add(sugu);
-
-
-                                             //Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
+                                             //sugu = new ShapeItem
                                              //{
-                                             //    ShapeItems.Add(shapeItems[0]);
-                                             //});
+                                             //    Geometry = shapeItems[0].Geometry.Clone(),
+                                             //    GeometryString = shapeItems[0].GeometryString,
+                                             //    Start = shapeItems[0].Start,
+                                             //    End = shapeItems[0].End,
+                                             //    Fill = shapeItems[0].Fill,
+                                             //    Stroke = shapeItems[0].Stroke,
+                                             //    ZIndex = shapeItems[0].ZIndex,
+                                             //    AnchorPoint = shapeItems[0].AnchorPoint,
+                                             //    Id = shapeItems[0].Id,
+                                             //    StrokeThickness = shapeItems[0].StrokeThickness,
+                                             //};
+                                             ////2. store it locally here
+                                             ////3. xaml.cs can call t
+                                             ////OnPropertyChanged("sugu1");
+                                             //ShapeItems.Add(sugu);
 
-
-                                             //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal,
-                                             //    new Action<List<ShapeItem>>((shapeItem) =>
-                                             //        ShapeItems.Add(shapeItem[0])),
-                                             //    shapeItems
-                                             //    );
-
-                                             //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Clear()));
-                                             //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Add(shapeItems[0])));
-
-                                             // sugu
-                                             //_ = this.ApplicationMainThreadDispatcher.BeginInvoke(
-                                             //      DispatcherPriority.Normal,
-                                             //      new Action<ObservableCollection<ShapeItem>>((ServerUpdate) =>
-                                             //      {
-                                             //          lock (this)
-                                             //          {
-
-                                             //              //processServerUpdateBatch(ServerUpdate);
-
-                                             //              ShapeItems.Add(ServerUpdate[0]);
-                                             //          }
-                                             //      }
-
-                                             //  ),
-                                             //  shapeItems);
-
-                                             //Application.Current.Dispatcher.BeginInvoke(new Action(() => this.ShapeItems.Add(shapeItems[0])));
-                                             //CreateIncomingShape(shapeItems[0]);
-                                             //serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
+                                             CreateIncomingShape(shapeItems[0]);
+                                             serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
                                              break;
                                          case Operation.Deletion:
                                              DeleteIncomingShape(shapeItems[0]);
@@ -188,58 +154,26 @@ namespace PlexShareWhiteboard
 
                                              //sugu
 
-                                             sugu = new ShapeItem
-                                             {
-                                                 Geometry = shapeItems[0].Geometry.Clone(),
-                                                 GeometryString = shapeItems[0].GeometryString,
-                                                 Start = shapeItems[0].Start,
-                                                 End = shapeItems[0].End,
-                                                 Fill = shapeItems[0].Fill,
-                                                 Stroke = shapeItems[0].Stroke,
-                                                 ZIndex = shapeItems[0].ZIndex,
-                                                 AnchorPoint = shapeItems[0].AnchorPoint,
-                                                 Id = shapeItems[0].Id,
-                                                 StrokeThickness = shapeItems[0].StrokeThickness,
-                                             };
-                                             //2. store it locally here
-                                             //3. xaml.cs can call t
-                                             //OnPropertyChanged("sugu1");
-                                             ShapeItems.Add(sugu);
-
-                                             //// rupesh
-                                             //Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
+                                             //sugu = new ShapeItem
                                              //{
-                                             //    ShapeItems.Add(shapeItems[0]);
-                                             //});
+                                             //    Geometry = shapeItems[0].Geometry.Clone(),
+                                             //    GeometryString = shapeItems[0].GeometryString,
+                                             //    Start = shapeItems[0].Start,
+                                             //    End = shapeItems[0].End,
+                                             //    Fill = shapeItems[0].Fill,
+                                             //    Stroke = shapeItems[0].Stroke,
+                                             //    ZIndex = shapeItems[0].ZIndex,
+                                             //    AnchorPoint = shapeItems[0].AnchorPoint,
+                                             //    Id = shapeItems[0].Id,
+                                             //    StrokeThickness = shapeItems[0].StrokeThickness,
+                                             //};
+                                             ////2. store it locally here
+                                             ////3. xaml.cs can call t
+                                             ////OnPropertyChanged("sugu1");
+                                             //ShapeItems.Add(sugu);
 
+                                             CreateIncomingShape(shapeItems[0]);
 
-                                             //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Clear()));
-                                             //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, 
-                                             //    new Action<List<ShapeItem>>((shapeItem) =>
-                                             //        ShapeItems.Add(shapeItem[0])),
-                                             //    shapeItems
-                                             //    );
-                                             //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Add(shapeItems[0])));
-                                             //Application.Current.Dispatcher.BeginInvoke(new Action(() => this.ShapeItems.Add(shapeItems[0])));
-                                             //CreateIncomingShape(shapeItems[0]);
-
-
-                                             // sugu
-                                             //_ = this.ApplicationMainThreadDispatcher.BeginInvoke(
-                                             //      DispatcherPriority.Normal,
-                                             //      new Action<ObservableCollection<ShapeItem>>((ServerUpdate) =>
-                                             //      {
-                                             //          lock (this)
-                                             //          {
-
-                                             //              //processServerUpdateBatch(ServerUpdate);
-                                             //               // added  
-                                             //              ShapeItems.Add(ServerUpdate[0]);
-                                             //          }
-                                             //      }
-
-                                             //  ),
-                                             //  shapeItems);
 
                                              break;
                                          case Operation.Deletion:
