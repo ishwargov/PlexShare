@@ -186,7 +186,7 @@
             <Grid Margin="0,55,0,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="191*"/>
-                    <ColumnDefinition Width="59*"/>
+                    <ColumnDefinition Width="69*"/>
                 </Grid.ColumnDefinitions>
                 <!--Frame Definitions-->
                 <!--Main Frame-->
