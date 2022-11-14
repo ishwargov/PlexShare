@@ -27,6 +27,7 @@ namespace PlexShareWhiteboard.Client
         private static Serializer serializer;
         private static ICommunicator communicator;
         private static readonly string moduleIdentifier = "Whiteboard";
+        private WhiteBoardViewModel _vm;
         public static ClientCommunicator Instance
         {
             get
@@ -42,13 +43,11 @@ namespace PlexShareWhiteboard.Client
                 return instance;
             }
         }
-
-        public void SendMessageToServer(string message, string ipAddress)
-        {
-            throw new NotImplementedException();
-        }
-
-
+        //public void SetVMRef(WhiteBoardViewModel vm)
+        //{
+        //    _vm = vm;
+        //    communicator.Subscribe(moduleIdentifier, _vm);
+        //}
         public void SendToServer(WBServerShape clientUpdate)
         {
             try

@@ -19,8 +19,9 @@ using System.ComponentModel;
 
 namespace PlexShareWhiteboard
 {
-    public partial class WhiteBoardViewModel: INotifyPropertyChanged
+    public partial class WhiteBoardViewModel : INotifyPropertyChanged
     {
+        //public AsyncObservableCollection<ShapeItem> ShapeItems { get; set; }
         public ObservableCollection<ShapeItem> ShapeItems { get; set; }
         public SelectObject select = new();
         List<ShapeItem> highlightShapes;
@@ -47,17 +48,21 @@ namespace PlexShareWhiteboard
         {
             // this will become client and server 
             isServer = true;
-            
+
+            //ShapeItems = new AsyncObservableCollection<ShapeItem>();
             ShapeItems = new ObservableCollection<ShapeItem>();
             highlightShapes = new List<ShapeItem>();
 
         }
         private static WhiteBoardViewModel instance;
+
         public event PropertyChangedEventHandler? PropertyChanged;
+
         public void OnPropertyChanged(string property)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
+
         public static WhiteBoardViewModel Instance
         {
             get
@@ -88,6 +93,7 @@ namespace PlexShareWhiteboard
                 machine = ClientSide.Instance;
                 machine.SetUserId(userId);
             }
+            //machine.SetVMRef(this);
 
         }
         public void IncrementId()
