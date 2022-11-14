@@ -50,7 +50,7 @@ namespace PlexShareWhiteboard.Server
             if (newShape != null)
             {
             Debug.WriteLine("Inisde ServerCommunicator.cs broadcast, " + newShape.Id);
-            Debug.WriteLine("Inisde ServerCommunicator.cs broadcast, " + newShape.Geometry.GetType().Name);
+            //Debug.WriteLine("Inisde ServerCommunicator.cs broadcast, " + newShape.Geometry.GetType().Name);
             }
             List<ShapeItem> newShapeList = new List<ShapeItem>();
             newShapeList.Add(newShape);

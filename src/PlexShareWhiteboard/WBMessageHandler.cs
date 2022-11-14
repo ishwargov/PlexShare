@@ -80,7 +80,7 @@ namespace PlexShareWhiteboard
                                              serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
                                              break;
                                          case Operation.NewUser:
-                                             LoadBoard(shapeItems);
+                                             LoadBoard(shapeItems,true);
                                              serverSide.NewUserHandler(deserializedObject);
                                              break;
                                          default:
@@ -132,7 +132,7 @@ namespace PlexShareWhiteboard
                                              redoStack.Clear();
                                              break;
                                          case Operation.NewUser:
-                                             LoadBoard(shapeItems);
+                                             LoadBoard(shapeItems,true);
                                              break;
                                      }
                                  }
@@ -154,9 +154,10 @@ namespace PlexShareWhiteboard
             throw new NotImplementedException();
         }
 
-        private void LoadBoard(List<ShapeItem> shapeItems)
+        private void LoadBoard(List<ShapeItem> shapeItems, bool isNewUser = false)
         {
-            ClearAllShapes();
+            if(!isNewUser)
+                ClearAllShapes();
             if(shapeItems != null)
             {
                 foreach (ShapeItem shapeItem in shapeItems)
