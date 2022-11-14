@@ -71,14 +71,23 @@ namespace PlexShareWhiteboard.Client
         /// <param name="op">Operation to be sent to Server</param>
         public void OnShapeReceived(ShapeItem boardShape, Operation op)
         {
-            
-            List<ShapeItem> newShapes = new List<ShapeItem>();
-            newShapes.Add(boardShape);
+            if (boardShape == null)
+            {
+                List<ShapeItem> newShapes = new List<ShapeItem>();
+                newShapes.Add(boardShape);
+                var newSerializedShapes = _serializer.ConvertToSerializableShapeItem(newShapes);
+                WBServerShape wbShape = new WBServerShape(newSerializedShapes, op);
+                _communicator.SendToServer(wbShape);
+            }
+            else
+            {
+                List<ShapeItem> newShapes = new List<ShapeItem>();
+                newShapes.Add(boardShape);
 
-            var newSerializedShapes = _serializer.ConvertToSerializableShapeItem(newShapes);
-            WBServerShape wbShape = new WBServerShape(newSerializedShapes, op, boardShape.User);
-            _communicator.SendToServer(wbShape);
-
+                var newSerializedShapes = _serializer.ConvertToSerializableShapeItem(newShapes);
+                WBServerShape wbShape = new WBServerShape(newSerializedShapes, op, boardShape.User);
+                _communicator.SendToServer(wbShape);
+            }   
         }
 
         public void NewUserHandler()
