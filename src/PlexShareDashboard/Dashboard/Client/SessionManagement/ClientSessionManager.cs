@@ -181,7 +181,7 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
                 var connectionStatus = _communicator.Start(ipAddress, port.ToString());
 
                 // if the IP address and/or the port number are incorrect
-                if (connectionStatus == "0")
+                if (connectionStatus == "failure")
                 {
                     return false;
                 }
