@@ -36,6 +36,7 @@ namespace PlexShareWhiteboard.Client
                     instance = new ClientCommunicator();
                     serializer = new Serializer();
                     communicator = CommunicationFactory.GetCommunicator();
+                    communicator.Subscribe(moduleIdentifier, WhiteBoardViewModel.Instance);
                 }
 
                 return instance;
