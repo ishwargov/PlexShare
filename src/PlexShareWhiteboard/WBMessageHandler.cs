@@ -171,8 +171,8 @@ namespace PlexShareWhiteboard
                                              ////3. xaml.cs can call t
                                              ////OnPropertyChanged("sugu1");
                                              //ShapeItems.Add(sugu);
-
-                                             CreateIncomingShape(shapeItems[0]);
+                                             ShapeItem shapeItem = shapeItems[0].DeepClone();
+                                             CreateIncomingShape(shapeItem);
 
 
                                              break;
