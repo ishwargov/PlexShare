@@ -114,6 +114,10 @@ namespace PlexShareScreenshare.Server
             _disposed = false;
             this.CurrentImage = null;
 
+            // Initialize rest of the properties
+            this.TileHeight = 0;
+            this.TileWidth = 0;
+
             try
             {
                 if (!isDebugging)
@@ -188,6 +192,16 @@ namespace PlexShareScreenshare.Server
         /// Gets whether the client is marked as pinned or not.
         /// </summary>
         public bool Pinned { get; set; }
+
+        /// <summary>
+        /// The height of the tile of the client screen.
+        /// </summary>
+        public int TileHeight { get; set; }
+
+        /// <summary>
+        /// The width of the tile of the client screen.
+        /// </summary>
+        public int TileWidth { get; set; }
 
         /// <summary>
         /// Pops and returns the received Frame at the beginning of the received image queue.

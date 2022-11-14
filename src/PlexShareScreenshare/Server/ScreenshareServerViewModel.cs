@@ -114,7 +114,6 @@ namespace PlexShareScreenshare.Server
             this.CurrentWindowClients = new ObservableCollection<SharedClientScreen>();
 
             (this.CurrentPageRows, this.CurrentPageColumns) = NumRowsColumns[this.CurrentPage];
-            this.CurrentPageResolution = Resolution[this.CurrentPage];
 
             Trace.WriteLine(Utils.GetDebugMessage("Successfully created an instance for the view model", withTimeStamp: true));
         }
@@ -231,12 +230,6 @@ namespace PlexShareScreenshare.Server
         public int CurrentPageColumns { get; private set; }
 
         /// <summary>
-        /// Gets the current resolution of the screen image in each
-        /// grid cell displayed on the screen.
-        /// </summary>
-        public (int, int) CurrentPageResolution { get; private set; }
-
-        /// <summary>
         /// Gets a singleton instance of "ScreenshareServerViewModel" class.
         /// </summary>
         /// <returns>
@@ -322,7 +315,7 @@ namespace PlexShareScreenshare.Server
             // Update all the fields and notify the UX
             _ = ApplicationMainThreadDispatcher.BeginInvoke(
                         DispatcherPriority.Normal,
-                        new Action<List<SharedClientScreen>, int, int, (int, int)>((newCurrentWindowClients, numNewRows, numNewCols, newRes) =>
+                        new Action<List<SharedClientScreen>, int, int, (int Height, int Width)>((newCurrentWindowClients, numNewRows, numNewCols, newRes) =>
                         {
                             lock (this)
                             {
@@ -332,17 +325,17 @@ namespace PlexShareScreenshare.Server
                                 this.CurrentWindowClients.Clear();
                                 foreach (SharedClientScreen screen in newCurrentWindowClients)
                                 {
+                                    screen.TileHeight = newRes.Height;
+                                    screen.TileWidth = newRes.Width;
                                     this.CurrentWindowClients.Add(screen);
                                 }
 
                                 this.CurrentPageRows = numNewRows;
                                 this.CurrentPageColumns = numNewCols;
-                                this.CurrentPageResolution = newRes;
 
                                 this.OnPropertyChanged(nameof(this.CurrentWindowClients));
                                 this.OnPropertyChanged(nameof(this.CurrentPageRows));
                                 this.OnPropertyChanged(nameof(this.CurrentPageColumns));
-                                this.OnPropertyChanged(nameof(this.CurrentPageResolution));
                             }
                         }),
                         newWindowClients, newNumRows, newNumCols, newResolution);
