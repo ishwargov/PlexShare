@@ -76,7 +76,9 @@ namespace PlexShareWhiteboard
                                              serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
                                              break;
                                          case Operation.Clear:
-                                             ClearAllShapes();
+                                             ShapeItems.Clear();
+                                             undoStack.Clear();
+                                             redoStack.Clear();
                                              serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
                                              break;
                                          case Operation.NewUser:
