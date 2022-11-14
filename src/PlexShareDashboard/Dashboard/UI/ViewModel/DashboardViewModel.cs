@@ -61,6 +61,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
         //defining the observable collection to store the username 
         public ObservableCollection<string> UserNameList { get; set; }
+
         //public 
         
 
@@ -75,6 +76,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         private int TotalMessageCount { get; set; }
 
         private int TotalParticipantsCount { get; set; }
+        private int MaxTotalParticipantsCount { get; set; }
 
         private string EngagementRate { get; set; }
 
@@ -126,6 +128,19 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
                 {
                     TotalParticipantsCount = value;
                     OnPropertyChanged("TotalParticipantsCountSetter");
+                }
+            }
+        }
+
+        public int MaxTotalParticipantsCountSetter
+        {
+            get { return MaxTotalParticipantsCount; }
+            set
+            {
+                if (MaxTotalParticipantsCount != value)
+                {
+                    MaxTotalParticipantsCount = value;
+                    OnPropertyChanged("MaxTotalParticipantsCountSetter");
                 }
             }
         }
@@ -286,6 +301,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             NonAttentiveUsersSetter = 0;
 
             TotalParticipantsCountSetter = 1;
+            MaxTotalParticipantsCountSetter = 1;
             TotalMessageCountSetter = 0;
             EngagementRateSetter = "0";
             //TotalParticipantsCountSetter = 1;
@@ -720,6 +736,14 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             return;
         }
 
+        public void SetMaxTotalParticipantsCount()
+        {
+            if (TotalParticipantsCountSetter > MaxTotalParticipantsCountSetter)
+            {
+                MaxTotalParticipantsCountSetter = TotalParticipantsCountSetter;
+            }
+        }
+
 
 
 
@@ -740,6 +764,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
                 UpdateButtonContent(currUser);
                 //UpdateButtonContent(currUser);
                 TotalParticipantsCountSetter = ParticipantsList.Count;
+                SetMaxTotalParticipantsCount();
 
             }
 
@@ -762,6 +787,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
                 UpdateButtonContent(currUser);
                 //UpdateButtonContent(currUser);
                 TotalParticipantsCountSetter = ParticipantsList.Count;
+                SetMaxTotalParticipantsCount();
 
             }
 
@@ -877,7 +903,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         {
             int activeMembers = currChatCountForEachUser.Count;
 
-            float EngagementRate = (float)(activeMembers*100) / TotalParticipantsCountSetter;
+            float EngagementRate = (float)(activeMembers*100) / MaxTotalParticipantsCountSetter;
             EngagementRateSetter = EngagementRate.ToString("0") + "%";
 
 
