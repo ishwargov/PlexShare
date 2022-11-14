@@ -15,7 +15,7 @@
         <Grid.ColumnDefinitions>
             <!--this column to show the participants list currently in the meeting-->
             <!--<ColumnDefinition Width="3*"/>-->
-            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="2.2*"/>
             <!--this column is to show the graphs or the main content of the dahsboard view -->
             <!--<ColumnDefinition Width="10*"/>-->
             <ColumnDefinition Width="10*"/>
@@ -60,10 +60,10 @@
                         <Grid Grid.Column="1">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="1*"/>
-                                <RowDefinition Height="1*"/>
+                                <!--<RowDefinition Height="1*"/>-->
                             </Grid.RowDefinitions>
                             <!--<TextBlock Grid.Row="0" TextWrapping="WrapWithOverflow"         Background="LightBlue" Text="{Binding userName}" Margin="12,6,0,0" Padding="10, 0, 10, 0"  TextAlignment="center" FontSize="15"/>-->
-                            <TextBlock TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" Background="WhiteSmoke" Text="{Binding UserName}"  TextAlignment="center" FontSize="15"/>
+                            <TextBlock TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" Background="WhiteSmoke" Text="{Binding UserName}" VerticalAlignment="Center" TextAlignment="center" FontSize="15" Margin="5, 0, 0, 0"/>
                             <!--<TextBlock TextWrapping="WrapWithOverflow" Grid.Row="1" Background="LightBlue" Text="{Binding status}" Margin="12,0,0,6" Padding="10, 0, 10, 0"  TextAlignment="center" />-->
                             <!--<TextBlock TextWrapping="WrapWithOverflow" Grid.Row="1" Background="WhiteSmoke" Text="{Binding Status}" HorizontalAlignment="Center" VerticalAlignment="Center"  TextAlignment="center" />-->
                         </Grid>
