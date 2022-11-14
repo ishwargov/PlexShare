@@ -35,7 +35,7 @@ namespace PlexShareScreenshare.Server
         /// was received last from the client to tell that the client is still
         /// presenting the screen.
         /// </summary>
-        private readonly Timer _timer;
+        private readonly Timer? _timer;
 
         /// <summary>
         /// The data model defining the callback for the timeout.
@@ -92,7 +92,7 @@ namespace PlexShareScreenshare.Server
         /// </param>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="Exception"></exception>
-        public SharedClientScreen(string clientId, string clientName, ITimerManager server)
+        public SharedClientScreen(string clientId, string clientName, ITimerManager server, bool isDebugging = false)
         {
             this.Id = clientId ?? throw new ArgumentNullException(nameof(clientId));
             this.Name = clientName ?? throw new ArgumentNullException(nameof(clientName));
@@ -115,18 +115,21 @@ namespace PlexShareScreenshare.Server
 
             try
             {
-                // Create the timer for this client
-                _timer = new Timer();
-                _timer.Elapsed += new ElapsedEventHandler((sender, e) => _server.OnTimeOut(sender, e, Id));
+                if (!isDebugging)
+                {
+                    // Create the timer for this client
+                    _timer = new Timer();
+                    _timer.Elapsed += new ElapsedEventHandler((sender, e) => _server.OnTimeOut(sender, e, Id));
 
-                // The timer should be invoked only once
-                _timer.AutoReset = false;
+                    // The timer should be invoked only once
+                    _timer.AutoReset = false;
 
-                // Set the time interval for the timer
-                this.UpdateTimer();
+                    // Set the time interval for the timer
+                    this.UpdateTimer();
 
-                // Start the timer
-                _timer.Enabled = true;
+                    // Start the timer
+                    _timer.Enabled = true;
+                }
             }
             catch (Exception e)
             {
@@ -424,9 +427,12 @@ namespace PlexShareScreenshare.Server
             // and unmanaged resources
             if (disposing)
             {
-                // Stop and dispose the timer object
-                _timer.Enabled = false;
-                _timer.Dispose();
+                if (_timer != null)
+                {
+                    // Stop and dispose the timer object
+                    _timer.Enabled = false;
+                    _timer.Dispose();
+                }
             }
 
             // Call the appropriate methods to clean up unmanaged resources here
