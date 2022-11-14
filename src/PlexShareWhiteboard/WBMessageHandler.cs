@@ -64,35 +64,6 @@ namespace PlexShareWhiteboard
                                              DisplayMessage(deserializedObject.UserID, deserializedObject.SnapshotNumber); //message that board number is saved
                                              break;
                                          case Operation.Creation:
-
-                                             Debug.WriteLine(" shape received1 is it ?? " + shapeItems.Count);
-                                             Debug.WriteLine(" shape received1 is it ?? " + shapeItems[0].Geometry);
-                                             Debug.WriteLine(" shape received1 is it ?? " + shapeItems[0].GeometryString);
-                                             Debug.WriteLine(" shape received1 is it ?? " + shapeItems[0].Id);
-                                             //Debug.WriteLine(" shape received is it ?? " + shapeItems[0].Geometry.GetType().Name);
-
-
-                                             //sugu
-                                             //1. get element ready 
-                                             // shapeItems[0]
-                                             //sugu = new ShapeItem
-                                             //{
-                                             //    Geometry = shapeItems[0].Geometry.Clone(),
-                                             //    GeometryString = shapeItems[0].GeometryString,
-                                             //    Start = shapeItems[0].Start,
-                                             //    End = shapeItems[0].End,
-                                             //    Fill = shapeItems[0].Fill,
-                                             //    Stroke = shapeItems[0].Stroke,
-                                             //    ZIndex = shapeItems[0].ZIndex,
-                                             //    AnchorPoint = shapeItems[0].AnchorPoint,
-                                             //    Id = shapeItems[0].Id,
-                                             //    StrokeThickness = shapeItems[0].StrokeThickness,
-                                             //};
-                                             ////2. store it locally here
-                                             ////3. xaml.cs can call t
-                                             ////OnPropertyChanged("sugu1");
-                                             //ShapeItems.Add(sugu);
-
                                              CreateIncomingShape(shapeItems[0]);
                                              serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
                                              break;
@@ -145,34 +116,7 @@ namespace PlexShareWhiteboard
                                              break;
                                          case Operation.Creation:
 
-                                             Debug.WriteLine(" shape received is it ?? " + shapeItems.Count);
-                                             Debug.WriteLine(" shape received is it ?? " + shapeItems[0].Geometry);
-                                             Debug.WriteLine(" shape received is it ?? " + shapeItems[0].GeometryString);
-                                             Debug.WriteLine(" shape received is it ?? " + shapeItems[0].Id);
-                                             //Debug.WriteLine(" shape received is it ?? " + shapeItems[0].Geometry.GetType().Name);
-
-
-                                             //sugu
-
-                                             //sugu = new ShapeItem
-                                             //{
-                                             //    Geometry = shapeItems[0].Geometry.Clone(),
-                                             //    GeometryString = shapeItems[0].GeometryString,
-                                             //    Start = shapeItems[0].Start,
-                                             //    End = shapeItems[0].End,
-                                             //    Fill = shapeItems[0].Fill,
-                                             //    Stroke = shapeItems[0].Stroke,
-                                             //    ZIndex = shapeItems[0].ZIndex,
-                                             //    AnchorPoint = shapeItems[0].AnchorPoint,
-                                             //    Id = shapeItems[0].Id,
-                                             //    StrokeThickness = shapeItems[0].StrokeThickness,
-                                             //};
-                                             ////2. store it locally here
-                                             ////3. xaml.cs can call t
-                                             ////OnPropertyChanged("sugu1");
-                                             //ShapeItems.Add(sugu);
-                                             ShapeItem shapeItem = shapeItems[0].DeepClone();
-                                             CreateIncomingShape(shapeItem);
+                                             CreateIncomingShape(shapeItems[0]);
 
 
                                              break;
@@ -183,7 +127,9 @@ namespace PlexShareWhiteboard
                                              ModifyIncomingShape(shapeItems[0]);
                                              break;
                                          case Operation.Clear:
-                                             ClearAllShapes();
+                                             ShapeItems.Clear();
+                                             undoStack.Clear();
+                                             redoStack.Clear();
                                              break;
                                          case Operation.NewUser:
                                              LoadBoard(shapeItems);

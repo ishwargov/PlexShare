@@ -47,8 +47,11 @@ namespace PlexShareWhiteboard.Server
 
         public void Broadcast(ShapeItem newShape, Operation op)
         {
+            if (newShape != null)
+            {
             Debug.WriteLine("Inisde ServerCommunicator.cs broadcast, " + newShape.Id);
             Debug.WriteLine("Inisde ServerCommunicator.cs broadcast, " + newShape.Geometry.GetType().Name);
+            }
             List<ShapeItem> newShapeList = new List<ShapeItem>();
             newShapeList.Add(newShape);
             Broadcast(newShapeList, op);
@@ -66,8 +69,12 @@ namespace PlexShareWhiteboard.Server
             try
             {
                 Trace.WriteLine("[Whiteboard] ServerCommunicator.Broadcast: Sending objects to client");
+                if (clientUpdate.ShapeItems[0] != null)
+                {
                 Trace.WriteLine("[Whiteboard] " + clientUpdate.ShapeItems[0].Id);
                 Trace.WriteLine("[Whiteboard] " + clientUpdate.ShapeItems[0].GeometryString);
+
+                }
                 var serializedObj = serializer.SerializeWBServerShape(clientUpdate);
                 communicator.Send(serializedObj, moduleIdentifier, ipAddress);
                 Trace.WriteLine("[Whiteboard] ServerCommunicator.Broadcast: Sent objects to client");
