@@ -19,7 +19,7 @@
         </Grid.RowDefinitions >
 
         <!-- Create a dock panel at the bottom of the screen -->
-        <DockPanel Grid.Row = "1" HorizontalAlignment = "Center" VerticalAlignment = "Stretch" >
+        <DockPanel Grid.Row = "1" HorizontalAlignment = "Center" VerticalAlignment = "Stretch">
             
             <!-- Create a button for previous page functionality -->
             <Button Click = "OnPreviousPageButtonClicked" ToolTip = "Previous Page" 
@@ -45,7 +45,7 @@
             </Button>
             
             <!-- Create a Textblock to write the current page number-->
-            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent" 
+            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent"
                        Foreground="White" Margin="20,0,20,0" FontWeight="DemiBold" FontSize="14" >
                 <Run Text ="{Binding CurrentPage, Mode=OneWay}"/>
                 <Run Text=" of "/>
@@ -103,7 +103,7 @@
         </StackPanel>
 
         <!-- Make a stack panel to show the tiles of clients -->
-        <StackPanel Orientation="Vertical" Grid.Row="0">
+        <StackPanel Orientation="Vertical" Grid.Row="0" Margin="4,5,4,5">
 
             <!-- Create an ItemsControl which will show all the images in the client list -->
             <ItemsControl x:Name ="Items" ItemsSource="{Binding CurrentWindowClients, Mode=OneWay}">
@@ -120,11 +120,11 @@
                     <DataTemplate>
                         <StackPanel Orientation="Vertical">
                             <!-- Create a grid to hold the Image, caption, pin and unpin buttons -->
-                            <Grid HorizontalAlignment="Center" VerticalAlignment="Center"
-                                  Width="{Binding TileWidth, Mode=OneWay}" Height="{Binding TileHeight, Mode=OneWay}">
+                            <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Width="{Binding TileWidth, Mode=OneWay}" Height="{Binding TileHeight, Mode=OneWay}" Margin="5,3,5,3">
+
 
                                 <!-- Create a border and put the image inside it -->
-                                <Border BorderThickness="2" CornerRadius="5" Background="#3C4043" Margin="0,10,0,0">
+                                <Border BorderThickness="2" CornerRadius="5" Background="#3C4043">
                                     <Image Source="{Binding CurrentImage, Mode=OneWay}" Stretch="Uniform"/>
                                 </Border>
 
@@ -199,7 +199,7 @@
 
                                 <!-- Create a textblock to show the name of the client on the bottom of the tile -->
                                 <TextBlock Text="{Binding Name, Mode=OneWay}" Foreground="AntiqueWhite" FontWeight="SemiBold" Background="Transparent" 
-                                           VerticalAlignment="Bottom" Padding="11,0,0,7" FontSize="11.5"/>
+                                           VerticalAlignment="Bottom" Margin="15,0,0,7" FontSize="11.5"/>
 
                             <!-- Close all the open components -->
                             </Grid>
