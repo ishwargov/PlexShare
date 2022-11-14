@@ -11,6 +11,7 @@ using System.Drawing;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
+using System.Windows.Media.Imaging;
 
 // The Timer class object
 using Timer = System.Timers.Timer;
@@ -35,7 +36,7 @@ namespace PlexShareScreenshare.Server
         /// was received last from the client to tell that the client is still
         /// presenting the screen.
         /// </summary>
-        private readonly Timer _timer;
+        private readonly Timer? _timer;
 
         /// <summary>
         /// The data model defining the callback for the timeout.
@@ -92,7 +93,7 @@ namespace PlexShareScreenshare.Server
         /// </param>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="Exception"></exception>
-        public SharedClientScreen(string clientId, string clientName, ITimerManager server)
+        public SharedClientScreen(string clientId, string clientName, ITimerManager server, bool isDebugging = false)
         {
             this.Id = clientId ?? throw new ArgumentNullException(nameof(clientId));
             this.Name = clientName ?? throw new ArgumentNullException(nameof(clientName));
@@ -113,20 +114,27 @@ namespace PlexShareScreenshare.Server
             _disposed = false;
             this.CurrentImage = null;
 
+            // Initialize rest of the properties
+            this.TileHeight = 0;
+            this.TileWidth = 0;
+
             try
             {
-                // Create the timer for this client
-                _timer = new Timer();
-                _timer.Elapsed += new ElapsedEventHandler((sender, e) => _server.OnTimeOut(sender, e, Id));
+                if (!isDebugging)
+                {
+                    // Create the timer for this client
+                    _timer = new Timer();
+                    _timer.Elapsed += new ElapsedEventHandler((sender, e) => _server.OnTimeOut(sender, e, Id));
 
-                // The timer should be invoked only once
-                _timer.AutoReset = false;
+                    // The timer should be invoked only once
+                    _timer.AutoReset = false;
 
-                // Set the time interval for the timer
-                this.UpdateTimer();
+                    // Set the time interval for the timer
+                    this.UpdateTimer();
 
-                // Start the timer
-                _timer.Enabled = true;
+                    // Start the timer
+                    _timer.Enabled = true;
+                }
             }
             catch (Exception e)
             {
@@ -178,12 +186,22 @@ namespace PlexShareScreenshare.Server
         /// <summary>
         /// Gets the current screen image of the client being displayed.
         /// </summary>
-        public Bitmap? CurrentImage { get; set; }
+        public BitmapImage? CurrentImage { get; set; }
 
         /// <summary>
         /// Gets whether the client is marked as pinned or not.
         /// </summary>
         public bool Pinned { get; set; }
+
+        /// <summary>
+        /// The height of the tile of the client screen.
+        /// </summary>
+        public int TileHeight { get; set; }
+
+        /// <summary>
+        /// The width of the tile of the client screen.
+        /// </summary>
+        public int TileWidth { get; set; }
 
         /// <summary>
         /// Pops and returns the received Frame at the beginning of the received image queue.
@@ -424,9 +442,12 @@ namespace PlexShareScreenshare.Server
             // and unmanaged resources
             if (disposing)
             {
-                // Stop and dispose the timer object
-                _timer.Enabled = false;
-                _timer.Dispose();
+                if (_timer != null)
+                {
+                    // Stop and dispose the timer object
+                    _timer.Enabled = false;
+                    _timer.Dispose();
+                }
             }
 
             // Call the appropriate methods to clean up unmanaged resources here

@@ -11,6 +11,8 @@ using System.Drawing;
 using System.Text.Json;
 using System.Timers;
 
+using SSUtils = PlexShareScreenshare.Utils;
+
 namespace PlexShareTests.ScreenshareTests
 {
     /// <summary>
@@ -126,7 +128,7 @@ namespace PlexShareTests.ScreenshareTests
             // Create a mock client and the server
             var viewmodelMock = new Mock<IMessageListener>();
             ScreenshareServer server = ScreenshareServer.GetInstance(viewmodelMock.Object, isDebugging: true);
-            SharedClientScreen client = Utils.GetMockClient(server);
+            SharedClientScreen client = Utils.GetMockClient(server, isDebugging: true);
 
             // Create a mock serialized Image packet received by the server
             var (mockImagePacket, mockFrame) = Utils.GetMockImagePacket(client.Id, client.Name);
@@ -160,17 +162,15 @@ namespace PlexShareTests.ScreenshareTests
             // Create a mock client and the server
             var viewmodelMock = new Mock<IMessageListener>();
             ScreenshareServer server = ScreenshareServer.GetInstance(viewmodelMock.Object, isDebugging: true);
-            SharedClientScreen client = Utils.GetMockClient(server);
+            SharedClientScreen client = Utils.GetMockClient(server, isDebugging: true);
 
             // Act
             // Put mock images into the client's image queue
             int numFrames = 10;
-            List<Frame> clientFrames = new();
+            List<Frame> clientFrames = Utils.GetMockFrames(numFrames);
             for (int i = 0; i < numFrames; ++i)
             {
-                Frame mockFrame = Utils.GetMockFrame();
-                client.PutImage(mockFrame);
-                clientFrames.Add(mockFrame);
+                client.PutImage(clientFrames[i]);
             }
 
             // Assert
@@ -197,7 +197,7 @@ namespace PlexShareTests.ScreenshareTests
             // Create a mock client and the server
             var viewmodelMock = new Mock<IMessageListener>();
             ScreenshareServer server = ScreenshareServer.GetInstance(viewmodelMock.Object, isDebugging: true);
-            SharedClientScreen client = Utils.GetMockClient(server);
+            SharedClientScreen client = Utils.GetMockClient(server, isDebugging: true);
 
             // Act
             // Put mock final images into the client's final image queue
@@ -234,15 +234,15 @@ namespace PlexShareTests.ScreenshareTests
             // Create a mock client and the server
             var viewmodelMock = new Mock<IMessageListener>();
             ScreenshareServer server = ScreenshareServer.GetInstance(viewmodelMock.Object, isDebugging: true);
-            SharedClientScreen client = Utils.GetMockClient(server);
+            SharedClientScreen client = Utils.GetMockClient(server, isDebugging: true);
 
             // Act
             // Put mock images into the client's image queue
             int numFrames = 10;
+            List<Frame> clientFrames = Utils.GetMockFrames(numFrames);
             for (int i = 0; i < numFrames; ++i)
             {
-                Frame mockFrame = Utils.GetMockFrame();
-                client.PutImage(mockFrame);
+                client.PutImage(clientFrames[i]);
             }
 
             // Start the processing of the images for the client.
@@ -259,7 +259,13 @@ namespace PlexShareTests.ScreenshareTests
                     // End the task when cancellation is requested
                     token.ThrowIfCancellationRequested();
 
-                    client.CurrentImage = client.GetFinalImage(token);
+                    Bitmap? finalImage = client.GetFinalImage(token);
+
+                    if (finalImage != null)
+                    {
+                        client.CurrentImage = SSUtils.BitmapToBitmapImage(finalImage);
+                    }
+
                 }
             }));
 
