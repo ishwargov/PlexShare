@@ -156,12 +156,14 @@ namespace PlexShareWhiteboard
 
         private void LoadBoard(List<ShapeItem> shapeItems)
         {
-            //ClearAllShapes();
-            //foreach (ShapeItem shapeItem in shapeItems)
-            //{
-            //    CreateIncomingShape(shapeItem);
-            //}
-            ;
+            ClearAllShapes();
+            if(shapeItems != null)
+            {
+                foreach (ShapeItem shapeItem in shapeItems)
+                {
+                    CreateIncomingShape(shapeItem);
+                }
+            }
         }
     }
 }
