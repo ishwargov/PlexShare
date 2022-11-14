@@ -34,8 +34,15 @@ namespace PlexShareWhiteboard
             for (int i = 0; i < ShapeItems.Count; ++i)
             {
                 if (ShapeItems[i].Id == newShape.Id)
-                    ShapeItems[i] = newShape;
+                {
+                    ShapeItems.Remove(ShapeItems[i]);
+                    break;
+                }
+                    
             }
+
+            ShapeItems.Add(newShape);
+            
         }
 
         public void DeleteIncomingShape(ShapeItem oldShape)
