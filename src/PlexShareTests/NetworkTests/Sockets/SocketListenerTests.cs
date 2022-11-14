@@ -1,17 +1,13 @@
-/// <author>Mohammad Umar Sultan</author>
-/// <created>16/10/2022</created>
+/// <author> Mohammad Umar Sultan </author>
+/// <created> 16/10/2022 </created>
 /// <summary>
 /// This file contains unit tests for the class SocketListener
 /// </summary>
 
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using PlexShareNetwork.Communication;
 using PlexShareNetwork.Queues;
-using Xunit;
+using System.Net;
+using System.Net.Sockets;
 
 namespace PlexShareNetwork.Sockets.Tests
 {
@@ -49,7 +45,7 @@ namespace PlexShareNetwork.Sockets.Tests
 
             // send packets and check they are received
             Packet[] sendPackets = NetworkTestGlobals.GeneratePackets(size, _destination, _module, count);
-            NetworkTestGlobals.SendPackets(sendPackets, clientSocket, count);
+            NetworkTestGlobals.SendPackets(sendPackets, clientSocket);
             NetworkTestGlobals.PacketsReceiveAssert(sendPackets, receivingQueue, count);
         }
 

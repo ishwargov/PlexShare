@@ -99,43 +99,39 @@ namespace PlexShareNetwork.Sockets
 		{
             Trace.WriteLine("[Networking] " +
                 "SocketListener.ReceiveCallback() function called.");
-
-            // if _runSocketListenerThread is set to false then this if
-            // block will not run and we will just return
-            if (_runSocketListenerThread)
+            try
             {
-                try
+                // get the count of received bytes 
+                int bytesCount = _socket.EndReceive(ar);
+
+                // if count of received bytes is greater than 0 and
+                // _runSocketListenerThread is true then process
+                // the received bytes
+                if (bytesCount > 0 && _runSocketListenerThread)
                 {
-                    // get the count of received bytes and if its
-                    // greater than 0 then process the received bytes
-                    int bytesCount = _socket.EndReceive(ar);
-                    if (bytesCount > 0)
-                    {
-                        // covert the received bytes to string and
-                        // append that string to _receivedString
-                        _receivedString.Append(
-                            Encoding.ASCII.GetString(
-                                buffer, 0, bytesCount));
+                    // covert the received bytes to string and
+                    // append that string to _receivedString
+                    _receivedString.Append(Encoding.ASCII.GetString(
+                        buffer, 0, bytesCount));
 
-                        // call ProcessReceivedString() to process the
-                        // received string and get the remaning string
-                        string remainingString = ProcessReceivedString(
-                            _receivedString.ToString());
+                    // call ProcessReceivedString() to process the
+                    // received string and get the remaning string
+                    string remainingString = ProcessReceivedString(
+                        _receivedString.ToString());
 
-                        // clear the received strign and append the
-                        // remaining string to it
-                        _receivedString.Clear();
-                        _receivedString.Append(remainingString);
-                    }
+                    // clear the received strign and append the
+                    // remaining string to it
+                    _receivedString.Clear();
+                    _receivedString.Append(remainingString);
                     _socket.BeginReceive(buffer, 0, bufferSize, 0,
                         ReceiveCallback, null);
                 }
-                catch (Exception e)
-                {
-                    Trace.WriteLine("[Networking] Error in " +
-                        "SocketListener.ReceiveCallback(): " +
-                        e.Message);
-                }
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine("[Networking] Error in " +
+                    "SocketListener.ReceiveCallback(): " +
+                    e.Message);
             }
 		}
 

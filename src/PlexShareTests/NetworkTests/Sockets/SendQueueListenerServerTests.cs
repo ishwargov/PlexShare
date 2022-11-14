@@ -1,16 +1,13 @@
-/// <author>Mohammad Umar Sultan</author>
-/// <created>16/10/2022</created>
+/// <author> Mohammad Umar Sultan </author>
+/// <created> 16/10/2022 </created>
 /// <summary>
 /// This file contains unit tests for the class SocketListener
 /// </summary>
 
-using System.Collections.Generic;
-using System.Net;
-using System.Net.Sockets;
-using System.Threading.Tasks;
 using PlexShareNetwork.Communication;
 using PlexShareNetwork.Queues;
-using Xunit;
+using System.Net;
+using System.Net.Sockets;
 
 namespace PlexShareNetwork.Sockets.Tests
 {
@@ -20,7 +17,7 @@ namespace PlexShareNetwork.Sockets.Tests
         private readonly int _smallPacketSize = 10;
         private readonly int _largePacketSize = 1000;
         private readonly int _veryLargePacketSize = 1000000;
-        private readonly string[] _destinations = { "Client1 ID", "Client2 ID" };
+        private readonly string[] _destinations = { "Client Id1", "Client Id2" };
         private readonly string _module = "Test Module";
         bool _clientGotDisconnectedTest = false;
 
@@ -53,8 +50,8 @@ namespace PlexShareNetwork.Sockets.Tests
             sendingQueue.RegisterModule("Test Module", true);
             Dictionary<string, TcpClient> clientIdToSocket = new()
             {
-                ["Client1 ID"] = serverSocket1,
-                ["Client2 ID"] = serverSocket2
+                ["Client Id1"] = serverSocket1,
+                ["Client Id2"] = serverSocket2
             };
             Dictionary<string, INotificationHandler> subscribedModules = new()
             {
@@ -74,13 +71,13 @@ namespace PlexShareNetwork.Sockets.Tests
             // if its client got disconnected test then disconnect client 1
             if (_clientGotDisconnectedTest)
             {
+                clientSocket1.GetStream().Close();
                 clientSocket1.Close();
-                clientSocket1.Dispose();
             }
 
             // send packets
             Packet[] sendPackets = NetworkTestGlobals.GeneratePackets(size, destination, _module, count);
-            NetworkTestGlobals.SendPackets(sendPackets, sendingQueue, count);
+            NetworkTestGlobals.EnqueuePackets(sendPackets, sendingQueue);
 
             // if its client got disconnected test then check whether modules are notified
             if (_clientGotDisconnectedTest)
@@ -89,7 +86,7 @@ namespace PlexShareNetwork.Sockets.Tests
                 testNotificationHandler.WaitForEvent();
                 // assert module is notified, client1 did not receive, and client2 received
                 Assert.Equal("OnClientLeft", testNotificationHandler.GetLastEvent());
-                Assert.Equal("Client1 ID", testNotificationHandler.GetLastEventClientId());
+                Assert.Equal("Client Id1", testNotificationHandler.GetLastEventClientId());
                 Assert.True(receivingQueue1.IsEmpty());
             }
             else // check client 1 received the packets

@@ -133,9 +133,6 @@ namespace PlexShareNetwork.Sockets
         /// clientId. If the client is not reachable then it calls
         /// the TryReconnectingToClient() function.
         /// </summary>
-        /// <param name="clientSocket">
-        /// The socket object which was connected to the client.
-        /// </param>
         /// <param name="clientId"> The Client Id. </param>
         /// <param name="bytes"> The data that is to be sent. </param>
         /// <param name="module"> The module sending the data. </param>
@@ -150,23 +147,23 @@ namespace PlexShareNetwork.Sockets
                 TcpClient clientSocket = 
                     _clientIdToClientSocketMap[clientId];
     
-                // check if the client is disconnected
-                if (clientSocket.Client.Poll(1, SelectMode.SelectRead)
-                    && clientSocket.Client.Available == 0)
+                // check if the client is connected then send data
+                if (!(clientSocket.Client.Poll(
+                    1, SelectMode.SelectRead)
+                    && clientSocket.Client.Available == 0))
+                {
+                    clientSocket.Client.Send(bytes);
+                    Trace.WriteLine("[Networking] Data sent from " +
+                        "server to client: " + clientId +
+                        " by module: " + module);
+                }
+                else 
                 {
                     // the client is disconnected so try to reconnect
                     Trace.WriteLine("[Networking] Client: " + clientId
                         + " got disconnected. Trying to reconnect...");
                     Task.Run(() => TryReconnectingToClient(
                         clientId, bytes, module));
-                }
-                else 
-                {
-                    // client is connected send the data
-                    clientSocket.Client.Send(bytes);
-                    Trace.WriteLine("[Networking] Data sent from " +
-                        "server to client: " + clientId +
-                        " by module: " + module);
                 }
             }
             catch (Exception e)
@@ -179,8 +176,8 @@ namespace PlexShareNetwork.Sockets
 
         /// <summary>
 		/// Tries to connect to the client 3 times and if connected 
-        /// then send the data to the client, otherwise it notifies
-        /// all other modules that the client has got disconnected.
+        /// then sends the data to the client, otherwise it notifies
+        /// all subscribed modules that the client has left.
 		/// </summary>
         /// <param name="clientId"> The client Id. </param>
         /// <param name="bytes"> The data that is to be sent. </param>
@@ -199,6 +196,7 @@ namespace PlexShareNetwork.Sockets
                 // try to reconnect 3 times
                 for (var i = 0; i < 3 && !isSent; i++)
                 {
+                    // wait for some time for client to reconnect
                     Thread.Sleep(100);
 
                     // if client is now connected then send the data
@@ -217,7 +215,7 @@ namespace PlexShareNetwork.Sockets
                 }
 
                 // if data was not send even after trying 3 times then
-                // client is disconnected, notify all modules
+                // client has left, notify all subscribed modules
                 if (!isSent)
                 {
                     Trace.WriteLine("[Networking] Client: " + 
@@ -231,7 +229,7 @@ namespace PlexShareNetwork.Sockets
                             moduleToNotificationHandler.Value;
                         notificationHandler.OnClientLeft(clientId);
                         Trace.WriteLine("[Networking] Notifed " +
-                            "module: " + moduleName + "that the " +
+                            "module: " + moduleName + " that the " +
                             "client: " + clientId + " has left.");
                     }
                     // here we dont need to remove the client socket
@@ -245,7 +243,6 @@ namespace PlexShareNetwork.Sockets
                 Trace.WriteLine("[Networking] Error in " +
                     "SendQueueListenerServer." +
                     "TryReconnectingToClient(): " + e.Message);
-
             }
         }
 	}
