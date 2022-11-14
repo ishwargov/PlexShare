@@ -5,6 +5,12 @@
 /// are implemented
 ///</summary>
 
+using PlexShareNetwork;
+using PlexShareNetwork.Communication;
+using System.Diagnostics;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace PlexShareScreenshare.Client
 {

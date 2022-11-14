@@ -5,6 +5,12 @@
 /// are implemented
 /// </summary>
 
+using PlexShareNetwork;
+using System;
+using System.Diagnostics;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace PlexShareScreenshare.Client
 {
@@ -25,10 +31,6 @@ namespace PlexShareScreenshare.Client
 
             StopImageSending();
             StopConfirmationSending();
-
-            // Stops the processing and the capturing module
-            _processor.StopProcessing();
-            _capturer.StopCapture();
 
             // Sending de-rgister request to server
             _communicator.Send(serializedDeregisterPacket, Utils.ModuleIdentifier, null);
@@ -65,8 +67,8 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         private async void StopImageSending()
         {
-            _capturer.StartCapture();
-            _processor.StartProcessing();
+            _capturer.StopCapture().Wait();
+            _processor.StopProcessing().Wait();
             Trace.WriteLine(Utils.GetDebugMessage("Successfully stopped capturer and processor"));
 
             Debug.Assert(_imageCancellationTokenSource != null,
