@@ -9,6 +9,7 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
     public class SessionAnalytics
     {
         public Dictionary<int, int> chatCountForEachUser;
+        public Dictionary<string, int> userNameVsChatCount;
 
         public List<int> listOfInSincereMembers;
 

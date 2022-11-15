@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PlexShareDashboard.Dashboard.Server.SessionManagement;
-using PlexShare.Dashboard.Server.SessionManagement;
+using PlexShareDashboard.Dashboard.Server.SessionManagement;
 namespace PlexShareTests.DashboardTests.SessionManagement.TestModules
 {
     public class FakeTelemetry : ITelemetry, ITelemetryNotifications

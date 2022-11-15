@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using PlexShareDashboard.Dashboard.Server.Telemetry;
 using PlexShareDashboard.Dashboard;
 
-namespace PlexShare.Dashboard
+namespace PlexShareDashboard.Dashboard
 {
     public class ServerToClientData
     {

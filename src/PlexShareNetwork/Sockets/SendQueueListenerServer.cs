@@ -1,11 +1,10 @@
-/// <author>Mohammad Umar Sultan</author>
-/// <created>16/10/2022</created>
+/// <author> Mohammad Umar Sultan </author>
+/// <created> 16/10/2022 </created>
 /// <summary>
 /// This file contains the class definition of SendQueueListenerServer.
 /// </summary>
 
 using PlexShareNetwork.Queues;
-using PlexShareNetwork.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -19,194 +18,232 @@ namespace PlexShareNetwork.Sockets
 	public class SendQueueListenerServer
 	{
 		// the thread which will be running
-		private readonly Thread _thread;
+		private readonly Thread _sendQueueListenerThread;
 		// boolean to tell whether thread is running or stopped
-		private bool _threadRun;
+		private bool _runSendQueueListenerThread;
 
-		// variable to store the send queue
+        // declare the sending queue
 		private readonly SendingQueue _sendingQueue;
 
-		// variable to store the dictionary which maps clientIds to their respective sockets
-		private readonly Dictionary<string, TcpClient> _clientIdToClientSocketMap;
+		// map of clientId to socket connected to the client
+		private readonly Dictionary<string, TcpClient> 
+            _clientIdToClientSocketMap;
 
-		// variable to store the dictionary which maps module identifiers to their respective notification handlers
-		private readonly Dictionary<string, INotificationHandler> _moduleToNotificationHandlerMap;
+		// map of module name to the module's notification handlers
+		private readonly Dictionary<string, INotificationHandler> 
+            _moduleToNotificationHandlerMap;
 
         /// <summary>
-        /// It is the Constructor which initializes the queue, clientIdSocket and subscribedModules
+        /// Constructor initializes the sending queue and the clientId
+        /// to client socket map, and the module to notification 
+        /// handler map, and the send queue listener thread
         /// </summary>
         /// <param name="sendingQueue"> The sending queue. </param>
-        /// <param name="clientIdToClientSocketMap"> The map from clientIds to their respective sockets. </param>
-        /// <param name="moduleToNotificationHandlerMap">
-        /// The dictionary which maps module identifiers to their respective notification handlers.
+        /// <param name="clientIdToClientSocketMap">
+        /// The map of clientId to socket connected to the client.
         /// </param>
-        public SendQueueListenerServer(SendingQueue sendingQueue, Dictionary<string, TcpClient> clientIdToClientSocketMap,
-			Dictionary<string, INotificationHandler> moduleToNotificationHandlerMap)
+        /// <param name="moduleToNotificationHandlerMap">
+        /// Map of module name to the module's notification handlers.
+        /// </param>
+        public SendQueueListenerServer(SendingQueue sendingQueue, 
+            Dictionary<string, TcpClient> clientIdToClientSocketMap,
+			Dictionary<string, INotificationHandler> 
+            moduleToNotificationHandlerMap)
 		{
             _sendingQueue = sendingQueue;
 			_clientIdToClientSocketMap = clientIdToClientSocketMap;
-			_moduleToNotificationHandlerMap = moduleToNotificationHandlerMap;
-            _thread = new Thread(Listen);
+			_moduleToNotificationHandlerMap = 
+                moduleToNotificationHandlerMap;
+            _sendQueueListenerThread = new Thread(Listen);
         }
 
 		/// <summary>
-		/// This function starts the thread.
+		/// Starts the send queue listener server thread.
 		/// </summary>
 		/// <returns> void </returns>
 		public void Start()
 		{
-            Trace.WriteLine("[Networking] SendQueueListenerServer.Start() function called.");
-            _threadRun = true;
-			_thread.Start();
-			Trace.WriteLine("[Networking] SendQueueListenerServer thread started.");
-		}
-
-		/// <summary>
-		/// This function stops the thread.
-		/// </summary>
-		/// <returns> void </returns>
-		public void Stop()
-		{
-            Trace.WriteLine("[Networking] SendQueueListenerServer.Stop() function called.");
-            _threadRun = false;
-            Trace.WriteLine("[Networking] SendQueueListenerServer thread stopped.");
-		}
-
-		/// <summary>
-		/// This function listens to send queue and when some packet comes in the send queue then
-		/// it sends the packet to the client corresponding to the destination field of the packet.
-		///  The thread will be running this function.
-		/// </summary>
-		/// <returns> void </returns>
-		private void Listen()
-		{
-            Trace.WriteLine("[Networking] SendQueueListenerServer.Listen() function called.");
-            while (_threadRun)
-			{
-                _sendingQueue.WaitForPacket();
-				Packet packet = _sendingQueue.Dequeue();
-                string sendString = SendString.PacketToSendString(packet);
-
-                // get the socket corresponding to the destination in the packet
-                var clientSockets = ClientIdToSocket(packet.destination);
-				foreach (var clientSocket in clientSockets)
-				{
-					var bytes = Encoding.ASCII.GetBytes(sendString);
-					try
-					{
-						// if client is connected then we send the data
-						if (!(clientSocket.Client.Poll(1, SelectMode.SelectRead) && clientSocket.Client.Available == 0))
-						{
-                            clientSocket.Client.Send(bytes);
-							Trace.WriteLine($"[Networking] Data sent from server to client by module: {packet.moduleOfPacket}.");
-						}
-						else // else the client is disconnected so we try to reconnect
-						{
-							Trace.WriteLine("[Networking] Client got disconnected. Trying to reconnect...");
-                            Task.Run(() => TryReconnectingToClient(clientSocket, bytes, packet));
-						}
-					}
-					catch (Exception e)
-					{
-						Trace.WriteLine($"[Networking] Error in SendQueueListenerServer thread: {e.Message}");
-					}
-				}
-			}
+            Trace.WriteLine("[Networking] " +
+                "SendQueueListenerServer.Start() function called.");
+            _runSendQueueListenerThread = true;
+            _sendQueueListenerThread.Start();
+			Trace.WriteLine("[Networking] SendQueueListenerServer " +
+                "thread started.");
 		}
 
         /// <summary>
-		/// This function tries to connect to the client 3 times and if connected then send the data
-		/// to the client, otherwise it notifies all other modules that the client got disconnected.
-		/// </summary>
-        ///  /// <param name="clientSocket"> The socket object to send to client. </param>
-        /// <param name="bytes"> The data that is to be sent. </param>
-        /// <param name="packet"> The packet to check which module sent the data. </param>
-		/// <returns> void </returns>
-        private void TryReconnectingToClient(TcpClient clientSocket, byte[] bytes, Packet packet)
-        {
-            Trace.WriteLine("[Networking] SendQueueListenerServer.TryReconnectingToClient() function called.");
-            try
-            {
-                var isSent = false;
-                // try to reconnect 3 times
-                for (var i = 0; i < 3 && !isSent; i++)
-                {
-                    Thread.Sleep(100);
+        /// Stops the send queue listener server thread.
+        /// </summary>
+        /// <returns> void </returns>
+        public void Stop()
+		{
+            Trace.WriteLine("[Networking] " +
+                "SendQueueListenerServer.Stop() function called.");
+            _runSendQueueListenerThread = false;
+            Trace.WriteLine("[Networking] SendQueueListenerServer " +
+                "thread stopped.");
+		}
 
-                    // check if the client is now connected and send the data
-                    if (!(clientSocket.Client.Poll(1, SelectMode.SelectRead) && clientSocket.Client.Available == 0))
+        /// <summary>
+        /// Listens to send queue and when some packet comes in the
+        /// send queue then it calls the SendDataToClient() function
+        /// to send the packet to the client(s) corresponding to the 
+        /// destination field of the packet.
+        /// </summary>
+        /// <returns> void </returns>
+        private void Listen()
+		{
+            Trace.WriteLine("[Networking] " +
+                "SendQueueListenerServer.Listen() function called.");
+            while (_runSendQueueListenerThread)
+			{
+                _sendingQueue.WaitForPacket();
+                Packet packet = _sendingQueue.Dequeue();
+
+                // convert packet to string as string can be sent
+                string packetString =
+                    PacketString.PacketToPacketString(packet);
+
+                // convert the string to bytes and send the bytes
+                byte[] bytes = Encoding.ASCII.GetBytes(packetString);
+
+                // if destination is not null then destination contains
+                // a client Id so send data to that particular client
+                if (packet.destination != null)
+                {
+                    SendDataToClient(packet.destination, bytes,
+                        packet.moduleOfPacket);
+                }
+                else
+                {
+                    // destination is null, so send the data to all
+                    // clients
+                    foreach (string clientId in
+                        _clientIdToClientSocketMap.Keys)
                     {
-                        Trace.WriteLine("[Networking] Client reconnected.");
-                        clientSocket.Client.Send(bytes);
-                        Trace.WriteLine($"[Networking] Data sent from server to client by {packet.moduleOfPacket}.");
-                        isSent = true;
+                        SendDataToClient(clientId, bytes,
+                            packet.moduleOfPacket);
                     }
                 }
+            }
+		}
 
-                // if data was not send even after trying 3 times then client is disconnected
-                if (!isSent)
+        /// <summary>
+        /// Sends the data given by bytes to client given by the
+        /// clientId. If the client is not reachable then it calls
+        /// the TryReconnectingToClient() function.
+        /// </summary>
+        /// <param name="clientId"> The Client Id. </param>
+        /// <param name="bytes"> The data that is to be sent. </param>
+        /// <param name="module"> The module sending the data. </param>
+        /// <returns> void </returns>
+        private void SendDataToClient(string clientId, 
+            byte[] bytes, string module)
+        {
+            Trace.WriteLine("[Networking] SendQueueListenerServer." +
+                "SendDataToClient() function called.");
+            try
+            {
+                TcpClient clientSocket = 
+                    _clientIdToClientSocketMap[clientId];
+    
+                // check if the client is connected then send data
+                if (!(clientSocket.Client.Poll(
+                    1, SelectMode.SelectRead)
+                    && clientSocket.Client.Available == 0))
                 {
-                    Trace.WriteLine("[Networking] Client has left. Removing client...");
-                    var clientId = SocketToClientId(clientSocket);
-                    foreach (var moduleToNotificationHandler in _moduleToNotificationHandlerMap)
-                    {
-                        moduleToNotificationHandler.Value.OnClientLeft(clientId);
-                        Trace.WriteLine($"[Networking] Notifed module:{moduleToNotificationHandler.Key} that the client has left.");
-                    }
-                    // here we dont need to remove the client socket from the _clientIdToClientSocketMap, it will
-                    // be done when the CommunicatorServer.RemoveClient() function will be called by the Dashboard
+                    clientSocket.Client.Send(bytes);
+                    Trace.WriteLine("[Networking] Data sent from " +
+                        "server to client: " + clientId +
+                        " by module: " + module);
+                }
+                else 
+                {
+                    // the client is disconnected so try to reconnect
+                    Trace.WriteLine("[Networking] Client: " + clientId
+                        + " got disconnected. Trying to reconnect...");
+                    Task.Run(() => TryReconnectingToClient(
+                        clientId, bytes, module));
                 }
             }
             catch (Exception e)
             {
-                Trace.WriteLine($"[Networking] Error in SendQueueListenerServer thread: {e.Message}");
-
+                Trace.WriteLine("[Networking] Error in " +
+                    "SendQueueListenerServer.SendDataToClient(): " +
+                    e.Message);
             }
         }
 
         /// <summary>
-        /// This function returns the socket for the given destination/ClientId. If destination 
-        /// is null then destination is broadcast, then it returns sockets of all clients.
-        /// </summary>
-        /// <param name="destination"> It is the client ID for unicast and null for boradcast. </param>
-        /// <returns> Set of client sockets. </returns>
-        private HashSet<TcpClient> ClientIdToSocket(string? destination)
-		{
-            Trace.WriteLine("[Networking] SendQueueListenerServer.ClientIdToSocket() function called.");
-            var clientSockets = new HashSet<TcpClient>();
-			if (destination == null)
-			{
-                foreach (var clientIdToClientSocket in _clientIdToClientSocketMap)
-                {
-                    clientSockets.Add(clientIdToClientSocket.Value);
-                }
-			}
-			else
-			{
-                clientSockets.Add(_clientIdToClientSocketMap[destination]);
-			}
-			return clientSockets;
-		}
-
-		/// <summary>
-		/// This function returns the client ID corresponding to the given socket object.
+		/// Tries to connect to the client 3 times and if connected 
+        /// then sends the data to the client, otherwise it notifies
+        /// all subscribed modules that the client has left.
 		/// </summary>
-		/// <param name="socket"> The socket object. </param>
-		/// <returns> ClientId string. </returns>
-		private string SocketToClientId(TcpClient socket)
-		{
-            Trace.WriteLine("[Networking] SendQueueListenerServer.SocketToClientId() function called.");
-            foreach (var clientIdToClientSocket in _clientIdToClientSocketMap)
+        /// <param name="clientId"> The client Id. </param>
+        /// <param name="bytes"> The data that is to be sent. </param>
+        /// <param name="module"> The module sending the data. </param>
+		/// <returns> void </returns>
+        private void TryReconnectingToClient(string clientId,
+            byte[] bytes, string module)
+        {
+            Trace.WriteLine("[Networking] SendQueueListenerServer." +
+                "TryReconnectingToClient() function called.");
+            try
             {
-                if (clientIdToClientSocket.Value == socket)
+                TcpClient clientSocket =
+                    _clientIdToClientSocketMap[clientId];
+                var isSent = false;
+                // try to reconnect 3 times
+                for (var i = 0; i < 3 && !isSent; i++)
                 {
-                    return clientIdToClientSocket.Key;
+                    // wait for some time for client to reconnect
+                    Thread.Sleep(100);
+
+                    // if client is now connected then send the data
+                    if (!(clientSocket.Client.Poll(
+                        1, SelectMode.SelectRead)
+                        && clientSocket.Client.Available == 0))
+                    {
+                        Trace.WriteLine("[Networking] Client: " +
+                            clientId + " reconnected.");
+                        clientSocket.Client.Send(bytes);
+                        Trace.WriteLine("[Networking] Data sent " +
+                            "from server to client: " + clientId + 
+                            " by module: " + module);
+                        isSent = true;
+                    }
+                }
+
+                // if data was not send even after trying 3 times then
+                // client has left, notify all subscribed modules
+                if (!isSent)
+                {
+                    Trace.WriteLine("[Networking] Client: " + 
+                        clientId + " has left. Removing client...");
+                    foreach (var moduleToNotificationHandler in 
+                        _moduleToNotificationHandlerMap)
+                    {
+                        string moduleName =
+                            moduleToNotificationHandler.Key;
+                        var notificationHandler =
+                            moduleToNotificationHandler.Value;
+                        notificationHandler.OnClientLeft(clientId);
+                        Trace.WriteLine("[Networking] Notifed " +
+                            "module: " + moduleName + " that the " +
+                            "client: " + clientId + " has left.");
+                    }
+                    // here we dont need to remove the client socket
+                    // from the _clientIdToClientSocketMap, it will be
+                    // done when the CommunicatorServer.RemoveClient()
+                    // function will be called by the Dashboard
                 }
             }
-            // this string "null" will never be returned because we got the socket
-            // from the _clientIdToClientSocketMap map only, so we will find the
-            // socket in this map in the above for loop
-            return "null";
-		}
+            catch (Exception e)
+            {
+                Trace.WriteLine("[Networking] Error in " +
+                    "SendQueueListenerServer." +
+                    "TryReconnectingToClient(): " + e.Message);
+            }
+        }
 	}
 }
