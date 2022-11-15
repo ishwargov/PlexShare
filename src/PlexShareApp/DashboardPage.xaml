@@ -26,53 +26,42 @@
 
 
         <!--<Border BorderBrush="Green" BorderThickness="2">-->
-
-        <!--now adding the static list to show the list of users in the column 0 -->
-        <ListView Grid.Column="0" x:Name="ContactsLV"  ItemsSource="{Binding ParticipantsList}" d:ItemsSource="{d:SampleData ItemCount=5} " >
+        <Border x:Name="Border7" CornerRadius="10" BorderThickness="4px" BorderBrush="{DynamicResource Color1Bg}"  >
+            <!--now adding the static list to show the list of users in the column 0 -->
+            <ListView Grid.Column="0" x:Name="ContactsLV" Background="{DynamicResource Color1Bg}" ItemsSource="{Binding ParticipantsList}" d:ItemsSource="{d:SampleData ItemCount=5} " >
 
             <ListView.ItemTemplate>
 
                 <DataTemplate>
                     <!--<Border BorderBrush="orange" BorderThickness="2">-->
                     <Grid Margin="5, 10, 0, 10">
-                        <!--<Grid.RowDefinitions>
-                                    <RowDefinition Height="1*"/>
-                                    <RowDefinition Height="1*"/>
-                                </Grid.RowDefinitions>-->
+                        
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1*"/>
                             <ColumnDefinition Width="1*"/>
                         </Grid.ColumnDefinitions>
-                        <!--<Border CornerRadius="100,100,100,100" Grid.Column="0" BorderBrush="White" BorderThickness="8"  Grid.RowSpan="2">
-                            <Border.Background>
-                                <ImageBrush x:Name="profile_picture" ImageSource="{Binding UserProfilePicPath}" Stretch="UniformToFill"/>
-                            </Border.Background>
-                            
-                        </Border>-->
 
                         <Ellipse Width="30" Height="30">
                             <Ellipse.Fill>
                                 <ImageBrush ImageSource="{Binding UserProfilePicPath}" />
                             </Ellipse.Fill>
                         </Ellipse>
-                        <!--<Image Grid.Column="0"  Grid.RowSpan="2" Source="{Binding UserProfilePicPath}"
-                        Height="32"  HorizontalAlignment="Center" VerticalAlignment="Center" ></Image>-->
+                       
                         <Grid Grid.Column="1">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="1*"/>
                                 <!--<RowDefinition Height="1*"/>-->
                             </Grid.RowDefinitions>
-                            <!--<TextBlock Grid.Row="0" TextWrapping="WrapWithOverflow"         Background="LightBlue" Text="{Binding userName}" Margin="12,6,0,0" Padding="10, 0, 10, 0"  TextAlignment="center" FontSize="15"/>-->
-                            <TextBlock TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" Background="WhiteSmoke" Text="{Binding UserName}" VerticalAlignment="Center" TextAlignment="center" FontSize="15" Margin="5, 0, 0, 0" />
-                            <!--<TextBlock TextWrapping="WrapWithOverflow" Grid.Row="1" Background="LightBlue" Text="{Binding status}" Margin="12,0,0,6" Padding="10, 0, 10, 0"  TextAlignment="center" />-->
-                            <!--<TextBlock TextWrapping="WrapWithOverflow" Grid.Row="1" Background="WhiteSmoke" Text="{Binding Status}" HorizontalAlignment="Center" VerticalAlignment="Center"  TextAlignment="center" />-->
+                        
+                            <TextBlock TextWrapping="WrapWithOverflow" HorizontalAlignment="Center"  Text="{Binding UserName}" Foreground="White" VerticalAlignment="Center" TextAlignment="center" FontSize="15" Margin="5, 0, 0, 0" />
+                           
                         </Grid>
                     </Grid>
                     <!--</Border>-->
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        <!--</Border>-->
+        </Border>
 
 
         <Grid Grid.Column="1" Background="White" Margin="20, 0, 20, 10">
@@ -95,8 +84,8 @@
             </Grid.ColumnDefinitions>
             <!--<Border BorderBrush="orange" BorderThickness="2">-->
 
-            
-            <Border x:Name="Border" CornerRadius="10" BorderThickness="2px" BorderBrush="Black">
+
+            <Border x:Name="Border" CornerRadius="10" BorderThickness="2px" BorderBrush="{DynamicResource Color1Bg}">
                 <Grid>
                     <Grid.RowDefinitions>
 
@@ -171,7 +160,7 @@
                         </Grid>
                     </Border>
                     <Grid Grid.Row="1">
-                        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Height="100" Width="500" >
+                        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Height="100" Width="950" >
                             <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Text="{Binding SummaryContentSetter}" TextWrapping="Wrap"  ></TextBlock>
                         </ScrollViewer>
 
@@ -222,13 +211,8 @@
 
 
         <!--defining the grid for showing the section for the participant count -->
-        <Grid Grid.Column="2" Margin="5, 0, 0, 0">
-            <Grid.Background>
-                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                    <GradientStop Color="LightGray" Offset="1"/>
-                    <GradientStop Color="White"/>
-                </LinearGradientBrush>
-            </Grid.Background>
+        <Grid Grid.Column="2" Margin="5, 0, 0, 0" Background="{DynamicResource Color1Bg}">
+            
             <Grid.RowDefinitions>
                 <!--to show the current mode of the session-->
                 <RowDefinition Height="1*"/>
@@ -251,7 +235,7 @@
 
                 <!--<Border BorderBrush="blue" BorderThickness="2" >-->
 
-                <Rectangle Height="120" Width="200"  Fill="White" RadiusY="10" RadiusX="10" >
+                <Rectangle Height="120" Width="150"  Fill="White" RadiusY="10" RadiusX="10" >
                     <Rectangle.Effect>
                         <DropShadowEffect BlurRadius="20" Color="#FFDEDEDE" 
                                           RenderingBias="Quality" ShadowDepth="1"/>
@@ -279,7 +263,7 @@
 
                 <!--<Border BorderBrush="blue" BorderThickness="2" >-->
 
-                <Rectangle Height="120" Width="200"  Fill="White" RadiusY="10" RadiusX="10" >
+                <Rectangle Height="120" Width="150"  Fill="White" RadiusY="10" RadiusX="10" >
                     <Rectangle.Effect>
                         <DropShadowEffect BlurRadius="20" Color="#FFDEDEDE" 
                                           RenderingBias="Quality" ShadowDepth="1"/>
@@ -308,7 +292,7 @@
 
                 <!--<Border BorderBrush="blue" BorderThickness="2" >-->
 
-                <Rectangle  Height="120" Width="200"  Fill="White" RadiusY="10" RadiusX="10" >
+                <Rectangle  Height="120" Width="150"  Fill="White" RadiusY="10" RadiusX="10" >
                     <Rectangle.Effect>
                         <DropShadowEffect BlurRadius="20" Color="#FFDEDEDE" 
                                           RenderingBias="Quality" ShadowDepth="1"/>
@@ -337,7 +321,7 @@
 
                 <!--<Border BorderBrush="blue" BorderThickness="2" >-->
 
-                <Rectangle  Height="120" Width="200"  Fill="White" RadiusY="10" RadiusX="10" >
+                <Rectangle  Height="120" Width="150"  Fill="White" RadiusY="10" RadiusX="10" >
                     <Rectangle.Effect>
                         <DropShadowEffect BlurRadius="20" Color="#FFDEDEDE" 
                                           RenderingBias="Quality" ShadowDepth="1"/>
@@ -367,7 +351,7 @@
 
                 <!--<Border BorderBrush="blue" BorderThickness="2" >-->
 
-                <Rectangle  Height="120" Width="200" Fill="White" RadiusY="10" RadiusX="10" >
+                <Rectangle  Height="120" Width="150" Fill="White" RadiusY="10" RadiusX="10" >
                     <Rectangle.Effect>
                         <DropShadowEffect BlurRadius="20" Color="#FFDEDEDE" 
                                           RenderingBias="Quality" ShadowDepth="1"/>
