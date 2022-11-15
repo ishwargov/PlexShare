@@ -51,6 +51,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\PlexShareWhiteboard\PlexShareWhiteboard.csproj" />
+		<PackageReference Include="Emoji.Wpf" Version="0.3.3" />
 		<PackageReference Include="LiveCharts" Version="0.9.7" />
 		<PackageReference Include="LiveCharts.Wpf" Version="0.9.7" />
 		<PackageReference Include="Syncfusion.SfChart.WPF" Version="20.3.0.56" />
