@@ -58,10 +58,7 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
             _communicator = CommunicationFactory.GetCommunicator();
             _communicator.Subscribe(moduleIdentifier, this);
             
-            
-            
-            
-               _contentClient = ContentClientFactory.GetInstance();
+            _contentClient = ContentClientFactory.GetInstance();
             //  clientBoardStateManager = ClientBoardStateManager.Instance;
             //  clientBoardStateManager.Start();
 
@@ -216,8 +213,6 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
         {
             return _user;
         }
-
-
 
         //change the session mode from lab mode to exam mode and vice versa
         public void ToggleSessionMode()
