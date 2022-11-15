@@ -26,6 +26,18 @@ namespace PlexShareWhiteboard
             return s;
         }
 
+        public void HighLightTextBox(Rect rect)
+        {
+            double x = rect.X;
+            double y = rect.Y;
+            double height = rect.Height;
+            double width = rect.Width;
+
+            ShapeItem hsBody = GenerateRectangleXYWidthHeight(x, y, width, height, null, Brushes.DodgerBlue, "hsBody", 100000);
+            highlightShapes.Add(hsBody);
+            ShapeItems.Add(hsBody);
+        }
+
         public void HighLightIt(Rect rect)
         {
             double x = rect.X;

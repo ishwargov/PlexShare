@@ -61,7 +61,10 @@ namespace PlexShareWhiteboard
             }
             else if (mode == "translate_mode")
             {
-                modeForUndo = "modify";
+                if (select.selectedObject.Geometry.GetType().Name == "GeometryGroup")
+                    modeForUndo = "textbox_translate";
+                else
+                    modeForUndo = "modify";
                 UnHighLightIt();
 
                 ShapeItem shape = select.selectedObject;

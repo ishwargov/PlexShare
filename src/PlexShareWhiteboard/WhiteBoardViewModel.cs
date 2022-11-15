@@ -30,7 +30,6 @@ namespace PlexShareWhiteboard
         int currentIdVal = 0;
         string userId = "0";
         int currentZIndex = 0;
-        string text = "";
         Point textBoxPoint = new (100, 100);
 
         Brush fillBrush = Brushes.Azure;
@@ -39,6 +38,8 @@ namespace PlexShareWhiteboard
         string modeForUndo = "select_object";
         ShapeItem currentShape = null;
         ShapeItem lastShape = null;
+        ShapeItem textBoxLastShape = null;
+
         int blobSize = 12;
         IShapeListener machine;
         UndoStackElement stackElement;
@@ -102,8 +103,19 @@ namespace PlexShareWhiteboard
             currentIdVal++;
             currentId = "u" + userId + "_f" + currentIdVal;
         }
+        public void TextFinishPush()
+        {
+            ;
+        }
         public void ChangeMode(string new_mode)
         {
+            /*if (mode == "create_textbox")
+            {
+                if (lastShape.TextString.Length != 0)
+                {
+                    TextFinishPush();
+                }
+            }*/
             mode = new_mode;
         }
 

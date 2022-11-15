@@ -7,6 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
 using System.Windows.Input;
+using System.Windows.Media.Media3D;
+using System.Windows.Media;
+using System.Windows;
 
 namespace PlexShareWhiteboard
 {
@@ -103,10 +106,13 @@ namespace PlexShareWhiteboard
         }
         public void TextBoxStart(System.Windows.Input.Key c)
         {
-            if (lastShape != null)
+            UnHighLightIt();
+            string text = "";
+            Debug.WriteLine("inisde textbox start" + textBoxLastShape);
+            if (textBoxLastShape != null)
             {
-                text = lastShape.TextString;
-                Debug.WriteLine("msater text " + text + "  id : " + lastShape.Id);
+                text = textBoxLastShape.TextString;
+                Debug.WriteLine("msater text " + text + "  id : " + textBoxLastShape.Id);
             }
             //Debug.WriteLine("Inside TextBoxStart function");
             if (c == Key.Space)
@@ -124,7 +130,7 @@ namespace PlexShareWhiteboard
                     Debug.WriteLine("back space after : " + text + ": text lengtrh: " + text.Length);
                     //Debug.WriteLine(lastShape.Id);
                     //CreateShape(DeonPoint, DeonPoint, "GeometryGroup", lastShape.Id);
-                    lastShape = UpdateShape(textBoxPoint, textBoxPoint, "GeometryGroup", lastShape, text);
+                    textBoxLastShape = UpdateShape(textBoxPoint, textBoxPoint, "GeometryGroup", textBoxLastShape, text);
                     return;
                     // IncrementId();
                     // lastShape = curShape;
@@ -137,20 +143,27 @@ namespace PlexShareWhiteboard
 
                 char ch = KeyToChar(c);
                 text += KeyToChar(c);
-                Debug.WriteLine("key down " + ch + "   text is now " + text + "  id : " + lastShape.Id);
+           //     Debug.WriteLine("key down " + ch + "   text is now " + text + "  id : " + lastShape.Id);
 
             }
             //Debug.WriteLine(text);
-            if (mode == "create_textbox" && lastShape != null)
+            if (mode == "create_textbox" && textBoxLastShape != null)
             {
                 // Create the formatted text based on the properties set.
                 //Debug.WriteLine("In create textbox mode");
                 //ShapeItem curShape = CreateShape(DeonPoint, DeonPoint, "GeometryGroup", lastShape.Id);
-                ShapeItem curShape = UpdateShape(textBoxPoint, textBoxPoint, "GeometryGroup", lastShape, text);
-                lastShape = curShape;
-
+                ShapeItem curShape = UpdateShape(textBoxPoint, textBoxPoint, "GeometryGroup", textBoxLastShape, text);
+                textBoxLastShape = curShape;
+                double x = curShape.Geometry.Bounds.X;
+                double y = curShape.Geometry.Bounds.Y;
+                double height = curShape.Geometry.Bounds.Height;
+                double width = curShape.Geometry.Bounds.Width;
+                ShapeItem hsBody = GenerateRectangleXYWidthHeight(x, y, width, height, null, Brushes.DodgerBlue, "hsBody", 100000);
+                highlightShapes.Add(hsBody);
+                foreach (ShapeItem si in highlightShapes)
+                    ShapeItems.Add(si);
             }
-            Debug.WriteLine("post create shape" + lastShape.TextString);
+            //Debug.WriteLine("post create shape" + lastShape.TextString);
 
             //Debug.WriteLine("text is currently : " + text+ " over");
         }
