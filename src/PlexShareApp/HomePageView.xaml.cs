@@ -45,6 +45,7 @@ namespace PlexShareApp
         string Email = "";
         string Url = "";
         string absolute_path = "";
+        bool homaPageanimation = true;
         /// <summary>
         /// Constructor function which takes some arguments from 
         /// authentication page.
@@ -76,8 +77,39 @@ namespace PlexShareApp
             this.Show();
 
             // Function to start the animation
-            HomePage_Animate(this);
+
+            Task task = new Task(() => HomePage_Animate(this));
+            task.Start();
         }
+
+        void HomePage_Animate(HomePageView obj)
+        {
+            int v = 0;
+            int direction = 1;
+            // Making animation run forever
+            while (homaPageanimation)
+            {
+                if (v == 0)
+                {
+                    direction = 1;
+                }
+                else if (v == 100)
+                {
+                    direction = -1;
+                }
+
+                v += direction;
+                obj.pb1.Dispatcher.Invoke(() => pb1.Value = v, System.Windows.Threading.DispatcherPriority.Background);
+                obj.pb2.Dispatcher.Invoke(() => pb2.Value = v, System.Windows.Threading.DispatcherPriority.Background);
+                obj.pb3.Dispatcher.Invoke(() => pb3.Value = v, System.Windows.Threading.DispatcherPriority.Background);
+                obj.pb4.Dispatcher.Invoke(() => pb4.Value = v, System.Windows.Threading.DispatcherPriority.Background);
+                obj.pb5.Dispatcher.Invoke(() => pb5.Value = v, System.Windows.Threading.DispatcherPriority.Background);
+                //obj.pb6.Dispatcher.Invoke(() => pb6.Value = v, System.Windows.Threading.DispatcherPriority.Background);
+
+                Thread.Sleep(20);
+            }
+        }
+
 
         /// <summary>
         /// On clicking new meeting button, creates the homepage view 
@@ -99,6 +131,7 @@ namespace PlexShareApp
             this.DataContext = viewModel;
 
             List<string> verified = viewModel.VerifyCredentials(this.Name_box.Text, "-1", "0");
+            homaPageanimation = false;
             MainScreenView mainScreenView = new MainScreenView(this.Name_box.Text, this.Email_textbox.Text, this.absolute_path, this.Url, verified[1], verified[2], true);
             mainScreenView.Show();
             this.Close();
@@ -170,6 +203,7 @@ namespace PlexShareApp
                 this.Server_PORT_textblock.Text = "Server PORT didn't matched!!!";
                 return;
             }
+            homaPageanimation = false;
             MainScreenView mainScreenView = new MainScreenView(this.Name_box.Text, this.Email_textbox.Text, this.absolute_path, this.Url, verified[1], verified[2], false);
             mainScreenView.Show();
             this.Close();
@@ -218,35 +252,6 @@ namespace PlexShareApp
             return absolute_path;
         }
 
-        void HomePage_Animate(HomePageView obj)
-        {
-            int v = 0;
-            int direction = 1, count = 0;
-            // Making animation run forever
-            while (count<4)
-            {
-                if (v == 0)
-                {
-                    direction = 1;
-                    count++;
-                }
-                else if (v == 100)
-                {
-                    direction = -1;
-                    count++;
-                }
-
-                v += direction;
-                obj.pb1.Dispatcher.Invoke(() => pb1.Value = v, System.Windows.Threading.DispatcherPriority.Background);
-                obj.pb2.Dispatcher.Invoke(() => pb2.Value = v, System.Windows.Threading.DispatcherPriority.Background);
-                obj.pb3.Dispatcher.Invoke(() => pb3.Value = v, System.Windows.Threading.DispatcherPriority.Background);
-                obj.pb4.Dispatcher.Invoke(() => pb4.Value = v, System.Windows.Threading.DispatcherPriority.Background);
-                obj.pb5.Dispatcher.Invoke(() => pb5.Value = v, System.Windows.Threading.DispatcherPriority.Background);
-                //obj.pb6.Dispatcher.Invoke(() => pb6.Value = v, System.Windows.Threading.DispatcherPriority.Background);
-
-                Thread.Sleep(20);
-            }
-        }
 
         /// <summary>
         /// Changes the theme using the toggle button. It changes the resource file 
