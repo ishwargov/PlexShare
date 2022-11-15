@@ -31,7 +31,7 @@ namespace PlexShareWhiteboard
                 InsertIntoStack(stackElement);
 
                 if (lastShape != null)
-                    machine.OnShapeReceived(lastShape, Operation.Creation);
+                  machine.OnShapeReceived(lastShape, Operation.Creation);
 
             }
             else if (modeForUndo == "delete" && lastShape != null)

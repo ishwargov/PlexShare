@@ -79,12 +79,12 @@ namespace PlexShareWhiteboard
                 ShapeItems.Add(si);
         }
         //deon
-        public void HighLightIt(Line line)
+        public void HighLightIt(LineGeometry line)
         {
-            double x1 = line.X1;
-            double y1 = line.Y1;
-            double x2 = line.X2;
-            double y2 = line.Y2;
+            double x1 = line.StartPoint.X;
+            double y1 = line.StartPoint.Y;
+            double x2 = line.EndPoint.X;
+            double y2 = line.EndPoint.Y;
 
             Debug.WriteLine("Entering line hightlighting with " + x1 + "  " + y1 + " " + x2 + " " + y2);
 
