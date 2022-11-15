@@ -79,7 +79,7 @@ namespace PlexShareApp
             // Function to start the animation
 
             Task task = new Task(() => HomePage_Animate(this));
-            task.Start();
+           task.Start();
         }
 
         void HomePage_Animate(HomePageView obj)
@@ -130,7 +130,7 @@ namespace PlexShareApp
             HomePageViewModel viewModel = new();
             this.DataContext = viewModel;
 
-            List<string> verified = viewModel.VerifyCredentials(this.Name_box.Text, "-1", "0");
+            List<string> verified = viewModel.VerifyCredentials(this.Name_box.Text, "-1", "0", this.Email_textbox.Text, this.Url);
             homaPageanimation = false;
             MainScreenView mainScreenView = new MainScreenView(this.Name_box.Text, this.Email_textbox.Text, this.absolute_path, this.Url, verified[1], verified[2], true);
             mainScreenView.Show();
@@ -194,7 +194,7 @@ namespace PlexShareApp
             HomePageViewModel viewModel = new();
             this.DataContext = viewModel;
 
-            List<string> verified = viewModel.VerifyCredentials(this.Name_box.Text, this.Server_IP.Text, this.Server_PORT.Text);
+            List<string> verified = viewModel.VerifyCredentials(this.Name_box.Text, this.Server_IP.Text, this.Server_PORT.Text, this.Email_textbox.Text, this.Url);
             if (verified[0]!="True")
             {
                 this.Server_IP.Text = "";

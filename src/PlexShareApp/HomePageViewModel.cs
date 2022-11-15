@@ -30,7 +30,7 @@ namespace PlexShareApp
         /// <param name="ip"></param>
         /// <param name="port"></param>
         /// <returns></returns>
-        public List<string> VerifyCredentials(string name, string ip, string port)
+        public List<string> VerifyCredentials(string name, string ip, string port, string email, string url)
         {
             Trace.WriteLine("[UX] Enetering HomeScreen Now");
             bool verified = false;
@@ -39,7 +39,7 @@ namespace PlexShareApp
             {
                 Trace.WriteLine("[UX] Instaniating a server");
                 MeetingCredentials meetingCredentials = serverSessionManager.GetPortsAndIPAddress();
-                verified = clientSessionManager.AddClient(meetingCredentials.ipAddress, meetingCredentials.port, name);
+                verified = clientSessionManager.AddClient(meetingCredentials.ipAddress, meetingCredentials.port, name, email, url);
                 ip = meetingCredentials.ipAddress;
                 port = meetingCredentials.port.ToString();
                 isServer = true;
@@ -47,7 +47,7 @@ namespace PlexShareApp
             else
             {
                 Trace.WriteLine("[UX] Instaniating a client");
-                verified = clientSessionManager.AddClient(ip, int.Parse(port), name);
+                verified = clientSessionManager.AddClient(ip, int.Parse(port), name, email, url);
                 isServer = false;
             }
 
