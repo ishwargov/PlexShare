@@ -1,4 +1,4 @@
-﻿// This file contains the implementation of Server session manager.
+// This file contains the implementation of Server session manager.
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

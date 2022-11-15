@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using PlexShareContent;
@@ -54,6 +54,7 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
         public ClientSessionManager()
         {
             moduleIdentifier = "Dashboard";
+
             _serializer = new DashboardSerializer();
             _communicator = CommunicationFactory.GetCommunicator();
             _communicator.Subscribe(moduleIdentifier, this);

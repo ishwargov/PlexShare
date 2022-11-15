@@ -1,4 +1,4 @@
-﻿/******************************************************************************
+/******************************************************************************
  * Filename    = MainScreenView.xaml.cs
  *
  * Author      = Neel Kabra
@@ -49,6 +49,7 @@ namespace PlexShareApp
         private static ScreenshareServerView screenshareServerView;
         private static ScreenshareClientView screenshareClientView;
         public event PropertyChangingEventHandler? PropertyChanged;
+ 
         private bool isServer;
         
         public MainScreenView(string name, string email, string picPath, string url, string ip, string port)
@@ -91,6 +92,10 @@ namespace PlexShareApp
 
                 Trace.WriteLine("[UX] Setting the IP:Port");
                 ServerIPandPort.Text = "Server IP : " + verified[1] + " Port : " + verified[2];
+            }
+            else
+            {
+
             }
 
             else
