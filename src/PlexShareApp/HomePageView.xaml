@@ -20,7 +20,10 @@
         mc:Ignorable="d"
         WindowStartupLocation = "CenterScreen"
         Title="HomePageView"
-        MinWidth="1411" MinHeight="800" WindowStyle="None" Height="722" Width="1291">
+        MinWidth="1411" MinHeight="800" WindowStyle="None" Height="722" Width="1291"
+        ResizeMode="CanResizeWithGrip"
+        AllowsTransparency="True"
+        SizeChanged="Window_SizeChanged" >
     <Window.Resources>
         <Style TargetType="TextBox" x:Key="Round_textbox">
             <Setter Property="Height" Value="50"/>
@@ -132,7 +135,7 @@
             <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="5" Grid.ColumnSpan="2" HorizontalAlignment="Right">
                 <!--Maximize Button-->
                 <Button Width="25"  Height="20" Click="MinimizeApp"
-                                Background="Transparent" ToolTip="Maximise"
+                                Background="Transparent" 
                                 BorderBrush="Transparent">
                     <materialDesign:PackIcon Kind="WindowMinimize" Width="16" Height="16" VerticalAlignment="Center"/>
                 </Button>
