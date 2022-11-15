@@ -12,19 +12,22 @@ namespace PlexShareApp
     /// 
     public partial class ScreenshareClientView : Page
     {
-        //Constructor for the class ScreenshareClientView
-        //Set the current DataContext as viewmodel
+        /// <summary>
+        /// Constructor for the class ScreenshareClientView
+        /// Set the current DataContext as viewmodel
+        /// Initialise the value of SharingScreen to false as initially screen won't be shared
+        /// </summary>
         public ScreenshareClientView()
         {
             InitializeComponent();
             ScreenshareClientViewModel viewModel = new();
             this.DataContext = viewModel;
+            viewModel.SharingScreen = false;
         }
 
         /// <summary>
         /// This function is triggered when the user clicks on the Stop Screen Share Button 
-        /// It will set the property Sharing Screen to false and call the viewmodel on it
-        /// It will set the visibility of panels according to the boolean
+        /// It sets the value of SharingScreen boolean to false as screen is not being shared 
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -33,8 +36,6 @@ namespace PlexShareApp
             if (this.DataContext is ScreenshareClientViewModel viewModel)
             {
                 viewModel.SharingScreen = false;
-                SharedScreen.Visibility = Visibility.Collapsed;
-                NotSharedScreen.Visibility = Visibility.Visible;
             }
 
             Trace.WriteLine(Utils.GetDebugMessage("Stop Share Button Clicked", withTimeStamp: true));
@@ -42,8 +43,7 @@ namespace PlexShareApp
 
         /// <summary>
         /// This function is triggered when the user clicks on the Start Screen Share Button 
-        /// It will set the property Sharing Screen to true and call the viewmodel on it
-        /// It will set the visibility of panels according to the boolean
+        /// It sets the value of SharingScreen boolean to true as screen is being shared 
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -52,11 +52,9 @@ namespace PlexShareApp
             if (this.DataContext is ScreenshareClientViewModel viewModel)
             {
                 viewModel.SharingScreen = true;
-                SharedScreen.Visibility = Visibility.Visible;
-                NotSharedScreen.Visibility = Visibility.Collapsed;
             }
 
-            Trace.WriteLine(Utils.GetDebugMessage("Stop Button Clicked", withTimeStamp: true));
+            Trace.WriteLine(Utils.GetDebugMessage("Start Share Button Clicked", withTimeStamp: true));
         }
     }
 }

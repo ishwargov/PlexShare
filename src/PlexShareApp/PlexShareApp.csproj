@@ -38,11 +38,16 @@
 		<None Remove="Assets\ZIndexTool.png" />
 		<None Remove="Icons\.png" />
 	  <None Remove="Icons\924-100x100.jpg" />
+	  <None Remove="Icons\chevron-left.png" />
+	  <None Remove="Icons\chevron-right.png" />
 	  <None Remove="Icons\main.jpeg" />
 	  <None Remove="Icons\NextButton.png" />
+	  <None Remove="Icons\NextPageButton.png" />
 	  <None Remove="Icons\NoClient.gif" />
 	  <None Remove="Icons\notshared.webp" />
 	  <None Remove="Icons\NotSharedScreenBackground.webp" />
+	  <None Remove="Icons\pin-off-outline.png" />
+	  <None Remove="Icons\pin.png" />
 	  <None Remove="Icons\PinButton.png" />
 	  <None Remove="Icons\PinButton_white.png" />
 	  <None Remove="Icons\playbutton.jpeg" />
@@ -53,6 +58,7 @@
 	  <None Remove="Icons\playbutton_white.png" />
 	  <None Remove="Icons\PreviousButton.png" />
 	  <None Remove="Icons\PreviousButton_white.png" />
+	  <None Remove="Icons\PreviousPageButton.png" />
 	  <None Remove="Icons\red_eyes.jpg" />
 	  <None Remove="Icons\SharedScreenBackground.jpeg" />
 	  <None Remove="Icons\StartShare.png" />
@@ -104,11 +110,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Resource Include="Icons\NextButton.png" />
+		<Resource Include="Icons\NextPageButton.png" />
 		<Resource Include="Icons\NoClient.gif" />
 		<Resource Include="Icons\NotSharedScreenBackground.webp" />
 		<Resource Include="Icons\PinButton.png" />
-		<Resource Include="Icons\PreviousButton.png" />
+		<Resource Include="Icons\PreviousPageButton.png" />
 		<Resource Include="Icons\SharedScreenBackground.jpeg" />
 		<Resource Include="Icons\StartShare.png" />
 		<Resource Include="Icons\StopShare.png" />

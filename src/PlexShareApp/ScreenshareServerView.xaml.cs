@@ -13,18 +13,49 @@ namespace PlexShareApp
     {
         /// <summary>
         /// Constructor for the ScreenshareServerView Class
+        /// Initialise the component and the ViewModel
         /// </summary>
         public ScreenshareServerView()
         {
-            //Initialise the component and the ViewModel
+
             InitializeComponent();
             ScreenshareServerViewModel viewModel = ScreenshareServerViewModel.GetInstance();
             this.DataContext = viewModel;
 
-            Trace.WriteLine(Utils.GetDebugMessage("Created the ScreenshareServerView Component\n", withTimeStamp: true));
+            Trace.WriteLine(Utils.GetDebugMessage("Created the ScreenshareServerView Component", withTimeStamp: true));
 
 
             Debug.WriteLine(viewModel.CurrentWindowClients.Count);
+        }
+
+        /// <summary>
+        /// This function increases the current page number by 1
+        /// If on the last page, next page button is not accessible and so is this function 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnNextPageButtonClicked(object sender, RoutedEventArgs e)
+        {
+            ScreenshareServerViewModel? viewModel = this.DataContext as ScreenshareServerViewModel;
+            Debug.Assert(viewModel != null, Utils.GetDebugMessage("View Model could not be created"));
+            viewModel.RecomputeCurrentWindowClients(viewModel.CurrentPage + 1);
+
+            Trace.WriteLine(Utils.GetDebugMessage("Next Page Button Clicked", withTimeStamp: true));
+        }
+
+        /// <summary>
+        /// This function decreases the current page number by 1
+        /// If on the first page, previous button is not accessible and so is this function 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnPreviousPageButtonClicked(object sender, RoutedEventArgs e)
+        {
+            ScreenshareServerViewModel? viewModel = this.DataContext as ScreenshareServerViewModel;
+            Debug.Assert(viewModel != null, Utils.GetDebugMessage("View Model could not be created"));
+            viewModel.RecomputeCurrentWindowClients(viewModel.CurrentPage - 1);
+
+            Trace.WriteLine(Utils.GetDebugMessage("Previous Page Button Clicked", withTimeStamp: true));
         }
 
         /// <summary>
@@ -46,37 +77,7 @@ namespace PlexShareApp
                 viewModel.OnPin(pinButton.CommandParameter.ToString()!);
             }
 
-            Trace.WriteLine(Utils.GetDebugMessage("Pin Button Clicked\n", withTimeStamp: true));
-        }
-
-        /// <summary>
-        /// This function increases the current page number by 1
-        /// If on the last page, next page button is not accessible and so is this function 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnNextPageButtonClicked(object sender, RoutedEventArgs e)
-        {
-            ScreenshareServerViewModel? viewModel = this.DataContext as ScreenshareServerViewModel;
-            Debug.Assert(viewModel != null, Utils.GetDebugMessage("View Model could not be created"));
-            viewModel.CurrentPage += 1;
-
-            Trace.WriteLine(Utils.GetDebugMessage("Next Page Button Clicked\n", withTimeStamp: true));
-        }
-
-        /// <summary>
-        /// This function decreases the current page number by 1
-        /// If on the first page, previous button is not accessible and so is this function 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnPreviousPageButtonClicked(object sender, RoutedEventArgs e)
-        {
-            ScreenshareServerViewModel? viewModel = this.DataContext as ScreenshareServerViewModel;
-            Debug.Assert(viewModel != null, Utils.GetDebugMessage("View Model could not be created"));
-            viewModel.CurrentPage -= 1;
-
-            Trace.WriteLine(Utils.GetDebugMessage("Previous Page Button Clicked\n", withTimeStamp: true));
+            Trace.WriteLine(Utils.GetDebugMessage("Pin Button Clicked", withTimeStamp: true));
         }
 
         /// <summary>
@@ -97,7 +98,7 @@ namespace PlexShareApp
                 viewModel.OnUnpin(someButton.CommandParameter.ToString()!);
             }
 
-            Trace.WriteLine(Utils.GetDebugMessage("Unpin Button Clicked\n", withTimeStamp: true));
+            Trace.WriteLine(Utils.GetDebugMessage("Unpin Button Clicked", withTimeStamp: true));
         }
     }
 }

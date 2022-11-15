@@ -19,22 +19,50 @@
         </Grid.RowDefinitions >
 
         <!-- Create a stack panel which will contain the controls shown when the screen is being shared -->
-        <StackPanel Name ="SharedScreen" Orientation="Vertical" Grid.Row="0" Visibility="Hidden">
+        <StackPanel Name ="SharedScreen" Orientation="Vertical" Grid.Row="0">
 
+            <!-- An image when the screen is being shared -->
             <Image Source="Icons/SharedScreenBackground.jpeg" Height="300" Margin="0,100,0,20"/>
 
+            <!-- Text shown when the image is being shared -->
             <TextBlock Text="You are being watched!" Foreground="IndianRed" 
                    FontSize="60" FontFamily="Comic Sans MS" TextWrapping="WrapWithOverflow" HorizontalAlignment="Center"/>
+
+            <!-- Make this panel visible only when the screen is being shared -->
+            <StackPanel.Resources>
+                <Style TargetType="StackPanel">
+                    <Setter Property="Visibility" Value="Hidden"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding SharingScreen, Mode=OneWay}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Resources>
 
         </StackPanel>
 
         <!-- Create a stack panel which will contain the controls shown when the screen is not being shared -->
         <StackPanel Name="NotSharedScreen" Orientation="Vertical" Grid.Row="0">
 
+            <!-- An image when the screen is being shared -->
             <Image gif:AnimationBehavior.SourceUri="Icons/NotSharedScreenBackground.webp" Name="Main" Height="400" Margin="0,100,0,20"/>
 
+            <!-- Text shown when the image is being shared -->
             <TextBlock Name="MainText" Text="You are not sharing your screen" Foreground="IndianRed" 
                    FontSize="60" FontFamily="Comic Sans MS" TextWrapping="WrapWithOverflow" HorizontalAlignment="Center"/>
+
+            <!-- Make this panel visible only when the screen is not being shared -->
+            <StackPanel.Resources>
+                <Style TargetType="StackPanel">
+                    <Setter Property="Visibility" Value="Visible"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding SharingScreen, Mode=OneWay}" Value="True">
+                            <Setter Property="Visibility" Value="Hidden"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Resources>
 
         </StackPanel>
 
@@ -60,14 +88,9 @@
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
-                    <!-- Make the button rounded and decrease its opacity on hover -->
+                    <!-- Make the button rounded -->
                     <Style TargetType="Border">
                         <Setter Property="CornerRadius" Value="50"/>
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Opacity" Value="0.4"/>
-                            </Trigger>
-                        </Style.Triggers>
                     </Style>
                 </Button.Resources>
             </Button>
@@ -83,17 +106,12 @@
                 <Image Source = "\Icons\StopShare.png" Height="27"/>
                 <!-- Style the button -->
                 <Button.Resources>
-                    <!-- When the button is active, it will have certain colour -->
-                    <!-- Depending on the boolean, the button will get deactivated and its colour will change -->
+                    <!-- Make the button rounded -->
                     <Style TargetType="Border">
                         <Setter Property="CornerRadius" Value="50"/>
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Opacity" Value="0.4"/>
-                            </Trigger>
-                        </Style.Triggers>
                     </Style>
-                    <!-- Make the button rounded and decrease its opacity on hover -->
+                    <!-- When the button is active, it will have certain colour -->
+                    <!-- Depending on the boolean, the button will get deactivated and its colour will change -->
                     <Style TargetType="Button">
                         <Setter Property="Background" Value="Red"/>
                         <Style.Triggers>
