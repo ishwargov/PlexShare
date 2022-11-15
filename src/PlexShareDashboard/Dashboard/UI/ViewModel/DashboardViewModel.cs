@@ -325,7 +325,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
 
             //hi this is development branch for this purpose 
-            SummaryContentSetter = "";
+            SummaryContentSetter = "An apple is an edible fruit produced by an apple tree (Malus domestica). Apple trees are cultivated worldwide and are the most widely grown species in the genus Malus. The tree originated in Central Asia, where its wild ancestor, Malus sieversii, is still found today. Apples have been grown for thousands of years in Asia and Europe and were brought to North America by European colonists. Apples have religious and mythological significance in many cultures, including Norse, Greek, and European Christian tradition.\r\n\r\nApples grown from seed tend to be very different from those of their parents, and the resultant fruit frequently lacks desired characteristics. Generally, apple cultivars are propagated by clonal grafting onto rootstocks. Apple trees grown without rootstocks tend to be larger and much slower to fruit after planting. Rootstocks are used to control the speed of growth and the size of the resulting tree, allowing for easier harvesting.An apple is an edible fruit produced by an apple tree (Malus domestica). Apple trees are cultivated worldwide and are the most widely grown species in the genus Malus. The tree originated in Central Asia, where its wild ancestor, Malus sieversii, is still found today. Apples have been grown for thousands of years in Asia and Europe and were brought to North America by European colonists. Apples have religious and mythological significance in many cultures, including Norse, Greek, and European Christian tradition.\r\n\r\nApples grown from seed tend to be very different from those of their parents, and the resultant fruit frequently lacks desired characteristics. Generally, apple cultivars are propagated by clonal grafting onto rootstocks. Apple trees grown without rootstocks tend to be larger and much slower to fruit after planting. Rootstocks are used to control the speed of growth and the size of the resulting tree, allowing for easier harvesting.";
 
 
 
@@ -347,18 +347,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         }
 
 
-        public static class BitmapConversion
-        {
-            public static BitmapSource BitmapToBitmapSource(Bitmap source)
-            {
-                return System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
-                              source.GetHbitmap(),
-                              IntPtr.Zero,
-                              Int32Rect.Empty,
-                              BitmapSizeOptions.FromEmptyOptions());
-            }
-        }
-
+     
         public void SetLeaveButtonAccordingToUser()
         {
             UserData currUser =  clientSessionManager.GetUser();
@@ -522,37 +511,6 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
         }
 
-
-        //string DownloadImage(string url, string userEmail)
-        //{
-        //    string imageName = "";
-        //    int len_email = userEmail.Length;
-        //    for (int i = 0; i < len_email; i++)
-        //    {
-        //        if (userEmail[i] == '@')
-        //            break;
-        //        imageName += userEmail[i];
-        //    }
-
-        //    string dir = Environment.GetEnvironmentVariable("temp", EnvironmentVariableTarget.User);
-        //    string absolute_path = System.IO.Path.Combine(dir, imageName);
-        //    //if (File.Exists(absolute_path))
-        //    //{
-        //    //    var image = Image.FromFile(absolute_path);
-
-        //    //    image.Dispose(); // this removes all resources
-
-        //    //    //later...
-
-        //    //    File.Delete(absolute_path); //now works
-        //    //    //File.Delete(absolute_path);
-        //    //}
-        //    using (WebClient webClient = new())
-        //    {
-        //        webClient.DownloadFile(url, absolute_path);
-        //    }
-        //    return absolute_path;
-        //}
 
 
         //function to update the ParticipantsList of viewmodel 
@@ -882,7 +840,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             UpdateUserIdVsChatCount(sessionAnalytics.chatCountForEachUser);
 
             //calculating the engagement rate 
-            CalculateEngagementRate(sessionAnalytics.chatCountForEachUser);
+            CalculateEngagementRate(sessionAnalytics.userNameVsChatCount);
 
             //calling the function to update and show the username vs chat count 
             UpdateUserNameVsChatCount(sessionAnalytics.userNameVsChatCount);
@@ -899,9 +857,9 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
         //############################################################################## 
         //Function to calculate the engagement rate 
-        public void CalculateEngagementRate(Dictionary<int, int> currChatCountForEachUser)
+        public void CalculateEngagementRate(Dictionary<string, int> currUserNameVsChatCount)
         {
-            int activeMembers = currChatCountForEachUser.Count;
+            int activeMembers = currUserNameVsChatCount.Count;
 
             float EngagementRate = (float)(activeMembers*100) / MaxTotalParticipantsCountSetter;
             EngagementRateSetter = EngagementRate.ToString("0") + "%";
