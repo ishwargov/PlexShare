@@ -50,25 +50,6 @@ namespace PlexShareScreenshare.Server
         };
 
         /// <summary>
-        /// Acts as a map from the number of screens on the current window
-        /// to the resolution of each screen image inside the grid cell
-        /// displayed on the screen.
-        /// </summary>
-        public static readonly List<(int Height, int Width)> Resolution = new()
-        {
-            (0, 0),      // 0 Total Screen
-            (100, 100),  // 1 Total Screen
-            (100, 100),  // 2 Total Screens
-            (100, 100),  // 3 Total Screens
-            (100, 100),  // 4 Total Screens
-            (100, 100),  // 5 Total Screens
-            (100, 100),  // 6 Total Screens
-            (100, 100),  // 7 Total Screens
-            (100, 100),  // 8 Total Screens
-            (100, 100)   // 9 Total Screens
-        };
-
-        /// <summary>
         /// The only singleton instance for this class.
         /// </summary>
         private static ScreenshareServerViewModel? _instance;
@@ -180,16 +161,6 @@ namespace PlexShareScreenshare.Server
         }
 
         /// <summary>
-        /// Gets the dispatcher to the main thread. In case it is not available
-        /// (such as during unit testing) the dispatcher associated with the
-        /// current thread is returned.
-        /// </summary>
-        private static Dispatcher ApplicationMainThreadDispatcher =>
-            (Application.Current?.Dispatcher != null) ?
-                    Application.Current.Dispatcher :
-                    Dispatcher.CurrentDispatcher;
-
-        /// <summary>
         /// Gets the clients which are on the current page.
         /// </summary>
         public ObservableCollection<SharedClientScreen> CurrentWindowClients { get; private set; }
@@ -242,6 +213,16 @@ namespace PlexShareScreenshare.Server
         public int CurrentPageColumns { get; private set; }
 
         /// <summary>
+        /// Gets the dispatcher to the main thread. In case it is not available
+        /// (such as during unit testing) the dispatcher associated with the
+        /// current thread is returned.
+        /// </summary>
+        private static Dispatcher ApplicationMainThreadDispatcher =>
+            (Application.Current?.Dispatcher != null) ?
+                    Application.Current.Dispatcher :
+                    Dispatcher.CurrentDispatcher;
+
+        /// <summary>
         /// Gets a singleton instance of "ScreenshareServerViewModel" class.
         /// </summary>
         /// <returns>
@@ -252,40 +233,6 @@ namespace PlexShareScreenshare.Server
             // Create a new instance if it was null before
             _instance ??= new();
             return _instance;
-        }
-
-        /// <summary>
-        /// Moves the subscribers marked as pinned to the front of the list
-        /// keeping the lexicographical order of their name.
-        /// </summary>
-        /// <param name="subscribers">
-        /// Input list of subscribers.
-        /// </param>
-        /// <returns>
-        /// List of subscribers with pinned subscribers in front.
-        /// </returns>
-        private static List<SharedClientScreen> MovePinnedSubscribers(List<SharedClientScreen> subscribers)
-        {
-            Debug.Assert(subscribers != null, Utils.GetDebugMessage("Received null subscribers list"));
-
-            // Separate pinned and unpinned subscribers
-            List<SharedClientScreen> pinnedSubscribers = new();
-            List<SharedClientScreen> unpinnedSubscribers = new();
-
-            foreach (SharedClientScreen subscriber in subscribers)
-            {
-                if (subscriber.Pinned)
-                {
-                    pinnedSubscribers.Add(subscriber);
-                }
-                else
-                {
-                    unpinnedSubscribers.Add(subscriber);
-                }
-            }
-
-            // Join both the lists with pinned subscribers followed by the unpinned ones
-            return pinnedSubscribers.Concat(unpinnedSubscribers).ToList();
         }
 
         /// <summary>
@@ -321,8 +268,8 @@ namespace PlexShareScreenshare.Server
             // The new number of rows and columns to be displayed based on new number of clients
             var (newNumRows, newNumCols) = NumRowsColumns[numNewWindowClients];
 
-            // The new resolution of screen image to be displayed based on new number of clients
-            (int, int) newResolution = Resolution[numNewWindowClients];
+            // The new tile dimensions of screen image to be displayed based on new number of clients
+            (int Height, int Width) newTileDimensions = GetTileDimensions(newNumRows, newNumCols);
 
             // Get the total number of pages
             int newTotalPages = GetTotalPages();
@@ -337,7 +284,7 @@ namespace PlexShareScreenshare.Server
                             (int Height, int Width),
                             int,
                             bool
-                        >((clients, numRows, numCols, resolution, totalPages, isLastPage) =>
+                        >((clients, numRows, numCols, tileDimensions, totalPages, isLastPage) =>
                         {
                             lock (this)
                             {
@@ -347,8 +294,8 @@ namespace PlexShareScreenshare.Server
                                 this.CurrentWindowClients.Clear();
                                 foreach (SharedClientScreen screen in clients)
                                 {
-                                    screen.TileHeight = resolution.Height;
-                                    screen.TileWidth = resolution.Width;
+                                    screen.TileHeight = tileDimensions.Height;
+                                    screen.TileWidth = tileDimensions.Width;
                                     this.CurrentWindowClients.Add(screen);
                                 }
 
@@ -367,12 +314,12 @@ namespace PlexShareScreenshare.Server
                         newWindowClients,
                         newNumRows,
                         newNumCols,
-                        newResolution,
+                        newTileDimensions,
                         newTotalPages,
                         this.CurrentPage == newTotalPages);
 
             // Notifies the old and new clients about the status of sending image packets.
-            NotifySubscribers(previousWindowClients, newWindowClients, newResolution);
+            NotifySubscribers(previousWindowClients, newWindowClients, (newNumRows, newNumCols));
 
             Trace.WriteLine(Utils.GetDebugMessage($"Successfully recomputed current window clients for the page {this.CurrentPage}", withTimeStamp: true));
         }
@@ -461,6 +408,71 @@ namespace PlexShareScreenshare.Server
         }
 
         /// <summary>
+        /// Moves the subscribers marked as pinned to the front of the list
+        /// keeping the lexicographical order of their name.
+        /// </summary>
+        /// <param name="subscribers">
+        /// Input list of subscribers.
+        /// </param>
+        /// <returns>
+        /// List of subscribers with pinned subscribers in front.
+        /// </returns>
+        private static List<SharedClientScreen> MovePinnedSubscribers(List<SharedClientScreen> subscribers)
+        {
+            Debug.Assert(subscribers != null, Utils.GetDebugMessage("Received null subscribers list"));
+
+            // Separate pinned and unpinned subscribers
+            List<SharedClientScreen> pinnedSubscribers = new();
+            List<SharedClientScreen> unpinnedSubscribers = new();
+
+            foreach (SharedClientScreen subscriber in subscribers)
+            {
+                if (subscriber.Pinned)
+                {
+                    pinnedSubscribers.Add(subscriber);
+                }
+                else
+                {
+                    unpinnedSubscribers.Add(subscriber);
+                }
+            }
+
+            // Join both the lists with pinned subscribers followed by the unpinned ones
+            return pinnedSubscribers.Concat(unpinnedSubscribers).ToList();
+        }
+
+        /// <summary>
+        /// Gets the tile dimensions in the grid displayed on the screen
+        /// based on the number of rows and columns presented.
+        /// </summary>
+        /// <param name="rows">
+        /// Number of rows of the grid on the screen
+        /// </param>
+        /// <param name="columns">
+        /// Number of columns of the grid on the screen
+        /// </param>
+        /// <returns>
+        /// A tuple having the height and width of the each grid tile
+        /// </returns>
+        private static (int Height, int Width) GetTileDimensions(int rows, int columns)
+        {
+            // Get the total system height and width
+            double screenHeight = SystemParameters.PrimaryScreenHeight;
+            double screenWidth = SystemParameters.PrimaryScreenWidth;
+
+            // The margins which are kept on the UI
+            double marginBetweenImages = (rows + 1) * 6;
+            double otherMargins = 100;
+
+            // Compute the tile height and width
+            double remainingHeight = screenHeight - marginBetweenImages - otherMargins;
+            int tileHeight = (int)Math.Floor(remainingHeight / rows);
+            int tileWidth = (int)Math.Floor(screenWidth / columns);
+
+            return (tileHeight, tileWidth);
+        }
+
+        /// <summary>
         /// Notify the previous/new window clients to stop/send their image packets.
         /// It also asks the previous/new window clients to stop/start their image processing.
         /// </summary>
@@ -470,17 +482,17 @@ namespace PlexShareScreenshare.Server
         /// <param name="currentWindowClients">
         /// List of clients which are there in the current window
         /// </param>
-        /// <param name="resolution">
-        /// Resolution of the image to be sent by the current window clients
+        /// <param name="numRowsColumns">
+        /// Number of rows and columns for the resolution of the image to be sent by the current window clients
         /// </param>
-        private void NotifySubscribers(List<SharedClientScreen> prevWindowClients, List<SharedClientScreen> currentWindowClients, (int, int) resolution)
+        private void NotifySubscribers(List<SharedClientScreen> prevWindowClients, List<SharedClientScreen> currentWindowClients, (int, int) numRowsColumns)
         {
             Debug.Assert(_model != null, Utils.GetDebugMessage("_model is found null"));
 
             // Ask all the current window clients to start sending image packets with the specified resolution
             _model.BroadcastClients(currentWindowClients
                                     .Select(client => client.Id)
-                                    .ToList(), nameof(ServerDataHeader.Send), resolution);
+                                    .ToList(), nameof(ServerDataHeader.Send), numRowsColumns);
 
             try
             {
@@ -547,7 +559,7 @@ namespace PlexShareScreenshare.Server
             // Ask all the previous window clients to stop sending image packets
             _model.BroadcastClients(prevWindowClients
                                     .Select(client => client.Id)
-                                    .ToList(), nameof(ServerDataHeader.Stop), Resolution[0]);
+                                    .ToList(), nameof(ServerDataHeader.Stop), (1, 1));
 
             // Ask all the previous window clients to stop processing their images
             foreach (SharedClientScreen client in prevWindowClients)

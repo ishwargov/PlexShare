@@ -32,10 +32,6 @@ namespace PlexShareScreenshare.Client
             StopImageSending();
             StopConfirmationSending();
 
-            // Stops the processing and the capturing module
-            _processor.StopProcessing();
-            _capturer.StopCapture();
-
             // Sending de-rgister request to server
             _communicator.Send(serializedDeregisterPacket, Utils.ModuleIdentifier, null);
             Trace.WriteLine(Utils.GetDebugMessage("Successfully sent DEREGISTER packet to server", withTimeStamp: true));
@@ -71,6 +67,10 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         private async void StopImageSending()
         {
+            _capturer.StopCapture().Wait();
+            _processor.StopProcessing().Wait();
+            Trace.WriteLine(Utils.GetDebugMessage("Successfully stopped capturer and processor"));
+
             Debug.Assert(_imageCancellationTokenSource != null,
                 Utils.GetDebugMessage("_imageCancellationTokenSource is not null, cannot stop image sending"));
             Debug.Assert(_sendImageTask != null,
@@ -129,7 +129,7 @@ namespace PlexShareScreenshare.Client
         {
             _id = id;
             _name = name;
-            Trace.WriteLine(Utils.GetDebugMessage("Successfully set client name and id", withTimeStamp: true));
+            Trace.WriteLine(Utils.GetDebugMessage("Successfully set client name and id"));
         }
     }
 }

@@ -185,6 +185,7 @@ namespace PlexShareScreenshare.Server
         public void OnTimeOut(object? source, ElapsedEventArgs e, string clientId)
         {
             DeregisterClient(clientId);
+            Trace.WriteLine(Utils.GetDebugMessage($"Timeout occurred for the client with id: {clientId}", withTimeStamp: true));
         }
 
         /// <summary>
@@ -235,10 +236,11 @@ namespace PlexShareScreenshare.Server
         /// Corresponding header to send with the data packet.
         /// Should be a string value of the enum "ServerDataHeader"
         /// </param>
-        /// <param name="resolution">
-        /// Resolution of the image to send if asking the clients to send image packet
+        /// <param name="numRowsColumns">
+        /// Resolution of the image based on the number of rows and columns
+        /// to send if asking the clients to send image packet
         /// </param>
-        public void BroadcastClients(List<string> clientIds, string headerVal, (int Height, int Width) resolution)
+        public void BroadcastClients(List<string> clientIds, string headerVal, (int Rows, int Cols) numRowsColumns)
         {
             Debug.Assert(_communicator != null, Utils.GetDebugMessage("_communicator is found null"));
 
@@ -256,8 +258,8 @@ namespace PlexShareScreenshare.Server
             // Serialize the data to send
             try
             {
-                Resolution resolutionToSend = new() { Height = resolution.Height, Width = resolution.Width };
-                string serializedData = JsonSerializer.Serialize(resolutionToSend);
+                int product = numRowsColumns.Rows * numRowsColumns.Cols;
+                string serializedData = JsonSerializer.Serialize(product);
 
                 // Create the data packet to send
                 DataPacket packet = new("1", "Server", headerVal, serializedData);
@@ -325,6 +327,13 @@ namespace PlexShareScreenshare.Server
         private void RegisterClient(string clientId, string clientName)
         {
             Debug.Assert(_subscribers != null, Utils.GetDebugMessage("_subscribers is found null"));
+
+            // Check if the clientId is present in the screen sharers list
+            if (_subscribers.ContainsKey(clientId))
+            {
+                Trace.WriteLine(Utils.GetDebugMessage($"Trying to register an already registered client with id {clientId}", withTimeStamp: true));
+                return;
+            }
 
             try
             {
