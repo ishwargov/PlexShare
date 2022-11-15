@@ -230,10 +230,13 @@ namespace PlexShareTests.DashboardTests.SessionManagement
         public void AddClientProcedureServerSide_ClientArrives_NewClientAddedToServer(string username)
         {
             Setup();
+            _clientSessionManager.SetUser(username,-1);
+            
             ClientToServerData clientToServerData = new("addClient", username);
             string serializedData = _serializer.Serialize(clientToServerData);
          
             _serverSessionManager.OnClientJoined(null);
+            _clientSessionManager.OnDataReceived(_fakeCommunicator.transferredData);
 
             try
             {
@@ -244,6 +247,7 @@ namespace PlexShareTests.DashboardTests.SessionManagement
                 Assert.Equal("addClient", serverToClientData.eventType);
                 Assert.Equal(receiveduser.username, username);
                 Assert.NotNull(receiveduser.userID);
+                Assert.NotEqual(-1, _clientSessionManager.GetUser().userID );
             }
             catch(Exception e)
             {
@@ -263,7 +267,7 @@ namespace PlexShareTests.DashboardTests.SessionManagement
                 var serializedData = _serializer.Serialize(clientToServerData);
 
                 _serverSessionManager.OnClientJoined(null);
-                _serverSessionManager.FakeClientArrivalProcedure(clientToServerData);
+                _serverSessionManager.ClientArrivalProcedure(clientToServerData);
             }
 
             // The updated session data which includes new users is now sent from server to the client side
@@ -423,7 +427,7 @@ namespace PlexShareTests.DashboardTests.SessionManagement
                 var serializedData = _serializer.Serialize(clientToServerData);
 
                 _serverSessionManager.OnClientJoined(null);
-                _serverSessionManager.FakeClientArrivalProcedure(clientToServerData);
+                _serverSessionManager.ClientArrivalProcedure(clientToServerData);
             }
 
             _clientSessionManager.SetUser(users.Last().username, users.Last().userID);
@@ -497,7 +501,7 @@ namespace PlexShareTests.DashboardTests.SessionManagement
             }
             catch (Exception e)
             {
-                Assert.Equal("Value cannot be null. (Parameter 'Null SerializedObject as Argument')", e.Message);
+                Assert.Equal("Value cannot be null. (Parameter '[Dashboard] Null SerializedObject as Argument')", e.Message);
             }
         }
 
@@ -513,7 +517,7 @@ namespace PlexShareTests.DashboardTests.SessionManagement
                 var serializedData = _serializer.Serialize(clientToServerData);
 
                 _serverSessionManager.OnClientJoined(null);
-                _serverSessionManager.FakeClientArrivalProcedure(clientToServerData);
+                _serverSessionManager.ClientArrivalProcedure(clientToServerData);
             }
             _clientSessionManager.SetUser(users.Last().username, users.Last().userID);
             _clientSessionManager.SetSessionUsers(users);

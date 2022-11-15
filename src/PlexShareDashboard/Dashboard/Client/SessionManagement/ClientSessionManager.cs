@@ -95,11 +95,11 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
         {
             if (serializedData == null)  //if recieved string is null
             {
-                Trace.WriteLine("Null Serialized Data recieved from network");
-                throw new ArgumentNullException("Null SerializedObject as Argument");
+                Trace.WriteLine("[Dashboard] Null Serialized Data recieved from network");
+                throw new ArgumentNullException("[Dashboard] Null SerializedObject as Argument");
                 // return;
             }
-            Trace.WriteLine("Data Recieved from Network");
+            Trace.WriteLine("[Dashboard] Data Recieved from Network");
             // Deserialize the data when it arrives
             var deserializedObject = _serializer.Deserialize<ServerToClientData>(serializedData);
 
@@ -161,6 +161,7 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
         //     Adds a user to the meeting.
         public bool AddClient(string ipAddress, int port, string username, string email = null, string photoUrl = null)  //added
         {
+            Trace.WriteLine("[Dashboard] AddClient() is called");
             // Null or whitespace named users are not allowed
             if (string.IsNullOrWhiteSpace(username))
             {
@@ -190,33 +191,37 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
         //     End the meeting for all, creating and storing the summary and analytics.
         public void EndMeet()
         {
-            Trace.WriteLine("[Dashboard] End Meet is called. Sending to Server to End Meet");
+            Trace.WriteLine("[Dashboard] End Meet is called from Dashboard UX. Sending to Server to End Meet");
             SendDataToServer("endMeet", _user.username, _user.userID);
         }
 
         //     Gather analytics of the users and messages.
         public void GetAnalytics()
         {
-            SendDataToServer("getAnalytics", _user.username, _user.userID);
+            Trace.WriteLine("[Dashboard] GetAnalytics() is called from Dashboard UX");
+
+           SendDataToServer("getAnalytics", _user.username, _user.userID);
         }
 
         //     Get the summary of the chats that were sent from the start of the
         //     meet till the function was called.
         public void GetSummary()
         {
-
+            Trace.WriteLine("[Dashboard] GetSummary() is called from Dashboard UX");
             SendDataToServer("getSummary", _user.username, _user.userID);
         }
 
         //     Fetches the Userdata object of the client.
         public UserData GetUser() //aded
         {
+            Trace.WriteLine("[Dashboard] GetUser() is Called from Dashboard UX");
             return _user;
         }
 
         //change the session mode from lab mode to exam mode and vice versa
         public void ToggleSessionMode()
         {
+            Trace.WriteLine("[Dashboard] ToggleSessionMode() is Called from Dashboard UX");
             SendDataToServer("toggleSession", _user.username, _user.userID);
         }
 
@@ -238,6 +243,8 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
             
             if(testmode == false)
             {
+                CloseProgram();
+               /*
                 Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
                 {
                     Application.Current.Shutdown();
@@ -246,6 +253,7 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
                 // Disposing the Screen Share Client.
                 // _screenShareClient.Dispose();  
                 Trace.WriteLine("[Dashboard] Removed the client from the client side. ");
+               */
             }
            
   
@@ -290,7 +298,7 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
             for (var i = 0; i < _clients.Count; ++i)
                 lock (this)
                 {
-                    Trace.WriteLine("[Dashboard] Notifying UX about the session change. ");
+                    Trace.WriteLine("[Dashboard] Notifying subscribed UX about the session change. ");
                     _clients[i].OnClientSessionChanged(_clientSessionData);
                 }
         }
@@ -308,16 +316,21 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
                     SendDataToServer("addClient", _user.username, _user.userID, _user.userEmail, _user.userPhotoUrl);
                     // clientBoardStateManager.SetUser(_user.userID.ToString());
                     // Whiteboard's user ID set.;
-                    WhiteBoardViewModel WBviewModel = WhiteBoardViewModel.Instance;
-                    WBviewModel.SetUserId(_user.userID);
-
-                    // ScreenShare's user ID and username set.
-                    // if (Environment.GetEnvironmentVariable("TEST_MODE") != "E2E")
-                    //   _screenShareClient.SetUser(_user.userID.ToString(), _user.username);
+                    if (testmode == false)
+                    {
+                        WhiteBoardViewModel WBviewModel = WhiteBoardViewModel.Instance;
+                        WBviewModel.SetUserId(_user.userID);
 
 
-                      ContentClientFactory.SetUser(_user.userID);
-                    // Content's user ID set. 
+
+                        // ScreenShare's user ID and username set.
+                        // if (Environment.GetEnvironmentVariable("TEST_MODE") != "E2E")
+                        //   _screenShareClient.SetUser(_user.userID.ToString(), _user.username);
+
+
+                        ContentClientFactory.SetUser(_user.userID);
+                        // Content's user ID set. 
+                    }
                 }
             }
         }
@@ -431,14 +444,23 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
             _communicator.Stop();
             // _screenShareClient.Dispose();
              MeetingEnded?.Invoke();
-            if(testmode ==false)
-            {
+            
                 Trace.WriteLine("[Dashboard] Shutdown Application");
+               
+            if (testmode == false)
+            {
                 Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
                 {
                     Application.Current.Shutdown();
                 });
-                Environment.Exit(0);
+                try
+                {
+                    Environment.Exit(0);
+                }
+                catch(Exception e)
+                {
+                    Trace.TraceError("[Dashboard] "+ e.Message);
+                }
             }
            
         }

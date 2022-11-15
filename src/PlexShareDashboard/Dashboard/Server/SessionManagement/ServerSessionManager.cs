@@ -80,7 +80,7 @@ namespace Dashboard.Server.SessionManagement
             _sessionData = new SessionData();
             _serializer = new DashboardSerializer();
             _telemetrySubscribers = new List<ITelemetryNotifications>();
-            //  _summarizer = SummarizerFactory.GetSummarizer();
+             _summarizer = SummarizerFactory.GetSummarizer();
             //  _screenShareServer = ScreenShareFactory.GetScreenShareServer();
 
             //   TraceManager traceManager = new();
@@ -240,7 +240,7 @@ namespace Dashboard.Server.SessionManagement
 
         //    When client is added this function updates the session, notifies telemetry and
         //     broadcast the new session data to all users.
-        private void ClientArrivalProcedure(ClientToServerData arrivedClient)
+        public void ClientArrivalProcedure(ClientToServerData arrivedClient)
         {
             // create a new user and add it to the session. 
             var user = CreateUser(arrivedClient.userID, arrivedClient.username, arrivedClient.userEmail, arrivedClient.photoUrl);
@@ -254,19 +254,7 @@ namespace Dashboard.Server.SessionManagement
             SendDataToClient("addClient", _sessionData, null, null, user);
         }
 
-        //this method is added for unit testing purpose to check users are added into SessionData
-        public void FakeClientArrivalProcedure(ClientToServerData arrivedClient)
-        {
-            // create a new user and add it to the session. 
-            var user = new UserData(arrivedClient.username, arrivedClient.userID, arrivedClient.userEmail, arrivedClient.photoUrl);
-            AddUserToSession(user);
-
-            // Notify Telemetry about the change in the session object.
-            NotifyTelemetryModule();
-
-            // serialize and broadcast the data back to the client side.
-            SendDataToClient("addClient", _sessionData, null, null, user);
-        }
+        
 
         //     Creates a new user based on the data arrived from the
         //     client side.
@@ -357,8 +345,16 @@ namespace Dashboard.Server.SessionManagement
             // stopping the communicator and notifying UX server about the End Meet event.
             _communicator.Stop();
             //   _screenShareServer.Dispose();
-           // MeetingEnded?.Invoke();
-           Environment.Exit(0);
+            // MeetingEnded?.Invoke();
+            try
+            {
+                Environment.Exit(0);
+            }
+            catch(Exception e)
+            {
+                Trace.WriteLine("[Dashboard] " + e.Message);
+            }
+          
         }
 
 
