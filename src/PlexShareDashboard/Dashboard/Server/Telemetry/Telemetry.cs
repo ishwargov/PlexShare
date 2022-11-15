@@ -73,7 +73,16 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
                 //we have to update the value of the chat count correspoding to the username for this purpose 
                 string currEmailId = userIdVsEmailId[currUserChatCount.Key];
                 string currUserName = emailIdVsUserName[currEmailId];
-                userNameVsChatCount[currUserName] = currUserChatCount.Value;
+                if (userNameVsChatCount.ContainsKey(currUserName) == false)
+                {
+                    userNameVsChatCount[currUserName] = 0 + currUserChatCount.Value;
+
+                }
+                else
+                { 
+                    userNameVsChatCount[currUserName] = userNameVsChatCount[currUserName] + currUserChatCount.Value;
+                
+                }
             
             }
 
