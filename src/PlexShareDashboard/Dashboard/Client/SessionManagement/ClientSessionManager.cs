@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using PlexShareContent;
@@ -41,7 +41,7 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
         private readonly string moduleIdentifier;
 
         private string _chatSummary;
-        private SessionData _clientSessionData;
+        public SessionData _clientSessionData;
 
         // private readonly ScreenShareClient _screenShareClient;
 
@@ -55,6 +55,7 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
         {
            
             moduleIdentifier = "Dashboard";
+
             _serializer = new DashboardSerializer();
             _communicator = CommunicationFactory.GetCommunicator();
             _communicator.Subscribe(moduleIdentifier, this);
