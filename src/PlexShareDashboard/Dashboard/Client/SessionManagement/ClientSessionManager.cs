@@ -41,7 +41,7 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
         private readonly string moduleIdentifier;
 
         private string _chatSummary;
-        private SessionData _clientSessionData;
+        public SessionData _clientSessionData;
 
         // private readonly ScreenShareClient _screenShareClient;
 

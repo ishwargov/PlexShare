@@ -43,19 +43,24 @@ namespace PlexShareApp
     public partial class MainScreenView : Window
     {
         private bool chatOn;
+        private bool cloudOn;
         private static DashboardPage dashboardPage;
         private static WhiteBoardPage whiteBoardPage;
         private static ChatPageView chatPage;
         private static ScreenshareServerView screenshareServerView;
         private static ScreenshareClientView screenshareClientView;
+        private static UploadPage uploadPage;
+
         public event PropertyChangingEventHandler? PropertyChanged;
 
         private bool isClient;
+        
         public MainScreenView(string name, string email, string picPath, string url, string ip, string port, bool isServer)
         {
 
 
             isClient = !isServer;
+            cloudOn = false;
                 // The client/server was verified to be correct.
             // We can add the client to meeting, and instantiate all modules.
             InitializeComponent();
@@ -63,7 +68,9 @@ namespace PlexShareApp
             dashboardPage = new DashboardPage();
             Trace.WriteLine("[UX] The Dashboard has started");
             chatPage = new ChatPageView();
+
             Trace.WriteLine("[UX] The ChatPage has started");
+          //  uploadPage = new UploadPage();
 
             if (isServer)
             {
@@ -85,7 +92,13 @@ namespace PlexShareApp
 
             Trace.WriteLine("[UX] Setting the IP:Port");
             ServerIPandPort.Text = "Server IP : " + ip + " Port : " + port;
-          
+
+            ClientSessionManager clientSessionManager;
+            clientSessionManager = SessionManagerFactory.GetClientSessionManager();
+            SessionData sessionData= clientSessionManager._clientSessionData;
+            UserData user = clientSessionManager.GetUser();
+            uploadPage = new UploadPage(sessionData.sessionId.ToString(), user.userEmail);
+
         }
 
         /// <summary>
@@ -147,12 +160,30 @@ namespace PlexShareApp
                 Trace.WriteLine("[UX] Rendering Chat");
                 chatOn = true;
                 ScreenWithChat.Content = chatPage;
+                Chat.Background = Brushes.DarkCyan;
             }
             else
             {
                 Trace.WriteLine("[UX] Removing Chat");
                 chatOn=false;
                 ScreenWithChat.Content = null;
+                Chat.Background = Brushes.Transparent;
+            }
+        }
+
+        private void UploadClick(object sender, RoutedEventArgs e)
+        {
+            if (cloudOn)
+            {
+                Cloud.Background = Brushes.Transparent;
+                cloudOn = false;
+                CloudPage.Content = null;
+            }
+            else
+            {
+                Cloud.Background = Brushes.DarkCyan;
+                cloudOn = true;
+                CloudPage.Content = uploadPage;
             }
         }
 
@@ -173,6 +204,7 @@ namespace PlexShareApp
             {
                 Application.Current.Shutdown();
             });
+            System.Environment.Exit(0);
         }
 
         ///<summary>

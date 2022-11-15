@@ -100,6 +100,7 @@ namespace PlexShareApp
         private void CloseApp(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
+            Environment.Exit(0);
         }
 
         ///<summary>

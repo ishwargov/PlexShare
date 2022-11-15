@@ -79,7 +79,7 @@ namespace PlexShareApp
             // Function to start the animation
 
             Task task = new Task(() => HomePage_Animate(this));
-           task.Start();
+            task.Start();
         }
 
         void HomePage_Animate(HomePageView obj)
@@ -291,6 +291,7 @@ namespace PlexShareApp
         private void CloseApp(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
+            Environment.Exit(0);
         }
 
         /// <summary>
