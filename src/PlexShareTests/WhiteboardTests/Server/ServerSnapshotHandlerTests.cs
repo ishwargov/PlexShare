@@ -28,7 +28,7 @@ namespace PlexShareTests.WhiteboardTests.Server
             }
         }
         [Fact]
-        public void ServerSnapshotHandler_SaveSnapshotTesting()
+        public void SaveSnapshotTest()
         {
             Boolean flag = true;
             for (var i = 1; i <= 4; i++)
@@ -43,14 +43,14 @@ namespace PlexShareTests.WhiteboardTests.Server
             Assert.True(flag);
         }
         [Fact]
-        public void GetCheckPointNumber_returns_checkPointNumber()
+        public void GetSnapshotNumberTest()
         {
             var checkpointNumbers = _serverSnapshotHandler.GetSnapshotNumber();
             Assert.Equal(4, checkpointNumbers);
         }
 
         [Fact]
-        public void FetchCheckpoint_Testing()
+        public void LoadBoardTest()
         {
             List<List<ShapeItem>> loadedShapeItems = new();
             for (var i = 1; i <= 4; i++)
@@ -66,7 +66,7 @@ namespace PlexShareTests.WhiteboardTests.Server
         }
 
         [Fact]
-        public void FetchCheckpoint_Fails()
+        public void LoadBoard_FailTest()
         {
             var boardShape = _serverSnapshotHandler.LoadBoard(5);
             Assert.Null(boardShape);
