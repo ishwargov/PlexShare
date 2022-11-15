@@ -53,7 +53,8 @@ namespace PlexShareWhiteboard.BoardComponents
             SerializableShapeItem y = new SerializableShapeItem
             {
                 FontSize = x.FontSize,
-                GeometryString = x.GeometryString,
+                //GeometryString = x.GeometryString,
+                GeometryString = x.Geometry.GetType().Name,
                 TextString = x.TextString,
                 PointList = x.PointList,
                 Start = x.Start,

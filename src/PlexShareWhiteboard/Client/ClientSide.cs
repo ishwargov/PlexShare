@@ -32,6 +32,7 @@ namespace PlexShareWhiteboard.Client
         ClientSnapshotHandler _snapshotHandler;
 
         private static ClientSide instance;
+        private WhiteBoardViewModel _vm;
 
         // To create only a single instance of ClientSide
         public static ClientSide Instance
@@ -54,10 +55,17 @@ namespace PlexShareWhiteboard.Client
             userID = userId;
         }
 
-  
+        //public void SetVMRef(WhiteBoardViewModel vm)
+        //{
+        //    _vm = vm;
+        //    _communicator.SetVMRef(_vm);
+        //}
+
+
         private ClientSide()
         {
             _communicator = ClientCommunicator.Instance;
+            _vm = WhiteBoardViewModel.Instance;
             _serializer = new Serializer();
             NewUserHandler();
         }
@@ -71,23 +79,15 @@ namespace PlexShareWhiteboard.Client
         /// <param name="op">Operation to be sent to Server</param>
         public void OnShapeReceived(ShapeItem boardShape, Operation op)
         {
-            if (boardShape == null)
-            {
-                List<ShapeItem> newShapes = new List<ShapeItem>();
-                newShapes.Add(boardShape);
-                var newSerializedShapes = _serializer.ConvertToSerializableShapeItem(newShapes);
-                WBServerShape wbShape = new WBServerShape(newSerializedShapes, op);
-                _communicator.SendToServer(wbShape);
-            }
-            else
-            {
-                List<ShapeItem> newShapes = new List<ShapeItem>();
-                newShapes.Add(boardShape);
+            
+            List<ShapeItem> newShapes = new List<ShapeItem>();
+            newShapes.Add(boardShape);
 
-                var newSerializedShapes = _serializer.ConvertToSerializableShapeItem(newShapes);
-                WBServerShape wbShape = new WBServerShape(newSerializedShapes, op, boardShape.User);
-                _communicator.SendToServer(wbShape);
-            }   
+            var newSerializedShapes = _serializer.ConvertToSerializableShapeItem(newShapes);
+            WBServerShape wbShape = new WBServerShape(newSerializedShapes, op);
+            //WBServerShape wbShape = new WBServerShape(newSerializedShapes, op, boardShape.User);
+            _communicator.SendToServer(wbShape);
+
         }
 
         public void NewUserHandler()
