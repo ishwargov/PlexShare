@@ -112,6 +112,9 @@ namespace PlexShareApp
                 case "Eraser":
                     Cursor = Cursors.Arrow;
                     break;
+                case "text":
+                    Cursor = Cursors.Arrow;
+                    break;
                 case "Line":
                     Cursor = Cursors.Cross;
                     break;
@@ -184,6 +187,9 @@ namespace PlexShareApp
 
         private void TextboxCreateMode(object sender, RoutedEventArgs e)
         {
+
+            this.currentTool = "text";
+
             viewModel.UnHighLightIt();
             viewModel.select.ifSelected = false;
             Cursor = Cursors.Pen;

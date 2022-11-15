@@ -205,11 +205,13 @@ namespace PlexShareWhiteboard
                     }
                     else
                     {
+                        UnHighLightIt();
                         if (select.selectBox == 0)
                         {
                             Debug.Write("Going to enter translate_mode \n");
                             mode = "translate_mode";
                         }
+                        HighLightTextBox(select.selectedObject.Geometry.Bounds);
                     }
 
                 }
