@@ -298,7 +298,7 @@ namespace PlexShareNetwork.Communication.Test
             Assert.Equal(_clientId + 0,
                 notificationHandlerServer.GetLastEventClientId());
 
-            // assert data is received by all clients
+            // assert data is received by all other clients
             for (var i = 1; i < communicatorsClient.Length; i++)
             {
                 notificationHandlersClient[i].WaitForEvent();
