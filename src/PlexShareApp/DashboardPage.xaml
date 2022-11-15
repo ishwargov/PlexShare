@@ -18,7 +18,7 @@
             <ColumnDefinition Width="2.2*" />
             <!--this column is to show the graphs or the main content of the dahsboard view -->
             <!--<ColumnDefinition Width="10*"/>-->
-            <ColumnDefinition Width="10*"/>
+            <ColumnDefinition Width="12*"/>
             <!-- this column to show the relevant data such as total participant count, chat count and so on-->
             <!--<ColumnDefinition Width="2*"/>-->
             <ColumnDefinition Width="1.7*"/>
@@ -145,23 +145,23 @@
             </Border>
 
 
-            <Border x:Name="Border3" Grid.Row="1" Grid.ColumnSpan="2"  CornerRadius="10" BorderThickness="2px" BorderBrush="Black" Margin="10, 10, 0, 0">
-            <Grid Background="WhiteSmoke" Margin="0, 0, 0, 0">
+            <Border x:Name="Border3" Grid.Row="1" Grid.ColumnSpan="2" Background="{DynamicResource Color1Bg}" CornerRadius="20" BorderThickness="10px"  Margin="10, 10, 0, 0">
+                <Grid  Margin="0, 0, 0, 0">
                 
                    
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1.5*"/>
                         <RowDefinition Height="5*"/>
                     </Grid.RowDefinitions>
-                    <Border x:Name="Border4" CornerRadius="5" BorderThickness="2px" BorderBrush="Black" Width="200">
-                        <Grid Grid.Row="0" >
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Text="Summary Of Session"></TextBlock>
+                    <Border x:Name="Border4" Grid.Row="0" CornerRadius="5" Background="White" BorderThickness="1px"   Margin="0, 10, 0, 0"  Width="200">
+                        
+                            <TextBlock HorizontalAlignment="Center" FontSize="15" VerticalAlignment="Center" FontWeight="Bold"  Text="Summary Of Session"></TextBlock>
 
-                        </Grid>
+                     
                     </Border>
-                    <Grid Grid.Row="1">
-                        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Height="100" Width="950" >
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Text="{Binding SummaryContentSetter}" TextWrapping="Wrap"  ></TextBlock>
+                    <Grid Grid.Row="1" Background="{DynamicResource Color1Bg}">
+                        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Height="100" Width="950"  >
+                            <TextBlock HorizontalAlignment="Center"  VerticalAlignment="Center" FontWeight="Bold" Text="{Binding SummaryContentSetter}" TextWrapping="Wrap"  ></TextBlock>
                         </ScrollViewer>
 
                     </Grid>
@@ -209,175 +209,176 @@
             <!--</Border>-->
         </Grid>
 
+        <Border x:Name="Border5" Background="{DynamicResource Color1Bg}"  Grid.Column="2" CornerRadius="10" BorderThickness="2px" >
 
-        <!--defining the grid for showing the section for the participant count -->
-        <Grid Grid.Column="2" Margin="5, 0, 0, 0" Background="{DynamicResource Color1Bg}">
-            
-            <Grid.RowDefinitions>
-                <!--to show the current mode of the session-->
-                <RowDefinition Height="1*"/>
+            <!--defining the grid for showing the section for the participant count -->
+            <Grid Margin="5, 0, 0, 0" >
 
-                <!--the first will be for showing the logo for the plexshare with the name of the application-->
-                <RowDefinition Height="1*"/>
-                <!--this row to show the participant count-->
-                <RowDefinition Height="1*"/>
-                <!--to show the total chat count-->
-                <RowDefinition Height="1*"/>
-                <!--to show the total time the session has started-->
-                <RowDefinition Height="1*"/>
-            </Grid.RowDefinitions>
-            <Grid.Effect>
-                <DropShadowEffect BlurRadius="20" Color="#FFDEDEDE" RenderingBias="Quality" ShadowDepth="1"/>
-            </Grid.Effect>
+                <Grid.RowDefinitions>
+                    <!--to show the current mode of the session-->
+                    <RowDefinition Height="1*"/>
 
-            <Grid Grid.Row="0">
+                    <!--the first will be for showing the logo for the plexshare with the name of the application-->
+                    <RowDefinition Height="1*"/>
+                    <!--this row to show the participant count-->
+                    <RowDefinition Height="1*"/>
+                    <!--to show the total chat count-->
+                    <RowDefinition Height="1*"/>
+                    <!--to show the total time the session has started-->
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+                <Grid.Effect>
+                    <DropShadowEffect BlurRadius="20" Color="#FFDEDEDE" RenderingBias="Quality" ShadowDepth="1"/>
+                </Grid.Effect>
+
+                <Grid Grid.Row="0">
 
 
-                <!--<Border BorderBrush="blue" BorderThickness="2" >-->
+                    <!--<Border BorderBrush="blue" BorderThickness="2" >-->
 
-                <Rectangle Height="120" Width="150"  Fill="White" RadiusY="10" RadiusX="10" >
-                    <Rectangle.Effect>
-                        <DropShadowEffect BlurRadius="20" Color="#FFDEDEDE" 
+                    <Rectangle Height="100" Width="125"  Fill="White" RadiusY="10" RadiusX="10" >
+                        <Rectangle.Effect>
+                            <DropShadowEffect BlurRadius="20" Color="#FFDEDEDE" 
                                           RenderingBias="Quality" ShadowDepth="1"/>
-                    </Rectangle.Effect>
-                </Rectangle>
-                <!--</Border>-->
-                <Grid  Height="50">
-                    <Grid Width="17" Height="26"  Background="#FFFFAF24" 
+                        </Rectangle.Effect>
+                    </Rectangle>
+                    <!--</Border>-->
+                    <Grid  Height="50">
+                        <Grid Width="17" Height="26"  Background="#FFFFAF24" 
                           HorizontalAlignment="Left" VerticalAlignment="Top" Margin="18,-24,0,0">
-                        <Grid.Effect>
-                            <DropShadowEffect BlurRadius="20" Color="#FFECECEC" 
+                            <Grid.Effect>
+                                <DropShadowEffect BlurRadius="20" Color="#FFECECEC" 
                                               RenderingBias="Quality" ShadowDepth="1"/>
-                        </Grid.Effect>
+                            </Grid.Effect>
+                        </Grid>
+                        <StackPanel Orientation="Vertical"  HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock x:Name="SessionMode" Text="{Binding SessionModeSetter, Mode=OneWay}" 
+                                   FontFamily="Champagne &amp; Limousines" Foreground="Black" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Text="Session Mode" 
+                                   FontFamily="Champagne &amp; Limousines" FontSize="10" Foreground="Black" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="WrapWithOverflow"/>
+                        </StackPanel>
                     </Grid>
-                    <StackPanel Orientation="Vertical"  HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock x:Name="SessionMode" Text="{Binding SessionModeSetter, Mode=OneWay}" 
-                                   FontFamily="Champagne &amp; Limousines" Foreground="Black" FontSize="30" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        <TextBlock Text="Session Mode" 
-                                   FontFamily="Champagne &amp; Limousines" FontSize="13" Foreground="Black" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="WrapWithOverflow"/>
-                    </StackPanel>
                 </Grid>
-            </Grid>
-            <Grid Grid.Row="1">
+                <Grid Grid.Row="1">
 
 
-                <!--<Border BorderBrush="blue" BorderThickness="2" >-->
+                    <!--<Border BorderBrush="blue" BorderThickness="2" >-->
 
-                <Rectangle Height="120" Width="150"  Fill="White" RadiusY="10" RadiusX="10" >
-                    <Rectangle.Effect>
-                        <DropShadowEffect BlurRadius="20" Color="#FFDEDEDE" 
+                    <Rectangle Height="100" Width="125"  Fill="White" RadiusY="10" RadiusX="10" >
+                        <Rectangle.Effect>
+                            <DropShadowEffect BlurRadius="20" Color="#FFDEDEDE" 
                                           RenderingBias="Quality" ShadowDepth="1"/>
-                    </Rectangle.Effect>
-                </Rectangle>
-                <!--</Border>-->
-                <Grid  Height="50">
-                    <Grid Width="17" Height="26"  Background="#FFFFAF24" 
+                        </Rectangle.Effect>
+                    </Rectangle>
+                    <!--</Border>-->
+                    <Grid  Height="50">
+                        <Grid Width="17" Height="26"  Background="#FFFFAF24" 
                           HorizontalAlignment="Left" VerticalAlignment="Top" Margin="18,-24,0,0">
-                        <Grid.Effect>
-                            <DropShadowEffect BlurRadius="20" Color="#FFECECEC" 
+                            <Grid.Effect>
+                                <DropShadowEffect BlurRadius="20" Color="#FFECECEC" 
                                               RenderingBias="Quality" ShadowDepth="1"/>
-                        </Grid.Effect>
-                    </Grid>
-                    <StackPanel Orientation="Vertical"  HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock x:Name="ParticipantsCount" Text="{Binding TotalParticipantsCountSetter, Mode=OneWay}" 
-                                   FontFamily="Champagne &amp; Limousines" Foreground="Black" FontSize="30" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        <TextBlock Text="Participants Count" 
+                            </Grid.Effect>
+                        </Grid>
+                        <StackPanel Orientation="Vertical"  HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock x:Name="ParticipantsCount" Text="{Binding TotalParticipantsCountSetter, Mode=OneWay}" 
+                                   FontFamily="Champagne &amp; Limousines" Foreground="Black" FontSize="25" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Text="Participants Count" 
                                    FontFamily="Champagne &amp; Limousines" FontSize="13" Foreground="Black" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="WrapWithOverflow"/>
-                    </StackPanel>
+                        </StackPanel>
+                    </Grid>
                 </Grid>
-            </Grid>
 
-            <Grid Grid.Row="2">
+                <Grid Grid.Row="2">
 
 
-                <!--<Border BorderBrush="blue" BorderThickness="2" >-->
+                    <!--<Border BorderBrush="blue" BorderThickness="2" >-->
 
-                <Rectangle  Height="120" Width="150"  Fill="White" RadiusY="10" RadiusX="10" >
-                    <Rectangle.Effect>
-                        <DropShadowEffect BlurRadius="20" Color="#FFDEDEDE" 
+                    <Rectangle  Height="100" Width="125" Fill="White" RadiusY="10" RadiusX="10" >
+                        <Rectangle.Effect>
+                            <DropShadowEffect BlurRadius="20" Color="#FFDEDEDE" 
                                           RenderingBias="Quality" ShadowDepth="1"/>
-                    </Rectangle.Effect>
-                </Rectangle>
-                <!--</Border>-->
-                <Grid  Height="50">
-                    <Grid Width="17" Height="26"  Background="#FFFFAF24" 
+                        </Rectangle.Effect>
+                    </Rectangle>
+                    <!--</Border>-->
+                    <Grid  Height="50">
+                        <Grid Width="17" Height="26"  Background="#FFFFAF24" 
                           HorizontalAlignment="Left" VerticalAlignment="Top" Margin="18,-24,0,0">
-                        <Grid.Effect>
-                            <DropShadowEffect BlurRadius="20" Color="#FFECECEC" 
+                            <Grid.Effect>
+                                <DropShadowEffect BlurRadius="20" Color="#FFECECEC" 
                                               RenderingBias="Quality" ShadowDepth="1"/>
-                        </Grid.Effect>
-                    </Grid>
-                    <StackPanel Orientation="Vertical"  HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock x:Name="ChatCount" Text="{Binding TotalMessageCountSetter}" 
-                                   FontFamily="Champagne &amp; Limousines" Foreground="Black" FontSize="30" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        <TextBlock Text="Messages Count" 
+                            </Grid.Effect>
+                        </Grid>
+                        <StackPanel Orientation="Vertical"  HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock x:Name="ChatCount" Text="{Binding TotalMessageCountSetter}" 
+                                   FontFamily="Champagne &amp; Limousines" Foreground="Black" FontSize="25" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Text="Messages Count" 
                                    FontFamily="Champagne &amp; Limousines" FontSize="13" Foreground="Black" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="WrapWithOverflow"/>
-                    </StackPanel>
+                        </StackPanel>
+                    </Grid>
                 </Grid>
-            </Grid>
 
-            <Grid Grid.Row="3">
+                <Grid Grid.Row="3">
 
 
-                <!--<Border BorderBrush="blue" BorderThickness="2" >-->
+                    <!--<Border BorderBrush="blue" BorderThickness="2" >-->
 
-                <Rectangle  Height="120" Width="150"  Fill="White" RadiusY="10" RadiusX="10" >
-                    <Rectangle.Effect>
-                        <DropShadowEffect BlurRadius="20" Color="#FFDEDEDE" 
+                    <Rectangle  Height="100" Width="125" Fill="White" RadiusY="10" RadiusX="10" >
+                        <Rectangle.Effect>
+                            <DropShadowEffect BlurRadius="20" Color="#FFDEDEDE" 
                                           RenderingBias="Quality" ShadowDepth="1"/>
-                    </Rectangle.Effect>
-                </Rectangle>
-                <!--</Border>-->
-                <Grid  Height="50">
-                    <Grid Width="17" Height="26"  Background="#FFFFAF24" 
+                        </Rectangle.Effect>
+                    </Rectangle>
+                    <!--</Border>-->
+                    <Grid  Height="50">
+                        <Grid Width="17" Height="26"  Background="#FFFFAF24" 
                           HorizontalAlignment="Left" VerticalAlignment="Top" Margin="18,-24,0,0">
-                        <Grid.Effect>
-                            <DropShadowEffect BlurRadius="20" Color="#FFECECEC" 
+                            <Grid.Effect>
+                                <DropShadowEffect BlurRadius="20" Color="#FFECECEC" 
                                               RenderingBias="Quality" ShadowDepth="1"/>
-                        </Grid.Effect>
-                    </Grid>
-                    <StackPanel Orientation="Vertical"  HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock x:Name="EngagementCount" Text="{Binding EngagementRateSetter}" 
-                                   FontFamily="Champagne &amp; Limousines" Foreground="Black" FontSize="30" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        <TextBlock Text="Engagement Rate" 
+                            </Grid.Effect>
+                        </Grid>
+                        <StackPanel Orientation="Vertical"  HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock x:Name="EngagementCount" Text="{Binding EngagementRateSetter}" 
+                                   FontFamily="Champagne &amp; Limousines" Foreground="Black" FontSize="25" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Text="Engagement Rate" 
                                    FontFamily="Champagne &amp; Limousines" FontSize="13" Foreground="Black" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="WrapWithOverflow"/>
-                    </StackPanel>
+                        </StackPanel>
+                    </Grid>
                 </Grid>
-            </Grid>
-            <!--</Border>-->
-            <!--<Border BorderBrush="Black" BorderThickness="2" >-->
-            <Grid Grid.Row="4">
+                <!--</Border>-->
+                <!--<Border BorderBrush="Black" BorderThickness="2" >-->
+                <Grid Grid.Row="4">
 
 
-                <!--<Border BorderBrush="blue" BorderThickness="2" >-->
+                    <!--<Border BorderBrush="blue" BorderThickness="2" >-->
 
-                <Rectangle  Height="120" Width="150" Fill="White" RadiusY="10" RadiusX="10" >
-                    <Rectangle.Effect>
-                        <DropShadowEffect BlurRadius="20" Color="#FFDEDEDE" 
+                    <Rectangle  Height="100" Width="125" Fill="White" RadiusY="10" RadiusX="10" >
+                        <Rectangle.Effect>
+                            <DropShadowEffect BlurRadius="20" Color="#FFDEDEDE" 
                                           RenderingBias="Quality" ShadowDepth="1"/>
-                    </Rectangle.Effect>
-                </Rectangle>
-                <!--</Border>-->
-                <Grid  Height="50">
-                    <Grid Width="17" Height="26"  Background="#FFFFAF24" 
+                        </Rectangle.Effect>
+                    </Rectangle>
+                    <!--</Border>-->
+                    <Grid  Height="50">
+                        <Grid Width="17" Height="26"  Background="#FFFFAF24" 
                           HorizontalAlignment="Left" VerticalAlignment="Top" Margin="18,-24,0,0">
-                        <Grid.Effect>
-                            <DropShadowEffect BlurRadius="20" Color="#FFECECEC" 
+                            <Grid.Effect>
+                                <DropShadowEffect BlurRadius="20" Color="#FFECECEC" 
                                               RenderingBias="Quality" ShadowDepth="1"/>
-                        </Grid.Effect>
-                    </Grid>
-                    <StackPanel Orientation="Vertical"  HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock x:Name="SomeRandomCount" Text="{Binding SessionScoreSetter}"
-                                   FontFamily="Champagne &amp; Limousines" Foreground="Black" FontSize="30" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        <TextBlock Text="Session Score" 
+                            </Grid.Effect>
+                        </Grid>
+                        <StackPanel Orientation="Vertical"  HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock x:Name="SomeRandomCount" Text="{Binding SessionScoreSetter}"
+                                   FontFamily="Champagne &amp; Limousines" Foreground="Black" FontSize="25" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Text="Session Score" 
                                    FontFamily="Champagne &amp; Limousines" FontSize="13" Foreground="Black" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="WrapWithOverflow"/>
-                    </StackPanel>
+                        </StackPanel>
+                    </Grid>
                 </Grid>
+
+                <!--</Border>-->
             </Grid>
-
-            <!--</Border>-->
-        </Grid>
-
+        </Border>
         <!--<Frame Name="Main" Content="" Margin="127,0,0,0" Background="#FFFFEDED" IsEnabled="False" />-->
     </Grid>
 </Page>
