@@ -364,6 +364,12 @@ namespace PlexShareApp
         //        }
 
         //    }
+        public void ChangeThickness(object sender, RoutedEventArgs e)
+        {
+            int thickness = (int)ThicknessSlider.Value;
+            viewModel.ChangeStrokeThickness(thickness);
+
+        }
 
     }
 }
