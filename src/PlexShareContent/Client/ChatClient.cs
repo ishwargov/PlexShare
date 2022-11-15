@@ -16,6 +16,7 @@ using PlexShareContent.Enums;
 using PlexShareNetwork.Communication;
 using System;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace PlexShareContent.Client
 {
@@ -50,6 +51,8 @@ namespace PlexShareContent.Client
         /// Auto-implemented UserID property.
         /// </summary>
         public int UserID { get; set; }
+
+        // helper functions
 
         /// <summary>
         /// Check if message is empty
@@ -96,15 +99,17 @@ namespace PlexShareContent.Client
         {
             try
             {
-                var json = _serializer.Serialize(contentData);
+                var serializedStr = _serializer.Serialize(contentData);
                 Trace.WriteLine($"[Chat Client] Setting event as '{eventType}' and sending object to server.");
-                _communicator.Send(json, _moduleIdentifier, null);
+                _communicator.Send(serializedStr, _moduleIdentifier, null);
             }
             catch (Exception e)
             {
                 Trace.WriteLine($"[Chat Client] Exception occurred while sending object.\n{e.GetType().Name} : {e.Message}");
             }
         }
+
+        // chat client functions
 
         /// <summary>
         /// Converts the input SendContentData object, sets the event type as New, serializes and sends it to server.

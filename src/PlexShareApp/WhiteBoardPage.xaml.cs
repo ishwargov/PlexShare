@@ -26,10 +26,11 @@ namespace PlexShareApp
     {
         WhiteBoardViewModel viewModel;
         string currentTool;
-        public WhiteBoardPage()
+        public WhiteBoardPage(int serverID)
         {
             InitializeComponent();
-            viewModel = new WhiteBoardViewModel();
+            //viewModel = new WhiteBoardViewModel();
+            viewModel = WhiteBoardViewModel.Instance;
             viewModel.ShapeItems = new ObservableCollection<ShapeItem>();
             this.DataContext = viewModel;
             this.currentTool = "Select";

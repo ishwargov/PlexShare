@@ -1,0 +1,44 @@
+﻿<Page x:Class="PlexShareApp.UploadPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:PlexShareApp"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="UploadPage">
+
+    <Grid Background="AntiqueWhite">
+        <StackPanel Margin="0,0,0,0">
+            <Label HorizontalAlignment="Center" FontFamily="Times New Roman" FontSize="20" HorizontalContentAlignment="Center" Margin="0,0,0,20" Width="800" Background="Azure">Upload File</Label>
+            <Grid Margin="10,10,10,30">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="5*"/>
+                    <RowDefinition Height="5*"/>
+                    <RowDefinition Height="5*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="5*"/>
+                    <ColumnDefinition Width="5*"/>
+                </Grid.ColumnDefinitions>
+                <Label Grid.Row="0" Grid.Column="0" HorizontalContentAlignment="Center" BorderBrush="Black" BorderThickness="1">Submission Status</Label>
+                <Label Name="Status" Grid.Row="0" Grid.Column="1" HorizontalContentAlignment="Center" BorderBrush="Black" BorderThickness="1">No Submissions made</Label>
+                <Label Grid.Row="1" Grid.Column="0" HorizontalContentAlignment="Center" BorderBrush="Black" BorderThickness="1">Last Modified</Label>
+                <Label Name="LastModified"  Grid.Row="1" Grid.Column="1" HorizontalContentAlignment="Center" BorderBrush="Black" BorderThickness="1">-</Label>
+                <Label Grid.Row="2" Grid.Column="0" HorizontalContentAlignment="Center" BorderBrush="Black" BorderThickness="1">PDF Name</Label>
+                <Label Name="PDFName" Grid.Row="2" Grid.Column="1" HorizontalContentAlignment="Center" BorderBrush="Black" BorderThickness="1">-</Label>
+            </Grid>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="5*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="5*"/>
+                    <ColumnDefinition Width="5*"/>
+                </Grid.ColumnDefinitions>
+                <Button x:Name="Submit" Click="SubmitButtonClick" Grid.Column="0" Grid.Row="0" FontSize="16" FontFamily="Times New Roman" Height="30" Width="100">Submit</Button>
+                <Button x:Name="Back" Click="BackButtonClick"  Grid.Column="1" Grid.Row="0" FontSize="16" FontFamily="Times New Roman" Height="30" Width="100">Back</Button>
+            </Grid>
+        </StackPanel>
+    </Grid>
+</Page>

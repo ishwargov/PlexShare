@@ -1,4 +1,7 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<!-- Author:        Sughandhan S-->
+<!-- Created on:    03/11/2022-->
+<!-- Summary:       Resource Dictionary contains styles for Chat TextBox in ChatPageView-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:PlexShareApp">
     <!-- Chat TextBox Theme-->
@@ -20,7 +23,7 @@
                                      Padding="5"
                                      TextWrapping="Wrap"
                                      Foreground="#CFCFCF"
-                                     x:Name="ChatBox"
+                                     x:Name="SendTextBox"
                                      AcceptsReturn="True"/>
 
                             <TextBlock IsHitTestVisible="False"
@@ -37,7 +40,7 @@
                                     <Style TargetType="{x:Type TextBlock}">
                                         <Style.Triggers>
                                             <!--When the Text property of SearchBox is "" or empty, the textblock is visible-->
-                                            <DataTrigger Binding="{Binding Text, ElementName=ChatBox}"
+                                            <DataTrigger Binding="{Binding Text, ElementName=SendTextBox}"
                                                              Value="">
                                                 <Setter Property="Visibility" Value="Visible"/>
                                             </DataTrigger>
