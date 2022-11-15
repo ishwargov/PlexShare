@@ -116,5 +116,33 @@ namespace PlexShareTests.WhiteboardTests
 
             return newShape;
         }
+
+        public static List<ShapeItem> GenerateRandomBoardShapes(int n)
+        {
+            List<ShapeItem> boardShapes = new();
+            Random random = new();
+            Dictionary<int, string> shapeTypes = new Dictionary<int, string>()
+            {
+                {0,"RectangleGeometry"},
+                {1,"EllipseGeometry" },
+                {2,"LineGeometry" },
+                {3, "GeometryGroup"}
+            };
+            for (var i = 0; i < n; i++)
+            {
+                Point start = new Point(random.Next(), random.Next());
+                Point end = new Point(random.Next(), random.Next());
+                boardShapes.Add(CreateShape(start, end, shapeTypes[random.Next(0,4)], RandomString(5)));
+            }
+            return boardShapes;
+        }
+        public static string RandomString(int length)
+        {
+            Random random = new();
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            return new string(Enumerable.Repeat(chars, length)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
+
     }
 }

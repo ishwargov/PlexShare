@@ -17,6 +17,6 @@ namespace PlexShareWhiteboard.Server.Interfaces
     internal interface IServerSnapshotHandler
     {
         public List<ShapeItem> LoadBoard(int snapshotNumber);
-        public string SaveBoard(List<ShapeItem> boardShapes);
+        public string SaveBoard(List<ShapeItem> boardShapes, string userID);
     }
 }
