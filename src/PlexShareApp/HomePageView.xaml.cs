@@ -54,7 +54,7 @@ namespace PlexShareApp
         /// <param name="url">Image URL from google authentication</param>
         /// <param name="success">success is true when directly rendered from the authentication
         /// success is false when IP and PORT is not valid for joining the meeting.</param>
-        public HomePageView(string name, string email, string url,bool success=true)
+        public HomePageView(string name, string email, string url)
         {
             InitializeComponent();
             // Updates the Date and time in each second in the view
@@ -69,16 +69,6 @@ namespace PlexShareApp
             this.Name_box.Text = Name;
             this.Email_textbox.Text = Email;
             this.Email_textbox.IsEnabled = false;
-            
-            // success is false when the IP and PORT entered is not valid entry, and homescreen is showed
-            // after checking in Mainscreen viewmodel
-            if(success==false)
-            {
-                this.Server_IP.Text = "";
-                this.Server_IP_textblock.Text = "Enter correct server IP";
-                this.Server_PORT.Text = "";
-                this.Server_PORT_textblock.Text = "Enter correct server PORT";
-            }
 
             // It stores the absolute path of the profile image
             absolute_path = DownloadImage(Url);
@@ -105,7 +95,11 @@ namespace PlexShareApp
             {
                 return;
             }
-            MainScreenView mainScreenView = new MainScreenView(this.Name_box.Text, this.Email_textbox.Text, this.absolute_path, this.Url, "-1", "0");
+            HomePageViewModel viewModel = new();
+            this.DataContext = viewModel;
+
+            List<string> verified = viewModel.VerifyCredentials(this.Name_box.Text, "-1", "0");
+            MainScreenView mainScreenView = new MainScreenView(this.Name_box.Text, this.Email_textbox.Text, this.absolute_path, this.Url, verified[1], verified[2]);
             mainScreenView.Show();
             this.Close();
         }
@@ -139,6 +133,7 @@ namespace PlexShareApp
         /// </summary>
         private void Join_Meeting_Button_Click(object sender, RoutedEventArgs e)
         {
+            Trace.WriteLine("[UX] Clicked Join Meeting");
             bool invalid = false;
             if (string.IsNullOrEmpty(this.Name_box.Text))
             {
@@ -149,7 +144,7 @@ namespace PlexShareApp
             if (string.IsNullOrEmpty(this.Server_IP.Text) || !Validate_IP(this.Server_IP.Text))
             {
                 this.Server_IP.Text = "";
-                this.Server_IP_textblock.Text = "Please Enter Valid Server IP!!!";
+                this.Server_IP_textblock.Text = "Please Enter Valid Server IP(format)!!!";
                 invalid = true;
             }
             if (string.IsNullOrEmpty(this.Server_PORT.Text))
@@ -163,7 +158,19 @@ namespace PlexShareApp
             {
                 return;
             }
-            MainScreenView mainScreenView = new MainScreenView(this.Name_box.Text, this.Email_textbox.Text, this.absolute_path, this.Url, this.Server_IP.Text, this.Server_PORT.Text); 
+            HomePageViewModel viewModel = new();
+            this.DataContext = viewModel;
+
+            List<string> verified = viewModel.VerifyCredentials(this.Name_box.Text, this.Server_IP.Text, this.Server_PORT.Text);
+            if (verified[0]!="True")
+            {
+                this.Server_IP.Text = "";
+                this.Server_IP_textblock.Text = "Server IP didn't matched!!!";
+                this.Server_PORT.Text = "";
+                this.Server_PORT_textblock.Text = "Server PORT didn't matched!!!";
+                return;
+            }
+            MainScreenView mainScreenView = new MainScreenView(this.Name_box.Text, this.Email_textbox.Text, this.absolute_path, this.Url, verified[1], verified[2]);
             mainScreenView.Show();
             this.Close();
         }

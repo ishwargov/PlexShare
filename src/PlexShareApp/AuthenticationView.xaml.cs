@@ -23,6 +23,7 @@ namespace PlexShareApp
     /// </summary>
     public partial class AuthenticationView : Window
     {
+        bool stopAnimation = false;
         public AuthenticationView()
         {
             InitializeComponent();
@@ -43,7 +44,7 @@ namespace PlexShareApp
             int direction = 1;
 
             // Making animation run forever
-            while (true)
+            while (stopAnimation == false)
             {
                 if(v == 0)
                 {
@@ -132,6 +133,7 @@ namespace PlexShareApp
         /// <param name="e"></param>
         private async void Home_Click(object sender, RoutedEventArgs e)
         {
+            stopAnimation = true;
             AuthenticationViewModel viewModel = this.DataContext as AuthenticationViewModel;
             var returnVal = await viewModel.AuthenticateUser();
 

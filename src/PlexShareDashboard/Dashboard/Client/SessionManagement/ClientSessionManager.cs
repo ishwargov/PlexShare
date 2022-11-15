@@ -51,8 +51,8 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
         {
             moduleIdentifier = "Dashboard";
             //_serializer = new Serializer();
-             //_communicator = CommunicationFactory.GetCommunicator();
-             //_communicator.Subscribe(moduleIdentifier, this);
+             _communicator = CommunicationFactory.GetCommunicator();
+             _communicator.Subscribe(moduleIdentifier, this);
           //   _contentClient = ContentClientFactory.GetInstance();
             //  clientBoardStateManager = ClientBoardStateManager.Instance;
             //  clientBoardStateManager.Start();
