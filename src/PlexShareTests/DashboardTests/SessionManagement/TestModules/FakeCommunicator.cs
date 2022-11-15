@@ -55,8 +55,8 @@ namespace PlexShareTests.DashboardTests.SessionManagement.TestModules
                 return meetAddress;
 
             if (meetAddress == serverIp + ":" + serverPort)
-                return "1";
-            return "0";
+                return "success";
+            return "failure";
         }
 
         public void Stop()

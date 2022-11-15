@@ -3,17 +3,9 @@ using Dashboard.Server.SessionManagement;
 using PlexShare.Dashboard;
 using PlexShareDashboard.Dashboard.Client.SessionManagement;
 using PlexShareDashboard.Dashboard.Server.SessionManagement;
-using PlexShareDashboard.Dashboard.Server.Telemetry;
 using PlexShareDashboard.Dashboard;
 using PlexShareTests.DashboardTests.SessionManagement.TestModules;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
-using NuGet.Frameworks;
-using Client.Models;
+
 
 namespace PlexShareTests.DashboardTests.SessionManagement
 {
@@ -128,9 +120,12 @@ namespace PlexShareTests.DashboardTests.SessionManagement
             Setup();
             _fakeCommunicator.meetAddress = inputMeetAddress;
             var meetCreds = _serverSessionManager.GetPortsAndIPAddress();
-            Assert.Equal(null,meetCreds);
+            Assert.Null(meetCreds);
         }
 
+        /// <summary>
+        /// This function is to test the Dashboard Serializer
+        /// </summary>
 
         [Fact]
         public void Serializing_Deserializing()
@@ -164,7 +159,7 @@ namespace PlexShareTests.DashboardTests.SessionManagement
             Setup();
             _fakeCommunicator.meetAddress = meetAddress;
             var clientAdded = _clientSessionManager.AddClient(ipAddress, port, username);
-            Assert.Equal(true, clientAdded);
+            Assert.True(clientAdded);
         }
 
         /// <summary>
@@ -181,13 +176,12 @@ namespace PlexShareTests.DashboardTests.SessionManagement
         [InlineData(null, "162.212.3.1", 20, "Chang Jia-han")]
         [InlineData("192.168.201.4:480", "192.230.201.4", 480, "Antonio")]
         [InlineData("192.168.20.1:8080", "192.168.20.1", 8081, "Jake Vickers")]
-        public void AddClient_InvalidCredentials_ReturnsFalse(string meetAddress, string ipAddress, int port,
-            string username)
+        public void AddClient_InvalidCredentials_ReturnsFalse(string meetAddress, string ipAddress, int port, string username)
         {
             Setup();
             _fakeCommunicator.meetAddress = meetAddress;
             var clientAdded = _clientSessionManager.AddClient(ipAddress, port, username);
-            Assert.Equal(false, clientAdded);
+            Assert.False(clientAdded);
         }
 
         /// <summary>
@@ -212,8 +206,7 @@ namespace PlexShareTests.DashboardTests.SessionManagement
      
             ServerToClientData serverToClientData = _serializer.Deserialize<ServerToClientData>(_fakeCommunicator.transferredData);
             int userID = serverToClientData._user.userID;
-            string userName = serverToClientData._user.username;
-            ClientToServerData clientToServerData = new ClientToServerData("addClient",userName, userID);
+            ClientToServerData clientToServerData = new ClientToServerData("addClient",username, userID);
             var serialized = _serializer.Serialize(clientToServerData);
 
             //serverSessionManager when recieves the data from network about addclient event,
@@ -227,7 +220,7 @@ namespace PlexShareTests.DashboardTests.SessionManagement
             Assert.Equal(s1, _fakeCommunicator.transferredData);
             Console.WriteLine("Session After\n\t" + _clientSessionManager.GetSessionData());
             UserData updatedUser = _clientSessionManager.GetUser();
-            Assert.Equal(updatedUser.username, username);
+            Assert.Equal(username,updatedUser.username);
             Assert.NotNull(updatedUser.userID);
          }
 
@@ -248,13 +241,13 @@ namespace PlexShareTests.DashboardTests.SessionManagement
                 var serverToClientData = _serializer.Deserialize<ServerToClientData>(_fakeCommunicator.transferredData);
                 var receiveduser = serverToClientData.GetUser();
 
-                Assert.Equal(serverToClientData.eventType, "addClient");
+                Assert.Equal("addClient", serverToClientData.eventType);
                 Assert.Equal(receiveduser.username, username);
                 Assert.NotNull(receiveduser.userID);
             }
             catch(Exception e)
             {
-                Assert.Equal(e.Message, "Value cannot be null.");
+                Assert.Equal("Value cannot be null.", e.Message);
             }        
         }
 
@@ -280,7 +273,7 @@ namespace PlexShareTests.DashboardTests.SessionManagement
 
             // The recieved session must not be null and have the same users that were added
             Assert.NotNull(returnedSessionData);
-            Assert.Equal(returnedSessionData.users[0].userID, 1);
+            Assert.Equal(1, returnedSessionData.users[0].userID);
 
 
             Assert.Equal(users.Count, returnedSessionData.users.Count);
@@ -333,6 +326,7 @@ namespace PlexShareTests.DashboardTests.SessionManagement
             Assert.NotNull(_clientSessionManagerNew.GetUser());
             Assert.NotNull(_clientSessionManagerLast.GetSessionData());
             Assert.NotNull(_clientSessionManagerNew.GetSessionData());
+
             SessionData sessionDataNew = _clientSessionManagerNew.GetSessionData();
             SessionData sessionDataLast = _clientSessionManagerLast.GetSessionData();
             for(int i = 0; i < sessionDataNew.users.Count; i++)
@@ -341,7 +335,6 @@ namespace PlexShareTests.DashboardTests.SessionManagement
                 Assert.Equal(sessionDataNew.users[i].userID, sessionDataLast.users[i].userID);
             }
            
-
             Assert.Equal(serverSession.users.Count,_clientSessionManagerLast.GetSessionData().users.Count );
         }
 
@@ -406,15 +399,15 @@ namespace PlexShareTests.DashboardTests.SessionManagement
 
             _clientSessionManager.SetUser(user.username, user.userID);
             _clientSessionManager.SetSessionUsers(new List<UserData> { user });
-            Assert.Equal(fakeClientUX.sessionMode, "LabMode");
-            Assert.Equal(_serverSessionManager.GetSessionData().sessionMode, "LabMode");
-            Assert.Equal(_clientSessionManager.GetSessionData().sessionMode, "LabMode");
+            Assert.Equal("LabMode", fakeClientUX.sessionMode);
+            Assert.Equal("LabMode", _serverSessionManager.GetSessionData().sessionMode);
+            Assert.Equal("LabMode", _clientSessionManager.GetSessionData().sessionMode);
             _clientSessionManager.ToggleSessionMode();
             _serverSessionManager.OnDataReceived(_fakeCommunicator.transferredData);
             _clientSessionManager.OnDataReceived(_fakeCommunicator.transferredData);
-            Assert.Equal(_serverSessionManager.GetSessionData().sessionMode, "ExamMode");
+            Assert.Equal("ExamMode", _serverSessionManager.GetSessionData().sessionMode);
             Assert.Equal(_clientSessionManager.GetSessionData().sessionMode, _serverSessionManager.GetSessionData().sessionMode);
-            Assert.Equal(fakeClientUX.sessionMode, "ExamMode");
+            Assert.Equal("ExamMode", fakeClientUX.sessionMode);
 
         }
 
@@ -474,9 +467,9 @@ namespace PlexShareTests.DashboardTests.SessionManagement
             _serverSessionManager.OnDataReceived(_fakeCommunicator.transferredData);
             _clientSessionManager.OnDataReceived(_fakeCommunicator.transferredData);
 
-            Assert.Equal(fakeServerUX.meetingEnded, true);
-            Assert.Equal(fakeClientUx.meetingEnded, true);
-            Assert.Equal(_serverSessionManager.summarySaved, true);
+            Assert.True(fakeServerUX.meetingEnded);
+            Assert.True(fakeClientUx.meetingEnded);
+            Assert.True(_serverSessionManager.summarySaved);
         }
 
 
@@ -567,9 +560,9 @@ namespace PlexShareTests.DashboardTests.SessionManagement
 
             _clientSessionManager.OnDataReceived(_fakeCommunicator.transferredData);
 
-            Assert.Equal(true,fakeServerUX.meetingEnded);
-            Assert.Equal(true,fakeClientUx.meetingEnded);
-            Assert.Equal(_serverSessionManager.summarySaved, true);
+            Assert.True(fakeServerUX.meetingEnded);
+            Assert.True(fakeClientUx.meetingEnded);
+            Assert.True(_serverSessionManager.summarySaved);
         }
 
        
