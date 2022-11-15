@@ -34,6 +34,9 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
         //get the user data object from the client session manager
         UserData GetUser();
 
+        //get the sessionData object from the client manager
+        SessionData GetSessionData();
+
         //event for notifying summary creation
         public event NotifySummaryCreated SummaryCreated;
 
