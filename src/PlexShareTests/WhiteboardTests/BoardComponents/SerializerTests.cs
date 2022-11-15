@@ -32,6 +32,7 @@ namespace PlexShareTests.WhiteboardTests.BoardComponents
             List<ShapeItem> deserializedObject = _serializer.DeserializeShapeItems(jsonString);
 
             Assert.True(Utility.CompareShapeItems(shapeItems, deserializedObject));
+
         }
 
         [Fact]

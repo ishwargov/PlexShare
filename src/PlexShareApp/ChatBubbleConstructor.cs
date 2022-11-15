@@ -17,7 +17,7 @@ namespace PlexShareApp
         {
             var message = item as Message;
 
-            if (message!=null && message.ToFrom)
+            if (message.ToFrom)
             {
                 return message.Type ? SentMsgBubble : SentFileBubble;
             }
@@ -27,21 +27,21 @@ namespace PlexShareApp
         /// <summary>
         /// Data Template for the sent chat message
         /// </summary>
-        public DataTemplate? SentMsgBubble { get; set; }
+        public DataTemplate SentMsgBubble { get; set; }
 
         /// <summary>
         /// Data Template for the received chat message
         /// </summary>
-        public DataTemplate? RecvMsgBubble { get; set; }
+        public DataTemplate RecvMsgBubble { get; set; }
 
         /// <summary>
         /// Data Template for the sent file message
         /// </summary>
-        public DataTemplate? SentFileBubble { get; set; }
+        public DataTemplate SentFileBubble { get; set; }
 
         /// <summary>
         /// Data Template for the received file message
         /// </summary>
-        public DataTemplate? RecvFileBubble { get; set; }
+        public DataTemplate RecvFileBubble { get; set; }
     }
 }

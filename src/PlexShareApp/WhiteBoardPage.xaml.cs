@@ -26,19 +26,26 @@ namespace PlexShareApp
     {
         WhiteBoardViewModel viewModel;
         string currentTool;
-        public WhiteBoardPage()
+        public WhiteBoardPage(int serverID)
         {
             InitializeComponent();
-            viewModel = new WhiteBoardViewModel();
+            //viewModel = new WhiteBoardViewModel();
+            viewModel = WhiteBoardViewModel.Instance;
             viewModel.ShapeItems = new ObservableCollection<ShapeItem>();
             this.DataContext = viewModel;
             this.currentTool = "Select";
         }
 
+        /// <summary>
+        /// Mouse Click Event for the WhiteBorad
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CanvasMouseDown(object sender, MouseButtonEventArgs e)
         {
             var a = e.GetPosition(sender as Canvas);
             viewModel.ShapeStart(a);
+            //singleTrigger = true;
             if (viewModel.select.ifSelected)
             {
 
@@ -58,12 +65,24 @@ namespace PlexShareApp
 
 
             }
+            else
+            {
+                if (this.ShapeToolBar.Visibility == Visibility.Visible)
+                    this.ShapeToolBar.Visibility = Visibility.Collapsed;
+
+            }
         }
 
+        /// <summary>
+        /// Event capturing the mouse move
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CanvasMouseMove(object sender, MouseEventArgs e)
         {
             var a = e.GetPosition(sender as Canvas);
             viewModel.ShapeBuilding(a);
+
         }
 
         private void CanvasMouseUp(object sender, MouseEventArgs e)
@@ -96,6 +115,9 @@ namespace PlexShareApp
                 case "text":
                     Cursor = Cursors.Arrow;
                     break;
+                case "Line":
+                    Cursor = Cursors.Cross;
+                    break;
                 default:
                     Cursor = Cursors.Arrow;
                     break;
@@ -110,17 +132,32 @@ namespace PlexShareApp
             Cursor = Cursors.Arrow;
 
         }
+
+        /*private void CanvasMouseUp1(object sender, MouseEventArgs e)
+        {
+            if (singleTrigger == true)
+            {
+                Debug.WriteLine("canvas mouse up 11 ");
+                var a = e.GetPosition(sender as Canvas);
+                viewModel.ShapeFinished(a);
+                e.Handled = true;
+            }
+            singleTrigger = false;
+        }*/
         private void RectangleCreateMode(object sender, RoutedEventArgs e)
         {
             viewModel.UnHighLightIt();
+            viewModel.select.ifSelected = false;
             this.currentTool = "Rectangle";
             if (this.ShapeToolBar.Visibility == Visibility.Collapsed)
                 this.ShapeToolBar.Visibility = Visibility.Visible;
             viewModel.ChangeMode("create_rectangle");
         }
+
         private void EllipseCreateMode(object sender, RoutedEventArgs e)
         {
             viewModel.UnHighLightIt();
+            viewModel.select.ifSelected = false;
             this.currentTool = "Ellipse";
             if (this.ShapeToolBar.Visibility == Visibility.Collapsed)
                 this.ShapeToolBar.Visibility = Visibility.Visible;
@@ -131,15 +168,17 @@ namespace PlexShareApp
         private void FreehandCreateMode(object sender, RoutedEventArgs e)
         {
             viewModel.UnHighLightIt();
+            viewModel.select.ifSelected = false;
             Cursor = Cursors.Pen;
-            if (this.ShapeToolBar.Visibility == Visibility.Collapsed)
-                this.ShapeToolBar.Visibility = Visibility.Visible;
+            if (this.ShapeToolBar.Visibility == Visibility.Visible)
+                this.ShapeToolBar.Visibility = Visibility.Collapsed;
             this.currentTool = "Freehand";
 
             viewModel.ChangeMode("create_freehand");
 
         }
-        private void Textbox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+
+        private void TextboxKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
             Debug.WriteLine("Enter text mode");
             Debug.WriteLine(e.Key);
@@ -152,6 +191,7 @@ namespace PlexShareApp
             this.currentTool = "text";
 
             viewModel.UnHighLightIt();
+            viewModel.select.ifSelected = false;
             Cursor = Cursors.Pen;
             if (this.ShapeToolBar.Visibility == Visibility.Visible)
                 this.ShapeToolBar.Visibility = Visibility.Collapsed;
@@ -160,6 +200,7 @@ namespace PlexShareApp
             viewModel.ChangeMode("create_textbox");
 
         }
+
         private void ColorGreen(object sender, RoutedEventArgs e)
         {
             viewModel.ChangeFillBrush(Brushes.Green);
@@ -176,9 +217,9 @@ namespace PlexShareApp
             viewModel.ChangeFillBrush(Brushes.Yellow);
         }
 
-        private void ColorWhite(object sender, RoutedEventArgs e)
+        private void ColorNull(object sender, RoutedEventArgs e)
         {
-            viewModel.ChangeFillBrush(Brushes.White);
+            viewModel.ChangeFillBrush(null);
         }
 
         private void ColorBlue(object sender, RoutedEventArgs e)
@@ -226,6 +267,7 @@ namespace PlexShareApp
         private void DeleteMode(object sender, RoutedEventArgs e)
         {
             viewModel.UnHighLightIt();
+            viewModel.select.ifSelected = false;
             this.currentTool = "Eraser";
             if (this.ShapeToolBar.Visibility == Visibility.Visible)
                 this.ShapeToolBar.Visibility = Visibility.Collapsed;
@@ -243,15 +285,29 @@ namespace PlexShareApp
         private void ClearMode(object sender, RoutedEventArgs e)
         {
             viewModel.UnHighLightIt();
+            viewModel.select.ifSelected = false;
             if (this.ShapeToolBar.Visibility == Visibility.Visible)
                 this.ShapeToolBar.Visibility = Visibility.Collapsed;
-            viewModel.ClearAllShapes();
+            MessageBoxResult result = MessageBox.Show("Are you sure you want to clear the canvas ? Cick on Save to save your progress.",
+                          "Confirmation", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+            if (result == MessageBoxResult.OK)
+            {
+                viewModel.ClearAllShapes();
+                return;
+            }
+            else
+            {
+                return;
+            }
+
 
         }
 
         private void LineMode(object sender, RoutedEventArgs e)
         {
+            this.currentTool = "Line";
             viewModel.UnHighLightIt();
+            viewModel.select.ifSelected = false;
             if (this.ShapeToolBar.Visibility == Visibility.Visible)
                 this.ShapeToolBar.Visibility = Visibility.Collapsed;
             viewModel.ChangeMode("create_line");
@@ -260,6 +316,7 @@ namespace PlexShareApp
         private void UndoMode(object sender, RoutedEventArgs e)
         {
             viewModel.UnHighLightIt();
+            viewModel.select.ifSelected = false;
             if (this.ShapeToolBar.Visibility == Visibility.Visible)
                 this.ShapeToolBar.Visibility = Visibility.Collapsed;
             viewModel.CallUndo();
@@ -269,10 +326,44 @@ namespace PlexShareApp
         private void RedoMode(object sender, RoutedEventArgs e)
         {
             viewModel.UnHighLightIt();
+            viewModel.select.ifSelected = false;
             if (this.ShapeToolBar.Visibility == Visibility.Visible)
                 this.ShapeToolBar.Visibility = Visibility.Collapsed;
 
             viewModel.CallRedo();
         }
+
+        //    private void RestorFrameDropDownSelectionChanged(object sender, SelectionChangedEventArgs e)
+        //    {
+        //        ListBox listbox = (ListBox)sender;
+
+        //        if (this.RestorFrameDropDown.SelectedItem != null)
+        //        {
+
+        //            string item = listbox.SelectedItem.ToString();
+        //            string numeric = new String(item.Where(Char.IsDigit).ToArray());
+        //            int cp = int.Parse(numeric);
+
+        //            MessageBoxResult result = MessageBox.Show("Are you sure you want to load checkpoint " + numeric + " ? All progress since the last checkpoint would be lost!",
+        //                          "Confirmation", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+        //            if (result == MessageBoxResult.OK)
+        //            {
+        //               // viewModel.RestoreFrame(cp, GlobCanvas);
+        //                this.RestorFrameDropDown.SelectedItem = null;
+        //                return;
+        //            }
+        //            else
+        //            {
+        //                this.RestorFrameDropDown.SelectedItem = null;
+        //                return;
+        //            }
+        //        }
+        //        else
+        //        {
+        //            return;
+        //        }
+
+        //    }
+
     }
 }

@@ -100,6 +100,7 @@ namespace PlexShareContent.Client
             sendData.Starred = false;
             sendData.Event = MessageEvent.New;
             sendData.FileData = new SendFileData(sendContent.Data);
+            //sendData.ReplyMessageID = sendContent.ReplyMessageID;
             SerializeAndSendToServer(sendData, "New");
         }
 
