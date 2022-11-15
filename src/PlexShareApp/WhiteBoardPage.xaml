@@ -793,7 +793,9 @@
                     <DataTemplate>
                         <Path Data="{Binding Geometry}"
 						  Fill="{Binding Fill}"
-						  Stroke="{Binding Stroke}"/>
+						  Stroke="{Binding Stroke}"
+                          StrokeThickness="{Binding StrokeThickness}"
+                              />
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
                 <ItemsControl.ItemContainerStyle>

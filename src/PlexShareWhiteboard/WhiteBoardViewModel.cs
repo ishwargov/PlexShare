@@ -34,6 +34,7 @@ namespace PlexShareWhiteboard
 
         Brush fillBrush = Brushes.Azure;
         Brush strokeBrush = Brushes.Black;
+        int strokeThickness = 30;
         string mode = "select_object";
         string modeForUndo = "select_object";
         ShapeItem currentShape = null;

@@ -18,6 +18,7 @@ namespace PlexShareWhiteboard
                 Stroke = strokeBrush,
                 ZIndex = currentZIndex,
                 AnchorPoint = a,
+                StrokeThickness = strokeThickness,
                 Id = currentId,
                 PointList = new List<Point>()
 
@@ -31,7 +32,15 @@ namespace PlexShareWhiteboard
             PathGeometry g1 = (PathGeometry)lastShape.Geometry;
 
             var line = new LineGeometry(a, _anchorPoint);
-            g1.AddGeometry(line);
+            //g1.AddGeometry(line);
+
+            Rect boundingBox = new(a,a);
+            //Geometry geometry = new EllipseGeometry(a, strokeThickness,strokeThickness);
+            Geometry geometry = new EllipseGeometry(boundingBox);
+            
+            g1.AddGeometry(geometry);
+            //g1.AddGeometry(line);
+
 
             ShapeItem newShape = new()
             {
@@ -39,6 +48,7 @@ namespace PlexShareWhiteboard
                 Fill = fillBrush,
                 Stroke = strokeBrush,
                 ZIndex = currentZIndex,
+                StrokeThickness= 30,
                 AnchorPoint = a,
                 Id = lastShape.Id,
                 PointList = lastShape.PointList
