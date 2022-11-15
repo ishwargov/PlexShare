@@ -484,7 +484,7 @@
 																VerticalAlignment="Center"
 																Margin="10 0 0 0"
                             ></TextBlock>
-                                                    <Slider x:Name="ThicknessSlider" Foreground="Black" Maximum="20" TickPlacement="BottomRight" TickFrequency="5" Margin="5 5 5 5" ></Slider>
+                                                    <Slider x:Name="ThicknessSlider" Foreground="Black"  Maximum="20" TickPlacement="BottomRight" TickFrequency="5" Margin="5 5 5 5" ValueChanged="ChangeThickness" ></Slider>
                                                 </StackPanel>
                                             </Grid>
                                         </Grid>
@@ -793,7 +793,9 @@
                     <DataTemplate>
                         <Path Data="{Binding Geometry}"
 						  Fill="{Binding Fill}"
-						  Stroke="{Binding Stroke}"/>
+						  Stroke="{Binding Stroke}"
+                          StrokeThickness="{Binding StrokeThickness}"
+                              />
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
                 <ItemsControl.ItemContainerStyle>

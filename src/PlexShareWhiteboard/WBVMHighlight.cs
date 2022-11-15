@@ -21,7 +21,8 @@ namespace PlexShareWhiteboard
                 Fill = f1,
                 Stroke = s1,
                 ZIndex = zi,
-                Id = id
+                Id = id,
+                StrokeThickness = 1
             };
             return s;
         }
