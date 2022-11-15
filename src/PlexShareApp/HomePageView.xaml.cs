@@ -99,7 +99,7 @@ namespace PlexShareApp
             this.DataContext = viewModel;
 
             List<string> verified = viewModel.VerifyCredentials(this.Name_box.Text, "-1", "0");
-            MainScreenView mainScreenView = new MainScreenView(this.Name_box.Text, this.Email_textbox.Text, this.absolute_path, this.Url, verified[1], verified[2]);
+            MainScreenView mainScreenView = new MainScreenView(this.Name_box.Text, this.Email_textbox.Text, this.absolute_path, this.Url, verified[1], verified[2], true);
             mainScreenView.Show();
             this.Close();
         }
@@ -170,7 +170,7 @@ namespace PlexShareApp
                 this.Server_PORT_textblock.Text = "Server PORT didn't matched!!!";
                 return;
             }
-            MainScreenView mainScreenView = new MainScreenView(this.Name_box.Text, this.Email_textbox.Text, this.absolute_path, this.Url, verified[1], verified[2]);
+            MainScreenView mainScreenView = new MainScreenView(this.Name_box.Text, this.Email_textbox.Text, this.absolute_path, this.Url, verified[1], verified[2], false);
             mainScreenView.Show();
             this.Close();
         }

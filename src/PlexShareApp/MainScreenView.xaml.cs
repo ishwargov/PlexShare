@@ -49,63 +49,43 @@ namespace PlexShareApp
         private static ScreenshareServerView screenshareServerView;
         private static ScreenshareClientView screenshareClientView;
         public event PropertyChangingEventHandler? PropertyChanged;
- 
-        private bool isServer;
-        
-        public MainScreenView(string name, string email, string picPath, string url, string ip, string port)
+
+        private bool isClient;
+        public MainScreenView(string name, string email, string picPath, string url, string ip, string port, bool isServer)
         {
 
-            MainScreenViewModel viewModel = new();
-            this.DataContext = viewModel;
 
-            List<string> verified = viewModel.VerifyCredentials(name, ip, port);
-            Trace.WriteLine(verified[0]);
-
-            if (verified[0] == "True") 
-            {
+            isClient = !isServer;
                 // The client/server was verified to be correct.
-                // We can add the client to meeting, and instantiate all modules.
-                InitializeComponent();
+            // We can add the client to meeting, and instantiate all modules.
+            InitializeComponent();
 
-                dashboardPage = new DashboardPage();
-                Trace.WriteLine("[UX] The Dashboard has started");
-                chatPage = new ChatPageView();
-                Trace.WriteLine("[UX] The ChatPage has started");
+            dashboardPage = new DashboardPage();
+            Trace.WriteLine("[UX] The Dashboard has started");
+            chatPage = new ChatPageView();
+            Trace.WriteLine("[UX] The ChatPage has started");
 
-                if (isServer)
-                {
-                    whiteBoardPage = new WhiteBoardPage(0);
-                    Trace.WriteLine("[UX] The Whiteboard Server has started");
-                    screenshareServerView = new ScreenshareServerView();
-                    Trace.WriteLine("[UX] The Screenshare Server has started");
-                }
-                else
-                {
-                    whiteBoardPage = new WhiteBoardPage(1);
-                    Trace.WriteLine("[UX] The Whiteboard Client has started");
-                    screenshareClientView = new ScreenshareClientView();
-                    Trace.WriteLine("[UX] The Screenshare Client has started");
-                }
-
-                Main.Content = dashboardPage;
-                Trace.WriteLine("[UX] Setting the content to the dashboard");
-
-                Trace.WriteLine("[UX] Setting the IP:Port");
-                ServerIPandPort.Text = "Server IP : " + verified[1] + " Port : " + verified[2];
+            if (isServer)
+            {
+                whiteBoardPage = new WhiteBoardPage(0);
+                Trace.WriteLine("[UX] The Whiteboard Server has started");
+                screenshareServerView = new ScreenshareServerView();
+                Trace.WriteLine("[UX] The Screenshare Server has started");
             }
             else
             {
-
+                whiteBoardPage = new WhiteBoardPage(1);
+                Trace.WriteLine("[UX] The Whiteboard Client has started");
+                screenshareClientView = new ScreenshareClientView();
+                Trace.WriteLine("[UX] The Screenshare Client has started");
             }
 
-            else
-            {
-                Trace.WriteLine("[UX] The verifiation failed, calling the HomeSceeenView() again");
-                HomePageView homePageView = new HomePageView(name, email, picPath);
-                homePageView.Show();
-                this.Close();
-                
-            }
+            Main.Content = dashboardPage;
+            Trace.WriteLine("[UX] Setting the content to the dashboard");
+
+            Trace.WriteLine("[UX] Setting the IP:Port");
+            ServerIPandPort.Text = "Server IP : " + ip + " Port : " + port;
+          
         }
 
         /// <summary>
@@ -132,7 +112,7 @@ namespace PlexShareApp
             Whiteboard.Background = Brushes.DarkSlateGray;
             Screenshare.Background = Brushes.DarkCyan;
 
-            if(isServer == true)
+            if(!isClient)
             {
                 Trace.WriteLine("[UX] Rendering Client Screenshare");
                 Main.Content = screenshareClientView;
@@ -241,6 +221,5 @@ namespace PlexShareApp
                 this.BorderThickness = new System.Windows.Thickness(0);
             }
         }
-
     }
 }
