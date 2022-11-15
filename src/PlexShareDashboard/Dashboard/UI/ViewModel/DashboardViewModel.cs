@@ -22,6 +22,7 @@ using System.Diagnostics;
 using LiveCharts.Wpf;
 using LiveCharts;
 using System.Windows;
+using System.Data.Entity.Core.Metadata.Edm;
 
 namespace PlexShareDashboard.Dashboard.UI.ViewModel
 {
@@ -51,6 +52,12 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         //public ObservableCollection<UserIdVsChatCount> UserIdVsChatCounts { get; set; }
         public ChartValues<int> ChatCountList { get; set; }
         public ObservableCollection<string> UserIdList { get; set; }
+
+        //defining the observable collection to store the username 
+        public ObservableCollection<string> UserNameList { get; set; }
+
+
+
         //debug.assert 
         //checkbills & free 
         //Trace  
@@ -239,6 +246,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             ChatCountList = new ChartValues<int>();
             UserIdList = new ObservableCollection<string>();
 
+            UserNameList = new ObservableCollection<string>();
          
 
             AttentiveUsersSetter = 100;
@@ -462,14 +470,38 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             });
             //ParticipantsList.Clear();
 
+            //first we have to insert the instructor 
+            //the instructor should be at the top 
+            //using the for loop for this purpose 
+            foreach (var currUser in users)
+            {
+                int currUserId = currUser.userID;
+                if (currUserId == 1)
+                {
+                    //int currUserId = currUser.userID;
+                    string currUserName = currUser.username + "  (Instructor)";
+                    string currUserStatus = "Presenting";
+                    User newUser = new User(currUserId, currUserName, currUserStatus);
+                    Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
+                    {
+                        ParticipantsList.Add(newUser);
+                    });
+                    break;
+                }
+            }
+
             //using the for loop to push the updated list of the users into participants list 
             foreach (var currUser in users)
             {
                 int currUserId = currUser.userID;
+                if (currUserId == 1)
+                {
+                    continue;
+                }
                 string currUserName = currUser.username;
                 string currUserStatus = "Presenting";
                 User newUser = new User(currUserId, currUserName, currUserStatus);
-
+                
 
                 Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
                 {
@@ -630,6 +662,28 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
         }
 
 
+        //overloading function to test it 
+        public void OnClientSessionChanged(SessionData newSessionData, int testingGateway)
+        {
+
+            if (newSessionData != null)
+            {
+                //we have to update the participants list and SessionMode
+                UpdateParticipantsList(newSessionData.users);
+                UserData currUser = clientSessionManager.GetUser();
+                //SetLeaveButtonAccordingToUser();
+                SessionModeSetter = newSessionData.sessionMode;
+                UpdateButtonContent(currUser);
+                //UpdateButtonContent(currUser);
+                TotalParticipantsCountSetter = ParticipantsList.Count;
+
+            }
+
+
+            return;
+        }
+
+
         //defining the function to update the summary of the current session till now 
         public void OnSummaryChanged(string latestSummary)
         {
@@ -645,7 +699,47 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             return;
         }
 
+        public void UpdateUserNameVsChatCount(Dictionary<string, int> currUserNameVsChatCount)
+        {
 
+           
+            Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
+            {
+                //we have to clear the array of the userid list and 
+                UserNameList.Clear();
+                ChatCountList.Clear();
+                //ParticipantsList.Clear();
+                //_matchObsCollection.Add(match);
+            });
+
+            int chatCount = 0;
+            //using the for loop to add the username vs userid 
+            foreach (var currUserChatCount in currUserNameVsChatCount)
+            {
+                var currUserName = currUserChatCount.Key;
+                var currChatCount = currUserChatCount.Value;
+
+                //UserIdVsChatCount currUserIdChatCount = new UserIdVsChatCount(currUserid, currChatCount);
+
+                //UserIdVsChatCounts.Add(currUserIdChatCount);
+                Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
+                {
+                    //we have to add  the new element into the chart values 
+                    UserNameList.Add(currUserName);
+                    ChatCountList.Add(currChatCount);
+                    //ParticipantsList.Clear();
+                    //_matchObsCollection.Add(match);
+                });
+
+                chatCount = chatCount + currChatCount;
+
+            }
+
+            TotalMessageCountSetter = chatCount;
+
+            //say everything went fine 
+            return;
+        }
         //##################################################################################
         //implementing the onanalytics changed
         public void OnAnalyticsChanged(SessionAnalytics latestAnalytics)
@@ -675,6 +769,8 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             UpdateUserIdVsChatCount(sessionAnalytics.chatCountForEachUser);
             CalculateEngagementRate(sessionAnalytics.chatCountForEachUser);
 
+            //calling the function to update and show the username vs chat count 
+            UpdateUserNameVsChatCount(sessionAnalytics.userNameVsChatCount);
 
             int currNonAttentiveUsers = sessionAnalytics.listOfInSincereMembers.Count;
             int currAttentiveUsers = TotalParticipantsCountSetter - currNonAttentiveUsers;

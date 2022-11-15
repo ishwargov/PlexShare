@@ -9,8 +9,8 @@ using Dashboard;
 using System.Net.Sockets;
 using PlexShareDashboard.Dashboard.Server.Summary;
 using PlexShareDashboard.Dashboard.Server.Telemetry;
-using PlexShare.Dashboard;
-using PlexShare.Dashboard.Server.SessionManagement;
+using PlexShareDashboard.Dashboard;
+using PlexShareDashboard.Dashboard.Server.SessionManagement;
 using PlexShareScreenshare.Server;
 using PlexShareWhiteboard;
 using PlexShareDashboard.Dashboard.Server.SessionManagement;
@@ -20,6 +20,7 @@ using PlexShareContent.Server;
 //using PlexShareNetwork.Serialization;
 using PlexShareDashboard.Dashboard;
 using PlexShareNetwork;
+using System.Threading;
 
 namespace Dashboard.Server.SessionManagement
 {
@@ -108,7 +109,7 @@ namespace Dashboard.Server.SessionManagement
                 userCount += 1;
                 if (userCount == 1)
                     _telemetry = testmode ? new Telemetry() : TelemetryFactory.GetTelemetryInstance();
-                UserData tempUser = new("dummy", userCount);
+                UserData tempUser = new("dummy", userCount,null,null);
                 _communicator.AddClient(userCount.ToString(), socketObject);
                 SendDataToClient("newID", null, null, null, tempUser, userCount);
             }
@@ -162,7 +163,6 @@ namespace Dashboard.Server.SessionManagement
                 case "getAnalytics":
                     GetAnalyticsProcedure(deserializedObj);
                     return;
-
 
 
                 case "removeClient":
@@ -233,7 +233,7 @@ namespace Dashboard.Server.SessionManagement
             _sessionData.ToggleMode();
 
             // Notify Telemetry about the change in the session object.
-            NotifyTelemetryModule();
+          //  NotifyTelemetryModule();
 
             // serialize and broadcast the data back to the client side.
             SendDataToClient("toggleSessionMode", _sessionData, null, null, null);
@@ -246,7 +246,8 @@ namespace Dashboard.Server.SessionManagement
         private void ClientArrivalProcedure(ClientToServerData arrivedClient)
         {
             // create a new user and add it to the session. 
-            var user = new UserData(arrivedClient.username, arrivedClient.userID);
+            var user = CreateUser(arrivedClient.userID, arrivedClient.username, arrivedClient.userEmail, arrivedClient.photoUrl);
+                //new UserData(arrivedClient.username, arrivedClient.userID, arrivedClient.userEmail, arrivedClient.photoUrl);
             AddUserToSession(user);
 
             // Notify Telemetry about the change in the session object.
@@ -260,7 +261,7 @@ namespace Dashboard.Server.SessionManagement
         public void FakeClientArrivalProcedure(ClientToServerData arrivedClient)
         {
             // create a new user and add it to the session. 
-            var user = new UserData(arrivedClient.username, arrivedClient.userID);
+            var user = new UserData(arrivedClient.username, arrivedClient.userID, arrivedClient.userEmail, arrivedClient.photoUrl);
             AddUserToSession(user);
 
             // Notify Telemetry about the change in the session object.
@@ -272,12 +273,12 @@ namespace Dashboard.Server.SessionManagement
 
         //     Creates a new user based on the data arrived from the
         //     client side.
-        private UserData CreateUser(string username, int userID)
+        private UserData CreateUser(int userID, string username,string userEmail , string photoUrl  )
         {
             lock (this)
             {
 
-                UserData user = new(username, userID);
+                UserData user = new(username, userID, userEmail,photoUrl);
                 return user;
             }
         }
@@ -299,11 +300,11 @@ namespace Dashboard.Server.SessionManagement
             {
                 // fetching all the chats from the content module.
                 PlexShareContent.DataModels.ChatThread[] allChatsTillNow;
-                //allChatsTillNow = _contentServer.GetAllMessages().ToArray();
+                allChatsTillNow = _contentServer.GetAllMessages().ToArray();
 
                 // creating the summary from the chats
-                //  _sessionSummary = _summarizer.GetSummary(allChatsTillNow);
-                _sessionSummary = "This is temporary Summary";
+                  _sessionSummary = _summarizer.GetSummary(allChatsTillNow);
+                //_sessionSummary = "This is temporary Summary";
 
                 // returning the summary
                 return new SummaryData(_sessionSummary);
@@ -352,7 +353,7 @@ namespace Dashboard.Server.SessionManagement
                 // The user is notified about this
                 SendDataToClient("endMeet", _sessionData, null, null, null);
             }
-
+            Thread.Sleep(2000);
             // stopping the communicator and notifying UX server about the End Meet event.
             _communicator.Stop();
             //   _screenShareServer.Dispose();
@@ -365,7 +366,7 @@ namespace Dashboard.Server.SessionManagement
         //     The analytics created are then sent to the client side again.
         private void GetAnalyticsProcedure(ClientToServerData receivedObject)
         {
-            UserData user = new(receivedObject.username, receivedObject.userID);
+            UserData user = new(receivedObject.username, receivedObject.userID, receivedObject.userEmail, receivedObject.photoUrl);
 
             if (testmode == true)
             {
@@ -378,8 +379,8 @@ namespace Dashboard.Server.SessionManagement
             try
             {
                 // Fetching the chats and creating analytics on them
-                //   var allChats = _contentServer.GetAllMessages().ToArray();
-                //   _sessionAnalytics = _telemetry.GetTelemetryAnalytics(allChats);
+                   var allChats = _contentServer.GetAllMessages().ToArray();
+                   _sessionAnalytics = _telemetry.GetTelemetryAnalytics(allChats);
                 SendDataToClient("getAnalytics", null, null, _sessionAnalytics, user);
             }
             catch (Exception e)
@@ -414,7 +415,7 @@ namespace Dashboard.Server.SessionManagement
         private void GetSummaryProcedure(ClientToServerData receivedObject)
         {
             var summaryData = CreateSummary();
-            UserData user = new(receivedObject.username, receivedObject.userID);
+            UserData user = new(receivedObject.username, receivedObject.userID, receivedObject.userEmail, receivedObject.photoUrl);
             SendDataToClient("getSummary", null, summaryData, null, user);
         }
 

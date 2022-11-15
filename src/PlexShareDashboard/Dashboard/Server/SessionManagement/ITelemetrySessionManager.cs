@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PlexShare.Dashboard.Server.SessionManagement
+namespace PlexShareDashboard.Dashboard.Server.SessionManagement
 {
     public interface ITelemetrySessionManager
     {
