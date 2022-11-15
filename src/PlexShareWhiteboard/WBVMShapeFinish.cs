@@ -17,13 +17,13 @@ namespace PlexShareWhiteboard
         public void ShapeFinished(Point _)
         {
             //Debug.WriteLine("Entering Shape Finished..............\
-            if (mode == "create_textbox")
+            /*if (mode == "create_textbox")
             {
                 if (lastShape.TextString.Length != 0)
                 {
                     TextFinishPush();
                 }
-            }
+            }*/
             if (modeForUndo == "create" )
             {
                 Debug.WriteLine("passing into undo stack " + lastShape.Geometry.GetType().Name);

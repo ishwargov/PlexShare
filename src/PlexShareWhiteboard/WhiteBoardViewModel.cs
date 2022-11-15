@@ -66,13 +66,13 @@ namespace PlexShareWhiteboard
         }
         public void ChangeMode(string new_mode)
         {
-            if (mode == "create_textbox")
+            /*if (mode == "create_textbox")
             {
                 if (lastShape.TextString.Length != 0)
                 {
                     TextFinishPush();
                 }
-            }
+            }*/
             mode = new_mode;
         }
 
