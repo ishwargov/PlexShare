@@ -22,6 +22,8 @@ namespace PlexShareTests.WhiteboardTests
         {
             if (shape1 == null && shape2 == null)
                 return true;
+            if (shape1 == null || shape2 == null)
+                return false;
 
             return shape1.GeometryString == shape2.GeometryString
                 && shape1.TextString == shape2.TextString
@@ -33,7 +35,8 @@ namespace PlexShareTests.WhiteboardTests
                 && shape1.Id == shape2.Id
                 && shape1.User == shape2.User
                 && shape1.TimeStamp == shape2.TimeStamp
-                && shape1.AnchorPoint == shape2.AnchorPoint;
+                && shape1.AnchorPoint == shape2.AnchorPoint
+                && shape1.PointList == shape2.PointList;
         }
 
         public static bool CompareShapeItems(
@@ -43,7 +46,7 @@ namespace PlexShareTests.WhiteboardTests
         {
             if (shapeItems1 == null && shapeItems2 == null)
                 return true;
-            if (shapeItems1.Count != shapeItems2.Count)
+            if ((shapeItems2 == null) || (shapeItems1 == null) || (shapeItems1.Count != shapeItems2.Count))
                 return false;
             for (var i = 0; i < shapeItems1.Count; i++)
             {
@@ -97,7 +100,7 @@ namespace PlexShareTests.WhiteboardTests
             ShapeItem newShape = new ShapeItem
             {
                 Geometry = geometry,
-                GeometryString = name,
+                GeometryString = geometry.GetType().Name,
                 Start = start,
                 End = end,
                 Fill = Brushes.Azure,

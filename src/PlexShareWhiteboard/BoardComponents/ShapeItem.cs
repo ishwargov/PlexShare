@@ -36,15 +36,20 @@ namespace PlexShareWhiteboard.BoardComponents
             ShapeItem newShape = new()
             {
                 Geometry = this.Geometry.Clone(),
-                GeometryString = this.GeometryString,
+                FontSize = this.FontSize,
+                GeometryString = this.Geometry.GetType().Name,
+                TextString = this.TextString,
+                PointList = this.PointList,
                 Start = this.Start,
                 End = this.End,
                 Fill = this.Fill,
                 Stroke = this.Stroke,
                 ZIndex = this.ZIndex,
-                AnchorPoint = this.AnchorPoint,
-                Id = this.Id,
                 StrokeThickness = this.StrokeThickness,
+                Id = this.Id,
+                User = this.User,
+                TimeStamp = this.TimeStamp,
+                AnchorPoint = this.AnchorPoint,
             };
             return newShape;
         }
