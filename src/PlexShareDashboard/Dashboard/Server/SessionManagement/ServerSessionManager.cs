@@ -314,14 +314,21 @@ namespace Dashboard.Server.SessionManagement
 
 
 
-
-
         //     This method is called when the host wants to end the meeting. The summary and analytics
         //     of the session is created and stored locally. The UX server is then notified about the end of the
         //     meet and the client side session manager is also provided with the same information.
         private void EndMeetProcedure(ClientToServerData receivedObject)
         {
             Trace.WriteLine("[Dashboard] EndMeet Procedure...");
+            if (testmode == true)
+            {
+                summarySaved = true;
+                _sessionData.users.Clear();
+                Trace.WriteLine("[Dashboard Server] Sending Client endMeet event");
+                SendDataToClient("endMeet", _sessionData, null, null, null);
+                MeetingEnded?.Invoke();
+                return;
+            }
             var tries = 3;
             try
             {
@@ -330,14 +337,9 @@ namespace Dashboard.Server.SessionManagement
                 while (tries > 0 && summarySaved == false)
                 {
                     // Fetching all the chats from the content module
-                        var allChats = _contentServer.GetAllMessages().ToArray();
-                        summarySaved = _summarizer.SaveSummary(allChats);
-                        _telemetry.SaveAnalytics(allChats);
-
-                    if (testmode == true)
-                    {
-                        summarySaved = true;
-                    }
+                    var allChats = _contentServer.GetAllMessages().ToArray();
+                    summarySaved = _summarizer.SaveSummary(allChats);
+                    _telemetry.SaveAnalytics(allChats);
 
                     tries--;
                 }
@@ -355,7 +357,8 @@ namespace Dashboard.Server.SessionManagement
             // stopping the communicator and notifying UX server about the End Meet event.
             _communicator.Stop();
             //   _screenShareServer.Dispose();
-            MeetingEnded?.Invoke();
+           // MeetingEnded?.Invoke();
+           Environment.Exit(0);
         }
 
 

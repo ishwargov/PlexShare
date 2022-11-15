@@ -35,7 +35,7 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
     {
         private readonly List<IClientSessionNotifications> _clients;
         private readonly ICommunicator _communicator;
-          private readonly IContentClient _contentClient;
+        private readonly IContentClient _contentClient;
         private readonly IDashboardSerializer _serializer;
         // private readonly IClientBoardStateManager clientBoardStateManager;
         private readonly string moduleIdentifier;
@@ -48,6 +48,7 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
         private SessionAnalytics _sessionAnalytics;
 
         private UserData _user;
+        private readonly bool testmode;
 
         //     Default constructor that will initialize communicator, contentclient,
         //     clientBoardStateManager and user side client data.
@@ -81,19 +82,10 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
             _communicator = communicator;
             _communicator.Subscribe(moduleIdentifier, this);
             // _screenShareClient = ScreenShareFactory.GetScreenShareClient();
-            /*
-             if (whiteboardInstance != null)
-                 clientBoardStateManager = whiteboardInstance;
-             else
-                 clientBoardStateManager = ClientBoardStateManager.Instance;
-             clientBoardStateManager.Start();
-            */
-
             if (_clients == null) _clients = new List<IClientSessionNotifications>();
             _clientSessionData = new SessionData();
             _chatSummary = null;
-
-            //  _screenShareClient = ScreenShareFactory.GetScreenShareClient();
+            testmode = true;
         }
 
 
@@ -235,6 +227,7 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
         ///     data from the session.
         public void RemoveClient()
         {
+
             // Asking the server to remove client from the server side.
             SendDataToServer("removeClient", _user.username, _user.userID);
 
@@ -242,15 +235,19 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
 
             // Stopping the network communicator.
             _communicator.Stop();
-
-            Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
+            
+            if(testmode == false)
             {
-                Application.Current.Shutdown();
-            });
-
-            // Disposing the Screen Share Client.
-            // _screenShareClient.Dispose();  
-            Trace.WriteLine("[Dashboard] Removed the client from the client side. ");
+                Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
+                {
+                    Application.Current.Shutdown();
+                });
+                Environment.Exit(0);
+                // Disposing the Screen Share Client.
+                // _screenShareClient.Dispose();  
+                Trace.WriteLine("[Dashboard] Removed the client from the client side. ");
+            }
+           
   
         }
 
@@ -433,12 +430,17 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
             Trace.WriteLine("[Dashboard] Calling Network to Stop listening ");
             _communicator.Stop();
             // _screenShareClient.Dispose();
-            //  MeetingEnded?.Invoke();
-            Trace.WriteLine("[Dashboard] Shutdown Application");
-            Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
+             MeetingEnded?.Invoke();
+            if(testmode ==false)
             {
-                Application.Current.Shutdown();
-            });
+                Trace.WriteLine("[Dashboard] Shutdown Application");
+                Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
+                {
+                    Application.Current.Shutdown();
+                });
+                Environment.Exit(0);
+            }
+           
         }
 
     }
