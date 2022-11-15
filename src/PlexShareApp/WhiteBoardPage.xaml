@@ -484,7 +484,7 @@
 																VerticalAlignment="Center"
 																Margin="10 0 0 0"
                             ></TextBlock>
-                                                    <Slider x:Name="ThicknessSlider" Foreground="Black"  Maximum="20" TickPlacement="BottomRight" TickFrequency="5" Margin="5 5 5 5" ValueChanged="ChangeThickness" ></Slider>
+                                                    <Slider x:Name="ThicknessSlider" Foreground="Black" Maximum="20" TickPlacement="BottomRight" TickFrequency="5" Margin="5 5 5 5" ></Slider>
                                                 </StackPanel>
                                             </Grid>
                                         </Grid>
@@ -801,7 +801,9 @@
                 <ItemsControl.ItemContainerStyle>
                     <Style TargetType="ContentPresenter">
                         <Setter Property="Panel.ZIndex" Value="{Binding ZIndex}"/>
+                        <EventSetter Event="MouseUp" Handler="CanvasMouseUp1"/>
                     </Style>
+
                 </ItemsControl.ItemContainerStyle>
             </ItemsControl>
 

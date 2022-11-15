@@ -34,7 +34,7 @@ namespace PlexShareWhiteboard
 
         Brush fillBrush = Brushes.Azure;
         Brush strokeBrush = Brushes.Black;
-        int strokeThickness = 1;
+        int strokeThickness = 10;
         string mode = "select_object";
         string modeForUndo = "select_object";
         ShapeItem currentShape = null;
@@ -142,11 +142,12 @@ namespace PlexShareWhiteboard
 
         public void ChangeFillBrush(SolidColorBrush br)
         {
+            Debug.WriteLine("ChangeFillBrush called");
             fillBrush = br;
 
             if (select.ifSelected == true)
             {
-                Debug.WriteLine("select color changed to " + br.ToString());
+                Debug.WriteLine("ChangeFillBrush select color changed to " + br.ToString());
 
                 //select.initialSelectionObject = select.selectedObject;
                 ShapeItem updateSelectShape = null;
@@ -162,7 +163,7 @@ namespace PlexShareWhiteboard
         }
         public ShapeItem UpdateStrokeColor(ShapeItem shape, Brush strokeBrush)
         {
-            shape.Fill = fillBrush;
+            shape.Stroke = strokeBrush;
 
             ShapeItem newShape = shape.DeepClone();
             newShape.Stroke = strokeBrush;
@@ -180,16 +181,19 @@ namespace PlexShareWhiteboard
 
         public void ChangeStrokeBrush(SolidColorBrush br)
         {
+            Debug.WriteLine("ChangeStrokeBrush called");
             strokeBrush = br;
             if (select.ifSelected == true)
             {
-                Debug.WriteLine("select color changed to " + br.ToString());
+                Debug.WriteLine("ChangeStrokeBrush select color changed to " + br.ToString());
                 ShapeItem updateSelectShape = null;
                 foreach (ShapeItem s in ShapeItems)
                     if (s.Id == select.selectedObject.Id)
                         updateSelectShape = s;
                 select.initialSelectionObject = updateSelectShape.DeepClone();
                 lastShape = UpdateStrokeColor(updateSelectShape, br);
+                modeForUndo = "modify";
+                ShapeFinished(new Point());
             }
         }
 
