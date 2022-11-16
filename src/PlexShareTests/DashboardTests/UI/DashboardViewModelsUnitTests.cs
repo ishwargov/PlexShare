@@ -112,9 +112,9 @@ namespace PlexShareTests.DashboardTests.UI
             //DashboardViewModelForTest.ButtonContentSetter = "LabMode";
             DashboardViewModelForTest.SessionModeSetter = "LabMode";
 
-            UserData user1 = new UserData("Rupesh Kumar", 1);
+          
 
-            DashboardViewModelForTest.UpdateButtonContent(user1);
+            DashboardViewModelForTest.UpdateButtonContent();
 
             Assert.Equal("Switch To ExamMode", DashboardViewModelForTest.ButtonContentSetter);
 
