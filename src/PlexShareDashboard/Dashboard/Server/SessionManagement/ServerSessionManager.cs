@@ -85,6 +85,7 @@ namespace Dashboard.Server.SessionManagement
 
             //   TraceManager traceManager = new();
             // traceManager.TraceListener();
+            // _communicator = CommunicationFactory.GetCommunicator(false);
 
             userCount = 0;
             moduleIdentifier = "serverSessionManager";
@@ -275,23 +276,26 @@ namespace Dashboard.Server.SessionManagement
         private SummaryData CreateSummary()
         {
 
-            if (testmode == true)
-            {
-                _sessionSummary = "This is the summary of the chats that happened in the session";
-                return new SummaryData(_sessionSummary);
-            }
-
             try
             {
-                // fetching all the chats from the content module.
-                ChatThread[] allChatsTillNow;
                 Trace.WriteLine("[Dashboard] Calling Chat Module to provide Chats");
-                allChatsTillNow = _contentServer.GetAllMessages().ToArray();
-                Trace.WriteLine("[Dashboard] Chats recieved. Calling summary subModule to give summary");
-                // creating the summary from the chats
-                _sessionSummary = _summarizer.GetSummary(allChatsTillNow);
-                // returning the summary
-                return new SummaryData(_sessionSummary);
+                if (testmode == false)
+                {
+                    // fetching all the chats from the content module.
+                    ChatThread[] allChatsTillNow;
+                    allChatsTillNow = _contentServer.GetAllMessages().ToArray();
+                   // Trace.WriteLine("[Dashboard] Chats recieved. Calling summary subModule to give summary");
+                    // creating the summary from the chats
+                    _sessionSummary = _summarizer.GetSummary(allChatsTillNow);
+                    // returning the summary
+                    return new SummaryData(_sessionSummary);
+                }
+                else
+                {
+                    _sessionSummary = "This is testing summary";
+                    return new SummaryData(_sessionSummary);
+                }
+                
             }
             catch (Exception e)
             {
@@ -308,15 +312,7 @@ namespace Dashboard.Server.SessionManagement
         private void EndMeetProcedure(ClientToServerData receivedObject)
         {
             Trace.WriteLine("[Dashboard] EndMeet Procedure...");
-            if (testmode == true)
-            {
-                summarySaved = true;
-                _sessionData.users.Clear();
-                Trace.WriteLine("[Dashboard Server] Sending Client endMeet event");
-                SendDataToClient("endMeet", _sessionData, null, null, null);
-                MeetingEnded?.Invoke();
-                return;
-            }
+            
             var tries = 3;
             try
             {
@@ -324,11 +320,18 @@ namespace Dashboard.Server.SessionManagement
                 // n tries are made to save summary and analytics before ending the meet
                 while (tries > 0 && summarySaved == false)
                 {
+                    if(testmode == false)
+                    {
+                        var allChats = _contentServer.GetAllMessages().ToArray();
+                        summarySaved = _summarizer.SaveSummary(allChats);
+                        _telemetry.SaveAnalytics(allChats);
+                    }
                     // Fetching all the chats from the content module
-                    var allChats = _contentServer.GetAllMessages().ToArray();
-                    summarySaved = _summarizer.SaveSummary(allChats);
-                    _telemetry.SaveAnalytics(allChats);
-
+                    
+                    if(testmode == true)
+                    {
+                        summarySaved = true;
+                    }
                     tries--;
                 }
                 _sessionData.users.Clear();
@@ -345,16 +348,12 @@ namespace Dashboard.Server.SessionManagement
             // stopping the communicator and notifying UX server about the End Meet event.
             _communicator.Stop();
             //   _screenShareServer.Dispose();
-            // MeetingEnded?.Invoke();
-            try
+             MeetingEnded?.Invoke();
+            if(testmode == false)
             {
-                Environment.Exit(0);
-            }
-            catch(Exception e)
-            {
-                Trace.WriteLine("[Dashboard] " + e.Message);
-            }
-          
+               // Environment.Exit(0);
+                
+            }              
         }
 
 
@@ -365,19 +364,22 @@ namespace Dashboard.Server.SessionManagement
         {
             UserData user = new(receivedObject.username, receivedObject.userID, receivedObject.userEmail, receivedObject.photoUrl);
 
-            if (testmode == true)
-            {
-
-                _sessionAnalytics = new SessionAnalytics();
-                SendDataToClient("getAnalytics", null, null, _sessionAnalytics, user);
-                return;
-            }
+            
 
             try
             {
                 // Fetching the chats and creating analytics on them
-                   var allChats = _contentServer.GetAllMessages().ToArray();
-                   _sessionAnalytics = _telemetry.GetTelemetryAnalytics(allChats);
+               if(testmode == false)
+                {
+                    var allChats = _contentServer.GetAllMessages().ToArray();
+                    _sessionAnalytics = _telemetry.GetTelemetryAnalytics(allChats);
+                }
+                else
+                {
+                    _sessionAnalytics = new SessionAnalytics();
+                }
+               
+                
                 SendDataToClient("getAnalytics", null, null, _sessionAnalytics, user);
             }
             catch (Exception e)

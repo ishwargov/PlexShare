@@ -240,8 +240,8 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
 
             // Stopping the network communicator.
             _communicator.Stop();
-            
-            if(testmode == false)
+            MeetingEnded?.Invoke();
+            if (testmode == false)
             {
                 CloseProgram();
                /*
@@ -445,24 +445,17 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
             // _screenShareClient.Dispose();
              MeetingEnded?.Invoke();
             
-                Trace.WriteLine("[Dashboard] Shutdown Application");
-               
+             Trace.WriteLine("[Dashboard] Shutdown Application");
+
             if (testmode == false)
             {
                 Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
                 {
                     Application.Current.Shutdown();
                 });
-                try
-                {
-                    Environment.Exit(0);
-                }
-                catch(Exception e)
-                {
-                    Trace.TraceError("[Dashboard] "+ e.Message);
-                }
+
+              //  Environment.Exit(0);
             }
-           
         }
 
     }

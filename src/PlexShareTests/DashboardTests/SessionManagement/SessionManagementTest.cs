@@ -141,6 +141,8 @@ namespace PlexShareTests.DashboardTests.SessionManagement
         }
 
 
+
+
         /// <summary>
         /// This function checks if the client is added in the session
         /// if it gives the correct meeting credentials
@@ -403,15 +405,20 @@ namespace PlexShareTests.DashboardTests.SessionManagement
 
             _clientSessionManager.SetUser(user.username, user.userID);
             _clientSessionManager.SetSessionUsers(new List<UserData> { user });
-            Assert.Equal("LabMode", fakeClientUX.sessionMode);
-            Assert.Equal("LabMode", _serverSessionManager.GetSessionData().sessionMode);
-            Assert.Equal("LabMode", _clientSessionManager.GetSessionData().sessionMode);
+            
             _clientSessionManager.ToggleSessionMode();
             _serverSessionManager.OnDataReceived(_fakeCommunicator.transferredData);
             _clientSessionManager.OnDataReceived(_fakeCommunicator.transferredData);
             Assert.Equal("ExamMode", _serverSessionManager.GetSessionData().sessionMode);
             Assert.Equal(_clientSessionManager.GetSessionData().sessionMode, _serverSessionManager.GetSessionData().sessionMode);
             Assert.Equal("ExamMode", fakeClientUX.sessionMode);
+
+            _clientSessionManager.ToggleSessionMode();
+            _serverSessionManager.OnDataReceived(_fakeCommunicator.transferredData);
+            _clientSessionManager.OnDataReceived(_fakeCommunicator.transferredData);
+            Assert.Equal("LabMode", _serverSessionManager.GetSessionData().sessionMode);
+            Assert.Equal(_clientSessionManager.GetSessionData().sessionMode, _serverSessionManager.GetSessionData().sessionMode);
+            Assert.Equal("LabMode", fakeClientUX.sessionMode);
 
         }
 
