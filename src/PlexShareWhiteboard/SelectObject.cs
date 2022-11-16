@@ -121,11 +121,13 @@ namespace PlexShareWhiteboard
 
                 if (HelperSelect(boundingBox, a, blobSize / 2))
                 {
+                   
                     select.ifSelected = true;
                     select.selectedObject = ShapeItems[i];
                     select.initialSelectionPoint = a;
                     tempZIndex = ShapeItems[i].ZIndex;
                     select.selectBox = 0;
+                    Debug.WriteLine("entering select ", select.selectedObject.Id);
                 }
                 else if (Child.FillContains(a) && Child.GetType().Name == "LineGeometry")
                 {

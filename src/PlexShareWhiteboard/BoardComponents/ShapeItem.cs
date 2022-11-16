@@ -37,6 +37,7 @@ namespace PlexShareWhiteboard.BoardComponents
             {
                 Geometry = this.Geometry.Clone(),
                 GeometryString = this.GeometryString,
+                TextString = this.TextString,
                 Start = this.Start,
                 End = this.End,
                 Fill = this.Fill,
@@ -44,6 +45,10 @@ namespace PlexShareWhiteboard.BoardComponents
                 ZIndex = this.ZIndex,
                 AnchorPoint = this.AnchorPoint,
                 Id = this.Id,
+                User = this.User,
+                TimeStamp = this.TimeStamp,
+                FontSize = this.FontSize,
+                PointList = this.PointList,  
                 StrokeThickness = this.StrokeThickness,
             };
             return newShape;

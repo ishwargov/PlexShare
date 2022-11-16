@@ -17,13 +17,7 @@ namespace PlexShareWhiteboard
         public void ShapeFinished(Point _)
         {
             //Debug.WriteLine("Entering Shape Finished..............\
-            /*if (mode == "create_textbox")
-            {
-                if (lastShape.TextString.Length != 0)
-                {
-                    TextFinishPush();
-                }
-            }*/
+            
             if (modeForUndo == "create" )
             {
                 Debug.WriteLine("passing into undo stack " + lastShape.Geometry.GetType().Name);
@@ -50,15 +44,16 @@ namespace PlexShareWhiteboard
                 InsertIntoStack(stackElement);
                 if (textBoxLastShape != null)
                     machine.OnShapeReceived(textBoxLastShape, Operation.Creation);
-            }
-            else if (modeForUndo == "textbox_translate")
+            }*/
+            else if (modeForUndo == "textbox_translate" && textBoxLastShape != null)
             {
-                stackElement = new UndoStackElement(textBoxLastShape, textBoxLastShape, Operation.ModifyShape);
+                Debug.WriteLine("entering translate undo.........");
+                stackElement = new UndoStackElement(select.initialSelectionObject, textBoxLastShape, Operation.ModifyShape);
                 InsertIntoStack(stackElement);
                 if (textBoxLastShape != null)
                     machine.OnShapeReceived(textBoxLastShape, Operation.ModifyShape);
-            }*/
-            else if (modeForUndo == "modify")
+            }
+            else if (modeForUndo == "modify" && lastShape != null)
             {
                // Debug.WriteLine("passing into undo stack " + lastShape.Geometry.GetType().Name);
               //  Debug.WriteLine(" inital bounding box" + select.initialSelectionObject.Geometry.Bounds.ToString() + "  final bounding box " + lastShape.Geometry.Bounds.ToString());
@@ -86,7 +81,8 @@ namespace PlexShareWhiteboard
             
             lastShape = null;
 
-            modeForUndo = "select";
+            if (modeForUndo != "create_textbox")
+                modeForUndo = "select";
 
             //Debug.WriteLine("Exiting Shape Finished........");
         }

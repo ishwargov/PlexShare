@@ -49,7 +49,7 @@ namespace PlexShareWhiteboard
         private WhiteBoardViewModel()
         {
             // this will become client and server 
-            isServer = true;
+            //isServer = true;
 
             //ShapeItems = new AsyncObservableCollection<ShapeItem>();
             ShapeItems = new ObservableCollection<ShapeItem>();
@@ -81,7 +81,7 @@ namespace PlexShareWhiteboard
         //public void SetUserId(string _userId)
         public void SetUserId(int _userId)
         {
-            String userId = _userId.ToString();
+            userId = _userId.ToString();
             currentId = "u" + userId + "_f" + currentIdVal;
             currentIdVal++;
 
@@ -106,17 +106,36 @@ namespace PlexShareWhiteboard
         }
         public void TextFinishPush()
         {
-            ;
+            stackElement = new UndoStackElement(textBoxLastShape, textBoxLastShape, Operation.Creation);
+            InsertIntoStack(stackElement);
+
+            if (textBoxLastShape != null)
+                machine.OnShapeReceived(textBoxLastShape, Operation.Creation);
         }
         public void ChangeMode(string new_mode)
         {
-            /*if (mode == "create_textbox")
+            if (mode == "create_textbox")
             {
-                if (lastShape.TextString.Length != 0)
+                Debug.WriteLine("mode for undo : ", textBoxLastShape.Id);
+                if (textBoxLastShape != null && textBoxLastShape.TextString.Length != 0)
                 {
+
                     TextFinishPush();
+                    Debug.WriteLine("entering undo modeeeee");
+
                 }
-            }*/
+                else if (textBoxLastShape != null)
+                {
+                    for (int i = 0; i < ShapeItems.Count; ++i)
+                    {
+                        if (textBoxLastShape.Id == ShapeItems[i].Id)
+                        {
+                            ShapeItems.RemoveAt(i);
+                            break;
+                        }
+                    }
+                }
+            }
             mode = new_mode;
         }
 
@@ -146,7 +165,7 @@ namespace PlexShareWhiteboard
 
             if (select.ifSelected == true)
             {
-                Debug.WriteLine("select color changed to " + br.ToString());
+                //Debug.WriteLine("select color changed to " + br.ToString());
 
                 //select.initialSelectionObject = select.selectedObject;
                 ShapeItem updateSelectShape = null;
@@ -181,6 +200,7 @@ namespace PlexShareWhiteboard
         public void ChangeStrokeBrush(SolidColorBrush br)
         {
             strokeBrush = br;
+
             if (select.ifSelected == true)
             {
                 Debug.WriteLine("select color changed to " + br.ToString());
@@ -188,8 +208,11 @@ namespace PlexShareWhiteboard
                 foreach (ShapeItem s in ShapeItems)
                     if (s.Id == select.selectedObject.Id)
                         updateSelectShape = s;
+
                 select.initialSelectionObject = updateSelectShape.DeepClone();
                 lastShape = UpdateStrokeColor(updateSelectShape, br);
+                modeForUndo = "modify";
+                ShapeFinished(new Point());
             }
         }
 

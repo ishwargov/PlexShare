@@ -69,7 +69,8 @@ namespace PlexShareWhiteboard
 
                 ShapeItem shape = select.selectedObject;
                 Rect boundingBox = shape.Geometry.Bounds;
-                Debug.WriteLine(" tranlsating line " + shape.AnchorPoint.ToString() + "   start : " + shape.Start.ToString());
+                Debug.WriteLine("x : ", boundingBox.X);
+                //Debug.WriteLine(" tranlsating line " + shape.AnchorPoint.ToString() + "   start : " + shape.Start.ToString());
                 double bx = shape.AnchorPoint.X + (a.X - select.initialSelectionPoint.X);
                 double by = shape.AnchorPoint.Y + (a.Y - select.initialSelectionPoint.Y);
                 double width = boundingBox.Width;
