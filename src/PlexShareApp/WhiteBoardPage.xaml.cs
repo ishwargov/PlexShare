@@ -1,4 +1,15 @@
-﻿using System;
+﻿ /***********************************
+ *Filename = WhiteBoardPage.xaml.cs
+ *
+ *Author = Parvathy S Kumar
+ *
+ * Product     = Plex Share
+ * 
+ * Project     = White Board
+ *
+ * Description = Whiteboard View
+ *************************************/
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -27,6 +38,7 @@ namespace PlexShareApp
         WhiteBoardViewModel viewModel;
         string currentTool;
         bool singleTrigger = true;
+        int val;
 
         public WhiteBoardPage(int serverID)
         {
@@ -382,8 +394,31 @@ namespace PlexShareApp
         {
             int thickness = (int)ThicknessSlider.Value;
             viewModel.ChangeStrokeThickness(thickness);
+            ShapeThicknessSlider.Value = thickness;
+            LineThicknessSlider.Value = thickness;
+            
 
         }
+
+        public void ChangeShapeThickness(object sender, RoutedEventArgs e)
+        {
+            int thickness = (int)ShapeThicknessSlider.Value;
+            viewModel.ChangeStrokeThickness(thickness);
+            LineThicknessSlider.Value = thickness;
+            ThicknessSlider.Value = thickness;
+
+        }
+
+
+        public void LineThicknessChange(object sender, RoutedEventArgs e)
+        {
+            int thickness = (int)LineThicknessSlider.Value;
+            viewModel.ChangeStrokeThickness(thickness);
+            ShapeThicknessSlider.Value = thickness;
+            ThicknessSlider.Value = thickness;
+        }
+
+
 
     }
 }
