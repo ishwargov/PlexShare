@@ -13,6 +13,7 @@ using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Windows;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
 namespace PlexShareScreenshare.Server
@@ -40,7 +41,7 @@ namespace PlexShareScreenshare.Server
             (1, 1),  // 0 Total Screen
             (1, 1),  // 1 Total Screen
             (1, 2),  // 2 Total Screens
-            (1, 3),  // 3 Total Screens
+            (2, 2),  // 3 Total Screens
             (2, 2),  // 4 Total Screens
             (2, 3),  // 5 Total Screens
             (2, 3),  // 6 Total Screens
@@ -54,15 +55,17 @@ namespace PlexShareScreenshare.Server
         /// </summary>
         private static ScreenshareServerViewModel? _instance;
 
+        // Constants for initial page view
+        private const int InitialPageNumber = 1;
+        private const int InitialTotalPages = 0;
+        private const int InitialNumberOfRows = 1;
+        private const int InitialNumberOfCols = 1;
+        private const bool InitialIsLastPage = true;
+
         /// <summary>
         /// Underlying data model.
         /// </summary>
         private readonly ScreenshareServer _model;
-
-        /// <summary>
-        /// The current page number that the server is viewing.
-        /// </summary>
-        private int _currentPage;
 
         /// <summary>
         /// List of all the clients sharing their screens. This list first contains
@@ -87,16 +90,16 @@ namespace PlexShareScreenshare.Server
             _model = ScreenshareServer.GetInstance(this);
 
             // Always display the first page initially
-            _currentPage = 1;
+            this.CurrentPage = InitialPageNumber;
 
             // Initialize rest of the fields
-            _subscribers = new List<SharedClientScreen>();
+            _subscribers = new();
             _disposed = false;
-            this.CurrentWindowClients = new ObservableCollection<SharedClientScreen>();
-            this.TotalPages = 1;
-            this.IsLastPage = true;
-
-            (this.CurrentPageRows, this.CurrentPageColumns) = NumRowsColumns[this.CurrentPage];
+            this.CurrentWindowClients = new();
+            this.TotalPages = InitialTotalPages;
+            this.IsLastPage = InitialIsLastPage;
+            this.CurrentPageRows = InitialNumberOfRows;
+            this.CurrentPageColumns = InitialNumberOfCols;
 
             Trace.WriteLine(Utils.GetDebugMessage("Successfully created an instance for the view model", withTimeStamp: true));
         }
@@ -130,17 +133,16 @@ namespace PlexShareScreenshare.Server
         {
             Debug.Assert(subscribers != null, Utils.GetDebugMessage("Received null subscribers list"));
 
-            // Sort the subscribers in lexicographical order of their name
-            List<SharedClientScreen> sortedSubscribers = subscribers
-                                                            .OrderBy(subscriber => subscriber.Name)
-                                                            .ToList();
+            // Acquire lock because timer threads could also execute simultaneously
+            lock (_subscribers)
+            {
+                // Move the subscribers marked as pinned to the front of the list
+                // keeping the lexicographical order of their name
+                _subscribers = RearrangeSubscribers(subscribers);
 
-            // Move the subscribers marked as pinned to the front of the list
-            // keeping the lexicographical order of their name
-            _subscribers = MovePinnedSubscribers(sortedSubscribers);
-
-            // Recompute the current window clients to notify the UX
-            RecomputeCurrentWindowClients();
+                // Recompute the current window clients to notify the UX
+                RecomputeCurrentWindowClients(this.CurrentPage);
+            }
 
             Trace.WriteLine(Utils.GetDebugMessage($"Successfully updated the subscribers list", withTimeStamp: true));
         }
@@ -168,29 +170,7 @@ namespace PlexShareScreenshare.Server
         /// <summary>
         /// Gets the current page that the server is viewing.
         /// </summary>
-        public int CurrentPage
-        {
-            get => _currentPage;
-
-            set
-            {
-                // Update the current page field and notify the UX
-                _ = ApplicationMainThreadDispatcher.BeginInvoke(
-                        DispatcherPriority.Normal,
-                        new Action<int>((newPage) =>
-                        {
-                            lock (this)
-                            {
-                                _currentPage = newPage;
-                                this.OnPropertyChanged(nameof(this.CurrentPage));
-                            }
-                        }),
-                        value);
-
-                // Recompute the current window clients to notify the UX
-                RecomputeCurrentWindowClients();
-            }
-        }
+        public int CurrentPage { get; private set; }
 
         /// <summary>
         /// Gets the total number of pages.
@@ -240,20 +220,53 @@ namespace PlexShareScreenshare.Server
         /// and notifies the UX. It also notifies the old and new clients
         /// about the new status of sending image packets.
         /// </summary>
-        public void RecomputeCurrentWindowClients()
+        /// <param name="newPageNum">
+        /// The new page number for which the current window clients should be recomputed.
+        /// </param>
+        public void RecomputeCurrentWindowClients(int newPageNum)
         {
             Debug.Assert(_subscribers != null, Utils.GetDebugMessage("_subscribers is found null"));
+            Debug.Assert(newPageNum > 0, Utils.GetDebugMessage("new page number should be positive"));
+
+            // Reset the view if the subscribers count is zero
+            if (_subscribers.Count == 0)
+            {
+                // Update the view to its initial state
+                UpdateView(
+                    new(),
+                    InitialPageNumber,
+                    InitialNumberOfRows,
+                    InitialNumberOfCols,
+                    InitialTotalPages,
+                    InitialIsLastPage,
+                    (InitialNumberOfRows, InitialNumberOfCols)
+                );
+
+                // Notifies the current clients to stop sending their image packets
+                NotifySubscribers(this.CurrentWindowClients.ToList(), new(), (InitialNumberOfRows, InitialNumberOfCols));
+                return;
+            }
+
+            // Get the total number of pages
+            int newTotalPages = GetTotalPages();
+
+            Debug.Assert(newPageNum <= newTotalPages, Utils.GetDebugMessage("page number should be less than the total number of pages"));
 
             // Total count of all the subscribers sharing screen
             int totalCount = _subscribers.Count;
 
             // Get the count of subscribers to skip for the current page
-            int countToSkip = GetCountToSkip();
+            int countToSkip = GetCountToSkip(newPageNum);
+
+            Debug.Assert(countToSkip >= 0, Utils.GetDebugMessage("count to skip should be non-negative"));
+            Debug.Assert(countToSkip <= totalCount, Utils.GetDebugMessage("count to skip should be less than or equal to the total count"));
 
             int remainingCount = totalCount - countToSkip;
 
             // Number of subscribers that will show up on the current page
             int limit = _subscribers[countToSkip].Pinned ? 1 : Math.Min(remainingCount, MaxTiles);
+
+            Debug.Assert(limit <= MaxTiles, Utils.GetDebugMessage("Number of tiles on the current page should be less than or equal to the maximum number of tiles"));
 
             // Get the new window clients to be displayed on the current page
             List<SharedClientScreen> newWindowClients = _subscribers.GetRange(countToSkip, limit);
@@ -271,52 +284,16 @@ namespace PlexShareScreenshare.Server
             // The new tile dimensions of screen image to be displayed based on new number of clients
             (int Height, int Width) newTileDimensions = GetTileDimensions(newNumRows, newNumCols);
 
-            // Get the total number of pages
-            int newTotalPages = GetTotalPages();
-
-            // Update all the fields and notify the UX
-            _ = ApplicationMainThreadDispatcher.BeginInvoke(
-                        DispatcherPriority.Normal,
-                        new Action<
-                            List<SharedClientScreen>,
-                            int,
-                            int,
-                            (int Height, int Width),
-                            int,
-                            bool
-                        >((clients, numRows, numCols, tileDimensions, totalPages, isLastPage) =>
-                        {
-                            lock (this)
-                            {
-                                // Note, to update the whole list, we can't simply assign it equal
-                                // to the new list. We need to clear the list first and add new elements
-                                // into the list to be able to see the effect on the UI.
-                                this.CurrentWindowClients.Clear();
-                                foreach (SharedClientScreen screen in clients)
-                                {
-                                    screen.TileHeight = tileDimensions.Height;
-                                    screen.TileWidth = tileDimensions.Width;
-                                    this.CurrentWindowClients.Add(screen);
-                                }
-
-                                this.CurrentPageRows = numRows;
-                                this.CurrentPageColumns = numCols;
-                                this.TotalPages = totalPages;
-                                this.IsLastPage = isLastPage;
-
-                                this.OnPropertyChanged(nameof(this.CurrentWindowClients));
-                                this.OnPropertyChanged(nameof(this.CurrentPageRows));
-                                this.OnPropertyChanged(nameof(this.CurrentPageColumns));
-                                this.OnPropertyChanged(nameof(this.TotalPages));
-                                this.OnPropertyChanged(nameof(this.IsLastPage));
-                            }
-                        }),
-                        newWindowClients,
-                        newNumRows,
-                        newNumCols,
-                        newTileDimensions,
-                        newTotalPages,
-                        this.CurrentPage == newTotalPages);
+            // Update the view with the new fields
+            UpdateView(
+                newWindowClients,
+                newPageNum,
+                newNumRows,
+                newNumCols,
+                newTotalPages,
+                newPageNum == newTotalPages,
+                newTileDimensions
+            );
 
             // Notifies the old and new clients about the status of sending image packets.
             NotifySubscribers(previousWindowClients, newWindowClients, (newNumRows, newNumCols));
@@ -334,18 +311,34 @@ namespace PlexShareScreenshare.Server
         {
             Debug.Assert(clientId != null, Utils.GetDebugMessage("Received null client id"));
             Debug.Assert(_subscribers != null, Utils.GetDebugMessage("_subscribers is found null"));
+            Debug.Assert(_subscribers.Count != 0, Utils.GetDebugMessage("_subscribers has count 0"));
 
-            // Find the index of the client
-            int pinnedScreenIdx = _subscribers.FindIndex(subscriber => subscriber.Id == clientId);
+            // Acquire lock because timer threads could also execute simultaneously
+            lock (_subscribers)
+            {
+                // Find the index of the client
+                int pinnedScreenIdx = _subscribers.FindIndex(subscriber => subscriber.Id == clientId);
 
-            Debug.Assert(pinnedScreenIdx != -1, Utils.GetDebugMessage($"Client Id: {clientId} not found in the subscribers list"));
+                Debug.Assert(pinnedScreenIdx != -1, Utils.GetDebugMessage($"Client Id: {clientId} not found in the subscribers list"));
 
-            if (pinnedScreenIdx == -1) return;
+                // If client not found
+                if (pinnedScreenIdx == -1)
+                {
+                    Trace.WriteLine(Utils.GetDebugMessage($"Client Id: {clientId} not found in the subscribers list", withTimeStamp: true));
+                    return;
+                }
 
-            // Mark the client as pinned and switch to the page of the client
-            SharedClientScreen pinnedScreen = _subscribers[pinnedScreenIdx];
-            pinnedScreen.Pinned = true;
-            this.CurrentPage = GetClientPage(pinnedScreen.Id);
+                // Mark the client as pinned
+                SharedClientScreen pinnedScreen = _subscribers[pinnedScreenIdx];
+                pinnedScreen.Pinned = true;
+
+                // Move the subscribers marked as pinned to the front of the list
+                // keeping the lexicographical order of their name
+                _subscribers = RearrangeSubscribers(_subscribers);
+
+                // Switch to the page of the client
+                RecomputeCurrentWindowClients(GetClientPage(pinnedScreen.Id));
+            }
 
             Trace.WriteLine(Utils.GetDebugMessage($"Successfully pinned the client with id: {clientId}", withTimeStamp: true));
         }
@@ -360,18 +353,34 @@ namespace PlexShareScreenshare.Server
         {
             Debug.Assert(clientId != null, Utils.GetDebugMessage("Received null client id"));
             Debug.Assert(_subscribers != null, Utils.GetDebugMessage("_subscribers is found null"));
+            Debug.Assert(_subscribers.Count != 0, Utils.GetDebugMessage("_subscribers has count 0"));
 
-            // Find the index of the client
-            int unpinnedScreenIdx = _subscribers.FindIndex(subscriber => subscriber.Id == clientId);
+            // Acquire lock because timer threads could also execute simultaneously
+            lock (_subscribers)
+            {
+                // Find the index of the client
+                int unpinnedScreenIdx = _subscribers.FindIndex(subscriber => subscriber.Id == clientId);
 
-            Debug.Assert(unpinnedScreenIdx != -1, Utils.GetDebugMessage($"Client Id: {clientId} not found in the subscribers list"));
+                Debug.Assert(unpinnedScreenIdx != -1, Utils.GetDebugMessage($"Client Id: {clientId} not found in the subscribers list"));
 
-            if (unpinnedScreenIdx != -1) return;
+                // If not found
+                if (unpinnedScreenIdx == -1)
+                {
+                    Trace.WriteLine(Utils.GetDebugMessage($"Client Id: {clientId} not found in the subscribers list", withTimeStamp: true));
+                    return;
+                }
 
-            // Mark the client as unpinned and switch to the previous (or the first) page
-            SharedClientScreen unpinnedScreen = _subscribers[unpinnedScreenIdx];
-            unpinnedScreen.Pinned = false;
-            this.CurrentPage = Math.Max(1, this.CurrentPage - 1);
+                // Mark the client as unpinned
+                SharedClientScreen unpinnedScreen = _subscribers[unpinnedScreenIdx];
+                unpinnedScreen.Pinned = false;
+
+                // Move the subscribers marked as pinned to the front of the list
+                // keeping the lexicographical order of their name
+                _subscribers = RearrangeSubscribers(_subscribers);
+
+                //  Switch to the previous (or the first) page
+                RecomputeCurrentWindowClients(Math.Max(1, this.CurrentPage - 1));
+            }
 
             Trace.WriteLine(Utils.GetDebugMessage($"Successfully unpinned the client with id: {clientId}", withTimeStamp: true));
         }
@@ -442,6 +451,29 @@ namespace PlexShareScreenshare.Server
         }
 
         /// <summary>
+        /// Rearranges the subscribers list by first having the Pinned subscribers followed by
+        /// the unpinned subscribers. The pinned and unpinned subscribers are kept in the
+        /// lexicographical order of their names.
+        /// </summary>
+        /// <param name="subscribers">
+        /// The subscribers list to rearrange
+        /// </param>
+        /// <returns>
+        /// The rearranged subscribers list
+        /// </returns>
+        private static List<SharedClientScreen> RearrangeSubscribers(List<SharedClientScreen> subscribers)
+        {
+            // Sort the subscribers in lexicographical order of their name
+            List<SharedClientScreen> sortedSubscribers = subscribers
+                                                            .OrderBy(subscriber => subscriber.Name)
+                                                            .ToList();
+
+            // Move the subscribers marked as pinned to the front of the list
+            // keeping the lexicographical order of their name
+            return MovePinnedSubscribers(sortedSubscribers);
+        }
+
+        /// <summary>
         /// Gets the tile dimensions in the grid displayed on the screen
         /// based on the number of rows and columns presented.
         /// </summary>
@@ -469,35 +501,24 @@ namespace PlexShareScreenshare.Server
             int tileHeight = (int)Math.Floor(remainingHeight / rows);
             int tileWidth = (int)Math.Floor(screenWidth / columns);
 
+            Debug.Assert(tileHeight >= 0, Utils.GetDebugMessage("Tile Height should be non-negative"));
+            Debug.Assert(tileWidth >= 0, Utils.GetDebugMessage("Tile Width should be non-negative"));
+
             return (tileHeight, tileWidth);
         }
 
         /// <summary>
-        /// Notify the previous/new window clients to stop/send their image packets.
-        /// It also asks the previous/new window clients to stop/start their image processing.
+        /// Starts the processing task for the clients.
         /// </summary>
-        /// <param name="prevWindowClients">
-        /// List of clients which were there in the previous window
+        /// <param name="clients">
+        /// The clients for which the processing task needs to be started
         /// </param>
-        /// <param name="currentWindowClients">
-        /// List of clients which are there in the current window
-        /// </param>
-        /// <param name="numRowsColumns">
-        /// Number of rows and columns for the resolution of the image to be sent by the current window clients
-        /// </param>
-        private void NotifySubscribers(List<SharedClientScreen> prevWindowClients, List<SharedClientScreen> currentWindowClients, (int, int) numRowsColumns)
+        private static void StartProcessingForClients(List<SharedClientScreen> clients)
         {
-            Debug.Assert(_model != null, Utils.GetDebugMessage("_model is found null"));
-
-            // Ask all the current window clients to start sending image packets with the specified resolution
-            _model.BroadcastClients(currentWindowClients
-                                    .Select(client => client.Id)
-                                    .ToList(), nameof(ServerDataHeader.Send), numRowsColumns);
-
             try
             {
                 // Ask all the current window clients to start processing their images
-                foreach (SharedClientScreen client in currentWindowClients)
+                foreach (SharedClientScreen client in clients)
                 {
                     // The lambda function takes the final image from the final image queue
                     // of the client and set it as the "CurrentImage" variable for the client
@@ -525,12 +546,14 @@ namespace PlexShareScreenshare.Server
                                             {
                                                 if (image != null)
                                                 {
-                                                    client.CurrentImage = Utils.BitmapToBitmapImage(image);
-                                                    this.OnPropertyChanged(nameof(this.CurrentWindowClients));
+                                                    BitmapImage img = Utils.BitmapToBitmapImage(image);
+                                                    img.Freeze();
+                                                    client.CurrentImage = img;
                                                 }
                                             }
                                         }),
-                                        client.GetFinalImage(token));
+                                        client.GetFinalImage(token)
+                                    );
                             }
                             catch (OperationCanceledException e)
                             {
@@ -553,20 +576,21 @@ namespace PlexShareScreenshare.Server
             {
                 Trace.WriteLine(Utils.GetDebugMessage($"Failed to start the processing: {e.Message}", withTimeStamp: true));
             }
+        }
 
-            Trace.WriteLine(Utils.GetDebugMessage("Successfully notified the new current window clients", withTimeStamp: true));
-
-            // Ask all the previous window clients to stop sending image packets
-            _model.BroadcastClients(prevWindowClients
-                                    .Select(client => client.Id)
-                                    .ToList(), nameof(ServerDataHeader.Stop), (1, 1));
-
-            // Ask all the previous window clients to stop processing their images
-            foreach (SharedClientScreen client in prevWindowClients)
+        /// <summary>
+        /// Stops the processing task for the clients.
+        /// </summary>
+        /// <param name="clients">
+        /// The clients for which the processing task needs to be stopped
+        /// </param>
+        private static void StopProcessingForClients(List<SharedClientScreen> clients)
+        {
+            foreach (SharedClientScreen client in clients)
             {
                 try
                 {
-                    client.StopProcessing();
+                    client.StopProcessing().Wait();
                 }
                 catch (OperationCanceledException e)
                 {
@@ -577,22 +601,143 @@ namespace PlexShareScreenshare.Server
                     Trace.WriteLine(Utils.GetDebugMessage($"Failed to stop the processing: {e.Message}", withTimeStamp: true));
                 }
             }
+        }
+
+        /// <summary>
+        /// Notify the previous/new window clients to stop/send their image packets.
+        /// It also asks the previous/new window clients to stop/start their image processing.
+        /// </summary>
+        /// <param name="prevWindowClients">
+        /// List of clients which were there in the previous window
+        /// </param>
+        /// <param name="currentWindowClients">
+        /// List of clients which are there in the current window
+        /// </param>
+        /// <param name="numRowsColumns">
+        /// Number of rows and columns for the resolution of the image to be sent by the current window clients
+        /// </param>
+        private void NotifySubscribers(List<SharedClientScreen> prevWindowClients, List<SharedClientScreen> currentWindowClients, (int, int) numRowsColumns)
+        {
+            Debug.Assert(_model != null, Utils.GetDebugMessage("_model is found null"));
+            Debug.Assert(prevWindowClients != null, Utils.GetDebugMessage("list of previous window clients is null"));
+            Debug.Assert(currentWindowClients != null, Utils.GetDebugMessage("list of current window clients is null"));
+
+            // Ask all the current window clients to start sending image packets with the specified resolution
+            _model.BroadcastClients(currentWindowClients
+                                    .Select(client => client.Id)
+                                    .ToList(), nameof(ServerDataHeader.Send), numRowsColumns);
+
+            // Start processing for the current window clients
+            StartProcessingForClients(currentWindowClients);
+
+            Trace.WriteLine(Utils.GetDebugMessage("Successfully notified the new current window clients", withTimeStamp: true));
+
+            // Ask all the previous window clients to stop sending image packets
+            _model.BroadcastClients(prevWindowClients
+                                    .Select(client => client.Id)
+                                    .ToList(), nameof(ServerDataHeader.Stop), (1, 1));
+
+            // Ask all the previous window clients to stop processing their images
+            StopProcessingForClients(prevWindowClients);
 
             Trace.WriteLine(Utils.GetDebugMessage("Successfully notified the previous window clients", withTimeStamp: true));
         }
 
         /// <summary>
+        /// Updates the view with the new values provided.
+        /// </summary>
+        /// <param name="newWindowClients">
+        /// The new current window clients
+        /// </param>
+        /// <param name="newPageNum">
+        /// The new page number
+        /// </param>
+        /// <param name="newNumRows">
+        /// The new number of grid rows on the new page
+        /// </param>
+        /// <param name="newNumCols">
+        /// The new number of grid columns on the new page
+        /// </param>
+        /// <param name="newTotalPages">
+        /// The new total number of pages
+        /// </param>
+        /// <param name="newIsLastPage">
+        /// If the new page is last page or not
+        /// </param>
+        /// <param name="newTileDimensions">
+        /// The new tile dimension of each grid cell on the new page
+        /// </param>
+        private void UpdateView(
+            List<SharedClientScreen> newWindowClients,
+            int newPageNum,
+            int newNumRows,
+            int newNumCols,
+            int newTotalPages,
+            bool newIsLastPage,
+            (int Height, int Width) newTileDimensions
+        )
+        {
+            // Update all the fields and notify the UX
+            _ = ApplicationMainThreadDispatcher.BeginInvoke(
+                        DispatcherPriority.Normal,
+                        new Action<
+                            List<SharedClientScreen>, int, int, int, int, bool, (int Height, int Width)
+                        >((clients, pageNum, numRows, numCols, totalPages, isLastPage, tileDimensions) =>
+                        {
+                            lock (this)
+                            {
+                                // Note, to update the whole list, we can't simply assign it equal
+                                // to the new list. We need to clear the list first and add new elements
+                                // into the list to be able to see the effect on the UI.
+                                this.CurrentWindowClients.Clear();
+                                foreach (SharedClientScreen screen in clients)
+                                {
+                                    screen.TileHeight = tileDimensions.Height;
+                                    screen.TileWidth = tileDimensions.Width;
+                                    this.CurrentWindowClients.Add(screen);
+                                }
+
+                                this.CurrentPage = pageNum;
+                                this.CurrentPageRows = numRows;
+                                this.CurrentPageColumns = numCols;
+                                this.TotalPages = totalPages;
+                                this.IsLastPage = isLastPage;
+
+                                this.OnPropertyChanged(nameof(this.CurrentWindowClients));
+                                this.OnPropertyChanged(nameof(this.CurrentPage));
+                                this.OnPropertyChanged(nameof(this.CurrentPageRows));
+                                this.OnPropertyChanged(nameof(this.CurrentPageColumns));
+                                this.OnPropertyChanged(nameof(this.TotalPages));
+                                this.OnPropertyChanged(nameof(this.IsLastPage));
+                            }
+                        }),
+                        newWindowClients,
+                        newPageNum,
+                        newNumRows,
+                        newNumCols,
+                        newTotalPages,
+                        newIsLastPage,
+                        newTileDimensions
+                );
+        }
+
+        /// <summary>
         /// Computes the number of subscribers to skip up to current page.
         /// </summary>
+        /// <param name="currentPageNum">
+        /// The current page number the server is viewing
+        /// </param>
         /// <returns>
-        /// Returns the number of subscribers to skip up to current page
+        /// Returns the number of subscribers to skip up to the current page
         /// </returns>
-        private int GetCountToSkip()
+        private int GetCountToSkip(int currentPageNum)
         {
             Debug.Assert(_subscribers != null, Utils.GetDebugMessage("_subscribers is found null"));
+            Debug.Assert(currentPageNum > 0, Utils.GetDebugMessage("current page number should be positive"));
+            Debug.Assert(currentPageNum <= GetTotalPages(), Utils.GetDebugMessage("current page number should be less than or equal to the total number of pages"));
 
             int countToSkip = 0;
-            for (int i = 0; i < this.CurrentPage; ++i)
+            for (int i = 1; i < currentPageNum; ++i)
             {
                 // The first screen on the page "i"
                 SharedClientScreen screen = _subscribers[countToSkip];
@@ -616,7 +761,9 @@ namespace PlexShareScreenshare.Server
         /// <param name="clientId">
         /// The client Id whose page is to be found
         /// </param>
-        /// <returns></returns>
+        /// <returns>
+        /// The page number of the client on which it's screen is displayed.
+        /// </returns>
         private int GetClientPage(string clientId)
         {
             Debug.Assert(_subscribers != null, Utils.GetDebugMessage("_subscribers is found null"));
@@ -650,10 +797,10 @@ namespace PlexShareScreenshare.Server
                     int clientIdx = _subscribers
                                 .GetRange(startSubscriberIdx, limit)
                                 .FindIndex(sub => sub.Id == clientId);
-                    if (clientIdx >= 0) return pageNum;
+                    if (clientIdx != -1) return pageNum;
 
                     // If screen is not pinned, then skip by max number of tiles that are displayed on one page
-                    startSubscriberIdx += MaxTiles;
+                    startSubscriberIdx += limit;
                 }
 
                 // Go to next page
@@ -718,7 +865,7 @@ namespace PlexShareScreenshare.Server
         /// </param>
         private void OnPropertyChanged(string property)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+            PropertyChanged?.Invoke(this, new(property));
         }
     }
 }

@@ -6,11 +6,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
 using System.Windows.Media.Imaging;
 
 // The Timer class object
@@ -22,7 +22,8 @@ namespace PlexShareScreenshare.Server
     /// Represents the screen shared by a client along with some other client information.
     /// </summary>
     public class SharedClientScreen :
-        IDisposable     // Handle cleanup work for the allocated resources
+        INotifyPropertyChanged, // Notifies the UX that a property value has changed.
+        IDisposable             // Handle cleanup work for the allocated resources
     {
         /// <summary>
         /// The timeout value in "milliseconds" defining the timeout for the timer in
@@ -79,6 +80,26 @@ namespace PlexShareScreenshare.Server
         private bool _disposed;
 
         /// <summary>
+        /// The current screen image of the client being displayed.
+        /// </summary>
+        private BitmapImage? _currentImage;
+
+        /// <summary>
+        /// Whether the client is marked as pinned or not.
+        /// </summary>
+        private bool _pinned;
+
+        /// <summary>
+        /// The height of the tile of the client screen.
+        /// </summary>
+        private int _tileHeight;
+
+        /// <summary>
+        /// The width of the tile of the client screen.
+        /// </summary>
+        private int _tileWidth;
+
+        /// <summary>
         /// Creates an instance of SharedClientScreen which represents the screen
         /// shared by a client and also stores some other information of the client.
         /// </summary>
@@ -100,23 +121,24 @@ namespace PlexShareScreenshare.Server
             _server = server ?? throw new ArgumentNullException(nameof(server));
 
             // Create a new stitcher object associated to this client
-            _stitcher = new ScreenStitcher(this);
+            _stitcher = new(this);
 
             // Initialize the queues to be empty
-            _imageQueue = new Queue<Frame>();
-            _finalImageQueue = new Queue<Bitmap>();
+            _imageQueue = new();
+            _finalImageQueue = new();
 
             // Mark the client as not pinned initially
-            this.Pinned = false;
+            _pinned = false;
 
             // Initialize these variables as null
             _imageSendTask = null;
-            _disposed = false;
-            this.CurrentImage = null;
+            _tokenSource = null;
+            _currentImage = null;
 
             // Initialize rest of the properties
-            this.TileHeight = 0;
-            this.TileWidth = 0;
+            _disposed = false;
+            _tileHeight = 0;
+            _tileWidth = 0;
 
             try
             {
@@ -124,7 +146,7 @@ namespace PlexShareScreenshare.Server
                 {
                     // Create the timer for this client
                     _timer = new Timer();
-                    _timer.Elapsed += new ElapsedEventHandler((sender, e) => _server.OnTimeOut(sender, e, Id));
+                    _timer.Elapsed += new((sender, e) => _server.OnTimeOut(sender, e, Id));
 
                     // The timer should be invoked only once
                     _timer.AutoReset = false;
@@ -159,6 +181,11 @@ namespace PlexShareScreenshare.Server
         }
 
         /// <summary>
+        /// Property changed event raised when a property is changed on a component.
+        /// </summary>
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        /// <summary>
         /// Implement IDisposable. Disposes the managed and unmanaged resources.
         /// </summary>
         public void Dispose()
@@ -186,22 +213,58 @@ namespace PlexShareScreenshare.Server
         /// <summary>
         /// Gets the current screen image of the client being displayed.
         /// </summary>
-        public BitmapImage? CurrentImage { get; set; }
+        public BitmapImage? CurrentImage
+        {
+            get => _currentImage;
+
+            set
+            {
+                _currentImage = value;
+                this.OnPropertyChanged(nameof(CurrentImage));
+            }
+        }
 
         /// <summary>
         /// Gets whether the client is marked as pinned or not.
         /// </summary>
-        public bool Pinned { get; set; }
+        public bool Pinned
+        {
+            get => _pinned;
+
+            set
+            {
+                _pinned = value;
+                this.OnPropertyChanged(nameof(Pinned));
+            }
+        }
 
         /// <summary>
-        /// The height of the tile of the client screen.
+        /// Gets the height of the tile of the client screen.
         /// </summary>
-        public int TileHeight { get; set; }
+        public int TileHeight
+        {
+            get => _tileHeight;
+
+            set
+            {
+                _tileHeight = value;
+                this.OnPropertyChanged(nameof(TileHeight));
+            }
+        }
 
         /// <summary>
-        /// The width of the tile of the client screen.
+        /// Gets the width of the tile of the client screen.
         /// </summary>
-        public int TileWidth { get; set; }
+        public int TileWidth
+        {
+            get => _tileWidth;
+
+            set
+            {
+                _tileWidth = value;
+                this.OnPropertyChanged(nameof(TileWidth));
+            }
+        }
 
         /// <summary>
         /// Pops and returns the received Frame at the beginning of the received image queue.
@@ -316,10 +379,14 @@ namespace PlexShareScreenshare.Server
         {
             Debug.Assert(_stitcher != null, Utils.GetDebugMessage("_stitcher is found null"));
 
-            if (_imageSendTask != null) return;
+            if (_imageSendTask != null)
+            {
+                Trace.WriteLine(Utils.GetDebugMessage($"Trying to start an already started task for the client with Id {this.Id}", withTimeStamp: true));
+                return;
+            }
 
             // Create a new cancellation token
-            _tokenSource = new CancellationTokenSource();
+            _tokenSource = new();
 
             try
             {
@@ -327,7 +394,7 @@ namespace PlexShareScreenshare.Server
                 _stitcher.StartStitching();
 
                 // Create and start a new task
-                _imageSendTask = new Task(() => task(_tokenSource.Token), _tokenSource.Token);
+                _imageSendTask = new(() => task(_tokenSource.Token), _tokenSource.Token);
                 _imageSendTask.Start();
             }
             catch (OperationCanceledException e)
@@ -349,7 +416,7 @@ namespace PlexShareScreenshare.Server
         /// containing frames and images.
         /// </summary>
         /// <exception cref="Exception"></exception>
-        public async void StopProcessing()
+        public async Task StopProcessing()
         {
             Debug.Assert(_stitcher != null, Utils.GetDebugMessage("_stitcher is found null"));
 
@@ -368,7 +435,6 @@ namespace PlexShareScreenshare.Server
                 // Cancel the task and wait for it to finish
                 _tokenSource.Cancel();
                 await _imageSendTask;
-                _imageSendTask = null;
             }
             catch (OperationCanceledException e)
             {
@@ -381,8 +447,10 @@ namespace PlexShareScreenshare.Server
             }
             finally
             {
-                // Dispose of the token
+                // Dispose of the token and the task
                 _tokenSource.Dispose();
+                _imageSendTask.Dispose();
+
                 _tokenSource = null;
                 _imageSendTask = null;
 
@@ -442,6 +510,8 @@ namespace PlexShareScreenshare.Server
             // and unmanaged resources
             if (disposing)
             {
+                StopProcessing().Wait();
+
                 if (_timer != null)
                 {
                     // Stop and dispose the timer object
@@ -454,6 +524,17 @@ namespace PlexShareScreenshare.Server
 
             // Now disposing has been done
             _disposed = true;
+        }
+
+        /// <summary>
+        /// Handles the property changed event raised on a component.
+        /// </summary>
+        /// <param name="property">
+        /// The name of the property that is changed
+        /// </param>
+        private void OnPropertyChanged(string property)
+        {
+            PropertyChanged?.Invoke(this, new(property));
         }
     }
 }

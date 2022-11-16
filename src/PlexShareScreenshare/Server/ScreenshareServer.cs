@@ -73,7 +73,7 @@ namespace PlexShareScreenshare.Server
             }
 
             // Initialize the rest of the fields
-            _subscribers = new Dictionary<string, SharedClientScreen>();
+            _subscribers = new();
             _listener = listener;
             _disposed = false;
 
@@ -105,7 +105,7 @@ namespace PlexShareScreenshare.Server
         {
             try
             {
-                DataPacket? packet = JsonSerializer.Deserialize<DataPacket>(serializedData); ;
+                DataPacket? packet = JsonSerializer.Deserialize<DataPacket>(serializedData);
 
                 if (packet == null)
                 {
@@ -243,6 +243,10 @@ namespace PlexShareScreenshare.Server
         public void BroadcastClients(List<string> clientIds, string headerVal, (int Rows, int Cols) numRowsColumns)
         {
             Debug.Assert(_communicator != null, Utils.GetDebugMessage("_communicator is found null"));
+            Debug.Assert(clientIds != null, Utils.GetDebugMessage("list of client Ids is found null"));
+
+            // If there are no clients to broadcast to
+            if (clientIds.Count == 0) return;
 
             // Validate header value
             try
@@ -328,25 +332,30 @@ namespace PlexShareScreenshare.Server
         {
             Debug.Assert(_subscribers != null, Utils.GetDebugMessage("_subscribers is found null"));
 
-            // Check if the clientId is present in the screen sharers list
-            if (_subscribers.ContainsKey(clientId))
+            // Acquire lock because timer threads could also execute simultaneously
+            lock (_subscribers)
             {
-                Trace.WriteLine(Utils.GetDebugMessage($"Trying to register an already registered client with id {clientId}", withTimeStamp: true));
-                return;
+                // Check if the clientId is present in the screen sharers list
+                if (_subscribers.ContainsKey(clientId))
+                {
+                    Trace.WriteLine(Utils.GetDebugMessage($"Trying to register an already registered client with id {clientId}", withTimeStamp: true));
+                    return;
+                }
+
+                try
+                {
+                    // Add this client to the list of screen sharers
+                    _subscribers.Add(clientId, new(clientId, clientName, this));
+                }
+                catch (Exception e)
+                {
+                    Trace.WriteLine(Utils.GetDebugMessage($"Error adding client to the list of screen sharers: {e.Message}", withTimeStamp: true));
+                    return;
+                }
+
+                NotifyUX();
             }
 
-            try
-            {
-                // Add this client to the list of screen sharers
-                _subscribers.Add(clientId, new SharedClientScreen(clientId, clientName, this));
-            }
-            catch (Exception e)
-            {
-                Trace.WriteLine(Utils.GetDebugMessage($"Error adding client to the list of screen sharers: {e.Message}", withTimeStamp: true));
-                return;
-            }
-
-            NotifyUX();
             Trace.WriteLine(Utils.GetDebugMessage($"Successfully registered the client- Id: {clientId}, Name: {clientName}", withTimeStamp: true));
         }
 
@@ -362,23 +371,29 @@ namespace PlexShareScreenshare.Server
         {
             Debug.Assert(_subscribers != null, Utils.GetDebugMessage("_subscribers is found null"));
 
-            // Check if the clientId is present in the screen sharers list
-            if (!_subscribers.ContainsKey(clientId))
+            SharedClientScreen client;
+
+            // Acquire lock because timer threads could also execute simultaneously
+            lock (_subscribers)
             {
-                Trace.WriteLine(Utils.GetDebugMessage($"Trying to deregister a client with id {clientId} which is not present in subscribers list", withTimeStamp: true));
-                return;
+                // Check if the clientId is present in the screen sharers list
+                if (!_subscribers.ContainsKey(clientId))
+                {
+                    Trace.WriteLine(Utils.GetDebugMessage($"Trying to deregister a client with id {clientId} which is not present in subscribers list", withTimeStamp: true));
+                    return;
+                }
+
+                // Remove the client from the list of screen sharers
+                client = _subscribers[clientId];
+                _ = _subscribers.Remove(clientId);
+
+                NotifyUX();
             }
-
-            // Remove the client from the list of screen sharers
-            SharedClientScreen client = _subscribers[clientId];
-            _ = _subscribers.Remove(clientId);
-
-            NotifyUX();
 
             // Stop all processing for this client
             try
             {
-                client.StopProcessing();
+                client.StopProcessing().Wait();
             }
             catch (OperationCanceledException e)
             {
