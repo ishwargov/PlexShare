@@ -49,7 +49,7 @@ namespace PlexShareWhiteboard
         private WhiteBoardViewModel()
         {
             // this will become client and server 
-            isServer = true;
+            isServer = false;
 
             //ShapeItems = new AsyncObservableCollection<ShapeItem>();
             ShapeItems = new ObservableCollection<ShapeItem>();
@@ -78,6 +78,7 @@ namespace PlexShareWhiteboard
             }
         }
 
+       
         //public void SetUserId(string _userId)
         public void SetUserId(int _userId)
         {
@@ -104,20 +105,40 @@ namespace PlexShareWhiteboard
             currentIdVal++;
             currentId = "u" + userId + "_f" + currentIdVal;
         }
-        public void TextFinishPush()
-        {
-            ;
-        }
+        
         public void ChangeMode(string new_mode)
         {
-            /*if (mode == "create_textbox")
+            if (mode == "create_textbox")
             {
-                if (lastShape.TextString.Length != 0)
+                Debug.WriteLine("mode for undo : ", textBoxLastShape.Id);
+                if (textBoxLastShape != null && textBoxLastShape.TextString != null && textBoxLastShape.TextString.Length != 0)
                 {
+
                     TextFinishPush();
+                    Debug.WriteLine("entering undo modeeeee");
+
                 }
-            }*/
+                else if (textBoxLastShape != null)
+                {
+                    for (int i = 0; i < ShapeItems.Count; ++i)
+                    {
+                        if (textBoxLastShape.Id == ShapeItems[i].Id)
+                        {
+                            ShapeItems.RemoveAt(i);
+                            break;
+                        }
+                    }
+                }
+            }
             mode = new_mode;
+        }
+        public void TextFinishPush()
+        {
+            stackElement = new UndoStackElement(textBoxLastShape, textBoxLastShape, Operation.Creation);
+            InsertIntoStack(stackElement);
+
+            if (textBoxLastShape != null)
+                machine.OnShapeReceived(textBoxLastShape, Operation.Creation);
         }
 
         public ShapeItem UpdateFillColor(ShapeItem shape, Brush fillBrush)
