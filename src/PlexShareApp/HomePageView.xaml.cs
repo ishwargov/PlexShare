@@ -10,6 +10,8 @@
  * Description = Interaction Logic for HomePageView.xaml
  * 
  ************************************************************/
+using Client.Models;
+using Dashboard;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -46,6 +48,8 @@ namespace PlexShareApp
         string Url = "";
         string absolute_path = "";
         bool homaPageanimation = true;
+        private bool sessionPageOn;
+        private SessionsPage sessionPage;
         /// <summary>
         /// Constructor function which takes some arguments from 
         /// authentication page.
@@ -70,12 +74,12 @@ namespace PlexShareApp
             this.Name_box.Text = Name;
             this.Email_textbox.Text = Email;
             this.Email_textbox.IsEnabled = false;
-
+            sessionPageOn = false;
             // It stores the absolute path of the profile image
             absolute_path = DownloadImage(Url);
             this.profile_picture.ImageSource = new BitmapImage(new Uri(absolute_path,UriKind.Absolute));
             this.Show();
-
+            sessionPage = new SessionsPage(Email);
             // Function to start the animation
 
             Task task = new Task(() => HomePage_Animate(this));
@@ -336,6 +340,22 @@ namespace PlexShareApp
             else
             {
                 this.BorderThickness = new System.Windows.Thickness(0);
+            }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (sessionPageOn)
+            {
+                //Session.Background = Brushes.Transparent;
+                sessionPageOn = false;
+                SessionPage.Content = null;
+            }
+            else
+            {
+                //Session.Background = Brushes.DarkCyan;
+                sessionPageOn = true;
+                SessionPage.Content = sessionPage;
             }
         }
     }
