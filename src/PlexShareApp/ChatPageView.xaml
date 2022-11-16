@@ -139,22 +139,22 @@
                             <TextBlock Foreground="{DynamicResource DynamicTextClr}" Text="{Binding IncomingMessage, UpdateSourceTrigger=PropertyChanged}"
                                        x:Name="MainText" TextWrapping="Wrap" Grid.Row="0" Width="250" FontSize="16"
                                        Padding="8,5,8,5" Grid.Column="0" />
-                            <!-- Currently adding edit button and delete button and making all buttons contrasting-->
+                            <!-- Currently adding reply, clear replybox, edit and delete button-->
                             <StackPanel Orientation="Horizontal" Grid.Column="1">
                                 <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
-                                    Width="30" Height="20" Margin="0,0,0,0" Click="ReplyButtonClick">
+                                    Width="30" Height="20" Margin="0,0,0,0" Click="ReplyButtonClick" ToolTip="Reply">
                                     <Image Source="Icons/reply.png" Width="15" Height="15" />
                                 </Button>
                                 <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
-                                    Width="30" Height="20" Margin="0,0,0,0" Click="ClearReplyBox">
+                                    Width="30" Height="20" Margin="0,0,0,0" Click="ClearReplyBox" ToolTip="Undo Reply">
                                     <Image Source="Icons/undo.png" Width="15" Height="15" />
                                 </Button>
                                 <Button  Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
-                                    Width="30" Height="20" Margin="0,0,0,0" Click="EditButtonClick">
+                                    Width="30" Height="20" Margin="0,0,0,0" Click="EditButtonClick" ToolTip="Edit">
                                     <Image Source="Icons/edit.png" Width="15" Height="15"/>
                                 </Button>
                                 <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
-                                    Width="30" Height="20" Margin="0,0,0,0" Click="DeleteButtonClick">
+                                    Width="30" Height="20" Margin="0,0,0,0" Click="DeleteButtonClick" ToolTip="Delete">
                                     <Image Source="Icons/delete.png" Width="15" Height="15"/>
                                 </Button>
                             </StackPanel>
@@ -228,12 +228,12 @@
                                 </Grid>
                             </Border>
                             <StackPanel>
-                                <Button Grid.Column="1" Background="Transparent" BorderBrush="Transparent"
+                                <Button Grid.Column="1" Background="Transparent" BorderBrush="Transparent" ToolTip="Reply"
                                     HorizontalAlignment="Right" Width="30" Margin="0,0,0,0" Click="ReplyButtonClick">
                                     <Image Source="Icons/reply.png" Width="15" Height="15" />
                                 </Button>
                                 <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
-                                    Width="30" Height="20" Margin="0,0,0,0" Click="ClearReplyBox">
+                                    Width="30" Height="20" Margin="0,0,0,0" Click="ClearReplyBox" ToolTip="Undo Reply">
                                     <Image Source="Icons/undo.png" Width="15" Height="15" />
                                 </Button>
                             </StackPanel>
@@ -302,11 +302,11 @@
                                    Padding="8,5,8,5" Grid.Column="0"/>
                         <StackPanel Orientation="Horizontal" Grid.Column="1">
                             <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
-                                    Width="30" Height="20" Margin="0,0,0,0" Click="ReplyButtonClick">
+                                    Width="30" Height="20" Margin="0,0,0,0" Click="ReplyButtonClick" ToolTip="Reply">
                                 <Image Source="Icons/reply.png" Width="15" Height="15" />
                             </Button>
                             <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
-                                    Width="30" Height="20" Margin="0,0,0,0" Click="ClearReplyBox">
+                                    Width="30" Height="20" Margin="0,0,0,0" Click="ClearReplyBox" ToolTip="Undo Reply">
                                 <Image Source="Icons/undo.png" Width="15" Height="15" />
                             </Button>
                             <!--<Button  Background="Violet" BorderBrush="Transparent" HorizontalAlignment="Right"
@@ -391,18 +391,18 @@
                                            Width="150" FontSize="16" Padding="8,5,8,5" />
                                 <Button Grid.Column="2" Background="Transparent" BorderBrush="Transparent"
                                         HorizontalAlignment="Right" Width="40" Margin="0,0,0,0"
-                                        Click="DownloadButtonClick">
+                                        Click="DownloadButtonClick" ToolTip="Download">
                                     <Image Source="Icons/download.png" Width="30" Height="30" />
                                 </Button>
                             </Grid>
                         </Border>
                         <StackPanel Orientation="Horizontal" Grid.Column="1">
                             <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
-                                    Width="30" Height="20" Margin="0,0,0,0" Click="ReplyButtonClick">
+                                    Width="30" Height="20" Margin="0,0,0,0" Click="ReplyButtonClick" ToolTip="Reply">
                                 <Image Source="Icons/reply.png" Width="15" Height="15" />
                             </Button>
                             <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
-                                    Width="30" Height="20" Margin="0,0,0,0" Click="ClearReplyBox">
+                                    Width="30" Height="20" Margin="0,0,0,0" Click="ClearReplyBox" ToolTip="Undo Reply">
                                 <Image Source="Icons/undo.png" Width="15" Height="15" />
                             </Button>
                         </StackPanel>
@@ -495,7 +495,7 @@
                                          Text="" AcceptsReturn="True"/>
                             </Grid>
                             <Button Background="Transparent" HorizontalAlignment="Right" Width="30" Margin="3,5,2,6"
-                                    Click="UploadButtonClick" VerticalAlignment="Bottom">
+                                    Click="UploadButtonClick" VerticalAlignment="Bottom" ToolTip="Upload">
                                 <Image Source="Icons/upload-file.png" Width="20" Height="20" />
                             </Button>
                         </Grid>
@@ -504,7 +504,7 @@
                             BorderBrush="{DynamicResource DynamicSendBox}" BorderThickness="0" Height="35" Width="35"
                             Margin="0,0,0,0" VerticalAlignment="Bottom">
                         <Button  Background="Transparent" HorizontalAlignment="Left" Width="30" Margin="3,5,0,5"
-                                Click="SendButtonClick">
+                                Click="SendButtonClick" ToolTip="Send">
                             <Image Source="Icons/send-mail.png" HorizontalAlignment="Center" Width="18" Height="18" />
                         </Button>
                     </Border>

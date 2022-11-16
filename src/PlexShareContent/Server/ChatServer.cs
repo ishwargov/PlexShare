@@ -119,7 +119,7 @@ namespace PlexShareContent.Server
             }
 
             // Star the message and return the starred message
-            msg.Starred = true;
+            msg.Starred = !msg.Starred;
             return msg;
         }
 
