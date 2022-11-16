@@ -57,33 +57,36 @@ namespace PlexShareApp
         /// <param name="e"></param>
         private void CanvasMouseDown(object sender, MouseButtonEventArgs e)
         {
-            var a = e.GetPosition(sender as Canvas);
-            viewModel.ShapeStart(a);
-            singleTrigger = true;
-            if (viewModel.select.ifSelected)
+            if(viewModel.canDraw)
             {
-
-                string shapeName = viewModel.select.selectedObject.Geometry.GetType().Name;
-                if (shapeName == "EllipseGeometry" || shapeName == "RectangleGeometry" || shapeName == "PathGeometry" || shapeName == "LineGeometry")
+                var a = e.GetPosition(sender as Canvas);
+                viewModel.ShapeStart(a);
+                singleTrigger = true;
+                if (viewModel.select.ifSelected)
                 {
-                    if (this.ShapeToolBar.Visibility == Visibility.Collapsed)
-                        this.ShapeToolBar.Visibility = Visibility.Visible;
-                }
 
+                    string shapeName = viewModel.select.selectedObject.Geometry.GetType().Name;
+                    if (shapeName == "EllipseGeometry" || shapeName == "RectangleGeometry" || shapeName == "PathGeometry" || shapeName == "LineGeometry")
+                    {
+                        if (this.ShapeToolBar.Visibility == Visibility.Collapsed)
+                            this.ShapeToolBar.Visibility = Visibility.Visible;
+                    }
+
+                    else
+                    {
+                        if (this.ShapeToolBar.Visibility == Visibility.Visible)
+                            this.ShapeToolBar.Visibility = Visibility.Collapsed;
+                    }
+
+
+
+                }
                 else
                 {
                     if (this.ShapeToolBar.Visibility == Visibility.Visible)
                         this.ShapeToolBar.Visibility = Visibility.Collapsed;
+
                 }
-
-
-
-            }
-            else
-            {
-                if (this.ShapeToolBar.Visibility == Visibility.Visible)
-                    this.ShapeToolBar.Visibility = Visibility.Collapsed;
-
             }
         }
 

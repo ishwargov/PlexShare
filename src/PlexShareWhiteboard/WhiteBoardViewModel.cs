@@ -26,6 +26,8 @@ namespace PlexShareWhiteboard
         public SelectObject select = new();
         List<ShapeItem> highlightShapes;
 
+
+        public bool canDraw = false;
         String currentId = "u0_f0";
         int currentIdVal = 0;
         string userId = "0";
@@ -97,6 +99,7 @@ namespace PlexShareWhiteboard
                 machine.SetUserId(userId);
             }
             //machine.SetVMRef(this);
+            canDraw = true;
 
         }
         public void IncrementId()
