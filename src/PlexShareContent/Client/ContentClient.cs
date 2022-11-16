@@ -499,11 +499,11 @@ namespace PlexShareContent.Client
             message.FileData = null;
             ReceiveContentData receivedMessage = message;
             var messageID = receivedMessage.MessageID;
-            // check if message ID is unique 
-            //if (_messageIDMap.ContainsKey(messageID))
-            //{
-            //    throw new ArgumentException("Message ID is not unique");
-            //}
+            // check if message ID is present 
+            if (!_messageIDMap.ContainsKey(messageID))
+            {
+                throw new ArgumentException("Message with message ID is not present");
+            }
             // get thread index and check if thread exists
             var threadID = _messageIDMap[messageID];
             if (!_threadIDMap.ContainsKey(threadID))
@@ -535,11 +535,11 @@ namespace PlexShareContent.Client
             message.FileData = null;
             ReceiveContentData receivedMessage = message;
             var messageID = receivedMessage.MessageID;
-            // check if message ID is unique 
-            //if (_messageIDMap.ContainsKey(messageID))
-            //{
-            //    throw new ArgumentException("Message ID is not unique");
-            //}
+            // check if message ID is present 
+            if (!_messageIDMap.ContainsKey(messageID))
+            {
+                throw new ArgumentException("Message with message ID is not present");
+            }
             // get thread index and check if thread exists
             var threadID = _messageIDMap[messageID];
             if (!_threadIDMap.ContainsKey(threadID))
@@ -570,11 +570,11 @@ namespace PlexShareContent.Client
             message.FileData = null;
             ReceiveContentData receivedMessage = message;
             var messageID = receivedMessage.MessageID;
-            // check if message ID is unique 
-            //if (_messageIDMap.ContainsKey(messageID))
-            //{
-            //    throw new ArgumentException("Message ID is not unique");
-            //}
+            // check if message ID is present 
+            if (!_messageIDMap.ContainsKey(messageID))
+            {
+                throw new ArgumentException("Message with message ID is not present");
+            }
             // get thread index and check if thread exists
             var threadID = _messageIDMap[messageID];
             if (!_threadIDMap.ContainsKey(threadID))
