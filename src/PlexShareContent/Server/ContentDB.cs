@@ -41,7 +41,7 @@ namespace PlexShareContent.Server
         /// <summary>
         ///     Fetch all the chat threads
         /// </summary>
-        public List<ChatThread> GetChatContexts()
+        public List<ChatThread> GetChatThreads()
         {
             return _chatThread;
         }

@@ -15,6 +15,8 @@ using PlexShareContent.Enums;
 using PlexShareContent.Server;
 using PlexShareContent;
 using PlexShareNetwork;
+using Microsoft.Azure.WebJobs.Host.Listeners;
+using PlexShareNetwork.Communication;
 
 namespace PlexShareTests.ContentTests.Server
 {
@@ -28,28 +30,44 @@ namespace PlexShareTests.ContentTests.Server
         private int sleeptime;
         private Utility utils;
 
-        public void Initialiser()
+        [Fact]
+        public void OnDataReceived_ChatIsReceived_CallReceiveMethodOfContentDB()
         {
             utils = new Utility();
             contentServer = ContentServerFactory.GetInstance() as ContentServer;
             contentServer.Reset();
-        }
-
-        [Fact]
-        public void OnDataReceived_ChatIsReceived_CallReceiveMethodOfContentDB()
-        {
-            Initialiser();
             sleeptime = 50;
-            contentServer = ContentServerFactory.GetInstance() as ContentServer;
-            contentServer.Reset();
             _notifHandler = new ContentServerNotificationHandler(contentServer);
             _serializer = new ContentSerializer();
             _listener = new FakeContentListener();
             _communicator = new FakeCommunicator();
             contentServer.Communicator = _communicator;
             contentServer.ServerSubscribe(_listener);
-            var messageData = utils.GenerateContentData(data: "Message");
 
+            var CurrentDirectory = Directory.GetCurrentDirectory();
+            var path = CurrentDirectory.Split(new[] { "\\Testing" }, StringSplitOptions.None);
+            var pathA = path[0] + "\\Testing\\Content\\Test_File.pdf";
+
+            var file = new ContentData
+            {
+                Data = "Test_File.pdf",
+                Type = MessageType.File,
+                FileData = new SendFileData(pathA),
+                SenderID = 1,
+                ReplyThreadID = -1,
+                Event = MessageEvent.New,
+                ReceiverIDs = new int[0]
+            };
+
+            var serializedMessage = _serializer.Serialize(file);
+
+            _notifHandler.OnDataReceived(serializedMessage);
+
+            Thread.Sleep(sleeptime);
+
+            var notifiedMessage = _listener.GetReceivedMessage();
+
+            Assert.Equal("Test_File.pdf", notifiedMessage.Data);
         }
     }
 }

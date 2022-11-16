@@ -10,10 +10,13 @@
  * Description = Contains Tests for ContentServer
  *****************************************************************************/
 
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Azure.WebJobs.Host.Listeners;
 using PlexShareContent;
 using PlexShareContent.DataModels;
 using PlexShareContent.Enums;
 using PlexShareContent.Server;
+using PlexShareNetwork.Communication;
 
 namespace PlexShareTests.ContentTests.Server
 {
@@ -39,7 +42,7 @@ namespace PlexShareTests.ContentTests.Server
             _contentServer.Communicator = _communicator;
            
 
-            var messageData = _utility.GenerateContentData(data: "First Message");
+            var messageData = _utility.GenerateContentData(data: "Test Message");
             var serializedMessage =_serializer.Serialize(messageData);
             _contentServer.Receive(serializedMessage);
 
@@ -168,29 +171,53 @@ namespace PlexShareTests.ContentTests.Server
         }
 
         [Fact]
-        public void
-            Receive_HandlingPrivateMessages_ShouldSaveTheNewMessageAndNotifyTheSubcsribersAndForwardTheSerializedMessageToCommunicator()
+        public void SGetAllMessages_GettingAllTheMessagesOnServer_ShouldReturnListOfChatContextsWithAllTheMessages()
+        {
+            Initialiser();
+            var chatContexts = _contentServer.GetAllMessages();
+            var firstMessage = chatContexts[0].MessageList[0];
+
+            Assert.Equal("Test Message", firstMessage.Data);
+            Assert.Equal(MessageType.Chat, firstMessage.Type);
+            Assert.Equal(MessageEvent.New, firstMessage.Event);
+            Assert.Equal(0, firstMessage.MessageID);
+            Assert.Equal(0, firstMessage.ReplyThreadID);
+
+            var secondMessage = chatContexts[1].MessageList[0];
+            Assert.Equal("Test_File.pdf", secondMessage.Data);
+            Assert.Equal(MessageType.File, secondMessage.Type);
+            Assert.Equal(MessageEvent.New, secondMessage.Event);
+            Assert.Equal(1, secondMessage.MessageID);
+            Assert.Equal(1, secondMessage.ReplyThreadID);
+        }
+
+        [Fact]
+        public void SSendAllMessagesToClient_SendingAllMessagesToANewlyJoinedClient_ListOfChatContextsShouldBeForwadedToCommunicator()
+        {
+            Initialiser();
+            var userId = 1;
+            _contentServer.SSendAllMessagesToClient(userId);
+            Assert.Equal(1, userId);
+        }
+
+        [Fact]
+        public void Receive_HandlingPrivateMessages_ShouldSaveTheNewMessageAndNotifyTheSubcsribersAndForwardTheSerializedMessageToCommunicator()
         {
             Initialiser();
             var messageData = _utility.GenerateContentData(data: "Test Message");
             messageData.ReceiverIDs = new[] { 2, 3 };
             messageData.SenderID = 1;
 
-            var serializesMessage =_serializer.Serialize(messageData);
-
+            var serializesMessage = _serializer.Serialize(messageData);
             _contentServer.Receive(serializesMessage);
-
             Thread.Sleep(sleeptime);
 
-            var notifiedMessage =_listener.GetReceivedMessage();
-
-            Assert.Equal( "Test Message", notifiedMessage.Data);
+            var notifiedMessage = _listener.GetReceivedMessage();
+            Assert.Equal("Test Message", notifiedMessage.Data);
 
             var sentMessage = _communicator.GetSentData();
-
-            var deserializesSentMessage =_serializer.Deserialize<ContentData>(sentMessage);
-
-            Assert.Equal( "Test Message", deserializesSentMessage.Data);
+            var deserializesSentMessage = _serializer.Deserialize<ContentData>(sentMessage);
+            Assert.Equal("Test Message", deserializesSentMessage.Data);
 
             var receivers = _communicator.GetReceiverIDs();
             Assert.Equal(3, receivers.Count);
@@ -198,30 +225,6 @@ namespace PlexShareTests.ContentTests.Server
             Assert.Equal("2", receivers[0]);
             Assert.Equal("3", receivers[1]);
             Assert.False(_communicator.IsBroadcast());
-        }
-
-
-        [Fact]
-        public void SGetAllMessages_GettingAllTheMessagesOnServer_ShouldReturnListOfChatContextsWithAllTheMessages()
-        {
-            Initialiser();
-            var chatContexts = _contentServer.GetAllMessages();
-
-            var firstMessage = chatContexts[0].MessageList[0];
-
-            Assert.Equal("First Message", firstMessage.Data);
-            Assert.Equal(MessageType.Chat, firstMessage.Type);
-            Assert.Equal(MessageEvent.New, firstMessage.Event);
-            Assert.Equal(0, firstMessage.MessageID);
-            Assert.Equal(0, firstMessage.ReplyThreadID);
-
-            var secondMessage = chatContexts[1].MessageList[0];
-
-            Assert.Equal("Test_File.pdf", secondMessage.Data);
-            Assert.Equal(MessageType.File, secondMessage.Type);
-            Assert.Equal(MessageEvent.New, secondMessage.Event);
-            Assert.Equal(1, secondMessage.MessageID);
-            Assert.Equal(1, secondMessage.ReplyThreadID);
         }
     }
 }
