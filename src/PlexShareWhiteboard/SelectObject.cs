@@ -138,7 +138,7 @@ namespace PlexShareWhiteboard
             {
                 if (select.selectedObject.Geometry.GetType().Name == "LineGeometry")
                 {
-                    //Debug.WriteLine("line selected\n");
+                    //Trace.WriteLine("[Whiteboard]  " + "line selected\n");
 
                     Line boundingLine = new ();
                     //boundingLine.X1 = select.selectedObject.anchorPoint.X;
@@ -147,12 +147,12 @@ namespace PlexShareWhiteboard
                     boundingLine.Y1 = select.selectedObject.Start.Y;
                     boundingLine.X2 = select.selectedObject.End.X;
                     boundingLine.Y2 = select.selectedObject.End.Y;
-                    Debug.WriteLine("selected boundingline x1 y1 x2 y2"+boundingLine.X1 + " " + boundingLine.Y1 + " " + boundingLine.X2 + " " + boundingLine.Y2);
+                    Trace.WriteLine("[Whiteboard]  " + "selected boundingline x1 y1 x2 y2"+boundingLine.X1 + " " + boundingLine.Y1 + " " + boundingLine.X2 + " " + boundingLine.Y2);
                     HighLightIt(boundingLine);
                     int boxNumber = PointInsideHighlightBox(boundingLine, a, blobSize / 2);
                     if (boxNumber >= 0)
                     {
-                        //Debug.WriteLine("In transform mode ");
+                        //Trace.WriteLine("[Whiteboard]  " + "In transform mode ");
                         mode = "transform_mode";
                         select.selectBox = boxNumber;
                     }
@@ -165,7 +165,7 @@ namespace PlexShareWhiteboard
                 }
                 else
                 {
-                    Debug.WriteLine("object selected\n");
+                    Trace.WriteLine("[Whiteboard]  " + "object selected\n");
                     HighLightIt(select.selectedObject.Geometry.Bounds);
                     int boxNumber = PointInsideHighlightBox(boundingBox, a, blobSize / 2);
                     ShapeItem newShape = new()
@@ -187,13 +187,13 @@ namespace PlexShareWhiteboard
                     {
                         if (boxNumber > 4)
                         {
-                            Debug.WriteLine("Going to enter dimensionChange_mode \n");
+                            Trace.WriteLine("[Whiteboard]  " + "Going to enter dimensionChange_mode \n");
                             mode = "dimensionChange_mode";
                             select.selectBox = boxNumber;
                         }
                         else if (boxNumber > 0)
                         {
-                            Debug.WriteLine("Going to enter transform mode \n");
+                            Trace.WriteLine("[Whiteboard]  " + "Going to enter transform mode \n");
                             mode = "transform_mode";
                             select.selectBox = boxNumber;
                         }

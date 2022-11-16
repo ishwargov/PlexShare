@@ -49,7 +49,7 @@ namespace PlexShareWhiteboard
                 move_point = shape.Start;
                 //lastShape=CreateShape(a, shape.End, "LineGeometry", shape.Id);
                 lastShape= UpdateShape(a, shape.End, "LineGeometry", shape);
-                //Debug.WriteLine("Start point selected for transform in line");
+                //Trace.WriteLine("[Whiteboard]  " + "Start point selected for transform in line");
             }
             else
             {
@@ -64,7 +64,7 @@ namespace PlexShareWhiteboard
             // p1 : 
             // p2 :  
 
-            Debug.WriteLine(" asha " + p1.ToString() + " " + p2.ToString() + "   " + shape.AnchorPoint.ToString());
+            Trace.WriteLine("[Whiteboard]  " + " Translating Line " + p1.ToString() + " " + p2.ToString() + "   " + shape.AnchorPoint.ToString());
             if (
                 (Math.Abs(boundingBox.X - shape.Start.X) < 5 && Math.Abs(boundingBox.Y - shape.Start.Y) < 5)
                 ||
