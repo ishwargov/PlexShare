@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PlexShareApp
 {
-    internal class HomePageViewModel
+    public class HomePageViewModel
     {
         bool isServer;
         IUXServerSessionManager serverSessionManager;
