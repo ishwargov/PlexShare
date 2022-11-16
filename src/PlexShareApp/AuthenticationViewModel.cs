@@ -47,7 +47,7 @@ public class AuthenticationViewModel
     /// <returns></returns>
     public async Task<List<string>> AuthenticateUser()
     {
-        Trace.WriteLine("[UX] Creating State and URI on port 8080");
+        Trace.WriteLine("[UX] Creating State and Redirect URI on port 8080");
         // Creating state and redirect URI using port 8080 on Loopback address
         string state = GenerateDataBase(32);
         string code_verifier = GenerateDataBase(32);
@@ -178,7 +178,7 @@ public class AuthenticationViewModel
     }
 
     /// <summary>
-    /// Getting a URI data with given input length
+    /// Generating a random cryptographic number oh length 32
     /// </summary>
     /// <param name="length"></param>
     /// <returns></returns>
