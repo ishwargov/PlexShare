@@ -55,13 +55,13 @@ namespace PlexShareWhiteboard
                                      switch (deserializedObject.Op)
                                      {
                                          case Operation.RestoreSnapshot:
-                                             UpdateCheckList(deserializedObject.SnapshotNumber);
                                              serverSide.RestoreSnapshotHandler(deserializedObject);
                                              LoadBoard(shapeItems);
                                              break;
                                          case Operation.CreateSnapshot:
                                              serverSide.CreateSnapshotHandler(deserializedObject);
                                              DisplayMessage(deserializedObject.UserID, deserializedObject.SnapshotNumber); //message that board number is saved
+                                             UpdateCheckList(deserializedObject.SnapshotNumber);
                                              break;
                                          case Operation.Creation:
                                              CreateIncomingShape(shapeItems[0]);
