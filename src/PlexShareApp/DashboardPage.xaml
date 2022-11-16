@@ -9,13 +9,13 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="Page1">
 
-    <Grid Background="White">
+    <Grid Background="White" Margin="0, 40, 0, 0">
         <!--<TextBlock>DashBoard</TextBlock>-->
         <!--defining the grid definitions -->
         <Grid.ColumnDefinitions>
             <!--this column to show the participants list currently in the meeting-->
             <!--<ColumnDefinition Width="3*"/>-->
-            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="2.2*" />
             <!--this column is to show the graphs or the main content of the dahsboard view -->
             <!--<ColumnDefinition Width="10*"/>-->
             <ColumnDefinition Width="10*"/>
@@ -28,7 +28,7 @@
         <!--<Border BorderBrush="Green" BorderThickness="2">-->
 
         <!--now adding the static list to show the list of users in the column 0 -->
-        <ListView Grid.Column="0" x:Name="ContactsLV" ItemsSource="{Binding ParticipantsList}" d:ItemsSource="{d:SampleData ItemCount=5}" >
+        <ListView Grid.Column="0" x:Name="ContactsLV"  ItemsSource="{Binding ParticipantsList}" d:ItemsSource="{d:SampleData ItemCount=5} " >
 
             <ListView.ItemTemplate>
 
@@ -43,15 +43,27 @@
                             <ColumnDefinition Width="1*"/>
                             <ColumnDefinition Width="1*"/>
                         </Grid.ColumnDefinitions>
-                        <Image Grid.Column="0"  Grid.RowSpan="2" Source="../Assets/profilepic1.PNG"
-                        Height="32"  HorizontalAlignment="Center" VerticalAlignment="Center" ></Image>
+                        <!--<Border CornerRadius="100,100,100,100" Grid.Column="0" BorderBrush="White" BorderThickness="8"  Grid.RowSpan="2">
+                            <Border.Background>
+                                <ImageBrush x:Name="profile_picture" ImageSource="{Binding UserProfilePicPath}" Stretch="UniformToFill"/>
+                            </Border.Background>
+                            
+                        </Border>-->
+
+                        <Ellipse Width="30" Height="30">
+                            <Ellipse.Fill>
+                                <ImageBrush ImageSource="{Binding UserProfilePicPath}" />
+                            </Ellipse.Fill>
+                        </Ellipse>
+                        <!--<Image Grid.Column="0"  Grid.RowSpan="2" Source="{Binding UserProfilePicPath}"
+                        Height="32"  HorizontalAlignment="Center" VerticalAlignment="Center" ></Image>-->
                         <Grid Grid.Column="1">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="1*"/>
-                                <RowDefinition Height="1*"/>
+                                <!--<RowDefinition Height="1*"/>-->
                             </Grid.RowDefinitions>
                             <!--<TextBlock Grid.Row="0" TextWrapping="WrapWithOverflow"         Background="LightBlue" Text="{Binding userName}" Margin="12,6,0,0" Padding="10, 0, 10, 0"  TextAlignment="center" FontSize="15"/>-->
-                            <TextBlock TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" Background="WhiteSmoke" Text="{Binding UserName}"  TextAlignment="center" FontSize="15"/>
+                            <TextBlock TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" Background="WhiteSmoke" Text="{Binding UserName}" VerticalAlignment="Center" TextAlignment="center" FontSize="15" Margin="5, 0, 0, 0" />
                             <!--<TextBlock TextWrapping="WrapWithOverflow" Grid.Row="1" Background="LightBlue" Text="{Binding status}" Margin="12,0,0,6" Padding="10, 0, 10, 0"  TextAlignment="center" />-->
                             <!--<TextBlock TextWrapping="WrapWithOverflow" Grid.Row="1" Background="WhiteSmoke" Text="{Binding Status}" HorizontalAlignment="Center" VerticalAlignment="Center"  TextAlignment="center" />-->
                         </Grid>
@@ -63,7 +75,7 @@
         <!--</Border>-->
 
 
-        <Grid Grid.Column="1" Background="White">
+        <Grid Grid.Column="1" Background="White" Margin="20, 0, 20, 10">
             <Grid.RowDefinitions>
 
                 <!--this row is to show the graphs for the usercountvstimestamp, and chatcount vs user-->
@@ -83,153 +95,98 @@
             </Grid.ColumnDefinitions>
             <!--<Border BorderBrush="orange" BorderThickness="2">-->
 
-            <!--<syncfusion:SfChart Grid.Column="0" Grid.Row="0" Background="WhiteSmoke">
-                <syncfusion:SfChart.PrimaryAxis>
-                    <syncfusion:CategoryAxis Header="Time Stamp" />
-                </syncfusion:SfChart.PrimaryAxis>
-                <syncfusion:SfChart.SecondaryAxis>
-                    <syncfusion:NumericalAxis Header="User Count"/>
-                </syncfusion:SfChart.SecondaryAxis>
-                <syncfusion:SfChart.Legend>
-                    <syncfusion:ChartLegend/>
-                </syncfusion:SfChart.Legend>
-                <syncfusion:ColumnSeries  ItemsSource="{Binding UserCountVsTimeStamps}" XBindingPath="TimeStamp" YBindingPath="UserCount" ShowTooltip="True" >
-                    <syncfusion:ColumnSeries.AdornmentsInfo>
-                        <syncfusion:ChartAdornmentInfo ShowLabel="True" >
-                        </syncfusion:ChartAdornmentInfo>
-                    </syncfusion:ColumnSeries.AdornmentsInfo>
-                </syncfusion:ColumnSeries>
-            </syncfusion:SfChart>-->
-            <!--<lvc:CartesianChart>
-                <lvc:CartesianChart.Series>
-                    <lvc:ColumnSeries Title="Country Cases" Values="{Binding CoronavirusCountryCaseCounts}"/>
-                </lvc:CartesianChart.Series>
-                <lvc:CartesianChart.AxisX>
-                    <lvc:Axis Title="Countries" Labels="{Binding CoronavirusCountryNames}">
-                        <lvc:Axis.Separator>
-                            <lvc:Separator Step="1"/>
-                        </lvc:Axis.Separator>
-                    </lvc:Axis>
-                </lvc:CartesianChart.AxisX>
-                <lvc:CartesianChart.AxisY>
-                    <lvc:Axis Title="Case Count"/>
-                </lvc:CartesianChart.AxisY>
-            </lvc:CartesianChart>-->
-            <!--<lvc:CartesianChart Series="{Binding SeriesCollection}" LegendLocation="Left">
-                <lvc:CartesianChart.AxisX>
-                    <lvc:Axis Title="Belts" Labels="{Binding Labels}"></lvc:Axis>
-                </lvc:CartesianChart.AxisX>
-                <lvc:CartesianChart.AxisY>
-                    <lvc:Axis Title="Members" LabelFormatter="{Binding Formatter}"></lvc:Axis>
-                </lvc:CartesianChart.AxisY>
-            </lvc:CartesianChart>-->
-
-            <lvc:CartesianChart>
-                <lvc:CartesianChart.Series>
-                    <lvc:ColumnSeries d:DataContext="{d:DesignInstance Type=viewmodel:DashboardViewModel}" Title="Country Cases" Values="{Binding UserCountList}"/>
-                </lvc:CartesianChart.Series>
-                <lvc:CartesianChart.AxisX>
-                    <lvc:Axis Title="TimeStamps" Labels="{Binding TimeStampsList}">
-                        <lvc:Axis.Separator>
-                            <lvc:Separator Step="1"/>
-                        </lvc:Axis.Separator>
-                    </lvc:Axis>
-                </lvc:CartesianChart.AxisX>
-                <lvc:CartesianChart.AxisY>
-                    <lvc:Axis Title="User Count"/>
-                </lvc:CartesianChart.AxisY>
-            </lvc:CartesianChart>
-
-            <lvc:CartesianChart Grid.Column="1" Grid.Row="0" >
-                <lvc:CartesianChart.Series>
-                    <lvc:ColumnSeries d:DataContext="{d:DesignInstance Type=viewmodel:DashboardViewModel}" Title="Chat Count" Values="{Binding ChatCountList}"/>
-                </lvc:CartesianChart.Series>
-                <lvc:CartesianChart.AxisX>
-                    <lvc:Axis Title="Users"  Labels="{Binding UserNameList}">
-                        <lvc:Axis.Separator>
-                            <lvc:Separator Step="1"/>
-                        </lvc:Axis.Separator>
-                    </lvc:Axis>
-                </lvc:CartesianChart.AxisX>
-                <lvc:CartesianChart.AxisY>
-                    <lvc:Axis Title="Chat Count"/>
-                </lvc:CartesianChart.AxisY>
-            </lvc:CartesianChart>
-            <!--chart for showing the chat count vs each user-->
-            <!--<syncfusion:SfChart Grid.Column="1" Grid.Row="0" Background="WhiteSmoke">
-                <syncfusion:SfChart.PrimaryAxis>
-                    <syncfusion:CategoryAxis Header="Time Stamp" />
-                </syncfusion:SfChart.PrimaryAxis>
-                <syncfusion:SfChart.SecondaryAxis>
-                    <syncfusion:NumericalAxis Header="User Count"/>
-                </syncfusion:SfChart.SecondaryAxis>
-                <syncfusion:SfChart.Legend>
-                    <syncfusion:ChartLegend/>
-                </syncfusion:SfChart.Legend>
-                <syncfusion:ColumnSeries  ItemsSource="{Binding UserIdVsChatCounts}" XBindingPath="UserId" YBindingPath="ChatCount" ShowTooltip="True" >
-                    <syncfusion:ColumnSeries.AdornmentsInfo>
-                        <syncfusion:ChartAdornmentInfo ShowLabel="True" >
-                        </syncfusion:ChartAdornmentInfo>
-                    </syncfusion:ColumnSeries.AdornmentsInfo>
-                </syncfusion:ColumnSeries>
-            </syncfusion:SfChart>-->
-            <Grid Grid.Row="1" Grid.ColumnSpan="2" Background="WhiteSmoke">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="2*"/>
-                    <ColumnDefinition Width="1*"/>
-                    <!--<ColumnDefinition Width="1*"/>-->
-                </Grid.ColumnDefinitions>
-                <!--<Grid.RowDefinitions>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                </Grid.RowDefinitions>-->
-                <Grid Grid.Column="0">
+            
+            <Border x:Name="Border" CornerRadius="10" BorderThickness="2px" BorderBrush="Black">
+                <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="1*"/>
-                        <RowDefinition Height="1*"/>
-                    </Grid.RowDefinitions>
-                    <Grid Grid.Row="0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="1*"/>
-                            <RowDefinition Height="1*"/>
-                        </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Text="Attentive Users"></TextBlock>
-                        <ProgressBar Grid.Row="1"  Margin="10,10,0,13" Name="PBar1" HorizontalAlignment="Center"  VerticalAlignment="Center" Width="150" Height="15" Value="{Binding AttentiveUsersSetter}" ></ProgressBar>
-                    </Grid>
-                    <Grid Grid.Row="1">
 
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="1*"/>
-                            <RowDefinition Height="1*"/>
-                        </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Text=" Non Attentive Users"></TextBlock>
-                        <ProgressBar Grid.Row="1"  Margin="10,10,0,13" Name="PBar2" HorizontalAlignment="Center" VerticalAlignment="Center" Width="150" Height="15" Foreground="Red" Value="{Binding NonAttentiveUsersSetter}" ></ProgressBar>
-                    </Grid>
+                        <RowDefinition Height="16*"></RowDefinition>
+                        <RowDefinition Height="1*"></RowDefinition>
+        
+                    </Grid.RowDefinitions>
+                    
+                    <lvc:CartesianChart Margin="10, 0, 10, 0" >
+                        <lvc:CartesianChart.Series>
+                            <lvc:ColumnSeries d:DataContext="{d:DesignInstance Type=viewmodel:DashboardViewModel}" Title="Country Cases" Values="{Binding UserCountList}"/>
+                        </lvc:CartesianChart.Series>
+                        <lvc:CartesianChart.AxisX>
+                            <lvc:Axis Title="TimeStamps" Labels="{Binding TimeStampsList}">
+                                <lvc:Axis.Separator>
+                                    <lvc:Separator Step="1"/>
+                                </lvc:Axis.Separator>
+                            </lvc:Axis>
+                        </lvc:CartesianChart.AxisX>
+                        <lvc:CartesianChart.AxisY>
+                            <lvc:Axis Title="User Count"/>
+                        </lvc:CartesianChart.AxisY>
+                    </lvc:CartesianChart>
+                <Label Grid.Row="1" FontWeight="Bold"  Content="Usercount vs Timestamps " HorizontalContentAlignment="Center"></Label>
+               
                 </Grid>
-                <Grid Grid.Column="1">
+                   
+                    
+            </Border>
+
+            <Border x:Name="Border1" Grid.Column="1" Grid.Row="0" CornerRadius="10" BorderThickness="2px" BorderBrush="Black" Margin="10, 0, 0, 0">
+                <Grid>
+                    <Grid.RowDefinitions>
+
+                        <RowDefinition Height="16*"></RowDefinition>
+                        <RowDefinition Height="1*"></RowDefinition>
+
+                    </Grid.RowDefinitions>
+                    <lvc:CartesianChart  >
+                    <lvc:CartesianChart.Series>
+                        <lvc:ColumnSeries  d:DataContext="{d:DesignInstance Type=viewmodel:DashboardViewModel}" Title="Chat Count" Values="{Binding ChatCountListForUserName}"/>
+                    </lvc:CartesianChart.Series>
+                    <lvc:CartesianChart.AxisX>
+                        <lvc:Axis Title="Users"  Labels="{Binding UserNameList}">
+                            <lvc:Axis.Separator>
+                                <lvc:Separator Step="1"/>
+                            </lvc:Axis.Separator>
+                        </lvc:Axis>
+                    </lvc:CartesianChart.AxisX>
+                    <lvc:CartesianChart.AxisY>
+                        <lvc:Axis Title="Chat Count"/>
+                    </lvc:CartesianChart.AxisY>
+                </lvc:CartesianChart>
+                    <Label Grid.Row="1" FontWeight="Bold" Content="ChatCount vs UserName " HorizontalContentAlignment="Center"></Label>
+
+                    </Grid>
+            </Border>
+
+
+            <Border x:Name="Border3" Grid.Row="1" Grid.ColumnSpan="2"  CornerRadius="10" BorderThickness="2px" BorderBrush="Black" Margin="10, 10, 0, 0">
+            <Grid Background="WhiteSmoke" Margin="0, 0, 0, 0">
+                
+                   
                     <Grid.RowDefinitions>
                         <RowDefinition Height="1*"/>
                         <RowDefinition Height="5*"/>
                     </Grid.RowDefinitions>
-                    <Grid Grid.Row="0">
-                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Text="Summary Of Session"></TextBlock>
-                        
-                    </Grid>
+                    <Border x:Name="Border4" CornerRadius="5" BorderThickness="2px" BorderBrush="Black" Width="200">
+                        <Grid Grid.Row="0" >
+                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Text="Summary Of Session"></TextBlock>
+
+                        </Grid>
+                    </Border>
                     <Grid Grid.Row="1">
-                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Text="{Binding SummaryContentSetter}" TextWrapping="WrapWithOverflow"></TextBlock>
+                        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Height="100" Width="500" >
+                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Text="{Binding SummaryContentSetter}" TextWrapping="Wrap"  ></TextBlock>
+                        </ScrollViewer>
 
                     </Grid>
+
+
+
+
                 </Grid>
-
-                <!--<ProgressBar Grid.Row="1" Margin="10,10,0,13" Name="PBar2" HorizontalAlignment="Center" VerticalAlignment="Center" Width="300" Height="30" Value="60" ></ProgressBar>-->
-
-            </Grid>
+            </Border>
 
 
 
             <!--now adding the different buttons for the user-->
-            <Grid Grid.Row="2" Grid.ColumnSpan="2" Background="LightGray">
+            <Grid Grid.Row="2" Grid.ColumnSpan="2" >
                 <!--<Grid.RowDefinitions>
                     <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>-->
@@ -437,5 +394,6 @@
             <!--</Border>-->
         </Grid>
 
+        <!--<Frame Name="Main" Content="" Margin="127,0,0,0" Background="#FFFFEDED" IsEnabled="False" />-->
     </Grid>
 </Page>
