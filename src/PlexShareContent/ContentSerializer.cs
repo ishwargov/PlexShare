@@ -55,7 +55,7 @@ namespace PlexShareContent
             }
             catch (Exception ex)
             {
-                Trace.WriteLine($"[Networking] Error while serializing: {ex.Message}");
+                Trace.WriteLine($" Error while serializing: {ex.Message}");
                 throw;
             }
         }
@@ -78,7 +78,7 @@ namespace PlexShareContent
             }
             catch (Exception ex)
             {
-                Trace.WriteLine($"[Networking] Error while deserializing: {ex.Message}");
+                Trace.WriteLine($" Error while deserializing: {ex.Message}");
                 throw;
             }
         }

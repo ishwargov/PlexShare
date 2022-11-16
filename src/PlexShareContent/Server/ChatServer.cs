@@ -35,7 +35,7 @@ namespace PlexShareContent.Server
         /// </summary>
         public List<ChatThread> GetMessages()
         {
-            return _contentDB.GetChatContexts();
+            return _contentDB.GetChatThreads();
         }
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace PlexShareContent.Server
         /// <summary>
         ///     This function is used to update a message with a new updated message.
         /// </summary>
-        private ReceiveContentData UpdateMessage(int replyId, int _msgId, string updatedMsg)
+        public ReceiveContentData UpdateMessage(int replyId, int _msgId, string updatedMsg)
         {
             var message = _contentDB.GetMessage(replyId, _msgId);
 
@@ -126,7 +126,7 @@ namespace PlexShareContent.Server
         /// <summary>
         ///     This function is used to Delete a message.
         /// </summary>
-        private ReceiveContentData DeleteMessage(int replyId, int _msgId)
+        public ReceiveContentData DeleteMessage(int replyId, int _msgId)
         {
             var message = _contentDB.GetMessage(replyId, _msgId);
 
