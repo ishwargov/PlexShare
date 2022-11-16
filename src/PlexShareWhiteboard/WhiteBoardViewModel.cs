@@ -161,11 +161,13 @@ namespace PlexShareWhiteboard
 
         public void ChangeFillBrush(SolidColorBrush br)
         {
+            Debug.WriteLine("ChangeFillBrush called");
             fillBrush = br;
 
             if (select.ifSelected == true)
             {
-                //Debug.WriteLine("select color changed to " + br.ToString());
+
+                Debug.WriteLine("ChangeFillBrush select color changed to " + br.ToString());
 
                 //select.initialSelectionObject = select.selectedObject;
                 ShapeItem updateSelectShape = null;
@@ -181,7 +183,7 @@ namespace PlexShareWhiteboard
         }
         public ShapeItem UpdateStrokeColor(ShapeItem shape, Brush strokeBrush)
         {
-            shape.Fill = fillBrush;
+            shape.Stroke = strokeBrush;
 
             ShapeItem newShape = shape.DeepClone();
             newShape.Stroke = strokeBrush;
@@ -199,11 +201,12 @@ namespace PlexShareWhiteboard
 
         public void ChangeStrokeBrush(SolidColorBrush br)
         {
+            Debug.WriteLine("ChangeStrokeBrush called");
             strokeBrush = br;
 
             if (select.ifSelected == true)
             {
-                Debug.WriteLine("select color changed to " + br.ToString());
+                Debug.WriteLine("ChangeStrokeBrush select color changed to " + br.ToString());
                 ShapeItem updateSelectShape = null;
                 foreach (ShapeItem s in ShapeItems)
                     if (s.Id == select.selectedObject.Id)

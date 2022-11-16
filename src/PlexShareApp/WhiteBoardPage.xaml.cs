@@ -26,6 +26,8 @@ namespace PlexShareApp
     {
         WhiteBoardViewModel viewModel;
         string currentTool;
+        bool singleTrigger = true;
+
         public WhiteBoardPage(int serverID)
         {
             InitializeComponent();
@@ -45,7 +47,7 @@ namespace PlexShareApp
         {
             var a = e.GetPosition(sender as Canvas);
             viewModel.ShapeStart(a);
-            //singleTrigger = true;
+            singleTrigger = true;
             if (viewModel.select.ifSelected)
             {
 
@@ -85,11 +87,11 @@ namespace PlexShareApp
 
         }
 
-        private void CanvasMouseUp(object sender, MouseEventArgs e)
-        {
-            var a = e.GetPosition(sender as Canvas);
-            viewModel.ShapeFinished(a);
-        }
+        //private void CanvasMouseUp(object sender, MouseEventArgs e)
+        //{
+        //    var a = e.GetPosition(sender as Canvas);
+        //    viewModel.ShapeFinished(a);
+        //}
         private void CanvasMouseEnter(object sender, MouseEventArgs e)
         {
             //Debug.WriteLine(this.currentTool + " Got it \n");
@@ -133,7 +135,7 @@ namespace PlexShareApp
 
         }
 
-        /*private void CanvasMouseUp1(object sender, MouseEventArgs e)
+        private void CanvasMouseUp(object sender, MouseEventArgs e)
         {
             if (singleTrigger == true)
             {
@@ -143,7 +145,19 @@ namespace PlexShareApp
                 e.Handled = true;
             }
             singleTrigger = false;
-        }*/
+        }
+
+        private void CanvasMouseUp1(object sender, MouseEventArgs e)
+        {
+            if (singleTrigger == true)
+            {
+                Debug.WriteLine("canvas mouse up 11 ");
+                var a = e.GetPosition(sender as Canvas);
+                viewModel.ShapeFinished(a);
+                e.Handled = true;
+            }
+            singleTrigger = false;
+        }
         private void RectangleCreateMode(object sender, RoutedEventArgs e)
         {
             viewModel.UnHighLightIt();
