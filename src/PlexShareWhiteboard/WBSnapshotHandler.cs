@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,6 +21,7 @@ namespace PlexShareWhiteboard
         }
         public void UpdateCheckList(int n)
         {
+            Trace.WriteLine("[Whiteboard] WBSnapshotHandler: Updating checklist with " + n);
             CheckList.Clear();
             for(int i = n; i>n-5 && i>0; i--)
             {
@@ -31,8 +33,10 @@ namespace PlexShareWhiteboard
         public void LoadSnapshot(int snapshotNumber)
         {
             List<ShapeItem> shapeList = machine.OnLoadMessage(snapshotNumber, userId);
-            
-            if(isServer)
+            ShapeItems.Clear();
+            undoStack.Clear();
+            redoStack.Clear();
+            if (isServer)
             {
                 ShapeItems.Clear();
                 foreach(ShapeItem s in shapeList)
