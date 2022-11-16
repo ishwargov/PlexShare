@@ -73,9 +73,13 @@ namespace PlexShareWhiteboard.Client
         {
             _clientCommunicator = communicator;
         }
-        public int GetSnapshotNumber()
-        {
-            return SnapshotNumber;
-        }
+        //public int GetSnapshotNumber()
+        //{
+        //    return SnapshotNumber;
+        //}
+        //public void SetSnapshotNumber()
+        //{
+        //    return _snapshotNumber;
+        //}
     }
 }

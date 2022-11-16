@@ -27,7 +27,6 @@ namespace PlexShareWhiteboard
 {
     public partial class WhiteBoardViewModel : INotificationHandler
     {
-        public ShapeItem sugu = null;
         private Dispatcher ApplicationMainThreadDispatcher =>
     (Application.Current?.Dispatcher != null) ?
         Application.Current.Dispatcher :
@@ -56,6 +55,7 @@ namespace PlexShareWhiteboard
                                      switch (deserializedObject.Op)
                                      {
                                          case Operation.RestoreSnapshot:
+                                             UpdateCheckList(deserializedObject.SnapshotNumber);
                                              serverSide.RestoreSnapshotHandler(deserializedObject);
                                              LoadBoard(shapeItems);
                                              break;
@@ -116,7 +116,8 @@ namespace PlexShareWhiteboard
                                              LoadBoard(shapeItems);
                                              break;
                                          case Operation.CreateSnapshot:
-                                             DisplayMessage(deserializedShape.UserID, deserializedShape.SnapshotNumber); //message that board number is saved
+                                             UpdateCheckList(deserializedShape.SnapshotNumber);
+                                             DisplayMessage(deserializedShape.UserID, deserializedShape.SnapshotNumber); 
                                              break;
                                          case Operation.Creation:
                                              CreateIncomingShape(shapeItems[0]);

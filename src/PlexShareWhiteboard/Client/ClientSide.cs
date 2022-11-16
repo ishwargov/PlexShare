@@ -108,5 +108,9 @@ namespace PlexShareWhiteboard.Client
             return null;
         }
 
+        public void SetSnapshotNumber(int snapshotNumber)
+        {
+            _snapshotHandler.SnapshotNumber = snapshotNumber;
+        }
     }
 }
