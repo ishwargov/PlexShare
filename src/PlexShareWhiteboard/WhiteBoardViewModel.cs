@@ -81,7 +81,7 @@ namespace PlexShareWhiteboard
         //public void SetUserId(string _userId)
         public void SetUserId(int _userId)
         {
-            String userId = _userId.ToString();
+            userId = _userId.ToString();
             currentId = "u" + userId + "_f" + currentIdVal;
             currentIdVal++;
 

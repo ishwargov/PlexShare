@@ -141,11 +141,7 @@ namespace PlexShareWhiteboard
                 {
                     //Debug.WriteLine("line selected\n");
 
-                    LineGeometry boundingLine = new ();
-                    //boundingLine.X1 = select.selectedObject.anchorPoint.X;
-                    //boundingLine.Y1 = select.selectedObject.anchorPoint.Y;
-                    boundingLine.StartPoint = new Point(select.selectedObject.Start.X, select.selectedObject.Start.Y);
-                    boundingLine.EndPoint = new Point(select.selectedObject.End.X, select.selectedObject.End.Y);
+                    LineGeometry boundingLine = (LineGeometry)GenerateBoundingLine(select.selectedObject);
                     Debug.WriteLine("selected boundingline "+boundingLine.StartPoint + " " + boundingLine.EndPoint);
                     HighLightIt(boundingLine);
                     int boxNumber = PointInsideHighlightBox(boundingLine, a, blobSize / 2);
