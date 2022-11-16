@@ -96,14 +96,15 @@ namespace PlexShareWhiteboard.Client
             _communicator.SendToServer(wbShape);
         }
 
-        public void OnSaveMessage(string userId)
+        public int OnSaveMessage(string userId)
         {
-            _snapshotHandler.SaveSnapshot(userId);
+            return _snapshotHandler.SaveSnapshot(userId);
         }
 
-        public void OnLoadMessage(int snapshotNumber, string userId)
+        public List<ShapeItem> OnLoadMessage(int snapshotNumber, string userId)
         {
             _snapshotHandler.RestoreSnapshot(snapshotNumber, userId);
+            return null;
         }
 
     }

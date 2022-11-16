@@ -51,7 +51,7 @@ namespace PlexShareWhiteboard
                                  {
                                      WBServerShape deserializedObject = serializer.DeserializeWBServerShape(serializedData);
                                      List<ShapeItem> shapeItems = serializer.ConvertToShapeItem(deserializedObject.ShapeItems);
-                                     Trace.WriteLine("ServerBoardCommunicator.onDataReceived: Receiving the XML string " + deserializedObject.Op);
+                                     Trace.WriteLine("[Whiteboard] WBMessageHandler.onDataReceived(Server): Receiving the json string " + deserializedObject.Op);
                                      var userId = deserializedObject.UserID;
                                      switch (deserializedObject.Op)
                                      {
@@ -86,18 +86,18 @@ namespace PlexShareWhiteboard
                                              serverSide.NewUserHandler(deserializedObject);
                                              break;
                                          default:
-                                             Console.WriteLine("Unidentified Operation at ServerBoardCommunicator");
+                                             Console.WriteLine("[Whiteboard] WBMessageHandler.onDataReceived(Server): Unidentified Operation at ServerBoardCommunicator");
                                              break;
                                      }
 
 
                                      Trace.WriteLine(
-                                         "WBMessageHandler.OnDataReceived: Took necessary actions on received object"
+                                         "[Whiteboard] WBMessageHandler.onDataReceived(Server): Took necessary actions on received object"
                                      );
                                  }
                                  catch (Exception e)
                                  {
-                                     Trace.WriteLine("ServerBoardCommunicator.onDataReceived: Exception Occured");
+                                     Trace.WriteLine("[Whiteboard] WBMessageHandler.onDataReceived(Server): Exception Occured");
                                      Trace.WriteLine(e.Message);
                                  }
                              }
@@ -108,6 +108,8 @@ namespace PlexShareWhiteboard
                                      Trace.WriteLine("[Whiteboard]  " + " Client msg received");
                                      var deserializedShape = serializer.DeserializeWBServerShape(serializedData);
                                      List<ShapeItem> shapeItems = serializer.ConvertToShapeItem(deserializedShape.ShapeItems);
+                                     Trace.WriteLine("[Whiteboard] WBMessageHandler.onDataReceived(Client): Receiving the json string " + deserializedShape.Op);
+
                                      switch (deserializedShape.Op)
                                      {
                                          case Operation.RestoreSnapshot:
@@ -137,7 +139,7 @@ namespace PlexShareWhiteboard
                                  }
                                  catch (Exception e)
                                  {
-                                     Trace.WriteLine("[Whiteboard] OnDataReceived: Exception Occured");
+                                     Trace.WriteLine("[Whiteboard] WBMessageHandler.onDataReceived(Client): Exception Occured");
                                      Trace.WriteLine(e.Message);
                                  }
                              }

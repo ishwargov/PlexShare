@@ -54,6 +54,7 @@ namespace PlexShareWhiteboard
                     }
                 }
             }
+
             UndoStackElement shapeToSend = Undo();
             if (shapeToSend != null)
                 machine.OnShapeReceived(shapeToSend.PrvShape, shapeToSend.Op);
