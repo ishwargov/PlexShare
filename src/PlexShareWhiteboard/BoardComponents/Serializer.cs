@@ -62,15 +62,17 @@ namespace PlexShareWhiteboard.BoardComponents
             else if (x.GeometryString == "PathGeometry")
             {
                 PathGeometry g1 = new PathGeometry();
-
-                for (int i = 1; i < x.PointList.Count; i++)
+                if(x.PointList != null)
                 {
-                    Point curPoint = x.PointList[i];
-                    Point prevPoint = x.PointList[i - 1];
-                    var line = new LineGeometry(curPoint, prevPoint);
-                    var circle = new EllipseGeometry(curPoint, 0.1, 0.1);
-                    g1.AddGeometry(circle);
-                    g1.AddGeometry(line);
+                    for (int i = 1; i < x.PointList.Count; i++)
+                    {
+                        Point curPoint = x.PointList[i];
+                        Point prevPoint = x.PointList[i - 1];
+                        var line = new LineGeometry(curPoint, prevPoint);
+                        var circle = new EllipseGeometry(curPoint, 0.1, 0.1);
+                        g1.AddGeometry(circle);
+                        g1.AddGeometry(line);
+                    }
                 }
                 g = g1;
             }
