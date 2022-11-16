@@ -68,6 +68,8 @@ namespace PlexShareWhiteboard.BoardComponents
                     Point curPoint = x.PointList[i];
                     Point prevPoint = x.PointList[i - 1];
                     var line = new LineGeometry(curPoint, prevPoint);
+                    var circle = new EllipseGeometry(curPoint, 0.1, 0.1);
+                    g1.AddGeometry(circle);
                     g1.AddGeometry(line);
                 }
                 g = g1;
