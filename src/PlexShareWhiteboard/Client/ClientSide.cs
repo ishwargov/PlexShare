@@ -67,6 +67,7 @@ namespace PlexShareWhiteboard.Client
             _communicator = ClientCommunicator.Instance;
             _vm = WhiteBoardViewModel.Instance;
             _serializer = new Serializer();
+            _snapshotHandler = new ClientSnapshotHandler();
             NewUserHandler();
         }
 

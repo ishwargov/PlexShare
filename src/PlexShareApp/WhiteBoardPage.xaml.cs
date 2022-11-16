@@ -46,17 +46,17 @@ namespace PlexShareApp
             InitializeComponent();
             //viewModel = new WhiteBoardViewModel();
             viewModel = WhiteBoardViewModel.Instance;
-            if (serverID == 0)
-                viewModel.isServer = true;
-            else
-                viewModel.isServer = false;
-            if(viewModel.canDraw==true && serverID == 0)
-            {
-                // this might be that the dashboard had called this before
-                // default it is not a server so we need to reiniiliase only if this is server
-                int passId = Int32.Parse(viewModel.userId);
-                viewModel.SetUserId(passId);
-            }
+            //if (serverID == 0)
+            //    viewModel.isServer = true;
+            //else
+            //    viewModel.isServer = false;
+            //if(viewModel.canDraw==true && serverID == 0)
+            //{
+            //    // this might be that the dashboard had called this before
+            //    // default it is not a server so we need to reiniiliase only if this is server
+            //    int passId = Int32.Parse(viewModel.userId);
+            //    viewModel.SetUserId(passId);
+            //}
             viewModel.ShapeItems = new ObservableCollection<ShapeItem>();
             this.DataContext = viewModel;
             this.currentTool = "Select";
