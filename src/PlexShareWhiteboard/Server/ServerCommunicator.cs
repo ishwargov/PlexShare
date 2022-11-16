@@ -39,12 +39,6 @@ namespace PlexShareWhiteboard.Server
             }
         }
 
-        //public void SetVMRef(WhiteBoardViewModel vm)
-        //{
-        //    _vm = vm;
-        //    communicator.Subscribe(moduleIdentifier, _vm);
-        //}
-
         public void Broadcast(ShapeItem newShape, Operation op)
         {
             if (newShape != null)

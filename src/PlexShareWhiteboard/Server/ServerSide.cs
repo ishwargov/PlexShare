@@ -204,7 +204,7 @@ namespace PlexShareWhiteboard.Server
 
         public void CreateSnapshotHandler(WBServerShape deserializedObject)
         {
-            _serverSnapshotHandler.SaveBoard(objIdToObjectMap.Values.ToList());
+            _serverSnapshotHandler.SaveBoard(objIdToObjectMap.Values.ToList(), deserializedObject.UserID);
             _communicator.Broadcast(deserializedObject);
         }
 

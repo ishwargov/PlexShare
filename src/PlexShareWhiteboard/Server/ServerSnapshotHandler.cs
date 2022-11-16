@@ -25,9 +25,9 @@ namespace PlexShareWhiteboard.Server
 {
     public class ServerSnapshotHandler : IServerSnapshotHandler
     {
-        Serializer _serializer;
+        private Serializer _serializer;
         private int _snapshotNumber;
-
+        private List<Tuple<int, string, List<ShapeItem>>> _snapshotSummary = new();
         public ServerSnapshotHandler()
         {
             _serializer = new Serializer();
@@ -55,15 +55,17 @@ namespace PlexShareWhiteboard.Server
             return null;
         }
 
-        public string SaveBoard(List<ShapeItem> boardShapes)
+        public string SaveBoard(List<ShapeItem> boardShapes, string userID)
         {
             try
             {
                 _snapshotNumber = _snapshotNumber + 1;
                 string boardShapesPath = _snapshotNumber + ".json";
                 var jsonString = _serializer.SerializeShapeItems(boardShapes);
-                //if(boardShapesPath != null)
                 File.WriteAllText(boardShapesPath, jsonString);
+
+                _snapshotSummary.Add(
+                    new Tuple<int, string, List<ShapeItem>>(_snapshotNumber, userID, boardShapes));
                 return jsonString;
             }
             catch (Exception ex)
@@ -73,6 +75,13 @@ namespace PlexShareWhiteboard.Server
             }
             return null;
         }
-
+        public int GetSnapshotNumber()
+        {
+            return _snapshotNumber;
+        }
+        public List<Tuple<int, string, List<ShapeItem>>> Summary()
+        {
+            return _snapshotSummary;
+        }
     }
 }
