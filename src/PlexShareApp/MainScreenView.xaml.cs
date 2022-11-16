@@ -91,7 +91,7 @@ namespace PlexShareApp
             Trace.WriteLine("[UX] Setting the content to the dashboard");
 
             Trace.WriteLine("[UX] Setting the IP:Port");
-            ServerIPandPort.Text = "Server IP : " + ip + " Port : " + port;
+            ServerIPandPort.Text = "Server IP : " + ip + "    Port : " + port;
 
             ClientSessionManager clientSessionManager;
             clientSessionManager = SessionManagerFactory.GetClientSessionManager();
@@ -187,11 +187,23 @@ namespace PlexShareApp
             }
         }
 
+        private void ShowIpandPort(object sender, RoutedEventArgs e)
+        {
+            Trace.WriteLine("[UX] Clicked the Info Button");
+            ServerIPandPort.Visibility = Visibility.Visible;
+        }
+
+        private void HideIpandPort(object sender, RoutedEventArgs e)
+        {
+            ServerIPandPort.Visibility = Visibility.Hidden;
+        }
+
         ///<summary>
         ///To move the window
         ///</summary>
         private void TitleBarDrag(object sender, MouseButtonEventArgs e)
         {
+            Trace.WriteLine("[UX] Trying to move the window");
             DragMove();
         }
 

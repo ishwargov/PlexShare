@@ -282,6 +282,7 @@ namespace PlexShareApp
         /// </summary>
         private void TitleBarDrag(object sender, MouseButtonEventArgs e)
         {
+            Trace.WriteLine("[UX] Trying to move the window");
             DragMove();
         }
 
