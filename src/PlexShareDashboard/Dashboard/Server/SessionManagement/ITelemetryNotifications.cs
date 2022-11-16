@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 // This file contains the interface for Telemetry to listen to changes in session data.
 
-namespace PlexShare.Dashboard.Server.SessionManagement
+namespace PlexShareDashboard.Dashboard.Server.SessionManagement
 {
     public interface ITelemetryNotifications
     {

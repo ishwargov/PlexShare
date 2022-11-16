@@ -87,7 +87,7 @@ namespace PlexShareWhiteboard
             double x2 = line.EndPoint.X;
             double y2 = line.EndPoint.Y;
 
-            Debug.WriteLine("Entering line hightlighting with " + x1 + "  " + y1 + " " + x2 + " " + y2);
+            Trace.WriteLine("[Whiteboard]  " + "Entering line hightlighting with " + x1 + "  " + y1 + " " + x2 + " " + y2);
 
             ShapeItem hsBody = GenerateLine(x1, y1, x2, y2, null, Brushes.DodgerBlue, "hsBody", currentZIndex);
             highlightShapes.Add(hsBody);

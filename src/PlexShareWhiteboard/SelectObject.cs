@@ -122,11 +122,13 @@ namespace PlexShareWhiteboard
 
                 if (HelperSelect(boundingBox, a, blobSize / 2))
                 {
+                   
                     select.ifSelected = true;
                     select.selectedObject = ShapeItems[i];
                     select.initialSelectionPoint = a;
                     tempZIndex = ShapeItems[i].ZIndex;
                     select.selectBox = 0;
+                    Debug.WriteLine("entering select ", select.selectedObject.Id);
                 }
                 else if (Child.FillContains(a) && Child.GetType().Name == "LineGeometry")
                 {
@@ -139,7 +141,7 @@ namespace PlexShareWhiteboard
             {
                 if (select.selectedObject.Geometry.GetType().Name == "LineGeometry")
                 {
-                    //Debug.WriteLine("line selected\n");
+                    //Trace.WriteLine("[Whiteboard]  " + "line selected\n");
 
                     LineGeometry boundingLine = (LineGeometry)GenerateBoundingLine(select.selectedObject);
                     Debug.WriteLine("selected boundingline "+boundingLine.StartPoint + " " + boundingLine.EndPoint);
@@ -147,7 +149,7 @@ namespace PlexShareWhiteboard
                     int boxNumber = PointInsideHighlightBox(boundingLine, a, blobSize / 2);
                     if (boxNumber >= 0)
                     {
-                        //Debug.WriteLine("In transform mode ");
+                        //Trace.WriteLine("[Whiteboard]  " + "In transform mode ");
                         mode = "transform_mode";
                         select.selectBox = boxNumber;
                     }
@@ -160,7 +162,7 @@ namespace PlexShareWhiteboard
                 }
                 else
                 {
-                    Debug.WriteLine("object selected\n");
+                    Trace.WriteLine("[Whiteboard]  " + "object selected\n");
                     HighLightIt(select.selectedObject.Geometry.Bounds);
                     int boxNumber = PointInsideHighlightBox(boundingBox, a, blobSize / 2);
                     ShapeItem newShape = new()
@@ -182,13 +184,13 @@ namespace PlexShareWhiteboard
                     {
                         if (boxNumber > 4)
                         {
-                            Debug.WriteLine("Going to enter dimensionChange_mode \n");
+                            Trace.WriteLine("[Whiteboard]  " + "Going to enter dimensionChange_mode \n");
                             mode = "dimensionChange_mode";
                             select.selectBox = boxNumber;
                         }
                         else if (boxNumber > 0)
                         {
-                            Debug.WriteLine("Going to enter transform mode \n");
+                            Trace.WriteLine("[Whiteboard]  " + "Going to enter transform mode \n");
                             mode = "transform_mode";
                             select.selectBox = boxNumber;
                         }

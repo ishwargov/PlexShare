@@ -105,7 +105,7 @@ namespace PlexShareWhiteboard
                              {
                                  try
                                  {
-                                     Debug.WriteLine(" Client msg received");
+                                     Trace.WriteLine("[Whiteboard]  " + " Client msg received");
                                      var deserializedShape = serializer.DeserializeWBServerShape(serializedData);
                                      List<ShapeItem> shapeItems = serializer.ConvertToShapeItem(deserializedShape.ShapeItems);
                                      switch (deserializedShape.Op)

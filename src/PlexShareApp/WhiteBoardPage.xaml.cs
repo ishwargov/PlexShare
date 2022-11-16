@@ -1,4 +1,15 @@
-﻿using System;
+﻿ /***********************************
+ *Filename = WhiteBoardPage.xaml.cs
+ *
+ *Author = Parvathy S Kumar
+ *
+ * Product     = Plex Share
+ * 
+ * Project     = White Board
+ *
+ * Description = Whiteboard View
+ *************************************/
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -26,6 +37,9 @@ namespace PlexShareApp
     {
         WhiteBoardViewModel viewModel;
         string currentTool;
+        bool singleTrigger = true;
+        int val;
+
         public WhiteBoardPage(int serverID)
         {
             InitializeComponent();
@@ -43,33 +57,36 @@ namespace PlexShareApp
         /// <param name="e"></param>
         private void CanvasMouseDown(object sender, MouseButtonEventArgs e)
         {
-            var a = e.GetPosition(sender as Canvas);
-            viewModel.ShapeStart(a);
-            //singleTrigger = true;
-            if (viewModel.select.ifSelected)
+            if(viewModel.canDraw)
             {
-
-                string shapeName = viewModel.select.selectedObject.Geometry.GetType().Name;
-                if (shapeName == "EllipseGeometry" || shapeName == "RectangleGeometry" || shapeName == "PathGeometry" || shapeName == "LineGeometry")
+                var a = e.GetPosition(sender as Canvas);
+                viewModel.ShapeStart(a);
+                singleTrigger = true;
+                if (viewModel.select.ifSelected)
                 {
-                    if (this.ShapeToolBar.Visibility == Visibility.Collapsed)
-                        this.ShapeToolBar.Visibility = Visibility.Visible;
-                }
 
+                    string shapeName = viewModel.select.selectedObject.Geometry.GetType().Name;
+                    if (shapeName == "EllipseGeometry" || shapeName == "RectangleGeometry" || shapeName == "PathGeometry" || shapeName == "LineGeometry")
+                    {
+                        if (this.ShapeToolBar.Visibility == Visibility.Collapsed)
+                            this.ShapeToolBar.Visibility = Visibility.Visible;
+                    }
+
+                    else
+                    {
+                        if (this.ShapeToolBar.Visibility == Visibility.Visible)
+                            this.ShapeToolBar.Visibility = Visibility.Collapsed;
+                    }
+
+
+
+                }
                 else
                 {
                     if (this.ShapeToolBar.Visibility == Visibility.Visible)
                         this.ShapeToolBar.Visibility = Visibility.Collapsed;
+
                 }
-
-
-
-            }
-            else
-            {
-                if (this.ShapeToolBar.Visibility == Visibility.Visible)
-                    this.ShapeToolBar.Visibility = Visibility.Collapsed;
-
             }
         }
 
@@ -85,11 +102,11 @@ namespace PlexShareApp
 
         }
 
-        private void CanvasMouseUp(object sender, MouseEventArgs e)
-        {
-            var a = e.GetPosition(sender as Canvas);
-            viewModel.ShapeFinished(a);
-        }
+        //private void CanvasMouseUp(object sender, MouseEventArgs e)
+        //{
+        //    var a = e.GetPosition(sender as Canvas);
+        //    viewModel.ShapeFinished(a);
+        //}
         private void CanvasMouseEnter(object sender, MouseEventArgs e)
         {
             //Debug.WriteLine(this.currentTool + " Got it \n");
@@ -133,7 +150,7 @@ namespace PlexShareApp
 
         }
 
-        /*private void CanvasMouseUp1(object sender, MouseEventArgs e)
+        private void CanvasMouseUp(object sender, MouseEventArgs e)
         {
             if (singleTrigger == true)
             {
@@ -143,7 +160,19 @@ namespace PlexShareApp
                 e.Handled = true;
             }
             singleTrigger = false;
-        }*/
+        }
+
+        private void CanvasMouseUp1(object sender, MouseEventArgs e)
+        {
+            if (singleTrigger == true)
+            {
+                Debug.WriteLine("canvas mouse up 11 ");
+                var a = e.GetPosition(sender as Canvas);
+                viewModel.ShapeFinished(a);
+                e.Handled = true;
+            }
+            singleTrigger = false;
+        }
         private void RectangleCreateMode(object sender, RoutedEventArgs e)
         {
             viewModel.UnHighLightIt();
@@ -321,6 +350,7 @@ namespace PlexShareApp
                 this.ShapeToolBar.Visibility = Visibility.Collapsed;
             viewModel.CallUndo();
             Debug.WriteLine("Undo called xaml");
+            viewModel.modeForUndo = "";
         }
 
         private void RedoMode(object sender, RoutedEventArgs e)
@@ -368,8 +398,31 @@ namespace PlexShareApp
         {
             int thickness = (int)ThicknessSlider.Value;
             viewModel.ChangeStrokeThickness(thickness);
+            ShapeThicknessSlider.Value = thickness;
+            LineThicknessSlider.Value = thickness;
+            
 
         }
+
+        public void ChangeShapeThickness(object sender, RoutedEventArgs e)
+        {
+            int thickness = (int)ShapeThicknessSlider.Value;
+            viewModel.ChangeStrokeThickness(thickness);
+            LineThicknessSlider.Value = thickness;
+            ThicknessSlider.Value = thickness;
+
+        }
+
+
+        public void LineThicknessChange(object sender, RoutedEventArgs e)
+        {
+            int thickness = (int)LineThicknessSlider.Value;
+            viewModel.ChangeStrokeThickness(thickness);
+            ShapeThicknessSlider.Value = thickness;
+            ThicknessSlider.Value = thickness;
+        }
+
+
 
     }
 }

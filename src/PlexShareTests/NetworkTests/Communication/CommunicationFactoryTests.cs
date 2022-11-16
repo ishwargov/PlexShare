@@ -1,30 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/// <author> Mohammad Umar Sultan </author>
+/// <created> 16/10/2022 </created>
+/// <summary>
+/// This file contains the tests for communication factory
+/// </summary>
 
 namespace PlexShareNetwork.Communication.Test
 {
     public class CommunicationFactoryTests
     {
         [Fact]
-        public void GetCommunicatorClientTest()
+        public void GetCommunicatorServerAndClientTest()
         {
-            ICommunicator communicatorClient = CommunicationFactory.GetCommunicator(true);
-            string returnString = communicatorClient.Start("0", "0");
-            Assert.Equal("failure", returnString);
-            communicatorClient.Stop();
-        }
+            // get the server and client communicartor from the factory
+            ICommunicator communicatorServer =
+                CommunicationFactory.GetCommunicator(false);
+            ICommunicator[] communicatorClient = {
+                CommunicationFactory.GetCommunicator(true) };
 
-        [Fact]
-        public void GetCommunicatorServerTest()
-        {
-            ICommunicator communicatorServer = CommunicationFactory.GetCommunicator(false);
-            string returnString = communicatorServer.Start();
-            Assert.NotEqual("success", returnString);
-            Assert.NotEqual("failure", returnString);
-            communicatorServer.Stop();
+            // start and stop the server and client communicartor to
+            // test that we have received the correct communcators
+            // from the factory
+            NetworkTestGlobals.StartServerAndClients(
+                communicatorServer, communicatorClient, "Client Id");
+            NetworkTestGlobals.StopServerAndClients(
+                communicatorServer, communicatorClient);
         }
     }
 }

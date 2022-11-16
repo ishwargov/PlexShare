@@ -26,6 +26,8 @@ namespace PlexShareWhiteboard
         public SelectObject select = new();
         List<ShapeItem> highlightShapes;
 
+
+        public bool canDraw = false;
         String currentId = "u0_f0";
         int currentIdVal = 0;
         string userId = "0";
@@ -36,7 +38,7 @@ namespace PlexShareWhiteboard
         Brush strokeBrush = Brushes.Black;
         int strokeThickness = 1;
         string mode = "select_object";
-        string modeForUndo = "select_object";
+        public string modeForUndo = "select_object";
         ShapeItem currentShape = null;
         ShapeItem lastShape = null;
         ShapeItem textBoxLastShape = null;
@@ -98,6 +100,7 @@ namespace PlexShareWhiteboard
                 machine.SetUserId(userId);
             }
             //machine.SetVMRef(this);
+            canDraw = true;
 
         }
         public void IncrementId()
@@ -105,13 +108,23 @@ namespace PlexShareWhiteboard
             currentIdVal++;
             currentId = "u" + userId + "_f" + currentIdVal;
         }
-        
+        public void TextFinishPush()
+        {
+            stackElement = new UndoStackElement(textBoxLastShape, textBoxLastShape, Operation.Creation);
+            InsertIntoStack(stackElement);
+
+            if (textBoxLastShape != null)
+            {
+                //Debug.WriteLine("into undo " + textBoxLastShape.Id + " " + textBoxLastShape.TextString);
+                machine.OnShapeReceived(textBoxLastShape, Operation.Creation);
+            }
+        }
         public void ChangeMode(string new_mode)
         {
             if (mode == "create_textbox")
             {
-                Debug.WriteLine("mode for undo : ", textBoxLastShape.Id);
-                if (textBoxLastShape != null && textBoxLastShape.TextString != null && textBoxLastShape.TextString.Length != 0)
+                if (textBoxLastShape != null && textBoxLastShape.TextString != null &&
+                         textBoxLastShape.TextString.Length != 0)
                 {
 
                     TextFinishPush();
@@ -129,18 +142,11 @@ namespace PlexShareWhiteboard
                         }
                     }
                 }
+                textBoxLastShape = null;
             }
             mode = new_mode;
         }
-        public void TextFinishPush()
-        {
-            stackElement = new UndoStackElement(textBoxLastShape, textBoxLastShape, Operation.Creation);
-            InsertIntoStack(stackElement);
-
-            if (textBoxLastShape != null)
-                machine.OnShapeReceived(textBoxLastShape, Operation.Creation);
-        }
-
+     
         public ShapeItem UpdateFillColor(ShapeItem shape, Brush fillBrush)
         {
             Debug.WriteLine(" Updaing color in select with old color " + shape.Fill + " and new color " + fillBrush);
@@ -163,11 +169,13 @@ namespace PlexShareWhiteboard
 
         public void ChangeFillBrush(SolidColorBrush br)
         {
+            Debug.WriteLine("ChangeFillBrush called");
             fillBrush = br;
 
             if (select.ifSelected == true)
             {
-                Debug.WriteLine("select color changed to " + br.ToString());
+
+                Debug.WriteLine("ChangeFillBrush select color changed to " + br.ToString());
 
                 //select.initialSelectionObject = select.selectedObject;
                 ShapeItem updateSelectShape = null;
@@ -183,7 +191,7 @@ namespace PlexShareWhiteboard
         }
         public ShapeItem UpdateStrokeColor(ShapeItem shape, Brush strokeBrush)
         {
-            shape.Fill = fillBrush;
+            shape.Stroke = strokeBrush;
 
             ShapeItem newShape = shape.DeepClone();
             newShape.Stroke = strokeBrush;
@@ -201,16 +209,21 @@ namespace PlexShareWhiteboard
 
         public void ChangeStrokeBrush(SolidColorBrush br)
         {
+            Debug.WriteLine("ChangeStrokeBrush called");
             strokeBrush = br;
+
             if (select.ifSelected == true)
             {
-                Debug.WriteLine("select color changed to " + br.ToString());
+                Debug.WriteLine("ChangeStrokeBrush select color changed to " + br.ToString());
                 ShapeItem updateSelectShape = null;
                 foreach (ShapeItem s in ShapeItems)
                     if (s.Id == select.selectedObject.Id)
                         updateSelectShape = s;
+
                 select.initialSelectionObject = updateSelectShape.DeepClone();
                 lastShape = UpdateStrokeColor(updateSelectShape, br);
+                modeForUndo = "modify";
+                ShapeFinished(new Point());
             }
         }
 
