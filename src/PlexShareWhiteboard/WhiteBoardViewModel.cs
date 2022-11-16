@@ -48,14 +48,22 @@ namespace PlexShareWhiteboard
         UndoStackElement stackElement;
         Boolean isServer=false;
 
+        public ObservableCollection<int> CheckList { get; set; }
+        List<int> snapshotNumbers = new() { 1, 2, 3, 4, 5 };
+
         private WhiteBoardViewModel()
         {
             // this will become client and server 
-            isServer = false;
 
+            isServer = true;
+            CheckList = new();
             //ShapeItems = new AsyncObservableCollection<ShapeItem>();
             ShapeItems = new ObservableCollection<ShapeItem>();
             highlightShapes = new List<ShapeItem>();
+
+            /*CheckList.Add(1);
+            CheckList.Add(2);
+            CheckList.Add(3);*/
 
         }
         private static WhiteBoardViewModel instance;
@@ -80,7 +88,6 @@ namespace PlexShareWhiteboard
             }
         }
 
-       
         //public void SetUserId(string _userId)
         public void SetUserId(int _userId)
         {
@@ -146,7 +153,7 @@ namespace PlexShareWhiteboard
             }
             mode = new_mode;
         }
-     
+
         public ShapeItem UpdateFillColor(ShapeItem shape, Brush fillBrush)
         {
             Debug.WriteLine(" Updaing color in select with old color " + shape.Fill + " and new color " + fillBrush);

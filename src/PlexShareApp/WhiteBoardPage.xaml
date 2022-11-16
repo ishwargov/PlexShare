@@ -683,7 +683,7 @@
                                 <Separator Grid.Row="10"  />
 
                                 <Grid Grid.Row="11">
-                                    <Button Name="Save" HorizontalAlignment="Center" ToolTip="Save Snapshot" VerticalAlignment="Center" Click="DeleteMode" Cursor="Hand" Style="{StaticResource ToolBarStyle}">
+                                    <Button Name="Save" HorizontalAlignment="Center" ToolTip="Save Snapshot" VerticalAlignment="Center" Click="SaveMode" Cursor="Hand" Style="{StaticResource ToolBarStyle}">
                                         <Image Source="Assets/SaveTool.png" ></Image>
                                     </Button>
                                 </Grid>
@@ -697,7 +697,7 @@
                                     PopupAnimation="Slide"
                                     StaysOpen="False"
                                     Height="100"
-                                    Width="115">    
+                                    Width="115">
 
                                         <Grid Name="RestoreDropdown" Background="WhiteSmoke">
 
@@ -717,33 +717,33 @@
                                                 </TextBlock>
                                             </StackPanel>
 
-                                            <ListBox Name="RestorFrameDropDown" Grid.Row="1" Background="WhiteSmoke">
+                                            <ListBox Name="RestorFrameDropDown" Grid.Row="1" Background="WhiteSmoke" ItemsSource="{Binding CheckList}">
                                             </ListBox>
                                         </Grid>
                                     </Popup>
                                     <ToggleButton Name="Restore" HorizontalAlignment="Center" ToolTip="Restore" VerticalAlignment="Center" Cursor="Hand">
                                         <Image Source="Assets/RestoreTool.png" ></Image>
                                         <ToggleButton.Style>
-                                        <Style TargetType="ToggleButton">
-                                            <Setter Property="Background" Value="WhiteSmoke"/>
-                                            <Setter Property="Template">
-                                                <Setter.Value>
-                                                    <ControlTemplate TargetType="ToggleButton">
-                                                        <Border Width="30"
+                                            <Style TargetType="ToggleButton">
+                                                <Setter Property="Background" Value="WhiteSmoke"/>
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="ToggleButton">
+                                                            <Border Width="30"
 																Height="25"
 															   CornerRadius="15"
 															   Background="{TemplateBinding Background}" Margin="0 15 0 0">
-                                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                        </Border>
-                                                    </ControlTemplate>
-                                                </Setter.Value>
-                                            </Setter>
-                                            <Style.Triggers>
-                                                <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter Property="Background" Value="SkyBlue"/>
-                                                </Trigger>
-                                            </Style.Triggers>
-                                        </Style>
+                                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                            </Border>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="SkyBlue"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
                                         </ToggleButton.Style>
                                     </ToggleButton>
                                 </Grid>

@@ -29,7 +29,7 @@ namespace PlexShareWhiteboard.Client.Interfaces
 
         void SetUserId(string userId);
 
-        //public void SetVMRef(WhiteBoardViewModel vm);
-
+        public int OnSaveMessage(string userId);
+        public List<ShapeItem> OnLoadMessage(int snapshotNumber, string userId);
     }
 }

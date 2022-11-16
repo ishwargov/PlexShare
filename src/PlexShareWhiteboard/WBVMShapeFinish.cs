@@ -23,7 +23,7 @@ namespace PlexShareWhiteboard
                 InsertIntoStack(stackElement);
 
                 if (lastShape != null)
-                  machine.OnShapeReceived(lastShape, Operation.Creation);
+                    machine.OnShapeReceived(lastShape, Operation.Creation);
 
             }
             else if (modeForUndo == "delete" && lastShape != null)
@@ -36,6 +36,13 @@ namespace PlexShareWhiteboard
                     machine.OnShapeReceived(lastShape, Operation.Deletion);
 
             }
+            /*else if (modeForUndo == "textbox_creation")
+            {
+                stackElement = new UndoStackElement(textBoxLastShape, textBoxLastShape, Operation.Creation);
+                InsertIntoStack(stackElement);
+                if (textBoxLastShape != null)
+                    machine.OnShapeReceived(textBoxLastShape, Operation.Creation);
+            }*/
             else if (modeForUndo == "textbox_translate" && textBoxLastShape != null)
             {
                 Debug.WriteLine("entering translate undo.........");
@@ -55,7 +62,6 @@ namespace PlexShareWhiteboard
                     machine.OnShapeReceived(lastShape, Operation.ModifyShape);
 
             }
-
             else;
 
 

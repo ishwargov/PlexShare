@@ -48,6 +48,7 @@ namespace PlexShareApp
             viewModel.ShapeItems = new ObservableCollection<ShapeItem>();
             this.DataContext = viewModel;
             this.currentTool = "Select";
+            this.RestorFrameDropDown.SelectionChanged += RestorFrameDropDownSelectionChanged;
         }
 
         /// <summary>
@@ -363,37 +364,45 @@ namespace PlexShareApp
             viewModel.CallRedo();
         }
 
-        //    private void RestorFrameDropDownSelectionChanged(object sender, SelectionChangedEventArgs e)
-        //    {
-        //        ListBox listbox = (ListBox)sender;
+        private void SaveMode(object sender, RoutedEventArgs e)
+        {
+            viewModel.UnHighLightIt();
+            if (this.ShapeToolBar.Visibility == Visibility.Visible)
+                this.ShapeToolBar.Visibility = Visibility.Collapsed;
+            viewModel.SaveSnapshot();
+        }
 
-        //        if (this.RestorFrameDropDown.SelectedItem != null)
-        //        {
+        private void RestorFrameDropDownSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ListBox listbox = (ListBox)sender;
 
-        //            string item = listbox.SelectedItem.ToString();
-        //            string numeric = new String(item.Where(Char.IsDigit).ToArray());
-        //            int cp = int.Parse(numeric);
+            if (this.RestorFrameDropDown.SelectedItem != null)
+            {
 
-        //            MessageBoxResult result = MessageBox.Show("Are you sure you want to load checkpoint " + numeric + " ? All progress since the last checkpoint would be lost!",
-        //                          "Confirmation", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
-        //            if (result == MessageBoxResult.OK)
-        //            {
-        //               // viewModel.RestoreFrame(cp, GlobCanvas);
-        //                this.RestorFrameDropDown.SelectedItem = null;
-        //                return;
-        //            }
-        //            else
-        //            {
-        //                this.RestorFrameDropDown.SelectedItem = null;
-        //                return;
-        //            }
-        //        }
-        //        else
-        //        {
-        //            return;
-        //        }
+                string item = listbox.SelectedItem.ToString();
+                string numeric = new String(item.Where(Char.IsDigit).ToArray());
+                int cp = int.Parse(numeric);
 
-        //    }
+                MessageBoxResult result = MessageBox.Show("Are you sure you want to load checkpoint " + numeric + " ? All progress since the last checkpoint would be lost!",
+                              "Confirmation", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.OK)
+                {
+                    viewModel.LoadSnapshot(cp);
+                    this.RestorFrameDropDown.SelectedItem = null;
+                    return;
+                }
+                else
+                {
+                    this.RestorFrameDropDown.SelectedItem = null;
+                    return;
+                }
+            }
+            else
+            {
+                return;
+            }
+        }
+
         public void ChangeThickness(object sender, RoutedEventArgs e)
         {
             int thickness = (int)ThicknessSlider.Value;
@@ -412,7 +421,6 @@ namespace PlexShareApp
             ThicknessSlider.Value = thickness;
 
         }
-
 
         public void LineThicknessChange(object sender, RoutedEventArgs e)
         {
