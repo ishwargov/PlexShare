@@ -88,6 +88,8 @@ namespace PlexShareTests.ContentTests.Client
         public void Dispose()
         {
             _contentClient.Reset();
+            _maxValidMessageID = 0;
+            _maxValidThreadID = 0;
         }
 
         [Fact]
@@ -191,7 +193,7 @@ namespace PlexShareTests.ContentTests.Client
             sendContentData.ReceiverIDs = null;
 
             Assert.Throws<ArgumentException>(() => _contentClient.ClientSendData(sendContentData));
-            
+
             Dispose();
         }
 
@@ -234,12 +236,12 @@ namespace PlexShareTests.ContentTests.Client
         {
             Setup();
             var sendContentData = _utility.GenerateSendContentData(
-                type: MessageType.File, 
+                type: MessageType.File,
                 data: "This is supposed to be a file path"
             );
 
             Assert.Throws<FileNotFoundException>(() => _contentClient.ClientSendData(sendContentData));
-            
+
             Dispose();
         }
 
@@ -429,6 +431,359 @@ namespace PlexShareTests.ContentTests.Client
             Dispose();
         }
 
+        [Fact]
+        public void ClientGetThread_ValidThreadID_ReturnsValidThread()
+        {
+            Setup();
+            var threadID = chatMessage.ReplyThreadID;
+            var thread = _contentClient.ClientGetThread(threadID);
 
+            Assert.Equal(1, thread.MessageCount);
+            Assert.Equal(threadID, thread.ThreadID);
+
+            Dispose();
+        }
+
+        [Fact]
+        public void ClientGetThread_InvalidThreadID_ReturnsArgumentException()
+        {
+            Setup();
+            var threadID = _maxValidThreadID + 1;
+
+            Assert.Throws<ArgumentException>(() => _contentClient.ClientGetThread(threadID));
+
+            Dispose();
+        }
+
+        [Fact]
+        public void GetUserID_SingleInstance_ReturnsValidUserID()
+        {
+            Setup();
+            var userID = _contentClient.GetUserID();
+
+            Assert.Equal(42, userID);
+
+            Dispose();
+        }
+
+        [Fact]
+        public void Reset_SingleInstance_ReturnsEmptyInstance()
+        {
+            Setup();
+            _contentClient.Reset();
+
+            Assert.Equal(-1, _contentClient.UserID);
+            Assert.Empty(_contentClient.AllMessages);
+
+            Dispose();
+        }
+
+        [Fact]
+        public void OnReceive_ValidNewMessageNotReplyNewThread_StoresMessageAndInformsSubscribers()
+        {
+            Setup();
+            var message = _utility.GenerateContentData(
+                messageID: ++_maxValidMessageID, 
+                replyThreadID: ++_maxValidThreadID
+            );
+
+            _contentClient.OnReceive(message);
+            Thread.Sleep(_sleepTime);
+            var messageThread = _contentClient.ClientGetThread(message.ReplyThreadID);
+            var index = messageThread.GetMessageIndex(message.MessageID);
+            var storedMessage = messageThread.MessageList[index];
+            var receivedMessage = _listener.GetReceivedMessage();
+
+            _utility.CheckReceiveContentData(message, storedMessage);
+            _utility.CheckReceiveContentData(message, receivedMessage);
+
+            Dispose();
+
+        }
+
+        [Fact]
+        public void OnReceive_ValidNewMessageNotReplyExistingThread_StoresMessageAndInformsSubscribers()
+        {
+            Setup();
+            var message = _utility.GenerateContentData(
+                messageID: ++_maxValidMessageID, 
+                replyThreadID: chatMessage.ReplyThreadID
+            );
+
+            _contentClient.OnReceive(message);
+            Thread.Sleep(_sleepTime);
+            var messageThread = _contentClient.ClientGetThread(message.ReplyThreadID);
+            var index = messageThread.GetMessageIndex(message.MessageID);
+            var storedMessage = messageThread.MessageList[index];
+            var receivedMessage = _listener.GetReceivedMessage();
+
+            _utility.CheckReceiveContentData(message, storedMessage);
+            _utility.CheckReceiveContentData(message, receivedMessage);
+
+            Dispose();
+
+        }
+
+
+
+        [Fact]
+        public void OnReceive_ValidNewReplyMessageExistingThread_StoresMessageAndInformsSubscribers()
+        {
+            Setup();
+            var message = _utility.GenerateContentData(
+                messageID: ++_maxValidMessageID, 
+                replyThreadID: chatMessage.ReplyThreadID, 
+                replyMessageID: chatMessage.MessageID
+            );
+
+            _contentClient.OnReceive(message);
+            Thread.Sleep(_sleepTime);
+            var messageThread = _contentClient.ClientGetThread(message.ReplyThreadID);
+            var index = messageThread.GetMessageIndex(message.MessageID);
+            var storedMessage = messageThread.MessageList[index];
+            var receivedMessage = _listener.GetReceivedMessage();
+
+            _utility.CheckReceiveContentData(message, storedMessage);
+            _utility.CheckReceiveContentData(message, receivedMessage);
+
+            Dispose();
+        }
+
+        [Fact]
+        public void OnReceive_NewMessageDuplicateMessageID_ReturnsArgumentException()
+        {
+            Setup();
+            var message = _utility.GenerateContentData(messageID: chatMessage.MessageID);
+
+            Assert.Throws<ArgumentException>(() => _contentClient.OnReceive(message));
+
+            Dispose();
+        }
+
+        [Fact]
+        public void OnReceive_NewMessageInvalidThreadID_ReturnsArgumentException()
+        {
+            Setup();
+            var message = _utility.GenerateContentData(messageID: ++_maxValidMessageID);
+
+            Assert.Throws<ArgumentException>(() => _contentClient.OnReceive(message));
+
+            Dispose();
+        }
+
+        [Fact]
+        public void OnReceive_NewEmptyMessage_ReturnsArgumentException()
+        {
+            Setup();
+            var message = _utility.GenerateContentData(
+                data: "", 
+                messageID: ++_maxValidMessageID, 
+                replyThreadID: ++_maxValidThreadID
+            );
+
+            Assert.Throws<ArgumentException>(() => _contentClient.OnReceive(message));
+
+            Dispose();
+        }
+
+        [Fact]
+        public void OnReceive_NewNullMessage_ReturnsArgumentException()
+        {
+            Setup();
+            var message = _utility.GenerateContentData(
+                data: null, 
+                messageID: ++_maxValidMessageID, 
+                replyThreadID: ++_maxValidThreadID
+            );
+
+            Assert.Throws<ArgumentException>(() => _contentClient.OnReceive(message));
+
+            Dispose();
+        }
+
+        [Fact]
+        public void OnReceive_NewMessageInvalidReplyMessageID_ReturnsArgumentException()
+        {
+            Setup();
+            var message = _utility.GenerateContentData(
+                messageID: ++_maxValidMessageID, 
+                replyThreadID: ++_maxValidThreadID, 
+                replyMessageID: ++_maxValidMessageID
+            );
+
+            Assert.Throws<ArgumentException>(() => _contentClient.OnReceive(message));
+
+            Dispose();
+        }
+
+        [Fact]
+        public void OnReceive_ValidEditMessage_StoresMessageAndInformsSubscribers()
+        {
+            Setup();
+            var message = _utility.GenerateContentData(
+                @event: MessageEvent.Edit, 
+                messageID: chatMessage.MessageID, 
+                replyThreadID: chatMessage.ReplyThreadID, 
+                data: "This is a sample edited message"
+            );
+
+            _contentClient.OnReceive(message);
+            Thread.Sleep(_sleepTime);
+            var messageThread = _contentClient.ClientGetThread(message.ReplyThreadID);
+            var index = messageThread.GetMessageIndex(message.MessageID);
+            var storedMessage = messageThread.MessageList[index];
+            var receivedMessage = _listener.GetReceivedMessage();
+
+            Assert.Equal(message.Data, storedMessage.Data);
+            Assert.Equal(message.Data, receivedMessage.Data);
+
+            Dispose();
+        }
+
+        [Fact]
+        public void OnReceive_EditMessageInvalidMessageID_ReturnsArgumentException()
+        {
+            Setup();
+            var message = _utility.GenerateContentData(
+                @event: MessageEvent.Edit, 
+                messageID: ++_maxValidMessageID, 
+                data: "This is a sample edited message"
+            );
+
+            Assert.Throws<ArgumentException>(() => _contentClient.OnReceive(message));
+
+            Dispose();
+        }
+
+        [Fact]
+        public void OnReceive_EditFileMessage_ReturnsArgumentException()
+        {
+            Setup();
+            var message = _utility.GenerateContentData(
+                @event: MessageEvent.Edit, 
+                messageID: fileMessage.MessageID, 
+                data: "This is a sample edited message"
+            );
+
+            Assert.Throws<ArgumentException>(() => _contentClient.OnReceive(message));
+
+            Dispose();
+        }
+
+        [Fact]
+        public void OnReceive_ValidDeleteMessage_StoresMessageAndInformsSubscribers()
+        {
+            Setup();
+            var message = _utility.GenerateContentData(
+                @event: MessageEvent.Delete, 
+                messageID: chatMessage.MessageID, 
+                replyThreadID: chatMessage.ReplyThreadID
+            );
+
+            _contentClient.OnReceive(message);
+            Thread.Sleep(_sleepTime);
+            var messageThread = _contentClient.ClientGetThread(message.ReplyThreadID);
+            var index = messageThread.GetMessageIndex(message.MessageID);
+            var storedMessage = messageThread.MessageList[index];
+            var receivedMessage = _listener.GetReceivedMessage();
+
+            Assert.Equal("Message Deleted.", storedMessage.Data);
+            Assert.Equal(message.MessageID, receivedMessage.MessageID);
+
+            Dispose();
+        }
+
+        [Fact]
+        public void OnReceive_DeleteMessageInvalidMessageID_ReturnsArgumentException()
+        {
+            Setup();
+            var message = _utility.GenerateContentData(@event: MessageEvent.Delete, messageID: ++_maxValidMessageID);
+
+            Assert.Throws<ArgumentException>(() => _contentClient.OnReceive(message));
+
+            Dispose();
+        }
+
+        [Fact]
+        public void OnReceive_DeleteFileMessage_ReturnsArgumentException()
+        {
+            Setup();
+            var message = _utility.GenerateContentData(@event: MessageEvent.Delete, messageID: fileMessage.MessageID);
+
+            Assert.Throws<ArgumentException>(() => _contentClient.OnReceive(message));
+
+            Dispose();
+        }
+
+        [Fact]
+        public void OnReceive_ValidStarMessage_StoresMessageAndInformsSubscribers()
+        {
+            Setup();
+            var message = _utility.GenerateContentData(
+                @event: MessageEvent.Star, 
+                messageID: chatMessage.MessageID, 
+                replyThreadID: chatMessage.ReplyThreadID, 
+                starred: chatMessage.Starred
+            );
+            var isStarred = message.Starred;
+
+            _contentClient.OnReceive(message);
+            Thread.Sleep(_sleepTime);
+            var messageThread = _contentClient.ClientGetThread(message.ReplyThreadID);
+            var index = messageThread.GetMessageIndex(message.MessageID);
+            var storedMessage = messageThread.MessageList[index];
+            var receivedMessage = _listener.GetReceivedMessage();
+
+            Assert.Equal(!isStarred, storedMessage.Starred);
+            Assert.Equal(isStarred, receivedMessage.Starred);
+
+            Dispose();
+        }
+
+        [Fact]
+        public void OnReceive_StarMessageInvalidMessageID_ReturnsArgumentException()
+        {
+            Setup();
+            var message = _utility.GenerateContentData(
+                @event: MessageEvent.Star, 
+                messageID: ++_maxValidMessageID
+            );
+
+            Assert.Throws<ArgumentException>(() => _contentClient.OnReceive(message));
+
+            Dispose();
+        }
+
+        [Fact]
+        public void OnReceive_StarFileMessage_ReturnsArgumentException()
+        {
+            Setup();
+            var message = _utility.GenerateContentData(
+                @event: MessageEvent.Star, 
+                messageID: fileMessage.MessageID
+            );
+
+            Assert.Throws<ArgumentException>(() => _contentClient.OnReceive(message));
+
+            Dispose();
+        }
+
+        [Fact]
+        public void OnReceive_ValidChatThreadList_SetsAllMessageAndInformsSubscribers()
+        {
+            Setup();
+            var chatThreads = _contentClient.AllMessages;
+            chatThreads.RemoveAt(0);
+
+            _contentClient.OnReceive(chatThreads);
+            Thread.Sleep(_sleepTime);
+            var newChatThreads = _contentClient.AllMessages;
+            var receivedChatThreads = _listener.GetAllMessages();
+
+            _utility.CheckChatThreadLists(chatThreads, newChatThreads);
+            _utility.CheckChatThreadLists(chatThreads, receivedChatThreads);
+
+            Dispose();
+        }
     }
 }
