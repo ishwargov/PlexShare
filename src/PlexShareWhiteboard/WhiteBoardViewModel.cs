@@ -26,6 +26,8 @@ namespace PlexShareWhiteboard
         public SelectObject select = new();
         List<ShapeItem> highlightShapes;
 
+
+        public bool canDraw = false;
         String currentId = "u0_f0";
         int currentIdVal = 0;
         string userId = "0";
@@ -49,7 +51,8 @@ namespace PlexShareWhiteboard
         private WhiteBoardViewModel()
         {
             // this will become client and server 
-            //isServer = true;
+
+            isServer = true;
 
             //ShapeItems = new AsyncObservableCollection<ShapeItem>();
             ShapeItems = new ObservableCollection<ShapeItem>();
@@ -97,6 +100,7 @@ namespace PlexShareWhiteboard
                 machine.SetUserId(userId);
             }
             //machine.SetVMRef(this);
+            canDraw = true;
 
         }
         public void IncrementId()
@@ -110,7 +114,10 @@ namespace PlexShareWhiteboard
             InsertIntoStack(stackElement);
 
             if (textBoxLastShape != null)
+            {
+                Debug.WriteLine("into undo " + textBoxLastShape.Id + " " + textBoxLastShape.TextString);
                 machine.OnShapeReceived(textBoxLastShape, Operation.Creation);
+            }
         }
         public void ChangeMode(string new_mode)
         {

@@ -108,26 +108,26 @@ namespace PlexShareWhiteboard
         {
             UnHighLightIt();
             string text = "";
-            Debug.WriteLine("inisde textbox start" + textBoxLastShape);
+            Trace.WriteLine("[Whiteboard]  " + "inisde textbox start" + textBoxLastShape);
             if (textBoxLastShape != null)
             {
                 text = textBoxLastShape.TextString;
-                Debug.WriteLine("msater text " + text + "  id : " + textBoxLastShape.Id);
+                Trace.WriteLine("[Whiteboard]  " + "msater text " + text + "  id : " + textBoxLastShape.Id);
             }
-            //Debug.WriteLine("Inside TextBoxStart function");
+            //Trace.WriteLine("[Whiteboard]  " + "Inside TextBoxStart function");
             if (c == Key.Space)
             {
-                //Debug.WriteLine("space");
+                //Trace.WriteLine("[Whiteboard]  " + "space");
                 text = text + ' ';
             }
             else if (c == Key.Back)
             {
                 if (text.Length != 0)
                 {
-                    //Debug.WriteLine("before : "+text+": text lengtrh: "+text.Length);
-                    Debug.WriteLine("back space before: " + text + ": text lengtrh: " + text.Length);
+                    //Trace.WriteLine("[Whiteboard]  " + "before : "+text+": text lengtrh: "+text.Length);
+                    Trace.WriteLine("[Whiteboard]  " + "back space before: " + text + ": text lengtrh: " + text.Length);
                     text = text.Substring(0, text.Length - 1);
-                    Debug.WriteLine("back space after : " + text + ": text lengtrh: " + text.Length);
+                    Trace.WriteLine("[Whiteboard]  " + "back space after : " + text + ": text lengtrh: " + text.Length);
                     //Debug.WriteLine(lastShape.Id);
                     //CreateShape(DeonPoint, DeonPoint, "GeometryGroup", lastShape.Id);
                     textBoxLastShape = UpdateShape(textBoxPoint, textBoxPoint, "GeometryGroup", textBoxLastShape, text);
@@ -143,14 +143,14 @@ namespace PlexShareWhiteboard
 
                 char ch = KeyToChar(c);
                 text += KeyToChar(c);
-           //     Debug.WriteLine("key down " + ch + "   text is now " + text + "  id : " + lastShape.Id);
+           //     Trace.WriteLine("[Whiteboard]  " + "key down " + ch + "   text is now " + text + "  id : " + lastShape.Id);
 
             }
             //Debug.WriteLine(text);
             if (mode == "create_textbox" && textBoxLastShape != null)
             {
                 // Create the formatted text based on the properties set.
-                //Debug.WriteLine("In create textbox mode");
+                //Trace.WriteLine("[Whiteboard]  " + "In create textbox mode");
                 //ShapeItem curShape = CreateShape(DeonPoint, DeonPoint, "GeometryGroup", lastShape.Id);
                 ShapeItem curShape = UpdateShape(textBoxPoint, textBoxPoint, "GeometryGroup", textBoxLastShape, text);
                 textBoxLastShape = curShape;
@@ -166,9 +166,9 @@ namespace PlexShareWhiteboard
                 
 
             }
-            //Debug.WriteLine("post create shape" + lastShape.TextString);
+            //Trace.WriteLine("[Whiteboard]  " + "post create shape" + lastShape.TextString);
 
-            //Debug.WriteLine("text is currently : " + text+ " over");
+            //Trace.WriteLine("[Whiteboard]  " + "text is currently : " + text+ " over");
         }
     }
 }

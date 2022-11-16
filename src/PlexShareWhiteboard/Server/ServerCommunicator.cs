@@ -39,18 +39,12 @@ namespace PlexShareWhiteboard.Server
             }
         }
 
-        //public void SetVMRef(WhiteBoardViewModel vm)
-        //{
-        //    _vm = vm;
-        //    communicator.Subscribe(moduleIdentifier, _vm);
-        //}
-
         public void Broadcast(ShapeItem newShape, Operation op)
         {
             if (newShape != null)
             {
-            Debug.WriteLine("Inisde ServerCommunicator.cs broadcast, " + newShape.Id);
-            //Debug.WriteLine("Inisde ServerCommunicator.cs broadcast, " + newShape.Geometry.GetType().Name);
+            Trace.WriteLine("[Whiteboard]  " + "Inisde ServerCommunicator.cs broadcast, " + newShape.Id);
+            //Trace.WriteLine("[Whiteboard]  " + "Inisde ServerCommunicator.cs broadcast, " + newShape.Geometry.GetType().Name);
             }
             List<ShapeItem> newShapeList = new List<ShapeItem>();
             newShapeList.Add(newShape);

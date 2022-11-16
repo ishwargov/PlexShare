@@ -69,7 +69,7 @@ namespace PlexShareWhiteboard
                 Debug.WriteLine(ShapeItems.Count() +  " before\n");
                 ShapeItems.Remove(ShapeItems[i]);
                 Debug.WriteLine(oldShape.Id + " is removed from list\n");
-                if (ShapeItems.Contains(oldShape)) Debug.WriteLine("not deleted\n");
+                if (ShapeItems.Contains(oldShape)) Trace.WriteLine("[Whiteboard]  " + "not deleted\n");
                 Debug.WriteLine(ShapeItems.Count() + " after\n");
             }
         }
@@ -79,7 +79,8 @@ namespace PlexShareWhiteboard
             ShapeItems.Clear();
             undoStack.Clear();
             redoStack.Clear();
-            machine.OnShapeReceived(lastShape, Operation.Clear);
+            if(machine!=null)
+                machine.OnShapeReceived(lastShape, Operation.Clear);
         }
     }
 }

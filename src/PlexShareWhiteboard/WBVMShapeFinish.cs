@@ -16,11 +16,9 @@ namespace PlexShareWhiteboard
         // this is mouse up -> typically mouse release
         public void ShapeFinished(Point _)
         {
-            //Debug.WriteLine("Entering Shape Finished..............\
-            
             if (modeForUndo == "create" )
             {
-                Debug.WriteLine("passing into undo stack " + lastShape.Geometry.GetType().Name);
+                Trace.WriteLine("[Whiteboard]  " + "passing into undo stack " + lastShape.Geometry.GetType().Name);
                 stackElement = new UndoStackElement(lastShape, lastShape, Operation.Creation);
                 InsertIntoStack(stackElement);
 
@@ -31,7 +29,7 @@ namespace PlexShareWhiteboard
             else if (modeForUndo == "delete" && lastShape != null)
             {
 
-                Debug.WriteLine("passing into undo stack " + lastShape.Geometry.GetType().Name);
+                Trace.WriteLine("[Whiteboard]  " + "passing into undo stack " + lastShape.Geometry.GetType().Name);
                 stackElement = new UndoStackElement(lastShape, lastShape, Operation.Deletion);
                 InsertIntoStack(stackElement);
                 if (lastShape != null)
@@ -55,8 +53,8 @@ namespace PlexShareWhiteboard
             }
             else if (modeForUndo == "modify" && lastShape != null)
             {
-               // Debug.WriteLine("passing into undo stack " + lastShape.Geometry.GetType().Name);
-              //  Debug.WriteLine(" inital bounding box" + select.initialSelectionObject.Geometry.Bounds.ToString() + "  final bounding box " + lastShape.Geometry.Bounds.ToString());
+               // Trace.WriteLine("[Whiteboard]  " + "passing into undo stack " + lastShape.Geometry.GetType().Name);
+              //  Trace.WriteLine("[Whiteboard]  " + " inital bounding box" + select.initialSelectionObject.Geometry.Bounds.ToString() + "  final bounding box " + lastShape.Geometry.Bounds.ToString());
                 stackElement = new UndoStackElement(select.initialSelectionObject, lastShape, Operation.ModifyShape);
                 InsertIntoStack(stackElement);
 
@@ -84,7 +82,7 @@ namespace PlexShareWhiteboard
             if (modeForUndo != "create_textbox")
                 modeForUndo = "select";
 
-            //Debug.WriteLine("Exiting Shape Finished........");
+            //Trace.WriteLine("[Whiteboard]  " + "Exiting Shape Finished........");
         }
     }
 }

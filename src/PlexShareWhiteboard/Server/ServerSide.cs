@@ -139,8 +139,8 @@ namespace PlexShareWhiteboard.Server
 
             newShape.ZIndex = Math.Max(_maxZIndex, newShape.ZIndex);
             objIdToObjectMap.Add(objectId, newShape);
-            Debug.WriteLine("inside AddObjectToServerList" + newShape.Id);
-            Debug.WriteLine("inside AddObjectToServerList" + newShape.Geometry.GetType().Name);
+            Trace.WriteLine("[Whiteboard]  " + "inside AddObjectToServerList" + newShape.Id);
+            Trace.WriteLine("[Whiteboard]  " + "inside AddObjectToServerList" + newShape.Geometry.GetType().Name);
             BroadcastToClients(newShape, op);
             _maxZIndex++;
         }
@@ -204,7 +204,7 @@ namespace PlexShareWhiteboard.Server
 
         public void CreateSnapshotHandler(WBServerShape deserializedObject)
         {
-            _serverSnapshotHandler.SaveBoard(objIdToObjectMap.Values.ToList());
+            _serverSnapshotHandler.SaveBoard(objIdToObjectMap.Values.ToList(), deserializedObject.UserID);
             _communicator.Broadcast(deserializedObject);
         }
 
