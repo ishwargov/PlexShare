@@ -41,10 +41,10 @@ namespace PlexShareApp
             InitializeComponent();
 
             UserName = userName;
-            viewModel = new SessionsViewModel(userName);
-            this.DataContext = viewModel;
-            viewModel.PropertyChanged += Listener;
-            sessions = new List<SessionEntity> { };
+            //viewModel = new SessionsViewModel(userName);
+            //this.DataContext = viewModel;
+            //viewModel.PropertyChanged += Listener;
+            //sessions = new List<SessionEntity> { };
         }
 
         /// <summary>

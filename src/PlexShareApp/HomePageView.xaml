@@ -338,13 +338,13 @@
             <TextBlock Name="Date" Text="Monday, August 24, 2022" Foreground="White" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" FontSize="26" FontFamily="Yu Gothic UI Semibold" FontWeight="Bold" TextWrapping="Wrap" />
         </Grid>
         <!--PlexShare Title-->
-        <TextBlock Foreground="{DynamicResource Color5Bg}" Grid.ColumnSpan="2" Grid.RowSpan="2" HorizontalAlignment="Left" FontSize="48" FontStyle="Normal" FontFamily="Cascadia Code SemiBold" Grid.Row="2" Grid.Column="1" TextWrapping="Wrap" Text="PlexShare" Width="300"/>
+        <TextBlock Foreground="{DynamicResource Color5Bg}" Grid.ColumnSpan="2" Grid.RowSpan="1" HorizontalAlignment="Left" FontSize="48" FontStyle="Normal" FontFamily="Cascadia Code SemiBold" Grid.Row="3" Grid.Column="1" TextWrapping="Wrap" Text="PlexShare" Width="300"/>
         <!--New Meeting Textbox-->
         <TextBlock Foreground="{DynamicResource Color5Bg}" Name="New_Meeting1" Grid.Column="1" Grid.Row="5" FontFamily="Cascadia Code SemiBold" TextWrapping="Wrap" Text="New Meeting" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="28"/>
         <!--Join Meeting Textbox-->
         <TextBlock Foreground="{DynamicResource Color5Bg}" Name="Join_Meeting" Grid.Column="3" Grid.Row="5" FontFamily="Cascadia Code SemiBold" TextWrapping="Wrap" Text="Join Meeting" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="28"/>
         <!--Session button-->
-        <Button Grid.Column="6" FontSize="18" Background="{DynamicResource Color1Bg}" Foreground="White" FontWeight="DemiBold" Margin="0,5,0,0" Padding="0,0,0,5" Content="Session"  VerticalAlignment="Top"  Grid.Row="1">
+        <Button Grid.Column="6" FontSize="18" Background="{DynamicResource Color1Bg}" Foreground="White" FontWeight="DemiBold" Margin="0,5,0,0" Padding="0,0,0,5" Content="Session"  Click="Button_Click" VerticalAlignment="Top"  Grid.Row="1" Name="Session">
             <Button.Resources>
                 <Style TargetType="Border">
                     <Setter Property="CornerRadius" Value="16"/>
@@ -368,7 +368,7 @@
             <ProgressBar x:Name="pb1" Height="10" Width="1000"  Orientation="Horizontal" Background="Transparent"  BorderThickness="0" Foreground="{DynamicResource Color1Bg}"></ProgressBar>
         </StackPanel>
         <StackPanel Grid.Row="2" Grid.RowSpan="2" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Center">
-            <ProgressBar x:Name="pb3" Height="10" Width="1000"  Orientation="Horizontal" Background="Transparent"  BorderThickness="0" Foreground="{DynamicResource Color4Bg}"></ProgressBar>
+            <ProgressBar x:Name="pb3" Height="10" Width="1000"  Orientation="Horizontal" Background="Transparent"  BorderThickness="0" Foreground="{DynamicResource Color6Bg}"></ProgressBar>
         </StackPanel>
         <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" VerticalAlignment="Center">
             <ProgressBar x:Name="pb2" Height="15" Width="1000"  Orientation="Horizontal" Background="Transparent"   BorderThickness="0" Foreground="{DynamicResource Color1Bg}"></ProgressBar>
@@ -379,5 +379,7 @@
         <StackPanel Grid.Row="1" Grid.Column="0" Grid.RowSpan="7" HorizontalAlignment="Center">
             <ProgressBar x:Name="pb5" Height="1000" Width="15"  Orientation="Vertical" Background="Transparent"   BorderThickness="0" Foreground="{DynamicResource Color6Bg}"></ProgressBar>
         </StackPanel>
+        <!--Cloud session page-->
+        <Frame x:Name="SessionPage" NavigationUIVisibility="Hidden" Grid.Column="1" Grid.ColumnSpan="5" Grid.Row="3" Grid.RowSpan="4"/>
     </Grid>
 </Window>
