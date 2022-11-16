@@ -38,7 +38,7 @@ namespace PlexShareWhiteboard
         Brush strokeBrush = Brushes.Black;
         int strokeThickness = 1;
         string mode = "select_object";
-        string modeForUndo = "select_object";
+        public string modeForUndo = "select_object";
         ShapeItem currentShape = null;
         ShapeItem lastShape = null;
         ShapeItem textBoxLastShape = null;
@@ -115,7 +115,7 @@ namespace PlexShareWhiteboard
 
             if (textBoxLastShape != null)
             {
-                Debug.WriteLine("into undo " + textBoxLastShape.Id + " " + textBoxLastShape.TextString);
+                //Debug.WriteLine("into undo " + textBoxLastShape.Id + " " + textBoxLastShape.TextString);
                 machine.OnShapeReceived(textBoxLastShape, Operation.Creation);
             }
         }
@@ -123,8 +123,8 @@ namespace PlexShareWhiteboard
         {
             if (mode == "create_textbox")
             {
-                Debug.WriteLine("mode for undo : ", textBoxLastShape.Id);
-                if (textBoxLastShape != null && textBoxLastShape.TextString.Length != 0)
+                if (textBoxLastShape != null && textBoxLastShape.TextString != null &&
+                         textBoxLastShape.TextString.Length != 0)
                 {
 
                     TextFinishPush();
@@ -142,6 +142,7 @@ namespace PlexShareWhiteboard
                         }
                     }
                 }
+                textBoxLastShape = null;
             }
             mode = new_mode;
         }

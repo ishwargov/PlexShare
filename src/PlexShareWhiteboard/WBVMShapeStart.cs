@@ -74,8 +74,8 @@ namespace PlexShareWhiteboard
                 
                 if (modeForUndo == "create_textbox")
                 {
-                    Debug.WriteLine("mode for undo : ", textBoxLastShape.Id);
-                    if (textBoxLastShape != null && textBoxLastShape.TextString.Length != 0)
+                    if (textBoxLastShape != null && textBoxLastShape.TextString != null &&
+                        textBoxLastShape.TextString.Length != 0)
                     {
                         
                         TextFinishPush();
