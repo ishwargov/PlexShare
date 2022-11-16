@@ -162,6 +162,9 @@ namespace PlexShareWhiteboard
                 highlightShapes.Add(hsBody);
                 foreach (ShapeItem si in highlightShapes)
                     ShapeItems.Add(si);
+
+                
+
             }
             //Trace.WriteLine("[Whiteboard]  " + "post create shape" + lastShape.TextString);
 

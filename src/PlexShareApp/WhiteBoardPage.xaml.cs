@@ -350,6 +350,7 @@ namespace PlexShareApp
                 this.ShapeToolBar.Visibility = Visibility.Collapsed;
             viewModel.CallUndo();
             Debug.WriteLine("Undo called xaml");
+            viewModel.modeForUndo = "";
         }
 
         private void RedoMode(object sender, RoutedEventArgs e)

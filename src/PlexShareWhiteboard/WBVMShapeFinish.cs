@@ -16,14 +16,6 @@ namespace PlexShareWhiteboard
         // this is mouse up -> typically mouse release
         public void ShapeFinished(Point _)
         {
-            //Trace.WriteLine("[Whiteboard]  " + "Entering Shape Finished..............\
-            /*if (mode == "create_textbox")
-            {
-                if (lastShape.TextString.Length != 0)
-                {
-                    TextFinishPush();
-                }
-            }*/
             if (modeForUndo == "create" )
             {
                 Trace.WriteLine("[Whiteboard]  " + "passing into undo stack " + lastShape.Geometry.GetType().Name);
@@ -50,15 +42,16 @@ namespace PlexShareWhiteboard
                 InsertIntoStack(stackElement);
                 if (textBoxLastShape != null)
                     machine.OnShapeReceived(textBoxLastShape, Operation.Creation);
-            }
-            else if (modeForUndo == "textbox_translate")
+            }*/
+            else if (modeForUndo == "textbox_translate" && textBoxLastShape != null)
             {
-                stackElement = new UndoStackElement(textBoxLastShape, textBoxLastShape, Operation.ModifyShape);
+                Debug.WriteLine("entering translate undo.........");
+                stackElement = new UndoStackElement(select.initialSelectionObject, textBoxLastShape, Operation.ModifyShape);
                 InsertIntoStack(stackElement);
                 if (textBoxLastShape != null)
                     machine.OnShapeReceived(textBoxLastShape, Operation.ModifyShape);
-            }*/
-            else if (modeForUndo == "modify")
+            }
+            else if (modeForUndo == "modify" && lastShape != null)
             {
                // Trace.WriteLine("[Whiteboard]  " + "passing into undo stack " + lastShape.Geometry.GetType().Name);
               //  Trace.WriteLine("[Whiteboard]  " + " inital bounding box" + select.initialSelectionObject.Geometry.Bounds.ToString() + "  final bounding box " + lastShape.Geometry.Bounds.ToString());
@@ -86,7 +79,8 @@ namespace PlexShareWhiteboard
             
             lastShape = null;
 
-            modeForUndo = "select";
+            if (modeForUndo != "create_textbox")
+                modeForUndo = "select";
 
             //Trace.WriteLine("[Whiteboard]  " + "Exiting Shape Finished........");
         }
