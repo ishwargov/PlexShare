@@ -1,4 +1,9 @@
-﻿using Dashboard;
+﻿/// <author>Rupesh Kumar</author>
+/// <summary>
+/// Unit tests for telemetry submodule
+/// </summary>
+
+using Dashboard;
 using Dashboard.Server.Persistence;
 using PlexShareDashboard.Dashboard.Server.Telemetry;
 using System;

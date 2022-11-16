@@ -1,4 +1,10 @@
-﻿using Dashboard;
+﻿/// <author>Rupesh Kumar</author>
+/// <summary>
+/// Unit Test for Dashboard View Model 
+/// </summary>
+
+
+using Dashboard;
 using PlexShareDashboard.Dashboard.Server.Telemetry;
 using PlexShareDashboard.Dashboard.UI.ViewModel;
 using Syncfusion.UI.Xaml.Charts;
