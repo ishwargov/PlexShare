@@ -30,7 +30,7 @@ namespace PlexShareWhiteboard
         public bool canDraw = false;
         String currentId = "u0_f0";
         int currentIdVal = 0;
-        string userId = "0";
+        public string userId = "0";
         int currentZIndex = 0;
         Point textBoxPoint = new (100, 100);
 
@@ -46,7 +46,7 @@ namespace PlexShareWhiteboard
         int blobSize = 12;
         IShapeListener machine;
         UndoStackElement stackElement;
-        Boolean isServer=false;
+        public Boolean isServer=false;
 
         public ObservableCollection<int> CheckList { get; set; }
         List<int> snapshotNumbers = new() { 1, 2, 3, 4, 5 };
@@ -54,8 +54,6 @@ namespace PlexShareWhiteboard
         private WhiteBoardViewModel()
         {
             // this will become client and server 
-
-            isServer = true;
             CheckList = new();
             //ShapeItems = new AsyncObservableCollection<ShapeItem>();
             ShapeItems = new ObservableCollection<ShapeItem>();
