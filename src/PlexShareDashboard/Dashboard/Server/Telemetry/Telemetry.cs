@@ -8,8 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using PlexShareDashboard;
 using PlexShareContent.DataModels;
-//using Dashboard.Server.Persistence;
-//using PlexShareDashboard.Dashboard.Server.Persistent;
 using Dashboard.Server.Persistence;
 using Dashboard;
 using System.Runtime.InteropServices;
@@ -63,6 +61,8 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             
         }
 
+
+
         //function to find the username vs chat count to show on the UX 
         public void UpdateUserNameVsChatCount()
         {
@@ -89,6 +89,8 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             //say everything went fine 
             return;
         }
+
+
 
         //function to fetch the telemetry analytics and then give it back to the session manager 
         public SessionAnalytics GetTelemetryAnalytics(PlexShareContent.DataModels.ChatThread[] allChatMessages)
@@ -133,6 +135,7 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
 
 
 
+
         //function fetch the details from the chatcontext and then giving it to persistent to save the analytics on the server 
         public void SaveAnalytics(PlexShareContent.DataModels.ChatThread[] allChatMessages)
         {
@@ -172,6 +175,8 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             return;
         }
 
+
+
         public void GetUserIdVsChatCount(PlexShareContent.DataModels.ChatThread[] allMessages)
         {
             //we have to implement when we start integrating with the chat module 
@@ -194,6 +199,8 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             //say everything went fine 
             return;
         }
+
+
 
 
         //function to calculate the insincere members when the meeting ends and the session manager tells to save the details and the insincere members list will only be calculated then only
@@ -222,6 +229,8 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
 
 
 
+
+
         public void UpdateUserIdVsEamilId(SessionData newSession)
         {
             //using the for loop for this purpose 
@@ -239,6 +248,8 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             return;
         
         }
+
+
 
         public void UpdateEmailIdVsUserName(SessionData newSession)
         {
@@ -259,6 +270,7 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
 
 
 
+
         //this function will be called whenever the session analytics will be changed at the server side session manager using publisher subscriber model 
         public void OnAnalyticsChanged(SessionData newSession)
         {
@@ -275,6 +287,8 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             return;
 
         }
+
+
 
         //function defined for testing purpose so that we can overload the function 
         public void OnAnalyticsChanged(SessionData newSession, DateTime currTime)
@@ -296,6 +310,8 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             userCountVsEachTimeStamp[currTime] = newSession.users.Count;
         
         }
+
+
 
 
         //function to calculate the arrival and exit time of the users 
@@ -322,37 +338,5 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             return;
         }
 
-        //public void CalculateArrivalExitTimeOfUser(SessionData newSession, DateTime currTime)
-        //{
-        //    //using the for loop for this purpose 
-        //    foreach (var currUser in newSession.users)
-        //    {
-        //        //if new user comes 
-        //        if (listOfCurrUserWithEntryTime.ContainsKey(currUser.userEmail) == false)
-        //        {
-        //            //then we have to update the entry time in this
-        //            listOfCurrUserWithEntryTime[currUser.userEmail] = currTime;
-
-        //            //if there is no entry has been made in the duration dictionary then add this user with duration time 0 
-        //            if (eachUserMeetingDurationTime.ContainsKey(currUser.userEmail) == false)
-        //            {
-        //                eachUserMeetingDurationTime[currUser.userEmail] = 0;
-
-        //            }
-        //            else
-        //            { 
-        //                //if entry is already there then we do not need to do anything 
-        //            }
-        //        }
-        //    }
-
-        //}
-
-
-
-        //function to get the useridvschatcount 
-        //public 
-        //ading some comments 
-        //adding some commetnsadfadsj
     }
 }

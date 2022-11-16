@@ -24,6 +24,7 @@
             <ColumnDefinition Width="1.7*"/>
         </Grid.ColumnDefinitions>
 
+        
 
         <!--<Border BorderBrush="Green" BorderThickness="2">-->
         <Border x:Name="Border7" CornerRadius="10" BorderThickness="4px" BorderBrush="{DynamicResource Color1Bg}"  >
@@ -62,6 +63,8 @@
             </ListView.ItemTemplate>
         </ListView>
         </Border>
+        
+        
 
 
         <Grid Grid.Column="1" Background="#E2DCC8" Margin="20, 0, 20, 10">
@@ -82,9 +85,9 @@
                 <!--<ColumnDefinition />-->
 
             </Grid.ColumnDefinitions>
-            <!--<Border BorderBrush="orange" BorderThickness="2">-->
 
 
+            
             <Border x:Name="Border" CornerRadius="5" BorderThickness="2px" BorderBrush="{DynamicResource Color1Bg}">
                 <Grid Background="White">
                     <Grid.RowDefinitions>
@@ -115,6 +118,8 @@
                    
                     
             </Border>
+            
+            
 
             <Border x:Name="Border1" Grid.Column="1" Grid.Row="0" CornerRadius="5" BorderThickness="2px" BorderBrush="Black" Margin="10, 0, 0, 0">
                 <Grid Background="White">
@@ -144,6 +149,8 @@
                     </Grid>
             </Border>
 
+            
+            
 
             <Border x:Name="Border3" Grid.Row="1" Grid.ColumnSpan="2" Background="{DynamicResource Color1Bg}" CornerRadius="20" BorderThickness="10px"  Margin="10, 10, 0, 0">
                 <Grid  Margin="0, 0, 0, 0">
@@ -173,23 +180,18 @@
             </Border>
 
 
+            
 
             <!--now adding the different buttons for the user-->
             <Grid Grid.Row="2" Grid.ColumnSpan="2" Background="#E2DCC8">
-                <!--<Grid.RowDefinitions>
-                    <RowDefinition Height="1*"/>
-                </Grid.RowDefinitions>-->
+               
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="1*"/>
                     <!--<ColumnDefinition Width="1*"/>-->
                 </Grid.ColumnDefinitions>
-                <!--<Border CornerRadius="15" BorderBrush="Black" BorderThickness="20" >-->
-
-                <!--<Button Style="{DynamicResource RoundedButtonStyle}" Grid.Column="0" HorizontalAlignment="center" VerticalAlignment="center" Background="#24a0ed" FontWeight="Bold" x:Name="RefreshButton" Height="40" Width="120" Content="Refresh" Click="OnRefreshButtonClick" >
-
-                </Button>-->
+              
 
                 <Button  Style="{DynamicResource RoundedButtonStyle}" Name="Refresh" Grid.Column="0" Grid.Row="1" Click="OnRefreshButtonClick"
                     Background="{DynamicResource Color1Bg}" Height="40" VerticalAlignment="Center" BorderThickness="0"
@@ -204,10 +206,7 @@
                         </Style>
                     </Button.Resources>
                 </Button>
-                <!--</Border>-->
-                <!--<Button Grid.Column="1" HorizontalAlignment="center" VerticalAlignment="center" Background="#24a0ed" FontWeight="Bold" x:Name="SwitchMode" Height="40" Width="140"   
-                Content="{Binding ButtonContentSetter}" Click="OnSwitchModeButtonClick">
-                </Button>-->
+               
 
                 <Button  Style="{DynamicResource RoundedButtonStyle}" Name="SwitchMode" Grid.Column="1"  Click="OnSwitchModeButtonClick"
                     Background="{DynamicResource Color1Bg}" Height="40" VerticalAlignment="Center" BorderThickness="0"
@@ -225,9 +224,7 @@
 
 
 
-                <!--<Button Grid.Column="2" HorizontalAlignment="center" VerticalAlignment="center" Background="Red" FontWeight="Bold" x:Name="LeaveMeeting" Height="40" Width="120"   
-                Content="{Binding LeaveButtonContentSetter}" Click="OnLeaveButtonClick">
-                </Button>-->
+              
                 <Button  Style="{DynamicResource RoundedButtonStyle}" Name="EndMeet" Grid.Column="2" Click="OnLeaveButtonClick"
                     Background="#D15454" Height="40" VerticalAlignment="Center" BorderThickness="0"
                     FontFamily="Cascadia Mono" FontSize="12" Width="120"
@@ -241,12 +238,13 @@
                         </Style>
                     </Button.Resources>
                 </Button>
-                <!--<TextBlock Grid.Row="0" TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Hello this is rupesh kumar and here i will be adding the different buttons for the user to be able to show and refresh the contents for the user for this purpose"></TextBlock>-->
+               
             </Grid>
 
 
-            <!--</Border>-->
         </Grid>
+        
+        
 
         <Border x:Name="Border5" Background="{DynamicResource Color1Bg}"  Grid.Column="2" CornerRadius="10" BorderThickness="2px" >
 
@@ -273,7 +271,6 @@
                 <Grid Grid.Row="0">
 
 
-                    <!--<Border BorderBrush="blue" BorderThickness="2" >-->
 
                     <Rectangle Height="100" Width="125"  Fill="White" RadiusY="10" RadiusX="10" >
                         <Rectangle.Effect>
@@ -281,7 +278,7 @@
                                           RenderingBias="Quality" ShadowDepth="1"/>
                         </Rectangle.Effect>
                     </Rectangle>
-                    <!--</Border>-->
+                    
                     <Grid  Height="50">
                         <Grid Width="17" Height="26"  Background="#FFFFAF24" 
                           HorizontalAlignment="Left" VerticalAlignment="Top" Margin="18,-24,0,0">
@@ -301,7 +298,6 @@
                 <Grid Grid.Row="1">
 
 
-                    <!--<Border BorderBrush="blue" BorderThickness="2" >-->
 
                     <Rectangle Height="100" Width="125"  Fill="White" RadiusY="10" RadiusX="10" >
                         <Rectangle.Effect>
@@ -309,7 +305,8 @@
                                           RenderingBias="Quality" ShadowDepth="1"/>
                         </Rectangle.Effect>
                     </Rectangle>
-                    <!--</Border>-->
+
+
                     <Grid  Height="50">
                         <Grid Width="17" Height="26"  Background="#FFFFAF24" 
                           HorizontalAlignment="Left" VerticalAlignment="Top" Margin="18,-24,0,0">
@@ -329,16 +326,14 @@
 
                 <Grid Grid.Row="2">
 
-
-                    <!--<Border BorderBrush="blue" BorderThickness="2" >-->
-
                     <Rectangle  Height="100" Width="125" Fill="White" RadiusY="10" RadiusX="10" >
                         <Rectangle.Effect>
                             <DropShadowEffect BlurRadius="20" Color="#FFDEDEDE" 
                                           RenderingBias="Quality" ShadowDepth="1"/>
                         </Rectangle.Effect>
                     </Rectangle>
-                    <!--</Border>-->
+
+
                     <Grid  Height="50">
                         <Grid Width="17" Height="26"  Background="#FFFFAF24" 
                           HorizontalAlignment="Left" VerticalAlignment="Top" Margin="18,-24,0,0">
@@ -358,16 +353,13 @@
 
                 <Grid Grid.Row="3">
 
-
-                    <!--<Border BorderBrush="blue" BorderThickness="2" >-->
-
                     <Rectangle  Height="100" Width="125" Fill="White" RadiusY="10" RadiusX="10" >
                         <Rectangle.Effect>
                             <DropShadowEffect BlurRadius="20" Color="#FFDEDEDE" 
                                           RenderingBias="Quality" ShadowDepth="1"/>
                         </Rectangle.Effect>
                     </Rectangle>
-                    <!--</Border>-->
+
                     <Grid  Height="50">
                         <Grid Width="17" Height="26"  Background="#FFFFAF24" 
                           HorizontalAlignment="Left" VerticalAlignment="Top" Margin="18,-24,0,0">
@@ -384,12 +376,8 @@
                         </StackPanel>
                     </Grid>
                 </Grid>
-                <!--</Border>-->
-                <!--<Border BorderBrush="Black" BorderThickness="2" >-->
+
                 <Grid Grid.Row="4">
-
-
-                    <!--<Border BorderBrush="blue" BorderThickness="2" >-->
 
                     <Rectangle  Height="100" Width="125" Fill="White" RadiusY="10" RadiusX="10" >
                         <Rectangle.Effect>
@@ -397,7 +385,8 @@
                                           RenderingBias="Quality" ShadowDepth="1"/>
                         </Rectangle.Effect>
                     </Rectangle>
-                    <!--</Border>-->
+                    
+                    
                     <Grid  Height="50">
                         <Grid Width="17" Height="26"  Background="#FFFFAF24" 
                           HorizontalAlignment="Left" VerticalAlignment="Top" Margin="18,-24,0,0">
@@ -415,9 +404,8 @@
                     </Grid>
                 </Grid>
 
-                <!--</Border>-->
             </Grid>
         </Border>
-        <!--<Frame Name="Main" Content="" Margin="127,0,0,0" Background="#FFFFEDED" IsEnabled="False" />-->
+      
     </Grid>
 </Page>
