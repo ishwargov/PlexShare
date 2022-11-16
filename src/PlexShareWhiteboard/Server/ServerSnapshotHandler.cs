@@ -64,7 +64,7 @@ namespace PlexShareWhiteboard.Server
                 SnapshotNumber = SnapshotNumber + 1;
                 string boardShapesPath = SnapshotNumber + ".json";
                 var jsonString = _serializer.SerializeShapeItems(boardShapes);
-                Trace.WriteLine("[Whiteboard] SnapshotHandler.Save: Saving in file"+boardShapes);
+                Trace.WriteLine("[Whiteboard] SnapshotHandler.Save: Saving in file in "+boardShapesPath);
                 //Trace.WriteLine("[Whiteboard] SnapshotHandler.Save: Saving as "+jsonString);
                 File.WriteAllText(boardShapesPath, jsonString);
 
