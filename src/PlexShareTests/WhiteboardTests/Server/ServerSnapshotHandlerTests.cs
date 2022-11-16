@@ -45,7 +45,7 @@ namespace PlexShareTests.WhiteboardTests.Server
         [Fact]
         public void GetSnapshotNumberTest()
         {
-            var checkpointNumbers = _serverSnapshotHandler.GetSnapshotNumber();
+            var checkpointNumbers = _serverSnapshotHandler.SnapshotNumber;
             Assert.Equal(4, checkpointNumbers);
         }
 

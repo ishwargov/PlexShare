@@ -13,14 +13,19 @@ namespace PlexShareWhiteboard
 
         public void SaveSnapshot()
         {
-            
-
             int currSnapshotNumber = machine.OnSaveMessage(userId);
             CheckList.Add(currSnapshotNumber);
 
-            if (CheckList.Count > 5)
-                CheckList.RemoveAt(0);
-
+            UpdateCheckList(currSnapshotNumber);
+        }
+        public void UpdateCheckList(int n)
+        {
+            CheckList.Clear();
+            for(int i = n; i>n-5 && i>0; i--)
+            {
+                CheckList.Add(i);
+            }
+            machine.SetSnapshotNumber(n);
         }
 
         public void LoadSnapshot(int snapshotNumber)

@@ -228,7 +228,7 @@ namespace PlexShareWhiteboard.Server
 
         public int OnSaveMessage(string userId)
         {
-            int snapshotNumber = _serverSnapshotHandler.GetSnapshotNumber()+1;
+            int snapshotNumber = _serverSnapshotHandler.SnapshotNumber+1;
             WBServerShape wBServerShape = new WBServerShape(null, Operation.CreateSnapshot, userId, snapshotNumber);
             return CreateSnapshotHandler(wBServerShape);
         }
@@ -247,6 +247,10 @@ namespace PlexShareWhiteboard.Server
             );
             BroadcastToClients(loadedShapes, Operation.RestoreSnapshot);
             return loadedShapes;
+        }
+        public void SetSnapshotNumber(int snapshotNumber)
+        {
+            _serverSnapshotHandler.SnapshotNumber = snapshotNumber;
         }
     }
 }
