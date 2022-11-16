@@ -68,7 +68,17 @@ namespace PlexShareTests.UX.HomePageTests
                 throw new NotImplementedException();
             }
 
+            SessionData GetSessionData()
+            {
+                throw new NotImplementedException();
+            }
+
             UserData IUXClientSessionManager.GetUser()
+            {
+                throw new NotImplementedException();
+            }
+
+            SessionData IUXClientSessionManager.GetSessionData()
             {
                 throw new NotImplementedException();
             }
