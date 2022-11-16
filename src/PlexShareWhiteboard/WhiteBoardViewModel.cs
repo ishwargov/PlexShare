@@ -51,8 +51,7 @@ namespace PlexShareWhiteboard
         private WhiteBoardViewModel()
         {
             // this will become client and server 
-
-            isServer = true;
+            isServer = false;
 
             //ShapeItems = new AsyncObservableCollection<ShapeItem>();
             ShapeItems = new ObservableCollection<ShapeItem>();
@@ -81,6 +80,7 @@ namespace PlexShareWhiteboard
             }
         }
 
+       
         //public void SetUserId(string _userId)
         public void SetUserId(int _userId)
         {
@@ -146,7 +146,7 @@ namespace PlexShareWhiteboard
             }
             mode = new_mode;
         }
-
+     
         public ShapeItem UpdateFillColor(ShapeItem shape, Brush fillBrush)
         {
             Debug.WriteLine(" Updaing color in select with old color " + shape.Fill + " and new color " + fillBrush);

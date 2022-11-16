@@ -74,10 +74,11 @@ namespace PlexShareWhiteboard
         }
         //deon
 
-        public int PointInsideHighlightBox(Line shape, Point click, double halfsize)
+        public int PointInsideHighlightBox(LineGeometry shape, Point click, double halfsize)
         {
-            Rect top = new(shape.X1 - halfsize, shape.Y1 - halfsize, 2 * halfsize, 2 * halfsize);
-            Rect bottom = new(shape.X2 - halfsize, shape.Y2 - halfsize, 2 * halfsize, 2 * halfsize);
+            Rect top = new(shape.StartPoint.X - halfsize, shape.StartPoint.Y - halfsize, 2 * halfsize, 2 * halfsize);
+            Rect bottom = new(shape.EndPoint.X - halfsize, shape.EndPoint.Y - halfsize, 2 * halfsize, 2 * halfsize);
+
 
             if (click.X > top.X && click.X < top.X + top.Width &&
                 click.Y > top.Y && click.Y < top.Y + top.Height)
@@ -142,14 +143,8 @@ namespace PlexShareWhiteboard
                 {
                     //Trace.WriteLine("[Whiteboard]  " + "line selected\n");
 
-                    Line boundingLine = new ();
-                    //boundingLine.X1 = select.selectedObject.anchorPoint.X;
-                    //boundingLine.Y1 = select.selectedObject.anchorPoint.Y;
-                    boundingLine.X1 = select.selectedObject.Start.X;
-                    boundingLine.Y1 = select.selectedObject.Start.Y;
-                    boundingLine.X2 = select.selectedObject.End.X;
-                    boundingLine.Y2 = select.selectedObject.End.Y;
-                    Trace.WriteLine("[Whiteboard]  " + "selected boundingline x1 y1 x2 y2"+boundingLine.X1 + " " + boundingLine.Y1 + " " + boundingLine.X2 + " " + boundingLine.Y2);
+                    LineGeometry boundingLine = (LineGeometry)GenerateBoundingLine(select.selectedObject);
+                    Debug.WriteLine("selected boundingline "+boundingLine.StartPoint + " " + boundingLine.EndPoint);
                     HighLightIt(boundingLine);
                     int boxNumber = PointInsideHighlightBox(boundingLine, a, blobSize / 2);
                     if (boxNumber >= 0)
