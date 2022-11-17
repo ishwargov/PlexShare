@@ -40,14 +40,17 @@ public class AuthenticationViewModel
     public AuthenticationViewModel()
     {
     }
- 
+
     /// <summary>
     /// This will be the main function called by the View to authenticate the user
     /// </summary>
-    /// <returns></returns>
+    /// <returns>string with a bool denoting success of Authentication</returns>
+    /// <returns>User Name</returns>
+    /// <returns>Smail ID</returns>
+    /// <returns>Profile Picture URL</returns>
     public async Task<List<string>> AuthenticateUser()
     {
-        Trace.WriteLine("[UX] Creating State and URI on port 8080");
+        Trace.WriteLine("[UX] Creating State and Redirect URI on port 8080");
         // Creating state and redirect URI using port 8080 on Loopback address
         string state = GenerateDataBase(32);
         string code_verifier = GenerateDataBase(32);
@@ -91,7 +94,19 @@ public class AuthenticationViewModel
         }
 
         // Sending HTTP request to browser and displaying response
-        var context = await http.GetContextAsync();
+        var taskData = http.GetContextAsync();
+
+        // If no response is recorded, then we do a timeout after 3 minutes.
+        // This may happen because of closing the browser
+        if (await Task.WhenAny(taskData, Task.Delay(180000)) != taskData)
+        {
+            Trace.WriteLine("[UX] Timeout occurred before getting response");
+            http.Stop();
+            result.Add("false");
+            return result;
+        }
+
+        var context = taskData.Result;
         var response = context.Response;
         string responseString = string.Format("<html><head><meta http-equiv='refresh' content='10;url=https://google.com'></head><body><center><h1>Authentication is complete! You will be redirected to your app in a few seconds!</h1></center></body></html>");
         var buffer = Encoding.UTF8.GetBytes(responseString);
@@ -178,7 +193,7 @@ public class AuthenticationViewModel
     }
 
     /// <summary>
-    /// Getting a URI data with given input length
+    /// Generating a random cryptographic number oh length 32
     /// </summary>
     /// <param name="length"></param>
     /// <returns></returns>
@@ -203,7 +218,7 @@ public class AuthenticationViewModel
         string tokenRequestURI = "https://www.googleapis.com/oauth2/v4/token";
         string tokenRequestBody = string.Format("code={0}&redirect_uri={1}&client_id={2}&code_verifier={3}&client_secret={4}&scope=&grant_type=authorization_code",
             code,
-            System.Uri.EscapeDataString(redirectURI),
+            Uri.EscapeDataString(redirectURI),
             clientId,
             code_verifier,
             clientSecret

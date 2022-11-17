@@ -36,7 +36,8 @@ namespace PlexShareApp
     /// </summary>
     public partial class AuthenticationView : Window
     {
-        bool stopAnimation = false;
+        private static bool stopAnimation = false;
+        private static bool buttonClicked = false; 
         public AuthenticationView()
         {
             InitializeComponent();
@@ -153,7 +154,15 @@ namespace PlexShareApp
         /// <param name="e"></param>
         private async void Home_Click(object sender, RoutedEventArgs e)
         {
+            // Sign In Button Should be disabled if it has been clicked once
+            if (buttonClicked)
+            {
+                return;
+            }
+
+            buttonClicked = true;
             stopAnimation = true;
+
             AuthenticationViewModel viewModel = this.DataContext as AuthenticationViewModel;
             var returnVal = await viewModel.AuthenticateUser();
 
@@ -177,6 +186,8 @@ namespace PlexShareApp
                 Trace.WriteLine("[UX] Authentication Unsuccessful");
                 // Re-initiaiting the animation
                 stopAnimation = false;
+                // Button Click re-enabled
+                buttonClicked = false;
                 AnimateAuthScreen(this);
             }        
         }

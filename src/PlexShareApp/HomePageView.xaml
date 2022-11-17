@@ -338,7 +338,7 @@
             <TextBlock Name="Date" Text="Monday, August 24, 2022" Foreground="White" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" FontSize="26" FontFamily="Yu Gothic UI Semibold" FontWeight="Bold" TextWrapping="Wrap" />
         </Grid>
         <!--PlexShare Title-->
-        <TextBlock Foreground="{DynamicResource Color5Bg}" Grid.ColumnSpan="2" Grid.RowSpan="2" HorizontalAlignment="Left" FontSize="48" FontStyle="Normal" FontFamily="Cascadia Code SemiBold" Grid.Row="3" Grid.Column="1" TextWrapping="Wrap" Text="PlexShare" Width="300"/>
+        <TextBlock Foreground="{DynamicResource Color5Bg}" Grid.ColumnSpan="2" Grid.RowSpan="1" HorizontalAlignment="Left" FontSize="48" FontStyle="Normal" FontFamily="Cascadia Code SemiBold" Grid.Row="3" Grid.Column="1" TextWrapping="Wrap" Text="PlexShare" Width="300"/>
         <!--New Meeting Textbox-->
         <TextBlock Foreground="{DynamicResource Color5Bg}" Name="New_Meeting1" Grid.Column="1" Grid.Row="5" FontFamily="Cascadia Code SemiBold" TextWrapping="Wrap" Text="New Meeting" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="28"/>
         <!--Join Meeting Textbox-->
