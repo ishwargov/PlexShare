@@ -203,6 +203,10 @@ namespace PlexShareWhiteboard.Server
             BroadcastToClients(loadedShapes, Operation.RestoreSnapshot);
         }
 
+        public void ClearServerList()
+        {
+            objIdToObjectMap.Clear();
+        }
 
 
         public int CreateSnapshotHandler(WBServerShape deserializedObject)
