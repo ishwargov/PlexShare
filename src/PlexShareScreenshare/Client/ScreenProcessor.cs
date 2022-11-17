@@ -4,6 +4,7 @@
 /// processing the image from ScreenCapturer class and calculating
 /// the image bits that are different from the previous image
 ///</summary>
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -33,7 +34,7 @@ namespace PlexShareScreenshare.Client
         // Current and the new resolutions 
         private Resolution CurrentRes;
         private Resolution NewRes;
-        public readonly Object ResolutionLock;
+        public readonly object ResolutionLock;
 
         // Height and Width of the images captured by the capturer
         int CapturedImageHeight;
@@ -137,9 +138,9 @@ namespace PlexShareScreenshare.Client
                     // coordinates and the RGB value of the second image
                     if (oldBlue != newBlue || oldGreen != newGreen || oldRed != newRed)
                     {
-                        Coordinates coordinates = new Coordinates() { X = x / bytesPerPixel, Y = y };
-                        RGB rgb = new RGB() { R = newRed, G = newGreen, B = newBlue };
-                        Pixel tmpVal = new Pixel() { Coordinates = coordinates, RGB = rgb };
+                        Coordinates coordinates = new() { X = x / bytesPerPixel, Y = y };
+                        RGB rgb = new() { R = newRed, G = newGreen, B = newBlue };
+                        Pixel tmpVal = new() { Coordinates = coordinates, RGB = rgb };
                         tmp.Add(tmpVal);
                         count++;
                     }
@@ -223,7 +224,7 @@ namespace PlexShareScreenshare.Client
         /// kill the processor task and make the processor task variable null
         /// Empty the Queue.
         /// </summary>
-        public async void StopProcessing()
+        public async Task StopProcessing()
         {
             Debug.Assert(_processorTask != null, Utils.GetDebugMessage("_processorTask was null, cannot call cancel."));
             Debug.Assert(_cancellationTokenSource != null, Utils.GetDebugMessage("_cancellationTokenSource was null, cannot call cancel."));
