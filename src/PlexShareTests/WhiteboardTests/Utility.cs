@@ -111,7 +111,8 @@ namespace PlexShareTests.WhiteboardTests
                         ? new Point(geometry.Bounds.X, geometry.Bounds.Y)
                         : start,
                 Id = id,
-                TextString = textDataOpt
+                TextString = textDataOpt,
+                FontSize =32
             };
 
             return newShape;

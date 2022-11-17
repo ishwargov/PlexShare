@@ -96,7 +96,7 @@ namespace PlexShareWhiteboard.BoardComponents
                     CultureInfo.GetCultureInfo("en-us"),
                     FlowDirection.LeftToRight,
                     new Typeface("Verdana"),
-                    x.FontSize,
+                    32,
                     x.Stroke,
                     3);
                 Trace.WriteLine("geometry groupil inside middle");

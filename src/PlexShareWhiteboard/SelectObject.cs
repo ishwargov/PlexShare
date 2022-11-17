@@ -164,19 +164,8 @@ namespace PlexShareWhiteboard
                     Trace.WriteLine("[Whiteboard]  " + "object selected\n");
                     HighLightIt(select.selectedObject.Geometry.Bounds);
                     int boxNumber = PointInsideHighlightBox(boundingBox, a, blobSize / 2);
-                    ShapeItem newShape = new()
-                    {
-                        Geometry = select.selectedObject.Geometry.Clone(),
-                        GeometryString = select.selectedObject.GeometryString,
-                        Start = select.selectedObject.Start,
-                        End = select.selectedObject.End,
-                        Fill = select.selectedObject.Fill,
-                        Stroke = select.selectedObject.Stroke,
-                        ZIndex = select.selectedObject.ZIndex,
-                        AnchorPoint = select.selectedObject.AnchorPoint,
-                        Id = select.selectedObject.Id,
-                        StrokeThickness = select.selectedObject.StrokeThickness,
-                    };
+
+                    ShapeItem newShape = select.selectedObject.DeepClone();
                     select.initialSelectionObject = newShape;
 
                     if (select.selectedObject.Geometry.GetType().Name != "GeometryGroup")
