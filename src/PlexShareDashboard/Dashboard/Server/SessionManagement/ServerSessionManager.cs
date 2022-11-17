@@ -80,11 +80,12 @@ namespace Dashboard.Server.SessionManagement
             _sessionData = new SessionData();
             _serializer = new DashboardSerializer();
             _telemetrySubscribers = new List<ITelemetryNotifications>();
-            //  _summarizer = SummarizerFactory.GetSummarizer();
+             _summarizer = SummarizerFactory.GetSummarizer();
             //  _screenShareServer = ScreenShareFactory.GetScreenShareServer();
 
             //   TraceManager traceManager = new();
             // traceManager.TraceListener();
+            // _communicator = CommunicationFactory.GetCommunicator(false);
 
             userCount = 0;
             moduleIdentifier = "serverSessionManager";
@@ -240,7 +241,7 @@ namespace Dashboard.Server.SessionManagement
 
         //    When client is added this function updates the session, notifies telemetry and
         //     broadcast the new session data to all users.
-        private void ClientArrivalProcedure(ClientToServerData arrivedClient)
+        public void ClientArrivalProcedure(ClientToServerData arrivedClient)
         {
             // create a new user and add it to the session. 
             var user = CreateUser(arrivedClient.userID, arrivedClient.username, arrivedClient.userEmail, arrivedClient.photoUrl);
@@ -254,19 +255,7 @@ namespace Dashboard.Server.SessionManagement
             SendDataToClient("addClient", _sessionData, null, null, user);
         }
 
-        //this method is added for unit testing purpose to check users are added into SessionData
-        public void FakeClientArrivalProcedure(ClientToServerData arrivedClient)
-        {
-            // create a new user and add it to the session. 
-            var user = new UserData(arrivedClient.username, arrivedClient.userID, arrivedClient.userEmail, arrivedClient.photoUrl);
-            AddUserToSession(user);
-
-            // Notify Telemetry about the change in the session object.
-            NotifyTelemetryModule();
-
-            // serialize and broadcast the data back to the client side.
-            SendDataToClient("addClient", _sessionData, null, null, user);
-        }
+        
 
         //     Creates a new user based on the data arrived from the
         //     client side.
@@ -287,23 +276,26 @@ namespace Dashboard.Server.SessionManagement
         private SummaryData CreateSummary()
         {
 
-            if (testmode == true)
-            {
-                _sessionSummary = "This is the summary of the chats that happened in the session";
-                return new SummaryData(_sessionSummary);
-            }
-
             try
             {
-                // fetching all the chats from the content module.
-                ChatThread[] allChatsTillNow;
                 Trace.WriteLine("[Dashboard] Calling Chat Module to provide Chats");
-                allChatsTillNow = _contentServer.GetAllMessages().ToArray();
-                Trace.WriteLine("[Dashboard] Chats recieved. Calling summary subModule to give summary");
-                // creating the summary from the chats
-                _sessionSummary = _summarizer.GetSummary(allChatsTillNow);
-                // returning the summary
-                return new SummaryData(_sessionSummary);
+                if (testmode == false)
+                {
+                    // fetching all the chats from the content module.
+                    ChatThread[] allChatsTillNow;
+                    allChatsTillNow = _contentServer.GetAllMessages().ToArray();
+                   // Trace.WriteLine("[Dashboard] Chats recieved. Calling summary subModule to give summary");
+                    // creating the summary from the chats
+                    _sessionSummary = _summarizer.GetSummary(allChatsTillNow);
+                    // returning the summary
+                    return new SummaryData(_sessionSummary);
+                }
+                else
+                {
+                    _sessionSummary = "This is testing summary";
+                    return new SummaryData(_sessionSummary);
+                }
+                
             }
             catch (Exception e)
             {
@@ -314,14 +306,13 @@ namespace Dashboard.Server.SessionManagement
 
 
 
-
-
         //     This method is called when the host wants to end the meeting. The summary and analytics
         //     of the session is created and stored locally. The UX server is then notified about the end of the
         //     meet and the client side session manager is also provided with the same information.
         private void EndMeetProcedure(ClientToServerData receivedObject)
         {
             Trace.WriteLine("[Dashboard] EndMeet Procedure...");
+            
             var tries = 3;
             try
             {
@@ -329,16 +320,18 @@ namespace Dashboard.Server.SessionManagement
                 // n tries are made to save summary and analytics before ending the meet
                 while (tries > 0 && summarySaved == false)
                 {
-                    // Fetching all the chats from the content module
+                    if(testmode == false)
+                    {
                         var allChats = _contentServer.GetAllMessages().ToArray();
                         summarySaved = _summarizer.SaveSummary(allChats);
                         _telemetry.SaveAnalytics(allChats);
-
-                    if (testmode == true)
+                    }
+                    // Fetching all the chats from the content module
+                    
+                    if(testmode == true)
                     {
                         summarySaved = true;
                     }
-
                     tries--;
                 }
                 _sessionData.users.Clear();
@@ -355,7 +348,12 @@ namespace Dashboard.Server.SessionManagement
             // stopping the communicator and notifying UX server about the End Meet event.
             _communicator.Stop();
             //   _screenShareServer.Dispose();
-            MeetingEnded?.Invoke();
+             MeetingEnded?.Invoke();
+            if(testmode == false)
+            {
+               // Environment.Exit(0);
+                
+            }              
         }
 
 
@@ -366,19 +364,22 @@ namespace Dashboard.Server.SessionManagement
         {
             UserData user = new(receivedObject.username, receivedObject.userID, receivedObject.userEmail, receivedObject.photoUrl);
 
-            if (testmode == true)
-            {
-
-                _sessionAnalytics = new SessionAnalytics();
-                SendDataToClient("getAnalytics", null, null, _sessionAnalytics, user);
-                return;
-            }
+            
 
             try
             {
                 // Fetching the chats and creating analytics on them
-                   var allChats = _contentServer.GetAllMessages().ToArray();
-                   _sessionAnalytics = _telemetry.GetTelemetryAnalytics(allChats);
+               if(testmode == false)
+                {
+                    var allChats = _contentServer.GetAllMessages().ToArray();
+                    _sessionAnalytics = _telemetry.GetTelemetryAnalytics(allChats);
+                }
+                else
+                {
+                    _sessionAnalytics = new SessionAnalytics();
+                }
+               
+                
                 SendDataToClient("getAnalytics", null, null, _sessionAnalytics, user);
             }
             catch (Exception e)

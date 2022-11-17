@@ -7,6 +7,9 @@ using System.Linq;
 using OxyPlot.Wpf;
 using PlexShareDashboard.Dashboard.Server.Telemetry;
 using ScottPlot;
+using SharpDX.Text;
+using System.Xml;
+using System.Xml.Linq;
 
 namespace Dashboard.Server.Persistence
 {
@@ -19,6 +22,7 @@ namespace Dashboard.Server.Persistence
             ServerDataPath = folderPath + "/Server/Persistence/PersistenceDownloads/TelemetryDownloads/ServerData/";
             TelemetryAnalyticsPath = folderPath + "/Server/Persistence/PersistenceDownloads/TelemetryDownloads/TelemetryAnalytics/";
             TelemetryAnalyticsPath = TelemetryAnalyticsPath + "_" + DateTime.Now.ToString("MM/dd/yyyy") + "_";
+
         }
 
         public string ServerDataPath { get; set; }
@@ -33,41 +37,85 @@ namespace Dashboard.Server.Persistence
             var sessionId = "Analytics";
             bool t1 = UserCountVsTimeStamp_PlotUtil(sessionAnalyticsData.userCountVsTimeStamp, sessionId);
 
-            bool t2 = ChatCountVsUserID_PlotUtil(sessionAnalyticsData.chatCountForEachUser, sessionId);
-
-
-            bool t3 = InsincereMembers_SaveUtil(sessionAnalyticsData.listOfInSincereMembers, sessionId);
+            bool t2 = ChatCountVsUserName_PlotUtil(sessionAnalyticsData.userNameVsChatCount, sessionId);
+            bool t3 = XML_save(sessionAnalyticsData,sessionId);
             bool isSaved = t1 & t2 & t3;
             return isSaved;
         }
-        private bool InsincereMembers_SaveUtil(List<int> InsincereMembers, string sessionId)
+        private bool XML_save(SessionAnalytics sessionanalytics,string sessionId)
         {
-            var p1 = TelemetryAnalyticsPath + sessionId;
-            var TextToSave = "Followings are UserIDs of InsincereMembers : " + Environment.NewLine;
-            foreach (var w in InsincereMembers) TextToSave = TextToSave + w + Environment.NewLine;
-
+            var score = "0";
+            if ( sessionanalytics.sessionSummary != null && sessionanalytics.sessionSummary.score != null) 
+                score = sessionanalytics.sessionSummary.score.ToString();
+            var path = TelemetryAnalyticsPath + sessionId;
+            var mostengaged = "None";
+            var temp = 0;
+            var maxcount = 0;
+            var val = sessionanalytics.userCountVsTimeStamp.Values.ToArray();
+            if (val != null)
+            {
+                for (var i = 0; i < val.Length; i++)
+                {
+                    if (maxcount < val[i]) maxcount = val[i];
+                }
+            }
+            var val1 = sessionanalytics.userNameVsChatCount;
+            if (val1 != null)
+            {
+                foreach (var i in val1)
+                {
+                    if (i.Value < temp)
+                    {
+                        temp = i.Value;
+                        mostengaged = i.Key;
+                    }
+                }
+            }
             try
             {
-                if (!Directory.Exists(p1)) Directory.CreateDirectory(p1);
 
-                File.WriteAllText(Path.Combine(p1, "insincereMembersList.txt"), TextToSave);
-                Trace.WriteLine("insincereMembersList.txt saved Successfully!!");
-                bool isSaved = true;
-                return isSaved;
+                if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+                    XmlTextWriter xwwrite = new XmlTextWriter(Path.Combine(path,"serverData.xml"), Encoding.UTF8);
+                    xwwrite.Formatting = Formatting.Indented;
+                    xwwrite.WriteStartElement("SessionTime");
+                    xwwrite.WriteString(DateTime.Now.ToString());
+                    xwwrite.WriteStartElement("SessionScore");
+                    xwwrite.WriteString(score);
+                    xwwrite.WriteEndElement();
+                    xwwrite.WriteStartElement("MaximumUserCount");
+                    xwwrite.WriteString(maxcount.ToString());
+                    xwwrite.WriteEndElement();
+                    xwwrite.WriteStartElement("MostEngagedUser");
+                    xwwrite.WriteString(mostengaged);
+                    xwwrite.WriteEndElement();
+                    xwwrite.WriteEndElement();
+                    xwwrite.Close();
+
+                    return true;
+                
+
             }
-            catch (Exception except)
-            {
+            catch(Exception except) {
                 Trace.WriteLine(except.Message);
-                bool isSaved = false;
-                return isSaved;
+                return false;
             }
+
         }
-       private bool ChatCountVsUserID_PlotUtil(Dictionary<int, int> ChatCountForEachUser, string sessionId)
+       private bool ChatCountVsUserName_PlotUtil(Dictionary<string, int> ChatCountForEachUser, string sessionId)
         {
             var p1 = TelemetryAnalyticsPath + sessionId;
+            if(ChatCountForEachUser == null)
+            {
+                Trace.WriteLine("null exception at chat count");
+                return false;
+            }
             var val1 = ChatCountForEachUser.Values.ToArray();
             var values1 = new double[val1.Length];
-            for (var i = 0; i < val1.Length; i++) values1[i] = val1[i];
+            int ik = 0;
+            foreach (var i in ChatCountForEachUser) {
+                values1[ik] = i.Value;
+                ik++;
+            }
             var pos1 = new List<double>();
             var lb1 = new List<string>();
 
@@ -92,7 +140,7 @@ namespace Dashboard.Server.Persistence
 
             plt1.YAxis.ManualTickSpacing(1);
 
-            plt1.XLabel("UserID");
+            plt1.XLabel("UserName");
             plt1.YLabel("ChatCount for any User");
 
             try
