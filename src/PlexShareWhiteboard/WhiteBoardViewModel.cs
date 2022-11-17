@@ -41,7 +41,7 @@ namespace PlexShareWhiteboard
         public string modeForUndo = "select_object";
         ShapeItem currentShape = null;
         public ShapeItem lastShape = null;
-        ShapeItem textBoxLastShape = null;
+        public ShapeItem textBoxLastShape = null;
 
         int blobSize = 12;
         IShapeListener machine;
