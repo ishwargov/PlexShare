@@ -46,6 +46,7 @@ namespace PlexShareApp
             InitializeComponent();
             //viewModel = new WhiteBoardViewModel();
             viewModel = WhiteBoardViewModel.Instance;
+            Trace.WriteLine("[WhiteBoard] White Board Page is initialised");
             if (serverID == 0)
                 viewModel.isServer = true;
             if (viewModel.canDraw == true && serverID == 0)
