@@ -49,7 +49,8 @@ namespace PlexShareApp
             Trace.WriteLine("[WhiteBoard] White Board Page is initialised "+serverID);
             if (serverID == 0)
                 viewModel.isServer = true;
-            if (viewModel.canDraw == true && serverID == 0)
+            //if (viewModel.canDraw == true && serverID == 0)
+            if (!viewModel.userId.Equals("init") && serverID == 0)
             {
                 Trace.WriteLine("[WhiteBoard] recalling setuserid");
                 // this might be that the dashboard had called this before

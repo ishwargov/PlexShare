@@ -30,7 +30,7 @@ namespace PlexShareWhiteboard
         public bool canDraw = false;
         String currentId = "u0_f0";
         int currentIdVal = 0;
-        public string userId = "0";
+        public string userId = "init";
         int currentZIndex = 0;
         Point textBoxPoint = new (100, 100);
 
@@ -59,7 +59,7 @@ namespace PlexShareWhiteboard
             //ShapeItems = new AsyncObservableCollection<ShapeItem>();
             ShapeItems = new ObservableCollection<ShapeItem>();
             highlightShapes = new List<ShapeItem>();
-            if(canDraw ==false)
+            if(userId.Equals("init"))
                 canDraw = false;
             /*CheckList.Add(1);
             CheckList.Add(2);
