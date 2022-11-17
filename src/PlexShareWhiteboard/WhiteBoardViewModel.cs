@@ -59,7 +59,8 @@ namespace PlexShareWhiteboard
             //ShapeItems = new AsyncObservableCollection<ShapeItem>();
             ShapeItems = new ObservableCollection<ShapeItem>();
             highlightShapes = new List<ShapeItem>();
-
+            if(canDraw ==false)
+                canDraw = false;
             /*CheckList.Add(1);
             CheckList.Add(2);
             CheckList.Add(3);*/
