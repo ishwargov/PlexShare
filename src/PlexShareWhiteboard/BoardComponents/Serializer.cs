@@ -46,9 +46,15 @@ namespace PlexShareWhiteboard.BoardComponents
         }
         public ShapeItem ConvertToShapeItem(SerializableShapeItem x)
         {
+
+            Trace.WriteLine("[WhiteBoard] converting to shape item " + x.GeometryString);
             if (x == null)
                 return null;
+            Trace.WriteLine("[WhiteBoard] converting to shape item chk -1" + x.GeometryString);
+
             Geometry g = null;
+            Trace.WriteLine("[WhiteBoard] converting to shape item chk -2" + x.GeometryString + " x.FontSize : "+ x.FontSize + "x.Stroke:"+ x.Stroke + "x.TextString"+ x.TextString);
+
             if (x.GeometryString == "EllipseGeometry")
             {
                 Rect boundingBox = new Rect(x.Start, x.End);
@@ -81,9 +87,10 @@ namespace PlexShareWhiteboard.BoardComponents
                 g = new LineGeometry(x.Start, x.End);
 
             }
-            else if (x.GeometryString == "TextGeometry")
+            else if (x.GeometryString == "GeometryGroup")
             {
                 // this geometry string does not have a corresponding 
+                Trace.WriteLine("geometry groupil inside start");
                 FormattedText formattedText = new FormattedText(
                     x.TextString,
                     CultureInfo.GetCultureInfo("en-us"),
@@ -92,9 +99,14 @@ namespace PlexShareWhiteboard.BoardComponents
                     x.FontSize,
                     x.Stroke,
                     3);
+                Trace.WriteLine("geometry groupil inside middle");
+                g=formattedText.BuildGeometry(x.Start);
+                Trace.WriteLine("geometry groupil inside end");
 
             }
             Trace.WriteLine(g);
+            Trace.WriteLine("[WhiteBoard] converting to shape item chk -3" + x.GeometryString);
+
             ShapeItem y = new ShapeItem
             {
                 Geometry = g,
