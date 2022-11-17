@@ -46,7 +46,7 @@ namespace PlexShareWhiteboard
         int blobSize = 12;
         IShapeListener machine;
         UndoStackElement stackElement;
-        public Boolean isServer=false;
+        public Boolean isServer=true;
 
         public ObservableCollection<int> CheckList { get; set; }
         List<int> snapshotNumbers = new() { 1, 2, 3, 4, 5 };
