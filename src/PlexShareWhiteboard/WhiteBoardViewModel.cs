@@ -98,12 +98,14 @@ namespace PlexShareWhiteboard
 
             if (isServer)
             {
+                Trace.WriteLine("[WhiteBoard] setuserId this is a server");
                 machine = ServerSide.Instance;
                 machine.SetUserId(userId);
                 
             }
             else
             {
+                Trace.WriteLine("[WhiteBoard] setuserId this is a client");
                 machine = ClientSide.Instance;
                 machine.SetUserId(userId);
             }
