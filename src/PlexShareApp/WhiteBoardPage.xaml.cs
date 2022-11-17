@@ -70,7 +70,8 @@ namespace PlexShareApp
         /// <param name="e"></param>
         private void CanvasMouseDown(object sender, MouseButtonEventArgs e)
         {
-            if(viewModel.canDraw)
+            Trace.WriteLine("[WhiteBoard Xaml] candraw "+ viewModel.canDraw);
+            if (viewModel.canDraw)
             {
                 var a = e.GetPosition(sender as Canvas);
                 viewModel.ShapeStart(a);

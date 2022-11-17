@@ -48,9 +48,14 @@ namespace PlexShareWhiteboard
                              {
                                  try
                                  {
+                                     Trace.WriteLine("[WhiteBoard] WBMessageHandler check0");
                                      WBServerShape deserializedObject = serializer.DeserializeWBServerShape(serializedData);
+                                     Trace.WriteLine("[WhiteBoard] WBMessageHandler check1");
                                      List<ShapeItem> shapeItems = serializer.ConvertToShapeItem(deserializedObject.ShapeItems);
                                      Trace.WriteLine("[Whiteboard] WBMessageHandler.onDataReceived(Server): Receiving the json string " + deserializedObject.Op);
+                                     
+                                     //if(shapeItems.Count > 0)
+                                     //    Trace.WriteLine("[Whiteboard] Abhm :" + shapeItems[0].TextString + shapeItems[0].Id);
                                      var userId = deserializedObject.UserID;
                                      switch (deserializedObject.Op)
                                      {
@@ -65,6 +70,7 @@ namespace PlexShareWhiteboard
                                              break;
                                          case Operation.Creation:
                                              CreateIncomingShape(shapeItems[0]);
+                                             Trace.WriteLine("[Whiteboard] Abhm :" + shapeItems[0].TextString + shapeItems[0].Id);
                                              serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
                                              break;
                                          case Operation.Deletion:

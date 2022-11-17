@@ -91,6 +91,7 @@ namespace PlexShareWhiteboard
         public void SetUserId(int _userId)
         {
             userId = _userId.ToString();
+            Trace.WriteLine("[whiteboard] called setuserid " + userId);
             currentId = "u" + userId + "_f" + currentIdVal;
             currentIdVal++;
 
@@ -107,6 +108,7 @@ namespace PlexShareWhiteboard
             }
             //machine.SetVMRef(this);
             canDraw = true;
+            Trace.WriteLine("[whiteboard] setuserid over candraw" + canDraw);
 
         }
         public void IncrementId()
