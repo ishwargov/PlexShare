@@ -34,7 +34,7 @@ namespace PlexShareApp
         /// All the messages upto now
         /// </summary>
         private readonly ObservableCollection<Message> _allMessages;
-        private Message addNewMessage;
+        private readonly Message addNewMessage;
 
         /// <summary>
         /// Creating an instance of our ChatPageView
@@ -85,11 +85,15 @@ namespace PlexShareApp
             else if(propertyName == "EditOrDelete")
             {
                 Message updatedMsg = null;
+                string replyMsgOld = "";
+                string replyMsgNew = "";
                 for (int i = 0; i < _allMessages.Count; i++)
                 {
                     var message = _allMessages[i];
                     if (message.MessageID == viewModel.ReceivedMsg.MessageID)
                     {
+                        replyMsgOld = message.IncomingMessage;
+                        replyMsgNew = viewModel.ReceivedMsg.IncomingMessage;
                         Message toUpd = new Message();
                         toUpd.ToFrom = message.ToFrom;
                         toUpd.ReplyMessage = message.ReplyMessage;
@@ -98,6 +102,26 @@ namespace PlexShareApp
                         toUpd.MessageID = message.MessageID;
                         toUpd.Type = message.Type;
                         toUpd.IncomingMessage = viewModel.ReceivedMsg.IncomingMessage;
+                        // updating
+                        _allMessages[i] = toUpd;
+                        updatedMsg = _allMessages[i];
+                    }
+                }
+
+                // Updating all the Chat bubbles which all have replied to this message that has been Editted/Deleted
+                for (int i=0;i < _allMessages.Count;i++)
+                {
+                    var message = _allMessages[i];
+                    if(message.ReplyMessage == replyMsgOld)
+                    {
+                        Message toUpd = new Message();
+                        toUpd.ToFrom = message.ToFrom;
+                        toUpd.ReplyMessage = replyMsgNew;
+                        toUpd.Sender = message.Sender;
+                        toUpd.Time = message.Time;
+                        toUpd.MessageID = message.MessageID;
+                        toUpd.Type = message.Type;
+                        toUpd.IncomingMessage = message.IncomingMessage;
                         // updating
                         _allMessages[i] = toUpd;
                         updatedMsg = _allMessages[i];
@@ -209,8 +233,11 @@ namespace PlexShareApp
                 if(senderButton.DataContext is Message)
                 {
                     Message msg = (Message)senderButton.DataContext;
-                    ReplyTextBox.Text = msg.IncomingMessage;
-                    ReplyMsgId = msg.MessageID;
+                    if(msg.IncomingMessage!= "Message Deleted.")
+                    {
+                        ReplyTextBox.Text = msg.IncomingMessage;
+                        ReplyMsgId = msg.MessageID;
+                    }
                 }
             }
         }
