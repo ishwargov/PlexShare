@@ -118,7 +118,7 @@ namespace PlexShareTests.ContentTests.Client
         {
             Setup();
             var sendContentData = _utility.GenerateSendContentData(
-                replyMessageID: chatMessage.ReplyMessageID,
+                replyMessageID: chatMessage.MessageID,
                 replyThreadID: chatMessage.ReplyThreadID
             );
 

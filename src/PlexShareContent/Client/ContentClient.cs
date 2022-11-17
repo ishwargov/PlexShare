@@ -418,10 +418,6 @@ namespace PlexShareContent.Client
         /// <exception cref="ArgumentException"></exception>
         private void Notify(ReceiveContentData message)
         {
-            if (message is null)
-            {
-                throw new ArgumentException("Null message in argument");
-            }
             Trace.WriteLine("[ContentClient] Notifying subscribers of new received message");
             foreach (var subscriber in _subscribers)
             {
@@ -682,10 +678,6 @@ namespace PlexShareContent.Client
         /// <exception cref="ArgumentException"></exception>
         private void Notify(List<ChatThread> allMessages)
         {
-            if (allMessages is null)
-            {
-                throw new ArgumentException("Null message in argument");
-            }
             Trace.WriteLine("[ContentClient] Notifying subscribers of all messages shared");
             foreach (var subscriber in _subscribers)
             {
