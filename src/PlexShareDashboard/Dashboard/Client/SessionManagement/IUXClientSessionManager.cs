@@ -11,7 +11,7 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
     {
         //this method is used to add client to the meeting.It will take the IP address , port number and name of user.
         //it returns true if user suceessfully added else false
-        bool AddClient(string ipAddress, int ports, string username);
+        bool AddClient(string ipAddress, int ports, string username, string userEmail, string photoUrl);
 
         //It is used to change the session mode from Lab Mode to Exam mode and vice-versa
         void ToggleSessionMode();
@@ -33,6 +33,9 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
 
         //get the user data object from the client session manager
         UserData GetUser();
+
+        //get the sessionData object from the client manager
+        SessionData GetSessionData();
 
         //event for notifying summary creation
         public event NotifySummaryCreated SummaryCreated;

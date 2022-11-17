@@ -16,7 +16,7 @@ namespace PlexShareWhiteboard.Client.Interfaces
     internal interface IClientSnapshotHandler
     {
         int SnapshotNumber { get; set; }
-        void SaveSnapshot(string UserId);
+        int SaveSnapshot(string UserId);
         void RestoreSnapshot(int snapshotNumber, string UserId);
     }
 }

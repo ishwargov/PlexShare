@@ -158,17 +158,23 @@ namespace PlexShareWhiteboard
             }
 
 
-            ShapeItem newShape = new()
-            {
-                Geometry = g1,
-                Fill = fillBrush,
-                Stroke = strokeBrush,
-                ZIndex = currentZIndex,
-                StrokeThickness = strokeThickness,
-                AnchorPoint = a,
-                Id = shape.Id,
-                PointList = x.PointList
-            };
+            //ShapeItem newShape = new()
+            //{
+            //    Geometry = g1,
+            //    Fill = fillBrush,
+            //    Stroke = strokeBrush,
+            //    ZIndex = currentZIndex,
+            //    StrokeThickness = strokeThickness,
+            //    AnchorPoint = a,
+            //    Id = shape.Id,
+            //    PointList = x.PointList
+            //};
+
+
+            ShapeItem newShape = shape.DeepClone();
+            newShape.Geometry = g1;
+            newShape.AnchorPoint = a;
+            newShape.PointList = x.PointList;
 
             for (int i = 0; i < ShapeItems.Count; i++)
             {
@@ -306,17 +312,23 @@ namespace PlexShareWhiteboard
 
                 }
 
-                ShapeItem newShape = new()
-                {
-                    Geometry = g1,
-                    Fill = fillBrush,
-                    Stroke = strokeBrush,
-                    ZIndex = currentZIndex,
-                    StrokeThickness = strokeThickness,
-                    AnchorPoint = a,
-                    Id = shape.Id,
-                    PointList = x.PointList
-                };
+                //ShapeItem newShape = new()
+                //{
+                //    Geometry = g1,
+                //    Fill = fillBrush,
+                //    Stroke = strokeBrush,
+                //    ZIndex = currentZIndex,
+                //    StrokeThickness = strokeThickness,
+                //    AnchorPoint = a,
+                //    Id = shape.Id,
+                //    PointList = x.PointList
+                //};
+
+
+                ShapeItem newShape = shape.DeepClone();
+                newShape.Geometry = g1;
+                newShape.AnchorPoint = a;
+                newShape.PointList = x.PointList;
 
                 for (int i = 0; i < ShapeItems.Count; i++)
                 {
@@ -356,17 +368,22 @@ namespace PlexShareWhiteboard
                 prevPoint = newPoint;
             }
 
-            ShapeItem newShape = new()
-            {
-                Geometry = g1,
-                Fill = fillBrush,
-                Stroke = strokeBrush,
-                ZIndex = currentZIndex,
-                StrokeThickness = strokeThickness,
-                AnchorPoint = p1,
-                Id = shape.Id,
-                PointList = lis
-            };
+            //ShapeItem newShape = new()
+            //{
+            //    Geometry = g1,
+            //    Fill = fillBrush,
+            //    Stroke = strokeBrush,
+            //    ZIndex = currentZIndex,
+            //    StrokeThickness = strokeThickness,
+            //    AnchorPoint = p1,
+            //    Id = shape.Id,
+            //    PointList = lis
+            //};
+
+            ShapeItem newShape = shape.DeepClone();
+            newShape.Geometry = g1;
+            newShape.AnchorPoint = p1;
+            newShape.PointList = lis;
 
             for (int i = 0; i < ShapeItems.Count; i++)
             {
@@ -402,18 +419,20 @@ namespace PlexShareWhiteboard
                 newPointList.Add(p);
 
 
-            ShapeItem updatingShape = new()
-            {
-                Geometry = g1,
-                Fill = fillBrush,
-                Stroke = strokeBrush,
-                ZIndex = currentZIndex,
-                StrokeThickness = strokeThickness,
-                Id = select.selectedObject.Id,
-                PointList = newPointList
-            };
+            //ShapeItem updatingShape = new()
+            //{
+            //    Geometry = g1,
+            //    Fill = fillBrush,
+            //    Stroke = strokeBrush,
+            //    ZIndex = currentZIndex,
+            //    StrokeThickness = strokeThickness,
+            //    Id = select.selectedObject.Id,
+            //    PointList = newPointList
+            //};
 
-
+            ShapeItem updatingShape = select.selectedObject.DeepClone();
+            updatingShape.Geometry = g1;
+            updatingShape.PointList = newPointList;
 
             for (int i = 0; i < ShapeItems.Count; i++)
             {

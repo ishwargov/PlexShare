@@ -140,7 +140,7 @@ namespace PlexShareWhiteboard
                     Child.GetType().Name == "GeometryGroup") &&
                     PointInsideRect(Child.Bounds, a))
                 {
-                    //Debug.WriteLine(" child bounds "+ Child.Bounds.ToString());
+                    //Trace.WriteLine("[Whiteboard]  " + " child bounds "+ Child.Bounds.ToString());
                     tempZIndex = ShapeItems[i].ZIndex;
                     toDelete = ShapeItems[i];
                 }

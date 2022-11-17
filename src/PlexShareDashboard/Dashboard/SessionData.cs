@@ -85,7 +85,7 @@ namespace Dashboard
                     lock (this)
                     {
 #pragma warning disable CS8604 // Possible null reference argument.
-                        UserData removedUser = new(users[i].username, users[i].userID);
+                        UserData removedUser = new(users[i].username, users[i].userID, users[i].userEmail, users[i].userPhotoUrl);
 #pragma warning restore CS8604 // Possible null reference argument.
                         users.RemoveAt(i);
                         return removedUser;

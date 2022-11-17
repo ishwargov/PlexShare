@@ -139,8 +139,8 @@ namespace PlexShareWhiteboard.Server
 
             newShape.ZIndex = Math.Max(_maxZIndex, newShape.ZIndex);
             objIdToObjectMap.Add(objectId, newShape);
-            Debug.WriteLine("inside AddObjectToServerList" + newShape.Id);
-            Debug.WriteLine("inside AddObjectToServerList" + newShape.Geometry.GetType().Name);
+            Trace.WriteLine("[Whiteboard]  " + "inside AddObjectToServerList" + newShape.Id);
+            Trace.WriteLine("[Whiteboard]  " + "inside AddObjectToServerList" + newShape.Geometry.GetType().Name);
             BroadcastToClients(newShape, op);
             _maxZIndex++;
         }
@@ -192,6 +192,8 @@ namespace PlexShareWhiteboard.Server
 
         public void RestoreSnapshotHandler(WBServerShape deserializedObject)
         {
+            Trace.WriteLine("[Whiteboard] ServerSide.RestoreSnapshotHandler: Restoring Snapshot " + deserializedObject.SnapshotNumber);
+            Trace.WriteLine("[Whiteboard] " + GetServerListSize());
             List<ShapeItem> loadedShapes = _serverSnapshotHandler.LoadBoard(deserializedObject.SnapshotNumber);
             List<SerializableShapeItem> serializableShapeItems = _serializer.ConvertToSerializableShapeItem(loadedShapes);
             WBServerShape wBServerShape = new WBServerShape(
@@ -202,10 +204,13 @@ namespace PlexShareWhiteboard.Server
             BroadcastToClients(loadedShapes, Operation.RestoreSnapshot);
         }
 
-        public void CreateSnapshotHandler(WBServerShape deserializedObject)
+
+
+        public int CreateSnapshotHandler(WBServerShape deserializedObject)
         {
-            _serverSnapshotHandler.SaveBoard(objIdToObjectMap.Values.ToList());
+            int n =_serverSnapshotHandler.SaveBoard(objIdToObjectMap.Values.ToList(), deserializedObject.UserID);
             _communicator.Broadcast(deserializedObject);
+            return n;
         }
 
         public void NewUserHandler(WBServerShape deserializedObject)
@@ -219,6 +224,33 @@ namespace PlexShareWhiteboard.Server
             );
 
             _communicator.Broadcast(wBServerShape, deserializedObject.UserID);
+        }
+
+        public int OnSaveMessage(string userId)
+        {
+            int snapshotNumber = _serverSnapshotHandler.SnapshotNumber+1;
+            WBServerShape wBServerShape = new WBServerShape(null, Operation.CreateSnapshot, userId, snapshotNumber);
+            return CreateSnapshotHandler(wBServerShape);
+        }
+
+        public List<ShapeItem> OnLoadMessage(int snapshotNumber, string userId)
+        {
+            WBServerShape deserializedObject = new WBServerShape(null, Operation.RestoreSnapshot, userId, snapshotNumber);
+            Trace.WriteLine("[Whiteboard] ServerSide.RestoreSnapshotHandler: Restoring Snapshot " + deserializedObject.SnapshotNumber);
+            Trace.WriteLine("[Whiteboard] " + GetServerListSize());
+            List<ShapeItem> loadedShapes = _serverSnapshotHandler.LoadBoard(deserializedObject.SnapshotNumber);
+            List<SerializableShapeItem> serializableShapeItems = _serializer.ConvertToSerializableShapeItem(loadedShapes);
+            WBServerShape wBServerShape = new WBServerShape(
+                serializableShapeItems,
+                Operation.RestoreSnapshot,
+                deserializedObject.UserID
+            );
+            BroadcastToClients(loadedShapes, Operation.RestoreSnapshot);
+            return loadedShapes;
+        }
+        public void SetSnapshotNumber(int snapshotNumber)
+        {
+            _serverSnapshotHandler.SnapshotNumber = snapshotNumber;
         }
     }
 }

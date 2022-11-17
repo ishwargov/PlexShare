@@ -1,4 +1,15 @@
-﻿using System;
+﻿ /***********************************
+ *Filename = WhiteBoardPage.xaml.cs
+ *
+ *Author = Parvathy S Kumar
+ *
+ * Product     = Plex Share
+ * 
+ * Project     = White Board
+ *
+ * Description = Whiteboard View
+ *************************************/
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -14,6 +25,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Client.Models;
 using PlexShareWhiteboard;
 using PlexShareWhiteboard.BoardComponents;
 
@@ -27,15 +39,28 @@ namespace PlexShareApp
         WhiteBoardViewModel viewModel;
         string currentTool;
         bool singleTrigger = true;
+        int val;
 
         public WhiteBoardPage(int serverID)
         {
             InitializeComponent();
             //viewModel = new WhiteBoardViewModel();
             viewModel = WhiteBoardViewModel.Instance;
+            //if (serverID == 0)
+            //    viewModel.isServer = true;
+            //else
+            //    viewModel.isServer = false;
+            //if(viewModel.canDraw==true && serverID == 0)
+            //{
+            //    // this might be that the dashboard had called this before
+            //    // default it is not a server so we need to reiniiliase only if this is server
+            //    int passId = Int32.Parse(viewModel.userId);
+            //    viewModel.SetUserId(passId);
+            //}
             viewModel.ShapeItems = new ObservableCollection<ShapeItem>();
             this.DataContext = viewModel;
             this.currentTool = "Select";
+            this.RestorFrameDropDown.SelectionChanged += RestorFrameDropDownSelectionChanged;
         }
 
         /// <summary>
@@ -45,33 +70,36 @@ namespace PlexShareApp
         /// <param name="e"></param>
         private void CanvasMouseDown(object sender, MouseButtonEventArgs e)
         {
-            var a = e.GetPosition(sender as Canvas);
-            viewModel.ShapeStart(a);
-            singleTrigger = true;
-            if (viewModel.select.ifSelected)
+            if(viewModel.canDraw)
             {
-
-                string shapeName = viewModel.select.selectedObject.Geometry.GetType().Name;
-                if (shapeName == "EllipseGeometry" || shapeName == "RectangleGeometry" || shapeName == "PathGeometry" || shapeName == "LineGeometry")
+                var a = e.GetPosition(sender as Canvas);
+                viewModel.ShapeStart(a);
+                singleTrigger = true;
+                if (viewModel.select.ifSelected)
                 {
-                    if (this.ShapeToolBar.Visibility == Visibility.Collapsed)
-                        this.ShapeToolBar.Visibility = Visibility.Visible;
-                }
 
+                    string shapeName = viewModel.select.selectedObject.Geometry.GetType().Name;
+                    if (shapeName == "EllipseGeometry" || shapeName == "RectangleGeometry" || shapeName == "PathGeometry" || shapeName == "LineGeometry")
+                    {
+                        if (this.ShapeToolBar.Visibility == Visibility.Collapsed)
+                            this.ShapeToolBar.Visibility = Visibility.Visible;
+                    }
+
+                    else
+                    {
+                        if (this.ShapeToolBar.Visibility == Visibility.Visible)
+                            this.ShapeToolBar.Visibility = Visibility.Collapsed;
+                    }
+
+
+
+                }
                 else
                 {
                     if (this.ShapeToolBar.Visibility == Visibility.Visible)
                         this.ShapeToolBar.Visibility = Visibility.Collapsed;
+
                 }
-
-
-
-            }
-            else
-            {
-                if (this.ShapeToolBar.Visibility == Visibility.Visible)
-                    this.ShapeToolBar.Visibility = Visibility.Collapsed;
-
             }
         }
 
@@ -335,6 +363,7 @@ namespace PlexShareApp
                 this.ShapeToolBar.Visibility = Visibility.Collapsed;
             viewModel.CallUndo();
             Debug.WriteLine("Undo called xaml");
+            viewModel.modeForUndo = "";
         }
 
         private void RedoMode(object sender, RoutedEventArgs e)
@@ -347,43 +376,73 @@ namespace PlexShareApp
             viewModel.CallRedo();
         }
 
-        //    private void RestorFrameDropDownSelectionChanged(object sender, SelectionChangedEventArgs e)
-        //    {
-        //        ListBox listbox = (ListBox)sender;
+        private void SaveMode(object sender, RoutedEventArgs e)
+        {
+            viewModel.UnHighLightIt();
+            if (this.ShapeToolBar.Visibility == Visibility.Visible)
+                this.ShapeToolBar.Visibility = Visibility.Collapsed;
+            viewModel.SaveSnapshot();
+        }
 
-        //        if (this.RestorFrameDropDown.SelectedItem != null)
-        //        {
+        private void RestorFrameDropDownSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ListBox listbox = (ListBox)sender;
 
-        //            string item = listbox.SelectedItem.ToString();
-        //            string numeric = new String(item.Where(Char.IsDigit).ToArray());
-        //            int cp = int.Parse(numeric);
+            if (this.RestorFrameDropDown.SelectedItem != null)
+            {
 
-        //            MessageBoxResult result = MessageBox.Show("Are you sure you want to load checkpoint " + numeric + " ? All progress since the last checkpoint would be lost!",
-        //                          "Confirmation", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
-        //            if (result == MessageBoxResult.OK)
-        //            {
-        //               // viewModel.RestoreFrame(cp, GlobCanvas);
-        //                this.RestorFrameDropDown.SelectedItem = null;
-        //                return;
-        //            }
-        //            else
-        //            {
-        //                this.RestorFrameDropDown.SelectedItem = null;
-        //                return;
-        //            }
-        //        }
-        //        else
-        //        {
-        //            return;
-        //        }
+                string item = listbox.SelectedItem.ToString();
+                string numeric = new String(item.Where(Char.IsDigit).ToArray());
+                int cp = int.Parse(numeric);
 
-        //    }
+                MessageBoxResult result = MessageBox.Show("Are you sure you want to load checkpoint " + numeric + " ? All progress since the last checkpoint would be lost!",
+                              "Confirmation", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.OK)
+                {
+                    viewModel.LoadSnapshot(cp);
+                    this.RestorFrameDropDown.SelectedItem = null;
+                    return;
+                }
+                else
+                {
+                    this.RestorFrameDropDown.SelectedItem = null;
+                    return;
+                }
+            }
+            else
+            {
+                return;
+            }
+        }
+
         public void ChangeThickness(object sender, RoutedEventArgs e)
         {
             int thickness = (int)ThicknessSlider.Value;
             viewModel.ChangeStrokeThickness(thickness);
+            ShapeThicknessSlider.Value = thickness;
+            LineThicknessSlider.Value = thickness;
+            
 
         }
+
+        public void ChangeShapeThickness(object sender, RoutedEventArgs e)
+        {
+            int thickness = (int)ShapeThicknessSlider.Value;
+            viewModel.ChangeStrokeThickness(thickness);
+            LineThicknessSlider.Value = thickness;
+            ThicknessSlider.Value = thickness;
+
+        }
+
+        public void LineThicknessChange(object sender, RoutedEventArgs e)
+        {
+            int thickness = (int)LineThicknessSlider.Value;
+            viewModel.ChangeStrokeThickness(thickness);
+            ShapeThicknessSlider.Value = thickness;
+            ThicknessSlider.Value = thickness;
+        }
+
+
 
     }
 }

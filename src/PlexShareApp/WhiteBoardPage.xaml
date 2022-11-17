@@ -188,13 +188,14 @@
 				  AllowsTransparency="True"
 				  PopupAnimation="Slide"
 				  StaysOpen="False"
-				  Height="80"
-				  Width="70">
+				  Height="140"
+				  Width="100">
 
                 <Grid Name="ShapeStrokeDropdown" Background="WhiteSmoke">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*" />
+                            <RowDefinition Height="2*"/>
                             <RowDefinition Height="2*"/>
                         </Grid.RowDefinitions>
                         <StackPanel Grid.Row="0">
@@ -251,6 +252,16 @@
                                     </RadioButton.RenderTransform>
                                 </RadioButton>
                             </Grid>
+                        </StackPanel>
+                        <StackPanel Grid.Row="2">
+                            <TextBlock Text="Thickness"
+																Foreground="Black"
+																FontSize="14"
+																FontWeight="light"
+																VerticalAlignment="Center"
+																Margin="10 0 0 0">
+                                `</TextBlock>
+                            <Slider x:Name="ShapeThicknessSlider" Foreground="Black" Maximum="20" TickPlacement="BottomRight" TickFrequency="5" Margin="5 5 5 5" ValueChanged="ChangeShapeThickness"></Slider>
                         </StackPanel>
                     </Grid>
                 </Grid>
@@ -484,7 +495,7 @@
 																VerticalAlignment="Center"
 																Margin="10 0 0 0"
                             ></TextBlock>
-                                                    <Slider x:Name="ThicknessSlider" Foreground="Black" Maximum="20" TickPlacement="BottomRight" TickFrequency="5" Margin="5 5 5 5" ></Slider>
+                                                    <Slider x:Name="ThicknessSlider" Foreground="Black" Maximum="20" TickPlacement="BottomRight" TickFrequency="5" Margin="5 5 5 5" ValueChanged="ChangeThickness"></Slider>
                                                 </StackPanel>
                                             </Grid>
                                         </Grid>
@@ -601,7 +612,7 @@
 																VerticalAlignment="Center"
 																Margin="10 0 0 0">
                                 `                   </TextBlock>
-                                                        <Slider x:Name="LineThicknessSlider" Foreground="Black" Maximum="20" TickPlacement="BottomRight" TickFrequency="5" Margin="5 5 5 5" ></Slider>
+                                                        <Slider x:Name="LineThicknessSlider" Foreground="Black" Maximum="20" TickPlacement="BottomRight" TickFrequency="5" Margin="5 5 5 5" ValueChanged="LineThicknessChange" ></Slider>
                                                     </StackPanel>
                                                 </Grid>
                                             </Grid>
@@ -672,7 +683,7 @@
                                 <Separator Grid.Row="10"  />
 
                                 <Grid Grid.Row="11">
-                                    <Button Name="Save" HorizontalAlignment="Center" ToolTip="Save Snapshot" VerticalAlignment="Center" Click="DeleteMode" Cursor="Hand" Style="{StaticResource ToolBarStyle}">
+                                    <Button Name="Save" HorizontalAlignment="Center" ToolTip="Save Snapshot" VerticalAlignment="Center" Click="SaveMode" Cursor="Hand" Style="{StaticResource ToolBarStyle}">
                                         <Image Source="Assets/SaveTool.png" ></Image>
                                     </Button>
                                 </Grid>
@@ -686,7 +697,7 @@
                                     PopupAnimation="Slide"
                                     StaysOpen="False"
                                     Height="100"
-                                    Width="115">    
+                                    Width="115">
 
                                         <Grid Name="RestoreDropdown" Background="WhiteSmoke">
 
@@ -706,33 +717,33 @@
                                                 </TextBlock>
                                             </StackPanel>
 
-                                            <ListBox Name="RestorFrameDropDown" Grid.Row="1" Background="WhiteSmoke">
+                                            <ListBox Name="RestorFrameDropDown" Grid.Row="1" Background="WhiteSmoke" ItemsSource="{Binding CheckList}">
                                             </ListBox>
                                         </Grid>
                                     </Popup>
                                     <ToggleButton Name="Restore" HorizontalAlignment="Center" ToolTip="Restore" VerticalAlignment="Center" Cursor="Hand">
                                         <Image Source="Assets/RestoreTool.png" ></Image>
                                         <ToggleButton.Style>
-                                        <Style TargetType="ToggleButton">
-                                            <Setter Property="Background" Value="WhiteSmoke"/>
-                                            <Setter Property="Template">
-                                                <Setter.Value>
-                                                    <ControlTemplate TargetType="ToggleButton">
-                                                        <Border Width="30"
+                                            <Style TargetType="ToggleButton">
+                                                <Setter Property="Background" Value="WhiteSmoke"/>
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="ToggleButton">
+                                                            <Border Width="30"
 																Height="25"
 															   CornerRadius="15"
 															   Background="{TemplateBinding Background}" Margin="0 15 0 0">
-                                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                        </Border>
-                                                    </ControlTemplate>
-                                                </Setter.Value>
-                                            </Setter>
-                                            <Style.Triggers>
-                                                <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter Property="Background" Value="SkyBlue"/>
-                                                </Trigger>
-                                            </Style.Triggers>
-                                        </Style>
+                                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                            </Border>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="SkyBlue"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
                                         </ToggleButton.Style>
                                     </ToggleButton>
                                 </Grid>
