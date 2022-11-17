@@ -46,11 +46,12 @@ namespace PlexShareApp
             InitializeComponent();
             //viewModel = new WhiteBoardViewModel();
             viewModel = WhiteBoardViewModel.Instance;
-            Trace.WriteLine("[WhiteBoard] White Board Page is initialised");
+            Trace.WriteLine("[WhiteBoard] White Board Page is initialised "+serverID);
             if (serverID == 0)
                 viewModel.isServer = true;
             if (viewModel.canDraw == true && serverID == 0)
             {
+                Trace.WriteLine("[WhiteBoard] recalling setuserid");
                 // this might be that the dashboard had called this before
                 // default it is not a server so we need to reiniiliase only if this is server
                 int passId = Int32.Parse(viewModel.userId);
