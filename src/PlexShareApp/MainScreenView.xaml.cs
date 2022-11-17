@@ -44,7 +44,6 @@ namespace PlexShareApp
         public MainScreenView(string name, string email, string picPath, string url, string ip, string port, bool isServer)
         {
 
-
             isClient = !isServer;
             cloudOn = false;
             // The client/server was verified to be correct.
@@ -90,6 +89,18 @@ namespace PlexShareApp
             // this is to disable backspace so backspace does not switch tabs
             NavigationCommands.BrowseBack.InputGestures.Clear();
 
+        }
+
+        /// <summary>
+        /// Disable the space key for whiteboard
+        /// </summary>
+        /// <param name="e"></param>
+        protected override void OnPreviewKeyDown(KeyEventArgs e)
+        {
+            if (e.Key == Key.Space)
+            {
+                e.Handled = true;
+            }
         }
 
         /// <summary>

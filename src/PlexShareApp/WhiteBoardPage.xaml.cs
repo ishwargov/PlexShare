@@ -36,6 +36,14 @@ namespace PlexShareApp
             this.currentTool = "Select";
         }
 
+        protected override void OnPreviewKeyDown(KeyEventArgs e)
+        {
+            if (e.Key == Key.Space)
+            {
+                e.Handled = true;
+            }
+        }
+
         private void CanvasMouseDown(object sender, MouseButtonEventArgs e)
         {
             var a = e.GetPosition(sender as Canvas);
