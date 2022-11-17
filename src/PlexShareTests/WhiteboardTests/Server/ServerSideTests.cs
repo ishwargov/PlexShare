@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using PlexShareWhiteboard.BoardComponents;
@@ -9,7 +10,7 @@ using PlexShareWhiteboard.Server;
 
 namespace PlexShareTests.WhiteboardTests.Server
 {
-
+    [Collection("Sequential")]
     public class ServerSideTests
     {
         private ServerSide server;
@@ -34,7 +35,6 @@ namespace PlexShareTests.WhiteboardTests.Server
             server.OnShapeReceived(Utility.CreateShape(start, end, "RectangleGeometry", "u0_f1"), Operation.Creation);
 
             Assert.Equal(server.GetServerListSize(), 2);
-
         }
 
         [Fact]
@@ -42,6 +42,6 @@ namespace PlexShareTests.WhiteboardTests.Server
         {
             server.OnShapeReceived(null, Operation.Clear);
             Assert.Equal(server.GetServerListSize(), 0);
-        }   
+        }
     }
 }

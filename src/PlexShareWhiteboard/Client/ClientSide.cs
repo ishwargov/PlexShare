@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 using PlexShareWhiteboard.Client.Interfaces;
 using PlexShareWhiteboard.Server;
 
+
 namespace PlexShareWhiteboard.Client
 {
     public class ClientSide : IShapeListener
@@ -32,7 +33,7 @@ namespace PlexShareWhiteboard.Client
         ClientSnapshotHandler _snapshotHandler;
 
         private static ClientSide instance;
-        private WhiteBoardViewModel _vm;
+        //private WhiteBoardViewModel _vm;
 
         // To create only a single instance of ClientSide
         public static ClientSide Instance
@@ -61,11 +62,9 @@ namespace PlexShareWhiteboard.Client
         //    _communicator.SetVMRef(_vm);
         //}
 
-
         private ClientSide()
         {
             _communicator = ClientCommunicator.Instance;
-            _vm = WhiteBoardViewModel.Instance;
             _serializer = new Serializer();
             _snapshotHandler = new ClientSnapshotHandler();
             NewUserHandler();
