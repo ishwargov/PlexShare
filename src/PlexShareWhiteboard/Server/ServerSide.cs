@@ -183,7 +183,6 @@ namespace PlexShareWhiteboard.Server
         // Save the current list in a copy (oldObjectMapCopy)
         private void ClearObjectsInServerList(ShapeItem newShape, Operation op)
         {
-            oldObjectMapCopy = objIdToObjectMap;
             objIdToObjectMap = new Dictionary<string, ShapeItem>();
             BroadcastToClients(newShape, op);
         }

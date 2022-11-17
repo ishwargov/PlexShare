@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using PlexShareWhiteboard.Server;
 using PlexShareWhiteboard.BoardComponents;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Routing;
 
 namespace PlexShareTests.WhiteboardTests.Server
 {
+    [Collection("Sequential")]
     public class ServerSnapshotHandlerTests
     {
         private ServerSnapshotHandler _serverSnapshotHandler;

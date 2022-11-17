@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using Google.Apis.PeopleService.v1.Data;
@@ -12,6 +13,7 @@ using System.Windows.Media;
 
 namespace PlexShareTests.WhiteboardTests
 {
+    [Collection("Sequential")]
     public class UndoRedoTests
     {
         WhiteBoardViewModel whiteBoardViewModel;
@@ -20,6 +22,7 @@ namespace PlexShareTests.WhiteboardTests
         public UndoRedoTests()
         {
             whiteBoardViewModel = WhiteBoardViewModel.Instance;
+            whiteBoardViewModel.SetUserId(2);
             undoStack = whiteBoardViewModel.undoStack;
             redoStack = whiteBoardViewModel.redoStack;
         }
@@ -59,6 +62,7 @@ namespace PlexShareTests.WhiteboardTests
 
             UndoStackElement popFromRedo = whiteBoardViewModel.Redo();
             Assert.Equal(lastShape, popFromRedo.NewShape);
+            whiteBoardViewModel.ClearAllShapes();
         }
 
         [Fact]
@@ -67,7 +71,7 @@ namespace PlexShareTests.WhiteboardTests
             Point start = new Point(1, 1);
             Point end = new Point(2, 2);
             ShapeItem lastShape = Utility.CreateShape(start, end, "EllipseGeometry", "randomID");
-            UndoStackElement undoStackElement = new UndoStackElement(lastShape, lastShape, Operation.Creation);
+            UndoStackElement undoStackElement = new UndoStackElement(lastShape, lastShape, Operation.Deletion);
             whiteBoardViewModel.InsertIntoStack(undoStackElement);
 
             //Assert
@@ -75,12 +79,31 @@ namespace PlexShareTests.WhiteboardTests
 
             // Creation was pushed, so checking if the element returned by Undo (which is sent to 
             // server has operation as deletion
-            Assert.Equal(Operation.Deletion, ShapeSentToServer.Op);
-          
+            Assert.Equal(Operation.Creation, ShapeSentToServer.Op);
+            whiteBoardViewModel.ClearAllShapes();
         }
 
         [Fact]
-        /*public void ReturnNullOnStackEmpty()
+        public void CallUndoCallRedo_Working()
+        {
+            Point start = new Point(1, 1);
+            Point end = new Point(2, 2);
+            ShapeItem lastShape = Utility.CreateShape(start, end, "EllipseGeometry", "randomID");
+            UndoStackElement undoStackElement = new UndoStackElement(lastShape, lastShape, Operation.Creation);
+            whiteBoardViewModel.InsertIntoStack(undoStackElement);
+            Assert.Equal(undoStack.Count(), 1);
+          
+            whiteBoardViewModel.CallUndo();
+            Assert.Equal(undoStack.Count(),0);
+
+            //whiteBoardViewModel.CallRedo();
+            //Assert.Equal(redoStack.Count(), 0);
+
+            whiteBoardViewModel.ClearAllShapes();
+        }
+
+        [Fact]
+        public void ReturnNullOnStackEmpty()
         {
             // Act
             undoStack.Clear();
@@ -93,9 +116,9 @@ namespace PlexShareTests.WhiteboardTests
             UndoStackElement popFromRedo = whiteBoardViewModel.Redo();
             Assert.Equal(null, popFromRedo);
         }
-        */
 
-        /*[Fact]
+
+        [Fact]
         public void ModifyShapeUndo()
         {
             Point start = new Point(1, 1);
@@ -130,8 +153,10 @@ namespace PlexShareTests.WhiteboardTests
             whiteBoardViewModel.InsertIntoStack(undoStackElement);
 
             UndoStackElement ShapeSentToServer = whiteBoardViewModel.Undo();
-            Assert.Equal()
-        }*/
+            Assert.True(Utility.CompareShapeItems(ShapeSentToServer.PrvShape, prvShape));
+
+
+        }
     }
 }
 

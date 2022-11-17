@@ -16,6 +16,7 @@ using System.Windows.Media.Media3D;
 
 namespace PlexShareTests.WhiteboardTests
 {
+    [Collection("Sequential")]
     public class Utility
     {
         public static bool CompareShapeItems(ShapeItem shape1, ShapeItem shape2)
