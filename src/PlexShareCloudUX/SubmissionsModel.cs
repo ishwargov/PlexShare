@@ -23,12 +23,17 @@ namespace PlexShareCloudUX
 {
     public class SubmissionsModel
     {
-        private const string SubmissionUrl = @"http://localhost:7213/api/submission";
-        private const string SessionUrl = @"http://localhost:7213/api/session";
+        //getting path from the files
+        string[] paths;
+        private string SubmissionUrl;//@"http://localhost:7213/api/submission";
+        private string SessionUrl ;//@"http://localhost:7213/api/session";
         private FileDownloadApi fileDownloadApi; //creating an instance of the FiledowloadApi.
 
         public SubmissionsModel() //constructor for the submissionmodel class. 
         {
+            paths = GetOfflinePaths();
+            SubmissionUrl = paths[0];
+            SessionUrl = paths[1];
             fileDownloadApi = new FileDownloadApi(SessionUrl, SubmissionUrl);
         }
 
@@ -77,6 +82,11 @@ namespace PlexShareCloudUX
 
             string path = GetDownloadFolderPath() + "\\" + SubmissionsList[num].UserName + "_" + SubmissionsList[num].SessionId + ".pdf";
             File.WriteAllBytes(path, pdf);
+        }
+        public static string[] GetOfflinePaths()
+        {
+            string[] lines = FileRead.GetPaths();
+            return lines;
         }
     }
 }

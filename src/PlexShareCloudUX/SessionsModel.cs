@@ -21,11 +21,15 @@ namespace PlexShareCloudUX
 {
     internal class SessionsModel
     {
-        private const string SubmissionUrl = @"http://localhost:7213/api/submission";
-        private const string SessionUrl = @"http://localhost:7213/api/session";
+        string[] paths;
+        private string SubmissionUrl;   //@"http://localhost:7213/api/submission";
+        private string SessionUrl;  //@"http://localhost:7213/api/session";
         private FileDownloadApi fileDownloadApi;
         public SessionsModel()
         {
+            paths = GetOfflinePaths();
+            SubmissionUrl = @paths[0];
+            SessionUrl = @paths[1];
             fileDownloadApi = new FileDownloadApi(SessionUrl, SubmissionUrl);
         }
         /// <summary>
@@ -37,6 +41,11 @@ namespace PlexShareCloudUX
         {
             IReadOnlyList<SessionEntity>? getEntity = await fileDownloadApi.GetSessionsByUserAsync(userName);
             return getEntity;
+        }
+        public static string[] GetOfflinePaths()
+        {
+            string[] lines = FileRead.GetPaths();
+            return lines;
         }
     }
 }

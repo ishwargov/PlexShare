@@ -24,13 +24,17 @@ namespace PlexShareCloudUX
     {
         public string SessionId;
         public string UserName;
-        private const string SubmissionUrl = @"http://localhost:7213/api/submission";
-        private const string SessionUrl = @"http://localhost:7213/api/session";
+        string[] paths;
+        private string SubmissionUrl;//@"http://localhost:7213/api/submission";
+        private string SessionUrl;//@"http://localhost:7213/api/session";
         private FileUploadApi _uploadClient;
         public UploadModel(string sessionId, string userName)
         {
             SessionId = sessionId;
             UserName = userName;
+            paths = GetOfflinePaths();
+            SubmissionUrl = paths[0];
+            SessionUrl = paths[1];
             _uploadClient = new(SessionUrl, SubmissionUrl);
         }
         
@@ -82,6 +86,11 @@ namespace PlexShareCloudUX
         {
             byte[] fileContent = File.ReadAllBytes(fileName);
             SubmissionEntity? putEntity = await _uploadClient.PutSubmissionAsync(SessionId, UserName, fileContent);
+        }
+        public static string[] GetOfflinePaths()
+        {
+            string[] lines = FileRead.GetPaths();
+            return lines;
         }
     }
 }
