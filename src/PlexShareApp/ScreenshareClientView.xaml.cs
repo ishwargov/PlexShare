@@ -1,4 +1,6 @@
-﻿using PlexShareScreenshare;
+﻿/// <author> Harsh Dubey </author>
+
+using PlexShareScreenshare;
 using PlexShareScreenshare.Client;
 using System.Diagnostics;
 using System.Windows;

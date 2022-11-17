@@ -1,4 +1,6 @@
-﻿using PlexShareScreenshare;
+﻿/// <author> Harsh Dubey </author>
+
+using PlexShareScreenshare;
 using PlexShareScreenshare.Server;
 using System.Diagnostics;
 using System.Windows;
@@ -23,7 +25,6 @@ namespace PlexShareApp
             this.DataContext = viewModel;
 
             Trace.WriteLine(Utils.GetDebugMessage("Created the ScreenshareServerView Component", withTimeStamp: true));
-
 
             Debug.WriteLine(viewModel.CurrentWindowClients.Count);
         }
