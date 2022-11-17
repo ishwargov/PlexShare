@@ -55,13 +55,13 @@ namespace PlexShareWhiteboard
                                      switch (deserializedObject.Op)
                                      {
                                          case Operation.RestoreSnapshot:
-                                             UpdateCheckList(deserializedObject.SnapshotNumber);
-                                             serverSide.RestoreSnapshotHandler(deserializedObject);
-                                             LoadBoard(shapeItems);
+                                             List<ShapeItem> loadedBoard = serverSide.OnLoadMessage(deserializedObject.SnapshotNumber, deserializedObject.UserID);
+                                             LoadBoard(loadedBoard);
                                              break;
                                          case Operation.CreateSnapshot:
                                              serverSide.CreateSnapshotHandler(deserializedObject);
-                                             DisplayMessage(deserializedObject.UserID, deserializedObject.SnapshotNumber); //message that board number is saved
+                                             //DisplayMessage(deserializedObject.UserID, deserializedObject.SnapshotNumber); 
+                                             UpdateCheckList(deserializedObject.SnapshotNumber);
                                              break;
                                          case Operation.Creation:
                                              CreateIncomingShape(shapeItems[0]);
@@ -158,8 +158,13 @@ namespace PlexShareWhiteboard
 
         private void LoadBoard(List<ShapeItem> shapeItems, bool isNewUser = false)
         {
-            if(!isNewUser)
-                ClearAllShapes();
+            if (!isNewUser)
+            {
+                ShapeItems.Clear();
+                undoStack.Clear();
+                redoStack.Clear();
+            }
+            Trace.WriteLine("[Whiteboard] LoadBoard: Loading shapeItems " + shapeItems);
             if(shapeItems != null)
             {
                 foreach (ShapeItem shapeItem in shapeItems)

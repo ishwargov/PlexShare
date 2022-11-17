@@ -65,8 +65,8 @@ namespace PlexShareWhiteboard.Server
                 Trace.WriteLine("[Whiteboard] ServerCommunicator.Broadcast: Sending objects to client");
                 if (clientUpdate.ShapeItems != null)
                 {
-                Trace.WriteLine("[Whiteboard] " + clientUpdate.ShapeItems[0].Id);
-                Trace.WriteLine("[Whiteboard] " + clientUpdate.ShapeItems[0].GeometryString);
+                //Trace.WriteLine("[Whiteboard] " + clientUpdate.ShapeItems[0].Id);
+                //Trace.WriteLine("[Whiteboard] " + clientUpdate.ShapeItems[0].GeometryString);
 
                 }
                 var serializedObj = serializer.SerializeWBServerShape(clientUpdate);
