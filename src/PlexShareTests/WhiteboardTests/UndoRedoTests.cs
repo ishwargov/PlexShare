@@ -80,7 +80,7 @@ namespace PlexShareTests.WhiteboardTests
         }
 
         [Fact]
-        public void ReturnNullOnStackEmpty()
+        /*public void ReturnNullOnStackEmpty()
         {
             // Act
             undoStack.Clear();
@@ -93,6 +93,7 @@ namespace PlexShareTests.WhiteboardTests
             UndoStackElement popFromRedo = whiteBoardViewModel.Redo();
             Assert.Equal(null, popFromRedo);
         }
+        */
 
         /*[Fact]
         public void ModifyShapeUndo()
