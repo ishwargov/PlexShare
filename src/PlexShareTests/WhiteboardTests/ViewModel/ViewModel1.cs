@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-
 using PlexShareWhiteboard;
 //using System.Drawing;
 using System.Windows;
@@ -15,9 +15,16 @@ using System.Windows.Shapes;
 
 namespace PlexShareTests.WhiteboardTests.ViewModel
 {
+    [Collection("Sequential")]
     public class ViewModel1    
     {
+        WhiteBoardViewModel viewModel;
+        public ViewModel1()
+        {
+            viewModel = WhiteBoardViewModel.Instance;
+            viewModel.SetUserId(3);
 
+        }
         [Fact]
         public void Test1()
         {
@@ -28,8 +35,7 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             Point start = new(1, 1);
             Point end = new(5, 5);
 
-            WhiteBoardViewModel viewModel = WhiteBoardViewModel.Instance;
-            viewModel.SetUserId(1);
+           
 
             //Point translatePoint, transformPoint, dimensionChangePoint;
 
@@ -80,8 +86,6 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
         [Fact]
         public void Test2()
         {
-            WhiteBoardViewModel viewModel = WhiteBoardViewModel.Instance;
-            viewModel.SetUserId(2);
             Point start = new(40, 40);
             Point end = new(50, 50);
             viewModel.ChangeMode("create_freehand");
@@ -99,8 +103,6 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
         [Fact]
         public void Test3()
         {
-            WhiteBoardViewModel viewModel = WhiteBoardViewModel.Instance;
-            viewModel.SetUserId(3);
 
             viewModel.ChangeMode("create_ellipse");
             Point start = new(10, 10);
@@ -118,8 +120,6 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
         public void Test4()
         {
             int s = 10;
-            WhiteBoardViewModel viewModel = WhiteBoardViewModel.Instance;
-            viewModel.SetUserId(4);
             viewModel.ChangeMode("create_rectangle");
 
             for (int i = 0; i < s; ++i)
@@ -139,8 +139,6 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
         [Fact]
         public void Test5()
         {
-            WhiteBoardViewModel viewModel = WhiteBoardViewModel.Instance;
-            viewModel.SetUserId(5);
 
             viewModel.ChangeMode("create_ellipse");
             Point start = new(10, 10);
@@ -163,8 +161,6 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
         [Fact]
         public void Test7()
         {
-            WhiteBoardViewModel viewModel = WhiteBoardViewModel.Instance;
-            viewModel.SetUserId(7);
             viewModel.ChangeMode("create_line");
             Point start = new(25, 30);
             viewModel.ShapeStart(start);
@@ -175,8 +171,6 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
         [Fact]
         public void Test8()
         {
-            WhiteBoardViewModel viewModel = WhiteBoardViewModel.Instance;
-            viewModel.SetUserId(8);
 
             viewModel.ChangeMode("create_rectangle");
             Point start = new(10, 10);
@@ -189,8 +183,6 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
         [Fact]
         public void Test9()
         {
-            WhiteBoardViewModel viewModel = WhiteBoardViewModel.Instance;
-            viewModel.SetUserId(9);
 
             viewModel.ChangeMode("create_freehand");
             Point start = new(0, 0);

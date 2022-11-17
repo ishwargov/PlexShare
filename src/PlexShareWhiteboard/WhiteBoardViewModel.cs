@@ -30,7 +30,7 @@ namespace PlexShareWhiteboard
         public bool canDraw = false;
         String currentId = "u0_f0";
         int currentIdVal = 0;
-        public string userId = "0";
+        public string userId = "init";
         int currentZIndex = 0;
         Point textBoxPoint = new (100, 100);
 
@@ -46,7 +46,7 @@ namespace PlexShareWhiteboard
         int blobSize = 12;
         IShapeListener machine;
         UndoStackElement stackElement;
-        public Boolean isServer=false;
+        public Boolean isServer=true;
 
         public ObservableCollection<int> CheckList { get; set; }
         List<int> snapshotNumbers = new() { 1, 2, 3, 4, 5 };
@@ -54,12 +54,12 @@ namespace PlexShareWhiteboard
         private WhiteBoardViewModel()
         {
             // this will become client and server 
-            isServer = true;
+            //isServer = true;
             CheckList = new();
             //ShapeItems = new AsyncObservableCollection<ShapeItem>();
             ShapeItems = new ObservableCollection<ShapeItem>();
             highlightShapes = new List<ShapeItem>();
-            if(canDraw ==false)
+            if(userId.Equals("init"))
                 canDraw = false;
             /*CheckList.Add(1);
             CheckList.Add(2);
@@ -98,12 +98,14 @@ namespace PlexShareWhiteboard
 
             if (isServer)
             {
+                Trace.WriteLine("[WhiteBoard] setuserId this is a server");
                 machine = ServerSide.Instance;
                 machine.SetUserId(userId);
                 
             }
             else
             {
+                Trace.WriteLine("[WhiteBoard] setuserId this is a client");
                 machine = ClientSide.Instance;
                 machine.SetUserId(userId);
             }

@@ -15,18 +15,18 @@ using System.Windows.Shapes;
 
 namespace PlexShareTests.WhiteboardTests
 {
+    [Collection("Sequential")]
     public class LineOperationsTests
     {
         Point start = new(1, 1);
         Point end = new(5, 5);
 
         [Fact]
-
         public void Test1()
         {
             WhiteBoardViewModel viewModel = WhiteBoardViewModel.Instance;
-            viewModel.SetUserId(2); 
-            
+            viewModel.SetUserId(2);
+
             viewModel.ChangeMode("create_line");
             start = new(15, 15);
             end = new(45, 45);
@@ -38,6 +38,9 @@ namespace PlexShareTests.WhiteboardTests
             viewModel.ShapeStart(new Point(30, 30));
             //viewModel.ObjectSelection(new Point(30, 30));
             Assert.Equal("LineGeometry", viewModel.select.selectedObject.Geometry.GetType().Name);
+            viewModel.ShapeItems.Clear();
+            viewModel.undoStack.Clear();
+            viewModel.redoStack.Clear();
         }
 
         [Fact]
@@ -45,7 +48,7 @@ namespace PlexShareTests.WhiteboardTests
         {
             WhiteBoardViewModel viewModel = WhiteBoardViewModel.Instance;
             viewModel.SetUserId(2);
-            
+
             viewModel.ChangeMode("create_line");
             start = new(15, 15);
             end = new(45, 45);
@@ -59,12 +62,14 @@ namespace PlexShareTests.WhiteboardTests
             viewModel.ShapeStart(new Point(45, 45));
             viewModel.ShapeBuilding(new Point(65, 65));
             viewModel.ShapeFinished(new Point());
-            
+
             viewModel.ChangeMode("select_mode");
             viewModel.ShapeStart(new Point(45, 45));
-            
-            Assert.Equal(viewModel.select.selectedObject.End, new Point(65, 65));
 
+            Assert.Equal(viewModel.select.selectedObject.End, new Point(65, 65));
+            viewModel.ShapeItems.Clear();
+            viewModel.undoStack.Clear();
+            viewModel.redoStack.Clear();
         }
 
         [Fact]
@@ -87,7 +92,9 @@ namespace PlexShareTests.WhiteboardTests
             viewModel.ShapeBuilding(new Point(50, 30));
 
             Assert.Equal(viewModel.lastShape.Start, new Point(35, 15));
-
+            viewModel.ShapeItems.Clear();
+            viewModel.undoStack.Clear();
+            viewModel.redoStack.Clear();
         }
     }
 }
