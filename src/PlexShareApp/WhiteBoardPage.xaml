@@ -644,7 +644,7 @@
                                         </ToggleButton>
                                     </Grid>
                                     <Grid Grid.Row="3">
-                                    <Button Name="TextBox" ToolTip="Add Text" HorizontalAlignment="Center" VerticalAlignment="Center" KeyDown="TextboxKeyDown" Click="TextboxCreateMode" Cursor="Hand" Style="{StaticResource ToolBarStyle}">
+                                    <Button Name="TextBox" ToolTip="Add Text" HorizontalAlignment="Center" VerticalAlignment="Center" KeyDown="TextboxKeyDown" PreviewKeyDown="TextboxPreviewKeyDown" Click="TextboxCreateMode"  Cursor="Hand" Style="{StaticResource ToolBarStyle}">
                                         <Image Source="Assets/Text.png"></Image>
                                     </Button>
 

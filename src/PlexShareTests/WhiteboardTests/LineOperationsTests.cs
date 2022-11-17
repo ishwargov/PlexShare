@@ -20,7 +20,8 @@ namespace PlexShareTests.WhiteboardTests
         Point start = new(1, 1);
         Point end = new(5, 5);
 
-        //[Fact]
+        [Fact]
+
         public void Test1()
         {
             WhiteBoardViewModel viewModel = WhiteBoardViewModel.Instance;
@@ -39,7 +40,7 @@ namespace PlexShareTests.WhiteboardTests
             Assert.Equal("LineGeometry", viewModel.select.selectedObject.Geometry.GetType().Name);
         }
 
-        //[Fact]
+        [Fact]
         public void Test2()
         {
             WhiteBoardViewModel viewModel = WhiteBoardViewModel.Instance;
@@ -66,7 +67,7 @@ namespace PlexShareTests.WhiteboardTests
 
         }
 
-        //[Fact]
+        [Fact]
         public void Test3()
         {
             WhiteBoardViewModel viewModel = WhiteBoardViewModel.Instance;

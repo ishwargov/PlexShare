@@ -228,6 +228,16 @@ namespace PlexShareApp
             viewModel.TextBoxStart(e.Key);
         }
 
+        private void TextboxPreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == Key.Space)
+            {
+                Debug.WriteLine("Space inserted");
+                viewModel.TextBoxStart(e.Key);
+            }
+
+        }
+
         private void TextboxCreateMode(object sender, RoutedEventArgs e)
         {
 

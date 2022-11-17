@@ -22,7 +22,7 @@ namespace PlexShareTests.WhiteboardTests
         Point start = new(1, 1);
         Point end = new(5, 5);
 
-        [Fact]
+        //[Fact]
         /*public void Test10()
         {
             WhiteBoardViewModel viewModel = WhiteBoardViewModel.Instance;
