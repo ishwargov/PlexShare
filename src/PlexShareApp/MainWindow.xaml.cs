@@ -10,6 +10,7 @@
  * Description = This is start view of the application. It is responsible for starting the authenticationView.
  * 
  *****************************************************************************/
+using System.Threading;
 using System.Windows;
 
 namespace PlexShareApp
@@ -26,9 +27,21 @@ namespace PlexShareApp
             /*
              *  Main Code :
              */
-            AuthenticationView authView = new();
+            SplashScreen splashScreen = new();
 
-            authView.Show();
+            splashScreen.Show();
+            
+            AuthenticationView authenticationView = new AuthenticationView();
+            authenticationView.Hide();
+
+            for(int i = 0; i<100; i++)
+            {
+                Thread.Sleep(i);
+            }
+
+            splashScreen.Close();
+            Thread.Sleep(500);
+            authenticationView.Show();
             this.Close();
 
             /*

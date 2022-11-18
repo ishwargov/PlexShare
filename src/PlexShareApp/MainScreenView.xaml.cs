@@ -127,7 +127,7 @@ namespace PlexShareApp
             Whiteboard.Background = Brushes.DarkSlateGray;
             Screenshare.Background = Brushes.DarkCyan;
 
-            if (!isClient)
+            if (isClient)
             {
                 Trace.WriteLine("[UX] Rendering Client Screenshare");
                 Main.Content = screenshareClientView;
