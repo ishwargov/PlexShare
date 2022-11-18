@@ -9,6 +9,7 @@ using PlexShareWhiteboard.BoardComponents;
 
 namespace PlexShareTests.WhiteboardTests.BoardComponents
 {
+    [Collection("Sequential")]
     public class SerializerTests
     {
         Serializer _serializer;
@@ -32,6 +33,7 @@ namespace PlexShareTests.WhiteboardTests.BoardComponents
             List<ShapeItem> deserializedObject = _serializer.DeserializeShapeItems(jsonString);
 
             Assert.True(Utility.CompareShapeItems(shapeItems, deserializedObject));
+
         }
 
         [Fact]

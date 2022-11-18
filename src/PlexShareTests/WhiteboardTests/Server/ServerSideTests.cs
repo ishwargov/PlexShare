@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using PlexShareWhiteboard.BoardComponents;
@@ -9,9 +10,22 @@ using PlexShareWhiteboard.Server;
 
 namespace PlexShareTests.WhiteboardTests.Server
 {
-
+    [Collection("Sequential")]
     public class ServerSideTests
     {
+        private ServerSide server;
+        public ServerSideTests()
+        {
+            server = ServerSide.Instance;
+            server.ClearServerList();
+        }
+        [Fact]
+        public void Clear_ServerListSizeZero()
+        {
+            server.OnShapeReceived(null, Operation.Clear);
+            Assert.Equal(0, server.GetServerListSize());
+            server.ClearServerList();
+        }
         [Fact]
         public void Instance_Always_ReturnsSameInstance()
         {
@@ -20,20 +34,23 @@ namespace PlexShareTests.WhiteboardTests.Server
             Assert.Equal(server1, server2);
         }
 
-
-
         [Fact]
         public void CreateTwoShapes_ServerListSizeIncrease()
         {
-            ServerSide server = ServerSide.Instance;
+            server.ClearServerList();
             Point start = new Point(1, 1);
             Point end = new Point(2, 2);
-            server.OnShapeReceived(Utility.CreateShape(start, end, "EllipseGeometry", "u0_f0"), Operation.Creation);
+
+            Point start1 = new Point(10, 10);
+            Point end1 = new Point(20, 20);
+
+            //server.OnShapeReceived(Utility.CreateShape(start, end, "EllipseGeometry", "u0_f0"), Operation.Creation);
+            //server.OnShapeReceived(Utility.CreateShape(start, end, "RectangleGeometry", "u0_f1"), Operation.Creation);
             server.OnShapeReceived(Utility.CreateShape(start, end, "RectangleGeometry", "u0_f1"), Operation.Creation);
-
+            server.OnShapeReceived(Utility.CreateShape(start1, end1, "RectangleGeometry", "u0_f2"), Operation.Creation);
             Assert.Equal(server.GetServerListSize(), 2);
-
         }
+
 
     }
 }

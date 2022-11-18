@@ -51,6 +51,7 @@ namespace PlexShareWhiteboard
                 AnchorPoint = name == "LineGeometry" ? new Point(geometry.Bounds.X, geometry.Bounds.Y) : start,
                 Id = oldShape.Id,
                 TextString = textDataOpt,
+                StrokeThickness = oldShape.StrokeThickness,
                 Start = start,
                 End = end
             };
@@ -89,7 +90,7 @@ namespace PlexShareWhiteboard
                   32,
                   Brushes.Black);
 
-
+                
                 // Build the geometry object that represents the text.
                 geometry = formattedText.BuildGeometry(start);
 
@@ -103,6 +104,7 @@ namespace PlexShareWhiteboard
                 Fill = fillBrush,
                 Stroke = strokeBrush,
                 ZIndex = currentZIndex,
+                StrokeThickness = strokeThickness,
                 AnchorPoint = name == "LineGeometry" ? new Point(geometry.Bounds.X, geometry.Bounds.Y) : start,
                 Id = id,
                 TextString = textDataOpt
@@ -116,7 +118,6 @@ namespace PlexShareWhiteboard
                     ShapeItems[i] = newShape;
                 }
             }
-
             return newShape;
         }
 
@@ -135,10 +136,11 @@ namespace PlexShareWhiteboard
                     toDelete = ShapeItems[i];
                 }
                 else if (ShapeItems[i].ZIndex > tempZIndex &&
-                    (Child.GetType().Name == "PathGeometry" ||  Child.GetType().Name == "LineGeometry" ) &&
+                    (Child.GetType().Name == "PathGeometry" ||  Child.GetType().Name == "LineGeometry" ||
+                    Child.GetType().Name == "GeometryGroup") &&
                     PointInsideRect(Child.Bounds, a))
                 {
-                    //Debug.WriteLine(" child bounds "+ Child.Bounds.ToString());
+                    //Trace.WriteLine("[Whiteboard]  " + " child bounds "+ Child.Bounds.ToString());
                     tempZIndex = ShapeItems[i].ZIndex;
                     toDelete = ShapeItems[i];
                 }
@@ -233,8 +235,18 @@ namespace PlexShareWhiteboard
         }
         public void TranslatingShape(ShapeItem shape, Point p1, Point p2)
         {
-            lastShape = UpdateShape(p1, p2, shape.Geometry.GetType().Name, shape,shape.TextString);
-            HighLightIt(p1, p2);
+            if (shape.Geometry.GetType().Name == "GeometryGroup")
+            {
+                textBoxLastShape = UpdateShape(p1, p2, shape.Geometry.GetType().Name, shape, shape.TextString);
+                Rect rect = textBoxLastShape.Geometry.Bounds;
+                HighLightTextBox(rect);
+                //HighLightIt(textBoxLastShape.Geometry.Bounds);
+            }
+            else
+            {
+                lastShape = UpdateShape(p1, p2, shape.Geometry.GetType().Name, shape, shape.TextString);
+                HighLightIt(p1, p2);
+            }
         }
     }
 }

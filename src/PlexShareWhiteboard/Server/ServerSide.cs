@@ -18,6 +18,7 @@ using PlexShareWhiteboard.Client.Interfaces;
 using PlexShareWhiteboard.Server.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,8 +33,11 @@ namespace PlexShareWhiteboard.Server
 
         // An instance of the ServerCommunicator
         private static ServerCommunicator _communicator;
-
         private static ServerSide instance;
+        private WhiteBoardViewModel _vm;
+        private Serializer _serializer;
+        private ServerSnapshotHandler _serverSnapshotHandler;
+        string userID;
 
         // To create only a single instance of ServerSide
         public static ServerSide Instance
@@ -50,14 +54,23 @@ namespace PlexShareWhiteboard.Server
             }
         }
 
-        string userID;
+        private ServerSide()
+        {
+            _serializer = new Serializer();
+            _serverSnapshotHandler = new ServerSnapshotHandler();
+            //_vm = WhiteBoardViewModel.Instance;
+        }
 
         public void SetUserId(string userId)
         {
             userID = userId;
         }
-        
 
+        //public void SetVMRef(WhiteBoardViewModel vm)
+        //{
+        //    _vm = vm;
+        //    _communicator.SetVMRef(_vm);
+        //}
         public int GetServerListSize()
         {
             return objIdToObjectMap.Count();
@@ -72,10 +85,6 @@ namespace PlexShareWhiteboard.Server
         private static int _maxZIndex = 0;
 
 
-
-        Serializer serializer = new Serializer();
-
-        ServerSnapshotHandler serverSnapshotHandler = new ServerSnapshotHandler();
 
         /// <summary>
         ///         When a ShapeItem is received from the Client/ViewModel, it updates the server side 
@@ -130,6 +139,8 @@ namespace PlexShareWhiteboard.Server
 
             newShape.ZIndex = Math.Max(_maxZIndex, newShape.ZIndex);
             objIdToObjectMap.Add(objectId, newShape);
+            Trace.WriteLine("[Whiteboard]  " + "inside AddObjectToServerList" + newShape.Id);
+            Trace.WriteLine("[Whiteboard]  " + "inside AddObjectToServerList" + newShape.Geometry.GetType().Name);
             BroadcastToClients(newShape, op);
             _maxZIndex++;
         }
@@ -172,7 +183,6 @@ namespace PlexShareWhiteboard.Server
         // Save the current list in a copy (oldObjectMapCopy)
         private void ClearObjectsInServerList(ShapeItem newShape, Operation op)
         {
-            oldObjectMapCopy = objIdToObjectMap;
             objIdToObjectMap = new Dictionary<string, ShapeItem>();
             BroadcastToClients(newShape, op);
         }
@@ -181,8 +191,10 @@ namespace PlexShareWhiteboard.Server
 
         public void RestoreSnapshotHandler(WBServerShape deserializedObject)
         {
-            List<ShapeItem> loadedShapes = serverSnapshotHandler.LoadBoard(deserializedObject.SnapshotNumber);
-            List<SerializableShapeItem> serializableShapeItems = serializer.ConvertToSerializableShapeItem(loadedShapes);
+            Trace.WriteLine("[Whiteboard] ServerSide.RestoreSnapshotHandler: Restoring Snapshot " + deserializedObject.SnapshotNumber);
+            Trace.WriteLine("[Whiteboard] " + GetServerListSize());
+            List<ShapeItem> loadedShapes = _serverSnapshotHandler.LoadBoard(deserializedObject.SnapshotNumber);
+            List<SerializableShapeItem> serializableShapeItems = _serializer.ConvertToSerializableShapeItem(loadedShapes);
             WBServerShape wBServerShape = new WBServerShape(
                 serializableShapeItems,
                 Operation.RestoreSnapshot,
@@ -191,23 +203,57 @@ namespace PlexShareWhiteboard.Server
             BroadcastToClients(loadedShapes, Operation.RestoreSnapshot);
         }
 
-        public void CreateSnapshotHandler(WBServerShape deserializedObject)
+        public void ClearServerList()
         {
-            serverSnapshotHandler.SaveBoard(objIdToObjectMap.Values.ToList());
+            objIdToObjectMap.Clear();
+        }
+
+
+        public int CreateSnapshotHandler(WBServerShape deserializedObject)
+        {
+            int n =_serverSnapshotHandler.SaveBoard(objIdToObjectMap.Values.ToList(), deserializedObject.UserID);
             _communicator.Broadcast(deserializedObject);
+            return n;
         }
 
         public void NewUserHandler(WBServerShape deserializedObject)
         {
             List<ShapeItem> shapeItems = objIdToObjectMap.Values.ToList();
-            List<SerializableShapeItem> serializableShapeItems = serializer.ConvertToSerializableShapeItem(shapeItems);
+            List<SerializableShapeItem> serializableShapeItems = _serializer.ConvertToSerializableShapeItem(shapeItems);
             WBServerShape wBServerShape = new WBServerShape(
                 serializableShapeItems,
                 Operation.NewUser,
                 deserializedObject.UserID
             );
-            
+
             _communicator.Broadcast(wBServerShape, deserializedObject.UserID);
+        }
+
+        public int OnSaveMessage(string userId)
+        {
+            int snapshotNumber = _serverSnapshotHandler.SnapshotNumber+1;
+            WBServerShape wBServerShape = new WBServerShape(null, Operation.CreateSnapshot, userId, snapshotNumber);
+            return CreateSnapshotHandler(wBServerShape);
+        }
+
+        public List<ShapeItem> OnLoadMessage(int snapshotNumber, string userId)
+        {
+            WBServerShape deserializedObject = new WBServerShape(null, Operation.RestoreSnapshot, userId, snapshotNumber);
+            Trace.WriteLine("[Whiteboard] ServerSide.RestoreSnapshotHandler: Restoring Snapshot " + deserializedObject.SnapshotNumber);
+            Trace.WriteLine("[Whiteboard] " + GetServerListSize());
+            List<ShapeItem> loadedShapes = _serverSnapshotHandler.LoadBoard(deserializedObject.SnapshotNumber);
+            List<SerializableShapeItem> serializableShapeItems = _serializer.ConvertToSerializableShapeItem(loadedShapes);
+            WBServerShape wBServerShape = new WBServerShape(
+                serializableShapeItems,
+                Operation.RestoreSnapshot,
+                deserializedObject.UserID
+            );
+            BroadcastToClients(loadedShapes, Operation.RestoreSnapshot);
+            return loadedShapes;
+        }
+        public void SetSnapshotNumber(int snapshotNumber)
+        {
+            _serverSnapshotHandler.SnapshotNumber = snapshotNumber;
         }
     }
 }

@@ -18,6 +18,5 @@ namespace PlexShareWhiteboard.Client.Interfaces
     public interface IClientCommunicator
     {
         void SendToServer(WBServerShape wBServerShape);
-        void SendMessageToServer(string message, string ipAddress);
     }
 }
