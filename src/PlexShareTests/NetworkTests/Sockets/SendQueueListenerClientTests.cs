@@ -6,10 +6,11 @@
 
 using PlexShareNetwork.Communication;
 using PlexShareNetwork.Queues;
+using PlexShareNetwork.Sockets;
 using System.Net;
 using System.Net.Sockets;
 
-namespace PlexShareNetwork.Sockets.Tests
+namespace PlexShareTests.NetworkTests.Sockets
 {
 	public class SendQueueListenerClientTests
 	{

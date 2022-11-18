@@ -7,10 +7,11 @@
 using PlexShareNetwork.Communication;
 using PlexShareNetwork.Queues;
 using PlexShareNetwork.Sockets;
+using PlexShareNetwork;
 using System.Net.Sockets;
 using System.Text;
 
-namespace PlexShareNetwork
+namespace PlexShareTests.NetworkTests
 {
     public static class NetworkTestGlobals
     {

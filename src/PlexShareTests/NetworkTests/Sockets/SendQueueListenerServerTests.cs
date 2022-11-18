@@ -4,12 +4,14 @@
 /// This file contains unit tests for SendQueueListenerServer
 /// </summary>
 
+using PlexShareNetwork;
 using PlexShareNetwork.Communication;
 using PlexShareNetwork.Queues;
+using PlexShareNetwork.Sockets;
 using System.Net;
 using System.Net.Sockets;
 
-namespace PlexShareNetwork.Sockets.Tests
+namespace PlexShareTests.NetworkTests.Sockets
 {
 	public class SendQueueListenerServerTests
 	{

@@ -4,7 +4,9 @@
 /// This file contains tests for the server and client Communicator
 /// </summary>
 
-namespace PlexShareNetwork.Communication.Test
+using PlexShareNetwork.Communication;
+
+namespace PlexShareTests.NetworkTests.Communication
 {
     public class CommunicatorTests
     {

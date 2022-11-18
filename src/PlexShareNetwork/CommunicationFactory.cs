@@ -6,6 +6,7 @@
 
 using PlexShareNetwork.Communication;
 using System;
+using System.Diagnostics;
 
 namespace PlexShareNetwork
 {
@@ -21,7 +22,9 @@ namespace PlexShareNetwork
         /// <returns> The communicator singleton instance. </returns>
         public static ICommunicator GetCommunicator(bool isClientSide = true)
 		{
-			if (isClientSide)
+            Trace.WriteLine("[Networking] CommunicationFactory.GetCommunicator()" +
+               " function called with isClientSide: " + isClientSide.ToString());
+            if (isClientSide)
 			{
 				return _communicatorClient;
 			}

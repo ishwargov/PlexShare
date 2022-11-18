@@ -4,7 +4,10 @@
 /// This file contains the tests for communication factory
 /// </summary>
 
-namespace PlexShareNetwork.Communication.Test
+using PlexShareNetwork;
+using PlexShareNetwork.Communication;
+
+namespace PlexShareTests.NetworkTests.Communication
 {
     public class CommunicationFactoryTests
     {
