@@ -202,61 +202,49 @@ namespace PlexShareNetwork.Sockets
         {
             Trace.WriteLine("[Networking] SendQueueListenerServer." +
                 "TryReconnectingToClient() function called.");
-            try
+            TcpClient clientSocket = _clientIdToClientSocketMap[clientId];
+            var isSent = false;
+            // try to reconnect 3 times
+            for (var i = 0; i < 3 && !isSent; i++)
             {
-                TcpClient clientSocket =
-                    _clientIdToClientSocketMap[clientId];
-                var isSent = false;
-                // try to reconnect 3 times
-                for (var i = 0; i < 3 && !isSent; i++)
-                {
-                    // wait for some time for client to reconnect
-                    Thread.Sleep(100);
+                // wait for some time for client to reconnect
+                Thread.Sleep(100);
 
-                    // if client is now connected then send the data
-                    if (!(clientSocket.Client.Poll(
-                        1, SelectMode.SelectRead)
-                        && clientSocket.Client.Available == 0))
-                    {
-                        Trace.WriteLine("[Networking] Client: " +
-                            clientId + " reconnected.");
-                        clientSocket.Client.Send(bytes);
-                        Trace.WriteLine("[Networking] Data sent " +
-                            "from server to client: " + clientId + 
-                            " by module: " + module);
-                        isSent = true;
-                    }
-                }
-
-                // if data was not send even after trying 3 times then
-                // client has left, notify all subscribed modules
-                if (!isSent)
+                // if client is now connected then send the data
+                if (!(clientSocket.Client.Poll(1, SelectMode.SelectRead)
+                    && clientSocket.Client.Available == 0))
                 {
-                    Trace.WriteLine("[Networking] Client: " + 
-                        clientId + " has left. Removing client...");
-                    foreach (var moduleToNotificationHandler in 
-                        _moduleToNotificationHandlerMap)
-                    {
-                        string moduleName =
-                            moduleToNotificationHandler.Key;
-                        var notificationHandler =
-                            moduleToNotificationHandler.Value;
-                        notificationHandler.OnClientLeft(clientId);
-                        Trace.WriteLine("[Networking] Notifed " +
-                            "module: " + moduleName + " that the " +
-                            "client: " + clientId + " has left.");
-                    }
-                    // here we dont need to remove the client socket
-                    // from the _clientIdToClientSocketMap, it will be
-                    // done when the CommunicatorServer.RemoveClient()
-                    // function will be called by the Dashboard
+                    Trace.WriteLine("[Networking] Client: " +
+                        clientId + " reconnected.");
+                    clientSocket.Client.Send(bytes);
+                    Trace.WriteLine("[Networking] Data sent " +
+                        "from server to client: " + clientId + 
+                        " by module: " + module);
+                    isSent = true;
                 }
             }
-            catch (Exception e)
+
+            // if data was not send even after trying 3 times then
+            // client has left, notify all subscribed modules
+            if (!isSent)
             {
-                Trace.WriteLine("[Networking] Error in " +
-                    "SendQueueListenerServer." +
-                    "TryReconnectingToClient(): " + e.Message);
+                Trace.WriteLine("[Networking] Client: " + clientId +
+                    " has left. Removing client...");
+                foreach (var moduleToNotificationHandler in 
+                    _moduleToNotificationHandlerMap)
+                {
+                    string moduleName = moduleToNotificationHandler.Key;
+                    var notificationHandler =
+                        moduleToNotificationHandler.Value;
+                    notificationHandler.OnClientLeft(clientId);
+                    Trace.WriteLine("[Networking] Notifed " +
+                        "module: " + moduleName + " that the " +
+                        "client: " + clientId + " has left.");
+                }
+                // here we dont need to remove the client socket
+                // from the _clientIdToClientSocketMap, it will be
+                // done when the CommunicatorServer.RemoveClient()
+                // function will be called by the Dashboard
             }
         }
     }

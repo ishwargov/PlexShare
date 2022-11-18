@@ -124,14 +124,14 @@ namespace PlexShareTests.NetworkTests.Sockets
         }
 
         /// <summary>
-        /// Tests error catch when starting socket listener
+        /// Tests error catch when starting SocketListener
         /// </summary>
         /// <returns> void </returns>
         [Fact]
         public void SocketListenerStartErrorCatchTest()
         {
-            // start socket listener without connecting socket
-            // so error must be thrown and catch
+            // start SocketListener with null socket so
+            // error must be thrown and catch
             TcpClient serverSocket = null;
             ReceivingQueue receivingQueue = new();
             SocketListener socketListener =

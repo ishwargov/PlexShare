@@ -34,6 +34,11 @@ namespace PlexShareTests.NetworkTests.Communication
                 communicatorServer, communicatorsClient, _clientId);
             NetworkTestGlobals.StopServerAndClients(
                 communicatorServer, communicatorsClient);
+            CommunicatorClient communicatorClient = new();
+
+            // now test error catch on start client and server
+            communicatorClient.Start("0", "0");
+            communicatorServer.Start();
         }
 
         /// <summary>
@@ -82,7 +87,13 @@ namespace PlexShareTests.NetworkTests.Communication
                 communicatorServer, communicatorsClient,
                 notificationHandlerServer, notificationHandlersClient,
                 _module, _modulePriority);
-            
+
+            // subscribe error catch test
+            NetworkTestGlobals.SubscribeOnServerAndClient(
+                communicatorServer, communicatorsClient,
+                notificationHandlerServer, notificationHandlersClient,
+                _module, _modulePriority);
+
             // stop client and server
             NetworkTestGlobals.StopServerAndClients(
                 communicatorServer, communicatorsClient);

@@ -408,19 +408,10 @@ namespace PlexShareNetwork.Communication
             }
             Packet packet = new(
                 serializedData, destination, moduleName);
-            bool isEnqueued = _sendingQueue.Enqueue(packet);
-            if (isEnqueued)
-            {
-                Trace.WriteLine("[Networking] Enqueued packet in " +
-                    "sending queue of the module: " + moduleName +
+            _sendingQueue.Enqueue(packet);
+            Trace.WriteLine("[Networking] SendQueue.Enqueued called " +
+                    "for data from module: " + moduleName +
                     " for destination: " + destination);
-            }
-            else
-            {
-                Trace.WriteLine("[Networking] Packet not enqueued " +
-                    "in sending queue of the module: " + moduleName +
-                    " for destination: " + destination);
-            }
         }
 
         /// <summary>

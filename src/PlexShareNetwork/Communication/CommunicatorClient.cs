@@ -202,17 +202,9 @@ namespace PlexShareNetwork.Communication
             Trace.WriteLine("[Networking] CommunicatorClient.Send() " +
                 "function called.");
             Packet packet = new(serializedData, null, moduleName);
-            bool isEnqueued = _sendingQueue.Enqueue(packet);
-            if (isEnqueued)
-            {
-                Trace.WriteLine("[Networking] Enqueued packet in " +
-                    "sending queue of the module: " + moduleName);
-            }
-            else
-            {
-                Trace.WriteLine("[Networking] Packet not enqueued " +
-                    "in sending queue of the module: " + moduleName);
-            }
+            _sendingQueue.Enqueue(packet);
+            Trace.WriteLine("[Networking] SendQueue.Enqueued called " +
+                    "for data from module: " + moduleName);
         }
 
         /// <summary>

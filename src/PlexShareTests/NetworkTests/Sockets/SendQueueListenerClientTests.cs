@@ -130,5 +130,25 @@ namespace PlexShareTests.NetworkTests.Sockets
         {
             PacketsSendTest(_largePacketSize, _multiplePacketsCount);
         }
+
+        /// <summary>
+        /// Tests error catch when starting SendQueueListenerClient
+        /// </summary>
+        /// <returns> void </returns>
+        [Fact]
+        public void SendQueueListenerClientErrorCatchTest()
+        {
+            // start SendQueueListenerClient with null
+            // socket so error must be thrown and catch
+            TcpClient clientSocket = null;
+            SendingQueue sendingQueue = new();
+            sendingQueue.RegisterModule(_module, true);
+            SendQueueListenerClient sendQueueListenerClient =
+                new(sendingQueue, clientSocket);
+            sendQueueListenerClient.Start();
+            Packet packet = new("Data", "Destination", "Module");
+            sendingQueue.Enqueue(packet);
+            sendQueueListenerClient.Stop();
+        }
     }
 }
