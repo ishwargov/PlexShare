@@ -11,29 +11,27 @@ namespace PlexShareWhiteboard
         public void ShapeStart(Point a)
         {
 
-            Debug.WriteLine("Entering Shape Start......\n");
+            Trace.WriteLine("[Whiteboard] : Entering Shape Start");
+
             UnHighLightIt();
 
             if (mode == "delete_mode")
             {
-
-                Debug.WriteLine("In Delete mode\n");
+                Trace.WriteLine("[Whiteboard] : In Delete mode");
                 modeForUndo = "delete";
                 DeleteShape(a);
             }
             else if (mode == "select_mode")
             {
 
-                //Debug.WriteLine("In select mode\n");
-
+                Trace.WriteLine("[Whiteboard] : In Select mode");
                 select.ifSelected = false;
                 ObjectSelection(a);
             }
             else if (mode == "create_rectangle")
             {
 
-                Debug.WriteLine("In create rectangle mode\n");
-
+                Trace.WriteLine("[Whiteboard] : In create rectangle mode");
                 ShapeItem curShape = CreateShape(a, a, "RectangleGeometry", currentId);
                 IncrementId();
                 lastShape = curShape;
@@ -43,8 +41,7 @@ namespace PlexShareWhiteboard
             else if (mode == "create_ellipse")
             {
 
-                Debug.WriteLine("In create ellipse mode\n");
-
+                Trace.WriteLine("[Whiteboard] : In create ellipse mode");
                 ShapeItem curShape = CreateShape(a, a, "EllipseGeometry", currentId);
                 IncrementId();
                 lastShape = curShape;
@@ -54,8 +51,7 @@ namespace PlexShareWhiteboard
             else if (mode == "create_freehand")
             {
 
-                Debug.WriteLine("In create freehand mode\n");
-
+                Trace.WriteLine("[Whiteboard] : In create freehand mode");
                 currentShape = CreateCurve(a);
                 IncrementId();
                 lastShape = currentShape;
@@ -65,8 +61,8 @@ namespace PlexShareWhiteboard
             else if (mode == "create_line")
             {
 
-                //Debug.WriteLine("In create line mode\n");
-
+                //Trace.WriteLine("[Whiteboard]  " + "In create line mode\n");
+                Trace.WriteLine("[Whiteboard] : In create line mode");
                 ShapeItem curShape = CreateShape(a, a, "LineGeometry", currentId);
                 IncrementId();
                 lastShape = curShape;
@@ -75,23 +71,45 @@ namespace PlexShareWhiteboard
             }
             else if (mode == "create_textbox")
             {
+                
+                if (modeForUndo == "create_textbox")
+                {
+                    if (textBoxLastShape != null && textBoxLastShape.TextString != null &&
+                        textBoxLastShape.TextString.Length != 0)
+                    {
+                        
+                        TextFinishPush();
+                        Debug.WriteLine("entering undo modeeeee");
 
-                Debug.WriteLine("In create text box mode\n");
+                    }
+                    else if (textBoxLastShape != null)
+                    {
+                        for (int i = 0; i < ShapeItems.Count; ++i)
+                        {
+                            if (textBoxLastShape.Id == ShapeItems[i].Id)
+                            {
+                                ShapeItems.RemoveAt(i);
+                                break;
+                            }
+                        }
+                    }
+                }
 
-                text = "";
+                modeForUndo = "create_textbox";
+                Trace.WriteLine("[Whiteboard] : In create text box mode");
                 textBoxPoint = a;
                 ShapeItem curShape = CreateShape(textBoxPoint, textBoxPoint, "GeometryGroup", currentId, "");
+                Debug.WriteLine("initial text box ", curShape.Id);
                 IncrementId();
-                lastShape = curShape;
+                textBoxLastShape = curShape.DeepClone();
+                Trace.WriteLine("[Whiteboard]  " + "inside create text box " + textBoxLastShape);
                 ShapeItems.Add(curShape);
                 currentZIndex++;
             }
             else
             {
-                Debug.WriteLine("In Unknown Mode\n");
+                Trace.WriteLine("[Whiteboard] : In Unknown Mode");
             }
-
-            //Debug.WriteLine("Exiting Shape Start......\n");
         }
     }
 }

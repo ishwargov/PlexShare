@@ -1,4 +1,10 @@
-﻿using Dashboard;
+﻿/// <author>Rupesh Kumar</author>
+/// <summary>
+/// Unit Test for Dashboard View Model 
+/// </summary>
+
+
+using Dashboard;
 using PlexShareDashboard.Dashboard.Server.Telemetry;
 using PlexShareDashboard.Dashboard.UI.ViewModel;
 using Syncfusion.UI.Xaml.Charts;
@@ -17,8 +23,9 @@ namespace PlexShareTests.DashboardTests.UI
         //here we will write the unit testing for the dashboard view model 
         //first doing the set up for testing purpose 
         private DashboardViewModel DashboardViewModelForTest = new();
+
+
         //test for doing the setup 
-        //private SystemStartUp = new
         [Fact]
         public void SetUpTest()
         {
@@ -41,6 +48,8 @@ namespace PlexShareTests.DashboardTests.UI
 
         }
 
+
+
         [Fact]
         //writing the testing for checking the initialization process 
         public void Initialization_Test_Of_Lists()
@@ -56,6 +65,8 @@ namespace PlexShareTests.DashboardTests.UI
             //say everything went fine 
             return;
         }
+
+
 
         //testing function for testing the initialization of the variables 
         [Fact]
@@ -73,6 +84,9 @@ namespace PlexShareTests.DashboardTests.UI
             //say everything went fine 
             return;
         }
+
+
+
 
         [Fact]
         //function to test the on property change event whether it is triggering or not 
@@ -96,6 +110,7 @@ namespace PlexShareTests.DashboardTests.UI
         }
 
 
+
         //function to check the updatebutton setter 
         [Fact]
         public void UpdateButtonContent_Test_To_Update_According_To_Current_Mode()
@@ -103,15 +118,18 @@ namespace PlexShareTests.DashboardTests.UI
             //DashboardViewModelForTest.ButtonContentSetter = "LabMode";
             DashboardViewModelForTest.SessionModeSetter = "LabMode";
 
-            UserData user1 = new UserData("Rupesh Kumar", 1);
+          
 
-            DashboardViewModelForTest.UpdateButtonContent(user1);
+            DashboardViewModelForTest.UpdateButtonContent();
 
             Assert.Equal("Switch To ExamMode", DashboardViewModelForTest.ButtonContentSetter);
 
             //say everything went fine 
             return;
         }
+
+
+
 
         [Fact]
         //writing the function to test the update participant list 
@@ -144,6 +162,8 @@ namespace PlexShareTests.DashboardTests.UI
         }
 
 
+
+
         [Fact]
         //function to test the GetHourAndMinute
         public void GetHourAndMinute_Test()
@@ -158,6 +178,9 @@ namespace PlexShareTests.DashboardTests.UI
             //say everything went fine 
             return;
         }
+
+
+
 
         [Fact]
         public void UpdateUserCountVsTimeStamp_Test()
@@ -182,9 +205,7 @@ namespace PlexShareTests.DashboardTests.UI
 
             //calling the function to update these participants count according to the time stamp 
             DashboardViewModelForTest.UpdateUserCountVsTimeStamp(currUserCountVsTimeStamp);
-            //checking the final answer that is stored in the corresponding arrays for this purpose 
-            //we also have to end the current application thread 
-            //System.Windows.Application.Current.Shutdown();
+            
 
 
             Assert.Equal(10, DashboardViewModelForTest.UserCountList[0]);
@@ -202,6 +223,8 @@ namespace PlexShareTests.DashboardTests.UI
             return;
         
         }
+
+
 
         [Fact]
         public void UpdateUserIdVsChatCount_Test()
@@ -221,8 +244,6 @@ namespace PlexShareTests.DashboardTests.UI
             DashboardViewModelForTest.UpdateUserIdVsChatCount(currUserIdVsChatCount);
 
 
-            //System.Windows.Application.Current.Shutdown();
-
             //now asserting the values for this purpose 
             Assert.Equal("1", DashboardViewModelForTest.UserIdList[0]);
             Assert.Equal("2", DashboardViewModelForTest.UserIdList[1]);
@@ -237,6 +258,8 @@ namespace PlexShareTests.DashboardTests.UI
             return;
         
         }
+
+
 
         [Fact]
 
@@ -255,6 +278,8 @@ namespace PlexShareTests.DashboardTests.UI
             //say everything went fine 
             return;
         }
+
+
 
         [Fact]
         public void OnClientSessionChanged_Test()
@@ -288,6 +313,8 @@ namespace PlexShareTests.DashboardTests.UI
             //say everything went fine 
             return;
         }
+
+
 
 
         [Fact]
@@ -338,7 +365,7 @@ namespace PlexShareTests.DashboardTests.UI
             //now the analytics is set we have to call the function onanalytics changed 
             DashboardViewModelForTest.OnAnalyticsChanged(sessionAnalytics);
 
-            //System.Windows.Application.Current.Shutdown();
+           
 
             //asserting the result values
             Assert.Equal(10, DashboardViewModelForTest.UserCountList[0]);
@@ -359,6 +386,8 @@ namespace PlexShareTests.DashboardTests.UI
             //say everything went fine 
             return;
         }
+
+
 
         [Fact]
         public void CalculateEngagementRate_Test()
