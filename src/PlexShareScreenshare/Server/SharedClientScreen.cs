@@ -52,7 +52,7 @@ namespace PlexShareScreenshare.Server
         /// <summary>
         /// Stores the frame received from the clients.
         /// </summary>
-        private readonly Queue<Frame> _imageQueue;
+        private readonly Queue<string> _imageQueue;
 
         /// <summary>
         /// The final stitched images received after stitching the previous
@@ -272,7 +272,7 @@ namespace PlexShareScreenshare.Server
         /// <returns>
         /// The received Frame that is removed from the beginning.
         /// </returns>
-        public Frame? GetImage(CancellationToken token)
+        public string? GetImage(CancellationToken token)
         {
             Debug.Assert(_imageQueue != null, Utils.GetDebugMessage("_imageQueue is found null"));
 
@@ -307,7 +307,7 @@ namespace PlexShareScreenshare.Server
         /// <param name="frame">
         /// Frame to be inserted.
         /// </param>
-        public void PutImage(Frame frame)
+        public void PutImage(string frame)
         {
             Debug.Assert(_imageQueue != null, Utils.GetDebugMessage("_imageQueue is found null"));
 
