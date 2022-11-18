@@ -17,24 +17,24 @@ using System.Net.Sockets;
 
 namespace PlexShareNetwork.Communication
 {
-	public class CommunicatorClient : ICommunicator
-	{
-		// initialize the sending queue and receiving queue
-		private readonly SendingQueue _sendingQueue = new();
-		private readonly ReceivingQueue _receivingQueue = new();
+    public class CommunicatorClient : ICommunicator
+    {
+        // initialize the sending queue and receiving queue
+        private readonly SendingQueue _sendingQueue = new();
+        private readonly ReceivingQueue _receivingQueue = new();
 
         // declare all the threads
         private readonly SocketListener _socketListener;
         private readonly SendQueueListenerClient
             _sendQueueListenerClient;
-		private readonly ReceiveQueueListener _receiveQueueListener;
+        private readonly ReceiveQueueListener _receiveQueueListener;
 
-		// declare the socket variable for the client
+        // declare the socket variable for the client
         // this will be used for communication with the server
-		private readonly TcpClient _clientSocket = new();
+        private readonly TcpClient _clientSocket = new();
 
-		// map to store the notification handlers of subscribed modules
-		private readonly Dictionary<string, INotificationHandler>
+        // map to store the notification handlers of subscribed modules
+        private readonly Dictionary<string, INotificationHandler>
             _moduleToNotificationHanderMap = new();
 
         /// <summary>
@@ -73,11 +73,11 @@ namespace PlexShareNetwork.Communication
         /// string "success" if success, "failure" if failure.
         /// </returns>
         public string Start(string serverIP, string serverPort)
-		{
+        {
             Trace.WriteLine("[Networking] CommunicatorClient.Start()" +
                 " function called.");
             try
-			{
+            {
                 // connect to the server
                 _clientSocket.Client.SetSocketOption(
                     SocketOptionLevel.Socket,
@@ -86,28 +86,28 @@ namespace PlexShareNetwork.Communication
                     ParseIPstring(serverIP), int.Parse(serverPort));
 
                 // start all threads
-				_socketListener.Start();
+                _socketListener.Start();
                 _sendQueueListenerClient.Start();
-				_receiveQueueListener.Start();
+                _receiveQueueListener.Start();
 
                 Trace.WriteLine("[Networking] CommunicatorClient" +
                     " started.");
                 return "success";
-			}
-			catch(Exception e)
-			{
-				Trace.WriteLine("[Networking] Error in " +
+            }
+            catch(Exception e)
+            {
+                Trace.WriteLine("[Networking] Error in " +
                     "CommunicatorClient.Start(): " + e.Message);
-				return "failure";
-			}
-		}
+                return "failure";
+            }
+        }
 
         /// <summary>
         /// Stops all threads, clears queues and closes the socket.
         /// </summary>
         /// <returns> void </returns>
         public void Stop()
-		{
+        {
             Trace.WriteLine("[Networking] CommunicatorClient.Stop() " +
                 "function called.");
             try
@@ -148,40 +148,40 @@ namespace PlexShareNetwork.Communication
         /// IP address of type "IPAddress"
         /// </returns>
         private static IPAddress ParseIPstring(string IPstring)
-		{
+        {
             Trace.WriteLine("[Networking] " +
                 "CommunicatorClient.ParseIP() function called.");
             try
             {
-				Trace.WriteLine("[Networking] Parsing IP address: " +
+                Trace.WriteLine("[Networking] Parsing IP address: " +
                     IPstring);
-				return IPAddress.Parse(IPstring);
-			}
-			catch
-			{
-				Trace.WriteLine("[Networking] Parsing DNS name: " +
+                return IPAddress.Parse(IPstring);
+            }
+            catch
+            {
+                Trace.WriteLine("[Networking] Parsing DNS name: " +
                     IPstring);
-				return Dns.GetHostAddresses(IPstring).Last();
-			}
-		}
+                return Dns.GetHostAddresses(IPstring).Last();
+            }
+        }
 
-		/// <summary>
-		/// This function is to be called only on the server.
-		/// </summary>
-		[ExcludeFromCodeCoverage]
-		public void AddClient(string clientId, TcpClient socket)
-		{
-			throw new NotSupportedException();
-		}
+        /// <summary>
+        /// This function is to be called only on the server.
+        /// </summary>
+        [ExcludeFromCodeCoverage]
+        public void AddClient(string clientId, TcpClient socket)
+        {
+            throw new NotSupportedException();
+        }
 
-		/// <summary>
-		/// This function is to be called only on the server.
-		/// </summary>
-		[ExcludeFromCodeCoverage]
-		public void RemoveClient(string clientId)
-		{
-			throw new NotSupportedException();
-		}
+        /// <summary>
+        /// This function is to be called only on the server.
+        /// </summary>
+        [ExcludeFromCodeCoverage]
+        public void RemoveClient(string clientId)
+        {
+            throw new NotSupportedException();
+        }
 
         /// <summary>
         /// Sends data to the server.
@@ -198,11 +198,11 @@ namespace PlexShareNetwork.Communication
         /// <returns> void </returns>
         public void Send(string serializedData, string moduleName,
             string? destination = null)
-		{
+        {
             Trace.WriteLine("[Networking] CommunicatorClient.Send() " +
                 "function called.");
             Packet packet = new(serializedData, null, moduleName);
-			bool isEnqueued = _sendingQueue.Enqueue(packet);
+            bool isEnqueued = _sendingQueue.Enqueue(packet);
             if (isEnqueued)
             {
                 Trace.WriteLine("[Networking] Enqueued packet in " +
@@ -213,7 +213,7 @@ namespace PlexShareNetwork.Communication
                 Trace.WriteLine("[Networking] Packet not enqueued " +
                     "in sending queue of the module: " + moduleName);
             }
-		}
+        }
 
         /// <summary>
         /// Other modules can subscribe using this function to be able
@@ -231,7 +231,7 @@ namespace PlexShareNetwork.Communication
         /// <returns> void </returns>
         public void Subscribe(string moduleName, INotificationHandler
             notificationHandler, bool isHighPriority)
-		{
+        {
             Trace.WriteLine("[Networking] " +
                 "CommunicatorClient.Subscribe() function called.");
             try
@@ -256,5 +256,5 @@ namespace PlexShareNetwork.Communication
                     "CommunicatorClient.Subscribe(): " + e.Message);
             }
         }
-	}
+    }
 }

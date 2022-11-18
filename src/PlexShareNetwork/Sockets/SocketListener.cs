@@ -13,11 +13,11 @@ using System.Threading;
 
 namespace PlexShareNetwork.Sockets
 {
-	public class SocketListener
-	{
-		// set the max size of buffer and initialize the buffer
-		private const int bufferSize = 1000000;
-		private readonly byte[] buffer = new byte[bufferSize];
+    public class SocketListener
+    {
+        // set the max size of buffer and initialize the buffer
+        private const int bufferSize = 1000000;
+        private readonly byte[] buffer = new byte[bufferSize];
 
         // StringBuilder string to store the the received message
         // StringBuilder type is mutable while string type is not
@@ -25,12 +25,12 @@ namespace PlexShareNetwork.Sockets
 
         // the thread which will be running
         private readonly Thread _socketListenerThread;
-		// boolean to tell whether the thread is running or stopped
-		private bool _runSocketListenerThread;
+        // boolean to tell whether the thread is running or stopped
+        private bool _runSocketListenerThread;
 
-		// declare the receiving queue and socket
-		private readonly ReceivingQueue _receivingQueue;
-		private readonly Socket _socket;
+        // declare the receiving queue and socket
+        private readonly ReceivingQueue _receivingQueue;
+        private readonly Socket _socket;
 
         /// <summary>
         /// Constructor initializes the receiving queue and socket,
@@ -42,23 +42,23 @@ namespace PlexShareNetwork.Sockets
         /// </param>
         public SocketListener(ReceivingQueue receivingQueue, 
             TcpClient socket)
-		{
+        {
             _receivingQueue = receivingQueue;
-			_socket = socket.Client;
+            _socket = socket.Client;
 
             // initialize the thread to listen to the socket
             // the thread is only initialized here and not started
             _socketListenerThread = new Thread(() => 
             _socket.BeginReceive(buffer, 0, bufferSize, 0,
             ReceiveCallback, null));
-		}
+        }
 
         /// <summary>
         /// Starts the socket listener thread.
         /// </summary>
         /// <returns> void </returns>
         public void Start()
-		{
+        {
             Trace.WriteLine("[Networking] SocketListener.Start() " +
                 "function called.");
             try
@@ -73,20 +73,20 @@ namespace PlexShareNetwork.Sockets
                 Trace.WriteLine("[Networking] Error in " +
                     "SocketListener.Start(): " + e.Message);
             }
-		}
+        }
 
         /// <summary>
         /// This function stops the thread.
         /// </summary>
         /// <returns> void </returns>
         public void Stop()
-		{
+        {
             Trace.WriteLine("[Networking] SocketListener.Stop()" +
                 " function called.");
             _runSocketListenerThread = false;
-			Trace.WriteLine("[Networking] SocketListener thread " +
+            Trace.WriteLine("[Networking] SocketListener thread " +
                 "stopped.");
-		}
+        }
 
         /// <summary>
         /// This is the AsyncCallback function which is passed to
@@ -96,7 +96,7 @@ namespace PlexShareNetwork.Sockets
         /// </summary>
         /// <returns> void </returns>
         private void ReceiveCallback(IAsyncResult ar)
-		{
+        {
             Trace.WriteLine("[Networking] " +
                 "SocketListener.ReceiveCallback() function called.");
             try
@@ -135,7 +135,7 @@ namespace PlexShareNetwork.Sockets
                     "SocketListener.ReceiveCallback(): " +
                     e.Message);
             }
-		}
+        }
 
         /// <summary>
         /// Processes the packets from the given string,
@@ -148,7 +148,7 @@ namespace PlexShareNetwork.Sockets
         /// The remaining string after processing the given string.
         /// </returns>
         private string ProcessReceivedString(string receivedString)
-		{
+        {
             Trace.WriteLine("[Networking] SocketListener." +
                 "ProcessReceivedString() function called.");
             while (true)
@@ -202,6 +202,6 @@ namespace PlexShareNetwork.Sockets
             Trace.WriteLine("[Networking] SocketListener." +
                 "ProcessReceivedString() function exited.");
             return receivedString; // return the remaining string
-		}
-	}
+        }
+    }
 }

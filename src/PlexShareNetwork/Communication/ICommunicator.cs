@@ -8,8 +8,8 @@ using System.Net.Sockets;
 
 namespace PlexShareNetwork.Communication
 {
-	public interface ICommunicator
-	{
+    public interface ICommunicator
+    {
         /// <summary>
         /// Client side: Connects to the server and starts all threads.
         /// Server side: Starts the tcp client connect request listener
@@ -98,5 +98,5 @@ namespace PlexShareNetwork.Communication
         /// <returns> void </returns>
         public void Subscribe(string moduleName, INotificationHandler
             notificationHandler, bool isHighPriority = false);
-	}
+    }
 }

@@ -15,22 +15,22 @@ using System.Threading.Tasks;
 
 namespace PlexShareNetwork.Sockets
 {
-	public class SendQueueListenerServer
-	{
-		// the thread which will be running
-		private readonly Thread _sendQueueListenerThread;
-		// boolean to tell whether thread is running or stopped
-		private bool _runSendQueueListenerThread;
+    public class SendQueueListenerServer
+    {
+        // the thread which will be running
+        private readonly Thread _sendQueueListenerThread;
+        // boolean to tell whether thread is running or stopped
+        private bool _runSendQueueListenerThread;
 
         // declare the sending queue
-		private readonly SendingQueue _sendingQueue;
+        private readonly SendingQueue _sendingQueue;
 
-		// map of clientId to socket connected to the client
-		private readonly Dictionary<string, TcpClient> 
+        // map of clientId to socket connected to the client
+        private readonly Dictionary<string, TcpClient> 
             _clientIdToClientSocketMap;
 
-		// map of module name to the module's notification handlers
-		private readonly Dictionary<string, INotificationHandler> 
+        // map of module name to the module's notification handlers
+        private readonly Dictionary<string, INotificationHandler> 
             _moduleToNotificationHandlerMap;
 
         /// <summary>
@@ -47,42 +47,42 @@ namespace PlexShareNetwork.Sockets
         /// </param>
         public SendQueueListenerServer(SendingQueue sendingQueue, 
             Dictionary<string, TcpClient> clientIdToClientSocketMap,
-			Dictionary<string, INotificationHandler> 
+            Dictionary<string, INotificationHandler> 
             moduleToNotificationHandlerMap)
-		{
+        {
             _sendingQueue = sendingQueue;
-			_clientIdToClientSocketMap = clientIdToClientSocketMap;
-			_moduleToNotificationHandlerMap = 
+            _clientIdToClientSocketMap = clientIdToClientSocketMap;
+            _moduleToNotificationHandlerMap = 
                 moduleToNotificationHandlerMap;
             _sendQueueListenerThread = new Thread(Listen);
         }
 
-		/// <summary>
-		/// Starts the send queue listener server thread.
-		/// </summary>
-		/// <returns> void </returns>
-		public void Start()
-		{
+        /// <summary>
+        /// Starts the send queue listener server thread.
+        /// </summary>
+        /// <returns> void </returns>
+        public void Start()
+        {
             Trace.WriteLine("[Networking] " +
                 "SendQueueListenerServer.Start() function called.");
             _runSendQueueListenerThread = true;
             _sendQueueListenerThread.Start();
-			Trace.WriteLine("[Networking] SendQueueListenerServer " +
+            Trace.WriteLine("[Networking] SendQueueListenerServer " +
                 "thread started.");
-		}
+        }
 
         /// <summary>
         /// Stops the send queue listener server thread.
         /// </summary>
         /// <returns> void </returns>
         public void Stop()
-		{
+        {
             Trace.WriteLine("[Networking] " +
                 "SendQueueListenerServer.Stop() function called.");
             _runSendQueueListenerThread = false;
             Trace.WriteLine("[Networking] SendQueueListenerServer " +
                 "thread stopped.");
-		}
+        }
 
         /// <summary>
         /// Listens to send queue and when some packet comes in the
@@ -92,11 +92,11 @@ namespace PlexShareNetwork.Sockets
         /// </summary>
         /// <returns> void </returns>
         private void Listen()
-		{
+        {
             Trace.WriteLine("[Networking] " +
                 "SendQueueListenerServer.Listen() function called.");
             while (_runSendQueueListenerThread)
-			{
+            {
                 _sendingQueue.WaitForPacket();
                 Packet packet = _sendingQueue.Dequeue();
 
@@ -126,7 +126,7 @@ namespace PlexShareNetwork.Sockets
                     }
                 }
             }
-		}
+        }
 
         /// <summary>
         /// Sends the data given by bytes to client given by the
@@ -175,14 +175,14 @@ namespace PlexShareNetwork.Sockets
         }
 
         /// <summary>
-		/// Tries to connect to the client 3 times and if connected 
+        /// Tries to connect to the client 3 times and if connected 
         /// then sends the data to the client, otherwise it notifies
         /// all subscribed modules that the client has left.
-		/// </summary>
+        /// </summary>
         /// <param name="clientId"> The client Id. </param>
         /// <param name="bytes"> The data that is to be sent. </param>
         /// <param name="module"> The module sending the data. </param>
-		/// <returns> void </returns>
+        /// <returns> void </returns>
         private void TryReconnectingToClient(string clientId,
             byte[] bytes, string module)
         {
@@ -245,5 +245,5 @@ namespace PlexShareNetwork.Sockets
                     "TryReconnectingToClient(): " + e.Message);
             }
         }
-	}
+    }
 }

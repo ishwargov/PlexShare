@@ -10,10 +10,10 @@ using System.Diagnostics;
 
 namespace PlexShareNetwork
 {
-	public static class CommunicationFactory
-	{
-		private static readonly CommunicatorClient _communicatorClient = new();
-		private static readonly CommunicatorServer _communicatorServer = new();
+    public static class CommunicationFactory
+    {
+        private static readonly CommunicatorClient _communicatorClient = new();
+        private static readonly CommunicatorServer _communicatorServer = new();
 
         /// <summary>
         /// Factory function to get the communicator.
@@ -21,14 +21,14 @@ namespace PlexShareNetwork
         /// <param name="isClientSide"> Boolean telling is it client side or server side. </param>
         /// <returns> The communicator singleton instance. </returns>
         public static ICommunicator GetCommunicator(bool isClientSide = true)
-		{
+        {
             Trace.WriteLine("[Networking] CommunicationFactory.GetCommunicator()" +
                " function called with isClientSide: " + isClientSide.ToString());
             if (isClientSide)
-			{
-				return _communicatorClient;
-			}
-			return _communicatorServer;
-		}
-	}
+            {
+                return _communicatorClient;
+            }
+            return _communicatorServer;
+        }
+    }
 }
