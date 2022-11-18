@@ -432,9 +432,9 @@ namespace PlexShareScreenshare.Server
             // Put the image to the client's image queue
             try
             {
-                Frame frame = JsonSerializer.Deserialize<Frame>(data);
+                //Frame frame = JsonSerializer.Deserialize<Frame>(data);
                 SharedClientScreen client = _subscribers[clientId];
-                client.PutImage(frame);
+                client.PutImage(data);
             }
             catch (Exception e)
             {
@@ -470,7 +470,7 @@ namespace PlexShareScreenshare.Server
                 {
                     clientId
                 };
-                BroadcastClients(clientIds, nameof(ServerDataHeader.Confirmation), (0, 0));
+                //BroadcastClients(clientIds, nameof(ServerDataHeader.Confirmation), (0, 0));
             }
             catch (Exception e)
             {
