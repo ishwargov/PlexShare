@@ -18,7 +18,7 @@
         <SolidColorBrush x:Key="DynamicRecvMsg" Color="DimGray" />
         <SolidColorBrush x:Key="DynamicRecvFile" Color="DarkSlateGray" />
         <SolidColorBrush x:Key="DynamicSendBox" Color="#0f3d3e" />
-        <SolidColorBrush x:Key="DynamicHeader" Color="#FFE77A" />
+        <SolidColorBrush x:Key="DynamicHeader" Color="Teal" />
         <SolidColorBrush x:Key="DynamicButtonBack" Color="Blue" />
         <SolidColorBrush x:Key="DynamicSentReplyMsg" Color="#596e5c" />
 
@@ -443,11 +443,10 @@
         </Border>
         <StackPanel>
             <StackPanel Orientation="Horizontal" Background="{DynamicResource DynamicHeader}" HorizontalAlignment="Stretch">
-                <Image Width="20" Height="20" Margin="4" Source="Icons/online-chat.png" />
-                <TextBlock Foreground="White" Grid.Column="1" Margin="4 0 0 0" FontSize="20"
-                           Text="Welcome to Chat Page" />
+                <!--<Image Width="20" Height="20" Margin="4" Source="Icons/online-chat.png" HorizontalAlignment="Center"/>
+                <TextBlock Foreground="White" Grid.Column="1" Margin="4 0 0 0" FontSize="20" HorizontalAlignment="Stretch"
+                           Text="" Background="{DynamicResource DynamicHeader}" />-->
             </StackPanel>
-
             <!--Grid layout for listbox and textbox-->
             <Grid>
                 <Grid.RowDefinitions>
