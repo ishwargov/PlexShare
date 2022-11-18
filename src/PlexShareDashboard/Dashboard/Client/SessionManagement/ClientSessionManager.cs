@@ -8,7 +8,7 @@ using PlexShareNetwork.Serialization;
 using PlexShareDashboard.Dashboard;
 using Dashboard;
 using PlexShareDashboard.Dashboard.Client.SessionManagement;
-using PlexShareScreenshare;
+using PlexShareScreenshare.Client;
 using PlexShareWhiteboard;
 using PlexShare.Dashboard.Client.SessionManagement;
 using PlexShareDashboard.Dashboard;
@@ -43,7 +43,7 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
         private string _chatSummary;
         public SessionData _clientSessionData;
 
-        // private readonly ScreenShareClient _screenShareClient;
+         private readonly ScreenshareClient screenshareClient;
 
         private SessionAnalytics _sessionAnalytics;
 
@@ -69,7 +69,7 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
             _clientSessionData = new SessionData();
             _user = null;
             _chatSummary = null;
-
+            screenshareClient = ScreenshareClient.GetInstance();
             // _screenShareClient = ScreenShareFactory.GetScreenShareClient();
             Trace.WriteLine("[Dashboard] Created Client Session Manager");
         }
@@ -327,7 +327,7 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
                         // ScreenShare's user ID and username set.
                         // if (Environment.GetEnvironmentVariable("TEST_MODE") != "E2E")
                         //   _screenShareClient.SetUser(_user.userID.ToString(), _user.username);
-
+                        screenshareClient.SetUser(_user.userID.ToString(), _user.username);
 
                         ContentClientFactory.SetUser(_user.userID);
                         // Content's user ID set. 
