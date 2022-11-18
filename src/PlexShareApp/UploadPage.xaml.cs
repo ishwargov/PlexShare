@@ -37,12 +37,12 @@ namespace PlexShareApp
     /// </summary>
     public partial class UploadPage : Page
     {
-        public UploadPage(string sessionId, string userName)
+        public UploadPage(string sessionId, string userName, bool isServer)
         {
             InitializeComponent();
 
             PdfName = "-";
-            UploadViewModel viewModel = new UploadViewModel(sessionId,userName);
+            UploadViewModel viewModel = new UploadViewModel(sessionId,userName,isServer);
             viewModel.PropertyChanged += UploadInfoUpdate;
             this.DataContext = viewModel;
         }

@@ -44,7 +44,7 @@ namespace PlexShareApp
 
             string emailId = currUser.userEmail;
 
-            UploadPage FileUploadPage = new UploadPage(sessionId, emailId);
+            //UploadPage FileUploadPage = new UploadPage(sessionId, emailId);
             //Main.Content = FileUploadPage;
 
             this.DashboardViewModelInstance = new DashboardViewModel();
