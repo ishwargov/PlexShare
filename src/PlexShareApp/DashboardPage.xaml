@@ -9,61 +9,65 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="Page1">
 
-    <Grid Background="White">
+    <Grid Background="#E2DCC8" Margin="0, 40, 0, 0">
         <!--<TextBlock>DashBoard</TextBlock>-->
         <!--defining the grid definitions -->
         <Grid.ColumnDefinitions>
             <!--this column to show the participants list currently in the meeting-->
             <!--<ColumnDefinition Width="3*"/>-->
-            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="2.2*" />
             <!--this column is to show the graphs or the main content of the dahsboard view -->
             <!--<ColumnDefinition Width="10*"/>-->
-            <ColumnDefinition Width="10*"/>
+            <ColumnDefinition Width="12*"/>
             <!-- this column to show the relevant data such as total participant count, chat count and so on-->
             <!--<ColumnDefinition Width="2*"/>-->
             <ColumnDefinition Width="1.7*"/>
         </Grid.ColumnDefinitions>
 
+        
 
         <!--<Border BorderBrush="Green" BorderThickness="2">-->
-
-        <!--now adding the static list to show the list of users in the column 0 -->
-        <ListView Grid.Column="0" x:Name="ContactsLV" ItemsSource="{Binding ParticipantsList}" d:ItemsSource="{d:SampleData ItemCount=5}" >
+        <Border x:Name="Border7" CornerRadius="10" BorderThickness="4px" BorderBrush="{DynamicResource Color1Bg}"  >
+            <!--now adding the static list to show the list of users in the column 0 -->
+            <ListView Grid.Column="0" x:Name="ContactsLV" Background="{DynamicResource Color1Bg}" ItemsSource="{Binding ParticipantsList}" d:ItemsSource="{d:SampleData ItemCount=5} " >
 
             <ListView.ItemTemplate>
 
                 <DataTemplate>
                     <!--<Border BorderBrush="orange" BorderThickness="2">-->
                     <Grid Margin="5, 10, 0, 10">
-                        <!--<Grid.RowDefinitions>
-                                    <RowDefinition Height="1*"/>
-                                    <RowDefinition Height="1*"/>
-                                </Grid.RowDefinitions>-->
+                        
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1*"/>
                             <ColumnDefinition Width="1*"/>
                         </Grid.ColumnDefinitions>
-                        <Image Grid.Column="0"  Grid.RowSpan="2" Source="../Assets/profilepic1.PNG"
-                        Height="32"  HorizontalAlignment="Center" VerticalAlignment="Center" ></Image>
+
+                        <Ellipse Width="30" Height="30">
+                            <Ellipse.Fill>
+                                <ImageBrush ImageSource="{Binding UserProfilePicPath}" />
+                            </Ellipse.Fill>
+                        </Ellipse>
+                       
                         <Grid Grid.Column="1">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="1*"/>
-                                <RowDefinition Height="1*"/>
+                                <!--<RowDefinition Height="1*"/>-->
                             </Grid.RowDefinitions>
-                            <!--<TextBlock Grid.Row="0" TextWrapping="WrapWithOverflow"         Background="LightBlue" Text="{Binding userName}" Margin="12,6,0,0" Padding="10, 0, 10, 0"  TextAlignment="center" FontSize="15"/>-->
-                            <TextBlock TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" Background="WhiteSmoke" Text="{Binding UserName}"  TextAlignment="center" FontSize="15"/>
-                            <!--<TextBlock TextWrapping="WrapWithOverflow" Grid.Row="1" Background="LightBlue" Text="{Binding status}" Margin="12,0,0,6" Padding="10, 0, 10, 0"  TextAlignment="center" />-->
-                            <!--<TextBlock TextWrapping="WrapWithOverflow" Grid.Row="1" Background="WhiteSmoke" Text="{Binding Status}" HorizontalAlignment="Center" VerticalAlignment="Center"  TextAlignment="center" />-->
+                        
+                            <TextBlock TextWrapping="WrapWithOverflow" HorizontalAlignment="Center"  Text="{Binding UserName}" Foreground="White" VerticalAlignment="Center" TextAlignment="center" FontSize="15" Margin="5, 0, 0, 0" />
+                           
                         </Grid>
                     </Grid>
                     <!--</Border>-->
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        <!--</Border>-->
+        </Border>
+        
+        
 
 
-        <Grid Grid.Column="1" Background="White">
+        <Grid Grid.Column="1" Background="#E2DCC8" Margin="20, 0, 20, 10">
             <Grid.RowDefinitions>
 
                 <!--this row is to show the graphs for the usercountvstimestamp, and chatcount vs user-->
@@ -71,7 +75,7 @@
                 <!--this row is to show the pie chart of attentive students and non-attentive students-->
                 <RowDefinition Height="1*"/>
                 <!--this row to show the buttons-->
-                <RowDefinition Height="0.5*"/>
+                <RowDefinition Height="0.3*"/>
 
             </Grid.RowDefinitions>
 
@@ -81,361 +85,327 @@
                 <!--<ColumnDefinition />-->
 
             </Grid.ColumnDefinitions>
-            <!--<Border BorderBrush="orange" BorderThickness="2">-->
 
-            <!--<syncfusion:SfChart Grid.Column="0" Grid.Row="0" Background="WhiteSmoke">
-                <syncfusion:SfChart.PrimaryAxis>
-                    <syncfusion:CategoryAxis Header="Time Stamp" />
-                </syncfusion:SfChart.PrimaryAxis>
-                <syncfusion:SfChart.SecondaryAxis>
-                    <syncfusion:NumericalAxis Header="User Count"/>
-                </syncfusion:SfChart.SecondaryAxis>
-                <syncfusion:SfChart.Legend>
-                    <syncfusion:ChartLegend/>
-                </syncfusion:SfChart.Legend>
-                <syncfusion:ColumnSeries  ItemsSource="{Binding UserCountVsTimeStamps}" XBindingPath="TimeStamp" YBindingPath="UserCount" ShowTooltip="True" >
-                    <syncfusion:ColumnSeries.AdornmentsInfo>
-                        <syncfusion:ChartAdornmentInfo ShowLabel="True" >
-                        </syncfusion:ChartAdornmentInfo>
-                    </syncfusion:ColumnSeries.AdornmentsInfo>
-                </syncfusion:ColumnSeries>
-            </syncfusion:SfChart>-->
-            <!--<lvc:CartesianChart>
-                <lvc:CartesianChart.Series>
-                    <lvc:ColumnSeries Title="Country Cases" Values="{Binding CoronavirusCountryCaseCounts}"/>
-                </lvc:CartesianChart.Series>
-                <lvc:CartesianChart.AxisX>
-                    <lvc:Axis Title="Countries" Labels="{Binding CoronavirusCountryNames}">
-                        <lvc:Axis.Separator>
-                            <lvc:Separator Step="1"/>
-                        </lvc:Axis.Separator>
-                    </lvc:Axis>
-                </lvc:CartesianChart.AxisX>
-                <lvc:CartesianChart.AxisY>
-                    <lvc:Axis Title="Case Count"/>
-                </lvc:CartesianChart.AxisY>
-            </lvc:CartesianChart>-->
-            <!--<lvc:CartesianChart Series="{Binding SeriesCollection}" LegendLocation="Left">
-                <lvc:CartesianChart.AxisX>
-                    <lvc:Axis Title="Belts" Labels="{Binding Labels}"></lvc:Axis>
-                </lvc:CartesianChart.AxisX>
-                <lvc:CartesianChart.AxisY>
-                    <lvc:Axis Title="Members" LabelFormatter="{Binding Formatter}"></lvc:Axis>
-                </lvc:CartesianChart.AxisY>
-            </lvc:CartesianChart>-->
 
-            <lvc:CartesianChart>
-                <lvc:CartesianChart.Series>
-                    <lvc:ColumnSeries d:DataContext="{d:DesignInstance Type=viewmodel:DashboardViewModel}" Title="Country Cases" Values="{Binding UserCountList}"/>
-                </lvc:CartesianChart.Series>
-                <lvc:CartesianChart.AxisX>
-                    <lvc:Axis Title="TimeStamps" Labels="{Binding TimeStampsList}">
-                        <lvc:Axis.Separator>
-                            <lvc:Separator Step="1"/>
-                        </lvc:Axis.Separator>
-                    </lvc:Axis>
-                </lvc:CartesianChart.AxisX>
-                <lvc:CartesianChart.AxisY>
-                    <lvc:Axis Title="User Count"/>
-                </lvc:CartesianChart.AxisY>
-            </lvc:CartesianChart>
+            
+            <Border x:Name="Border" CornerRadius="5" BorderThickness="2px" BorderBrush="{DynamicResource Color1Bg}">
+                <Grid Background="White">
+                    <Grid.RowDefinitions>
 
-            <lvc:CartesianChart Grid.Column="1" Grid.Row="0" >
-                <lvc:CartesianChart.Series>
-                    <lvc:ColumnSeries d:DataContext="{d:DesignInstance Type=viewmodel:DashboardViewModel}" Title="Country Cases" Values="{Binding ChatCountList}"/>
-                </lvc:CartesianChart.Series>
-                <lvc:CartesianChart.AxisX>
-                    <lvc:Axis Title="TimeStamps" Labels="{Binding UserIdList}">
-                        <lvc:Axis.Separator>
-                            <lvc:Separator Step="1"/>
-                        </lvc:Axis.Separator>
-                    </lvc:Axis>
-                </lvc:CartesianChart.AxisX>
-                <lvc:CartesianChart.AxisY>
-                    <lvc:Axis Title="User Count"/>
-                </lvc:CartesianChart.AxisY>
-            </lvc:CartesianChart>
-            <!--chart for showing the chat count vs each user-->
-            <!--<syncfusion:SfChart Grid.Column="1" Grid.Row="0" Background="WhiteSmoke">
-                <syncfusion:SfChart.PrimaryAxis>
-                    <syncfusion:CategoryAxis Header="Time Stamp" />
-                </syncfusion:SfChart.PrimaryAxis>
-                <syncfusion:SfChart.SecondaryAxis>
-                    <syncfusion:NumericalAxis Header="User Count"/>
-                </syncfusion:SfChart.SecondaryAxis>
-                <syncfusion:SfChart.Legend>
-                    <syncfusion:ChartLegend/>
-                </syncfusion:SfChart.Legend>
-                <syncfusion:ColumnSeries  ItemsSource="{Binding UserIdVsChatCounts}" XBindingPath="UserId" YBindingPath="ChatCount" ShowTooltip="True" >
-                    <syncfusion:ColumnSeries.AdornmentsInfo>
-                        <syncfusion:ChartAdornmentInfo ShowLabel="True" >
-                        </syncfusion:ChartAdornmentInfo>
-                    </syncfusion:ColumnSeries.AdornmentsInfo>
-                </syncfusion:ColumnSeries>
-            </syncfusion:SfChart>-->
-            <Grid Grid.Row="1" Grid.ColumnSpan="2" Background="WhiteSmoke">
+                        <RowDefinition Height="16*" ></RowDefinition>
+                        <RowDefinition Height="1*"></RowDefinition>
+        
+                    </Grid.RowDefinitions>
+                    
+                    <lvc:CartesianChart Background="White" Margin="10, 0, 10, 0" >
+                        <lvc:CartesianChart.Series>
+                            <lvc:ColumnSeries d:DataContext="{d:DesignInstance Type=viewmodel:DashboardViewModel}" Title="Country Cases" Values="{Binding UserCountList}"/>
+                        </lvc:CartesianChart.Series>
+                        <lvc:CartesianChart.AxisX>
+                            <lvc:Axis Title="TimeStamps" Labels="{Binding TimeStampsList}">
+                                <lvc:Axis.Separator>
+                                    <lvc:Separator Step="1"/>
+                                </lvc:Axis.Separator>
+                            </lvc:Axis>
+                        </lvc:CartesianChart.AxisX>
+                        <lvc:CartesianChart.AxisY>
+                            <lvc:Axis Title="User Count"/>
+                        </lvc:CartesianChart.AxisY>
+                    </lvc:CartesianChart>
+                <Label Grid.Row="1" FontWeight="Bold"  Content="Usercount vs Timestamps " HorizontalContentAlignment="Center"></Label>
+               
+                </Grid>
+                   
+                    
+            </Border>
+            
+            
+
+            <Border x:Name="Border1" Grid.Column="1" Grid.Row="0" CornerRadius="5" BorderThickness="2px" BorderBrush="Black" Margin="10, 0, 0, 0">
+                <Grid Background="White">
+                    <Grid.RowDefinitions>
+
+                        <RowDefinition Height="16*"></RowDefinition>
+                        <RowDefinition Height="1*"></RowDefinition>
+
+                    </Grid.RowDefinitions>
+                    <lvc:CartesianChart  >
+                    <lvc:CartesianChart.Series>
+                        <lvc:ColumnSeries  d:DataContext="{d:DesignInstance Type=viewmodel:DashboardViewModel}" Title="Chat Count" Values="{Binding ChatCountListForUserName}"/>
+                    </lvc:CartesianChart.Series>
+                    <lvc:CartesianChart.AxisX>
+                        <lvc:Axis Title="Users"  Labels="{Binding UserNameList}">
+                            <lvc:Axis.Separator>
+                                <lvc:Separator Step="1"/>
+                            </lvc:Axis.Separator>
+                        </lvc:Axis>
+                    </lvc:CartesianChart.AxisX>
+                    <lvc:CartesianChart.AxisY>
+                        <lvc:Axis Title="Chat Count"/>
+                    </lvc:CartesianChart.AxisY>
+                </lvc:CartesianChart>
+                    <Label Grid.Row="1" FontWeight="Bold" Content="ChatCount vs UserName " HorizontalContentAlignment="Center"></Label>
+
+                    </Grid>
+            </Border>
+
+            
+            
+
+            <Border x:Name="Border3" Grid.Row="1" Grid.ColumnSpan="2" Background="{DynamicResource Color1Bg}" CornerRadius="20" BorderThickness="10px"  Margin="10, 10, 0, 0">
+                <Grid  Margin="0, 0, 0, 0">
+                
+                   
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1.5*"/>
+                        <RowDefinition Height="5*"/>
+                    </Grid.RowDefinitions>
+                    <Border x:Name="Border4" Grid.Row="0" CornerRadius="5" Background="White" BorderThickness="1px"   Margin="0, 10, 0, 0"  Width="200">
+                        
+                            <TextBlock HorizontalAlignment="Center" FontSize="15" VerticalAlignment="Center" FontWeight="Bold"  Text="Summary Of Session"></TextBlock>
+
+                     
+                    </Border>
+                    <Grid Grid.Row="1" Background="{DynamicResource Color1Bg}">
+                        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Height="100" Width="950"  >
+                            <TextBlock HorizontalAlignment="Center" Foreground="AntiqueWhite" VerticalAlignment="Center" FontWeight="Bold" Text="{Binding SummaryContentSetter}" TextWrapping="Wrap"  ></TextBlock>
+                        </ScrollViewer>
+
+                    </Grid>
+
+
+
+
+                </Grid>
+            </Border>
+
+
+            
+
+            <!--now adding the different buttons for the user-->
+            <Grid Grid.Row="2" Grid.ColumnSpan="2" Background="#E2DCC8">
+               
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="1*"/>
                     <!--<ColumnDefinition Width="1*"/>-->
                 </Grid.ColumnDefinitions>
-                <!--<Grid.RowDefinitions>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                </Grid.RowDefinitions>-->
-                <Grid Grid.Column="0">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="1*"/>
-                        <RowDefinition Height="1*"/>
-                    </Grid.RowDefinitions>
-                    <Grid Grid.Row="0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="1*"/>
-                            <RowDefinition Height="1*"/>
-                        </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Text="Attentive Users"></TextBlock>
-                        <ProgressBar Grid.Row="1"  Margin="10,10,0,13" Name="PBar1" HorizontalAlignment="Center"  VerticalAlignment="Center" Width="150" Height="15" Value="{Binding AttentiveUsersSetter}" ></ProgressBar>
-                    </Grid>
-                    <Grid Grid.Row="1">
+              
 
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="1*"/>
-                            <RowDefinition Height="1*"/>
-                        </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Text=" Non Attentive Users"></TextBlock>
-                        <ProgressBar Grid.Row="1"  Margin="10,10,0,13" Name="PBar2" HorizontalAlignment="Center" VerticalAlignment="Center" Width="150" Height="15" Foreground="Red" Value="{Binding NonAttentiveUsersSetter}" ></ProgressBar>
-                    </Grid>
-                </Grid>
-                <Grid Grid.Column="1">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="1*"/>
-                        <RowDefinition Height="5*"/>
-                    </Grid.RowDefinitions>
-                    <Grid Grid.Row="0">
-                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Text="Summary Of Session"></TextBlock>
-                        
-                    </Grid>
-                    <Grid Grid.Row="1">
-                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Text="{Binding SummaryContentSetter}" TextWrapping="WrapWithOverflow"></TextBlock>
+                <Button  Style="{DynamicResource RoundedButtonStyle}" Name="Refresh" Grid.Column="0" Grid.Row="1" Click="OnRefreshButtonClick"
+                    Background="{DynamicResource Color1Bg}" Height="40" VerticalAlignment="Center" BorderThickness="0"
+                    FontFamily="Cascadia Mono" FontSize="12" Width="120"
+                    Content="Refresh" Foreground="#E2DCC8">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="10,10,10,10"/>
+                        </Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Text" Value="Dashboard"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+               
 
-                    </Grid>
-                </Grid>
+                <Button  Style="{DynamicResource RoundedButtonStyle}" Name="SwitchMode" Grid.Column="1"  Click="OnSwitchModeButtonClick"
+                    Background="{DynamicResource Color1Bg}" Height="40" VerticalAlignment="Center" BorderThickness="0"
+                    FontFamily="Cascadia Mono" FontSize="12" Width="140"
+                    Content="{Binding ButtonContentSetter}" Foreground="#E2DCC8">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="10,10,10,10"/>
+                        </Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Text" Value="Dashboard"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
 
-                <!--<ProgressBar Grid.Row="1" Margin="10,10,0,13" Name="PBar2" HorizontalAlignment="Center" VerticalAlignment="Center" Width="300" Height="30" Value="60" ></ProgressBar>-->
 
+
+              
+                <Button  Style="{DynamicResource RoundedButtonStyle}" Name="EndMeet" Grid.Column="2" Click="OnLeaveButtonClick"
+                    Background="#D15454" Height="40" VerticalAlignment="Center" BorderThickness="0"
+                    FontFamily="Cascadia Mono" FontSize="12" Width="120"
+                    Content="{Binding LeaveButtonContentSetter}" Foreground="#E2DCC8">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="10,10,10,10"/>
+                        </Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Text" Value="Dashboard"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+               
             </Grid>
 
 
-
-            <!--now adding the different buttons for the user-->
-            <Grid Grid.Row="2" Grid.ColumnSpan="2" Background="LightGray">
-                <!--<Grid.RowDefinitions>
-                    <RowDefinition Height="1*"/>
-                </Grid.RowDefinitions>-->
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="1*"/>
-                </Grid.ColumnDefinitions>
-                <!--<Border CornerRadius="15" BorderBrush="Black" BorderThickness="20" >-->
-
-                <Button Grid.Column="0" HorizontalAlignment="center" VerticalAlignment="center" Background="#24a0ed" FontWeight="Bold" x:Name="RefreshButton" Height="40" Width="120" Content="Refresh" Click="OnRefreshButtonClick" >
-
-                </Button>
-                <!--</Border>-->
-                <Button Grid.Column="1" HorizontalAlignment="center" VerticalAlignment="center" Background="#24a0ed" FontWeight="Bold" x:Name="SwitchMode" Height="40" Width="140"   
-                Content="{Binding ButtonContentSetter}" Click="OnSwitchModeButtonClick">
-                </Button>
-
-                <Button Grid.Column="2" HorizontalAlignment="center" VerticalAlignment="center" Background="#24a0ed" FontWeight="Bold" x:Name="UploadAssignment" Height="40" Width="120"   
-                Content="Upload" Click="OnUploadButtonClick">
-                </Button>
-
-                <Button Grid.Column="3" HorizontalAlignment="center" VerticalAlignment="center" Background="Red" FontWeight="Bold" x:Name="LeaveMeeting" Height="40" Width="120"   
-                Content="{Binding LeaveButtonContentSetter}" Click="OnLeaveButtonClick">
-                </Button>
-                <!--<TextBlock Grid.Row="0" TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Hello this is rupesh kumar and here i will be adding the different buttons for the user to be able to show and refresh the contents for the user for this purpose"></TextBlock>-->
-            </Grid>
-
-
-            <!--</Border>-->
         </Grid>
+        
+        
+
+        <Border x:Name="Border5" Background="{DynamicResource Color1Bg}"  Grid.Column="2" CornerRadius="10" BorderThickness="2px" >
+
+            <!--defining the grid for showing the section for the participant count -->
+            <Grid Margin="5, 0, 0, 0" >
+
+                <Grid.RowDefinitions>
+                    <!--to show the current mode of the session-->
+                    <RowDefinition Height="1*"/>
+
+                    <!--the first will be for showing the logo for the plexshare with the name of the application-->
+                    <RowDefinition Height="1*"/>
+                    <!--this row to show the participant count-->
+                    <RowDefinition Height="1*"/>
+                    <!--to show the total chat count-->
+                    <RowDefinition Height="1*"/>
+                    <!--to show the total time the session has started-->
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+                <Grid.Effect>
+                    <DropShadowEffect BlurRadius="20" Color="#FFDEDEDE" RenderingBias="Quality" ShadowDepth="1"/>
+                </Grid.Effect>
+
+                <Grid Grid.Row="0">
 
 
-        <!--defining the grid for showing the section for the participant count -->
-        <Grid Grid.Column="2" Margin="5, 0, 0, 0">
-            <Grid.Background>
-                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                    <GradientStop Color="LightGray" Offset="1"/>
-                    <GradientStop Color="White"/>
-                </LinearGradientBrush>
-            </Grid.Background>
-            <Grid.RowDefinitions>
-                <!--to show the current mode of the session-->
-                <RowDefinition Height="1*"/>
 
-                <!--the first will be for showing the logo for the plexshare with the name of the application-->
-                <RowDefinition Height="1*"/>
-                <!--this row to show the participant count-->
-                <RowDefinition Height="1*"/>
-                <!--to show the total chat count-->
-                <RowDefinition Height="1*"/>
-                <!--to show the total time the session has started-->
-                <RowDefinition Height="1*"/>
-            </Grid.RowDefinitions>
-            <Grid.Effect>
-                <DropShadowEffect BlurRadius="20" Color="#FFDEDEDE" RenderingBias="Quality" ShadowDepth="1"/>
-            </Grid.Effect>
-
-            <Grid Grid.Row="0">
-
-
-                <!--<Border BorderBrush="blue" BorderThickness="2" >-->
-
-                <Rectangle Height="120" Width="200"  Fill="White" RadiusY="10" RadiusX="10" >
-                    <Rectangle.Effect>
-                        <DropShadowEffect BlurRadius="20" Color="#FFDEDEDE" 
+                    <Rectangle Height="100" Width="125"  Fill="White" RadiusY="10" RadiusX="10" >
+                        <Rectangle.Effect>
+                            <DropShadowEffect BlurRadius="20" Color="#FFDEDEDE" 
                                           RenderingBias="Quality" ShadowDepth="1"/>
-                    </Rectangle.Effect>
-                </Rectangle>
-                <!--</Border>-->
-                <Grid  Height="50">
-                    <Grid Width="17" Height="26"  Background="#FFFFAF24" 
+                        </Rectangle.Effect>
+                    </Rectangle>
+                    
+                    <Grid  Height="50">
+                        <Grid Width="17" Height="26"  Background="#FFFFAF24" 
                           HorizontalAlignment="Left" VerticalAlignment="Top" Margin="18,-24,0,0">
-                        <Grid.Effect>
-                            <DropShadowEffect BlurRadius="20" Color="#FFECECEC" 
+                            <Grid.Effect>
+                                <DropShadowEffect BlurRadius="20" Color="#FFECECEC" 
                                               RenderingBias="Quality" ShadowDepth="1"/>
-                        </Grid.Effect>
+                            </Grid.Effect>
+                        </Grid>
+                        <StackPanel Orientation="Vertical"  HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock x:Name="SessionMode" Text="{Binding SessionModeSetter, Mode=OneWay}" 
+                                   FontFamily="Champagne &amp; Limousines" Foreground="Black" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Text="Session Mode" 
+                                   FontFamily="Champagne &amp; Limousines" FontSize="10" Foreground="Black" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="WrapWithOverflow"/>
+                        </StackPanel>
                     </Grid>
-                    <StackPanel Orientation="Vertical"  HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock x:Name="SessionMode" Text="{Binding SessionModeSetter, Mode=OneWay}" 
-                                   FontFamily="Champagne &amp; Limousines" Foreground="Black" FontSize="30" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        <TextBlock Text="Session Mode" 
-                                   FontFamily="Champagne &amp; Limousines" FontSize="13" Foreground="Black" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="WrapWithOverflow"/>
-                    </StackPanel>
                 </Grid>
-            </Grid>
-            <Grid Grid.Row="1">
+                <Grid Grid.Row="1">
 
 
-                <!--<Border BorderBrush="blue" BorderThickness="2" >-->
 
-                <Rectangle Height="120" Width="200"  Fill="White" RadiusY="10" RadiusX="10" >
-                    <Rectangle.Effect>
-                        <DropShadowEffect BlurRadius="20" Color="#FFDEDEDE" 
+                    <Rectangle Height="100" Width="125"  Fill="White" RadiusY="10" RadiusX="10" >
+                        <Rectangle.Effect>
+                            <DropShadowEffect BlurRadius="20" Color="#FFDEDEDE" 
                                           RenderingBias="Quality" ShadowDepth="1"/>
-                    </Rectangle.Effect>
-                </Rectangle>
-                <!--</Border>-->
-                <Grid  Height="50">
-                    <Grid Width="17" Height="26"  Background="#FFFFAF24" 
+                        </Rectangle.Effect>
+                    </Rectangle>
+
+
+                    <Grid  Height="50">
+                        <Grid Width="17" Height="26"  Background="#FFFFAF24" 
                           HorizontalAlignment="Left" VerticalAlignment="Top" Margin="18,-24,0,0">
-                        <Grid.Effect>
-                            <DropShadowEffect BlurRadius="20" Color="#FFECECEC" 
+                            <Grid.Effect>
+                                <DropShadowEffect BlurRadius="20" Color="#FFECECEC" 
                                               RenderingBias="Quality" ShadowDepth="1"/>
-                        </Grid.Effect>
-                    </Grid>
-                    <StackPanel Orientation="Vertical"  HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock x:Name="ParticipantsCount" Text="{Binding TotalParticipantsCountSetter, Mode=OneWay}" 
-                                   FontFamily="Champagne &amp; Limousines" Foreground="Black" FontSize="30" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        <TextBlock Text="Participants Count" 
+                            </Grid.Effect>
+                        </Grid>
+                        <StackPanel Orientation="Vertical"  HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock x:Name="ParticipantsCount" Text="{Binding TotalParticipantsCountSetter, Mode=OneWay}" 
+                                   FontFamily="Champagne &amp; Limousines" Foreground="Black" FontSize="25" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Text="Participants Count" 
                                    FontFamily="Champagne &amp; Limousines" FontSize="13" Foreground="Black" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="WrapWithOverflow"/>
-                    </StackPanel>
+                        </StackPanel>
+                    </Grid>
                 </Grid>
-            </Grid>
 
-            <Grid Grid.Row="2">
+                <Grid Grid.Row="2">
 
-
-                <!--<Border BorderBrush="blue" BorderThickness="2" >-->
-
-                <Rectangle  Height="120" Width="200"  Fill="White" RadiusY="10" RadiusX="10" >
-                    <Rectangle.Effect>
-                        <DropShadowEffect BlurRadius="20" Color="#FFDEDEDE" 
+                    <Rectangle  Height="100" Width="125" Fill="White" RadiusY="10" RadiusX="10" >
+                        <Rectangle.Effect>
+                            <DropShadowEffect BlurRadius="20" Color="#FFDEDEDE" 
                                           RenderingBias="Quality" ShadowDepth="1"/>
-                    </Rectangle.Effect>
-                </Rectangle>
-                <!--</Border>-->
-                <Grid  Height="50">
-                    <Grid Width="17" Height="26"  Background="#FFFFAF24" 
+                        </Rectangle.Effect>
+                    </Rectangle>
+
+
+                    <Grid  Height="50">
+                        <Grid Width="17" Height="26"  Background="#FFFFAF24" 
                           HorizontalAlignment="Left" VerticalAlignment="Top" Margin="18,-24,0,0">
-                        <Grid.Effect>
-                            <DropShadowEffect BlurRadius="20" Color="#FFECECEC" 
+                            <Grid.Effect>
+                                <DropShadowEffect BlurRadius="20" Color="#FFECECEC" 
                                               RenderingBias="Quality" ShadowDepth="1"/>
-                        </Grid.Effect>
-                    </Grid>
-                    <StackPanel Orientation="Vertical"  HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock x:Name="ChatCount" Text="{Binding TotalMessageCountSetter}" 
-                                   FontFamily="Champagne &amp; Limousines" Foreground="Black" FontSize="30" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        <TextBlock Text="Messages Count" 
+                            </Grid.Effect>
+                        </Grid>
+                        <StackPanel Orientation="Vertical"  HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock x:Name="ChatCount" Text="{Binding TotalMessageCountSetter}" 
+                                   FontFamily="Champagne &amp; Limousines" Foreground="Black" FontSize="25" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Text="Messages Count" 
                                    FontFamily="Champagne &amp; Limousines" FontSize="13" Foreground="Black" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="WrapWithOverflow"/>
-                    </StackPanel>
+                        </StackPanel>
+                    </Grid>
                 </Grid>
-            </Grid>
 
-            <Grid Grid.Row="3">
+                <Grid Grid.Row="3">
 
-
-                <!--<Border BorderBrush="blue" BorderThickness="2" >-->
-
-                <Rectangle  Height="120" Width="200"  Fill="White" RadiusY="10" RadiusX="10" >
-                    <Rectangle.Effect>
-                        <DropShadowEffect BlurRadius="20" Color="#FFDEDEDE" 
+                    <Rectangle  Height="100" Width="125" Fill="White" RadiusY="10" RadiusX="10" >
+                        <Rectangle.Effect>
+                            <DropShadowEffect BlurRadius="20" Color="#FFDEDEDE" 
                                           RenderingBias="Quality" ShadowDepth="1"/>
-                    </Rectangle.Effect>
-                </Rectangle>
-                <!--</Border>-->
-                <Grid  Height="50">
-                    <Grid Width="17" Height="26"  Background="#FFFFAF24" 
+                        </Rectangle.Effect>
+                    </Rectangle>
+
+                    <Grid  Height="50">
+                        <Grid Width="17" Height="26"  Background="#FFFFAF24" 
                           HorizontalAlignment="Left" VerticalAlignment="Top" Margin="18,-24,0,0">
-                        <Grid.Effect>
-                            <DropShadowEffect BlurRadius="20" Color="#FFECECEC" 
+                            <Grid.Effect>
+                                <DropShadowEffect BlurRadius="20" Color="#FFECECEC" 
                                               RenderingBias="Quality" ShadowDepth="1"/>
-                        </Grid.Effect>
-                    </Grid>
-                    <StackPanel Orientation="Vertical"  HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock x:Name="EngagementCount" Text="{Binding EngagementRateSetter}" 
-                                   FontFamily="Champagne &amp; Limousines" Foreground="Black" FontSize="30" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        <TextBlock Text="Engagement Rate" 
+                            </Grid.Effect>
+                        </Grid>
+                        <StackPanel Orientation="Vertical"  HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock x:Name="EngagementCount" Text="{Binding EngagementRateSetter}" 
+                                   FontFamily="Champagne &amp; Limousines" Foreground="Black" FontSize="25" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Text="Engagement Rate" 
                                    FontFamily="Champagne &amp; Limousines" FontSize="13" Foreground="Black" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="WrapWithOverflow"/>
-                    </StackPanel>
+                        </StackPanel>
+                    </Grid>
                 </Grid>
-            </Grid>
-            <!--</Border>-->
-            <!--<Border BorderBrush="Black" BorderThickness="2" >-->
-            <Grid Grid.Row="4">
 
+                <Grid Grid.Row="4">
 
-                <!--<Border BorderBrush="blue" BorderThickness="2" >-->
-
-                <Rectangle  Height="120" Width="200" Fill="White" RadiusY="10" RadiusX="10" >
-                    <Rectangle.Effect>
-                        <DropShadowEffect BlurRadius="20" Color="#FFDEDEDE" 
+                    <Rectangle  Height="100" Width="125" Fill="White" RadiusY="10" RadiusX="10" >
+                        <Rectangle.Effect>
+                            <DropShadowEffect BlurRadius="20" Color="#FFDEDEDE" 
                                           RenderingBias="Quality" ShadowDepth="1"/>
-                    </Rectangle.Effect>
-                </Rectangle>
-                <!--</Border>-->
-                <Grid  Height="50">
-                    <Grid Width="17" Height="26"  Background="#FFFFAF24" 
+                        </Rectangle.Effect>
+                    </Rectangle>
+                    
+                    
+                    <Grid  Height="50">
+                        <Grid Width="17" Height="26"  Background="#FFFFAF24" 
                           HorizontalAlignment="Left" VerticalAlignment="Top" Margin="18,-24,0,0">
-                        <Grid.Effect>
-                            <DropShadowEffect BlurRadius="20" Color="#FFECECEC" 
+                            <Grid.Effect>
+                                <DropShadowEffect BlurRadius="20" Color="#FFECECEC" 
                                               RenderingBias="Quality" ShadowDepth="1"/>
-                        </Grid.Effect>
-                    </Grid>
-                    <StackPanel Orientation="Vertical"  HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock x:Name="SomeRandomCount" Text="{Binding SessionScoreSetter}"
-                                   FontFamily="Champagne &amp; Limousines" Foreground="Black" FontSize="30" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        <TextBlock Text="Session Score" 
+                            </Grid.Effect>
+                        </Grid>
+                        <StackPanel Orientation="Vertical"  HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock x:Name="SomeRandomCount" Text="{Binding SessionScoreSetter}"
+                                   FontFamily="Champagne &amp; Limousines" Foreground="Black" FontSize="25" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Text="Session Score" 
                                    FontFamily="Champagne &amp; Limousines" FontSize="13" Foreground="Black" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="WrapWithOverflow"/>
-                    </StackPanel>
+                        </StackPanel>
+                    </Grid>
                 </Grid>
+
             </Grid>
-
-            <!--</Border>-->
-        </Grid>
-
+        </Border>
+      
     </Grid>
 </Page>

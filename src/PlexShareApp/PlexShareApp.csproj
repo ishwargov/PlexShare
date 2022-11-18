@@ -68,6 +68,17 @@
 	  <None Remove="Icons\tenor.gif" />
 	  <None Remove="Icons\UnpinButton.png" />
 	  <None Remove="Icons\UnpinButton_white.png" />
+		<None Remove="Icons\download.png" />
+		<None Remove="Icons\file.png" />
+		<None Remove="Icons\online-chat.png" />
+		<None Remove="Icons\reply-all.png" />
+		<None Remove="Icons\reply.png" />
+		<None Remove="Icons\send-mail.png" />
+		<None Remove="Icons\upload-file.png" />
+    <None Remove="Icons\upload-file.png" />
+    <None Remove="Icons\delete.png" />
+    <None Remove="Icons\edit.png" />
+    <None Remove="Icons\undo.png" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -119,6 +130,16 @@
 		<Resource Include="Icons\StartShare.png" />
 		<Resource Include="Icons\StopShare.png" />
 		<Resource Include="Icons\UnpinButton.png" />
+		<Resource Include="Icons\download.png" />
+		<Resource Include="Icons\file.png" />
+		<Resource Include="Icons\online-chat.png" />
+		<Resource Include="Icons\reply-all.png" />
+		<Resource Include="Icons\reply.png" />
+		<Resource Include="Icons\send-mail.png" />
+		<Resource Include="Icons\upload-file.png" />
+    <Resource Include="Icons\delete.png" />
+    <Resource Include="Icons\edit.png" />
+    <Resource Include="Icons\undo.png" />
 		<Resource Include="Resources\497-4973038_profile-picture-circle-png-transparent-png.png" />
 		<Resource Include="Resources\AuthScreenImg.jpg" />
 		<Resource Include="Resources\GoogleSignIn.png" />

@@ -1,13 +1,7 @@
 ﻿using Dashboard;
 using PlexShareDashboard.Dashboard.Server.Telemetry;
 using PlexShareContent.DataModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using PlexShareDashboard.Dashboard.Server.SessionManagement;
-using PlexShare.Dashboard.Server.SessionManagement;
 namespace PlexShareTests.DashboardTests.SessionManagement.TestModules
 {
     public class FakeTelemetry : ITelemetry, ITelemetryNotifications
@@ -21,12 +15,12 @@ namespace PlexShareTests.DashboardTests.SessionManagement.TestModules
             sessionAnalytics = new SessionAnalytics();
         }
 
-        public void SaveAnalytics(PlexShareContent.DataModels.ChatThread[] allMessages)
+        public void SaveAnalytics(ChatThread[] allMessages)
         {
 
         }
 
-        public SessionAnalytics GetTelemetryAnalytics(PlexShareContent.DataModels.ChatThread[] allMessages)
+        public SessionAnalytics GetTelemetryAnalytics(ChatThread[] allMessages)
         {
             return sessionAnalytics;
         }
