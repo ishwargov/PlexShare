@@ -274,7 +274,7 @@ namespace PlexShareTests.ScreenshareTests
             Thread.Sleep(10000);
 
             // Stop the processing of the images for the client
-            client.StopProcessing();
+            client.StopProcessing().Wait();
 
             // Assert
             // The "CurrentImage" variable of the client should not be null at the end
