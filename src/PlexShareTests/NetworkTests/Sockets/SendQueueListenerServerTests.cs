@@ -160,6 +160,7 @@ namespace PlexShareTests.NetworkTests.Sockets
                         sendPackets, clientReceivingQueues[i], count);
                 }
             }
+            sendQueueListenerServer.Stop();
         }
 
         /// <summary>

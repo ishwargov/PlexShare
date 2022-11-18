@@ -75,6 +75,7 @@ namespace PlexShareTests.NetworkTests.Sockets
                 sendPackets, sendingQueue);
             NetworkTestGlobals.PacketsReceiveAssert(
                 sendPackets, receivingQueue, count);
+            sendQueueListenerClient.Stop();
         }
 
         /// <summary>

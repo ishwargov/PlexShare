@@ -28,7 +28,7 @@ namespace PlexShareNetwork.Communication
         private readonly ReceiveQueueListener _receiveQueueListener;
 
         // tcp listener to listen for client connect requests
-        private readonly TcpListener _tcpClientConnectRequestListener;
+        private TcpListener _tcpClientConnectRequestListener;
 
         // map to store the sockets of the clients to send data
         private readonly Dictionary<string, TcpClient>
@@ -49,10 +49,6 @@ namespace PlexShareNetwork.Communication
         // boolean to tell whether thread is running or stopped
         private bool _runClientConnectReuqestAcceptorThread;
 
-        // variables to store ip address and port of the server
-        private readonly IPAddress ip;
-        private readonly int port;
-
         /// <summary>
         /// Constructor finds the ip address and port of the current
         /// machine, and initialize the tcp listener on that IP and
@@ -60,14 +56,6 @@ namespace PlexShareNetwork.Communication
         /// </summary>
         public CommunicatorServer()
         {
-            // find ip address and port of the current machine and
-            // initialize tcp client connect request listener on
-            // this ip address and port
-            ip = IPAddress.Parse(FindIpAddress());
-            port = FindFreePort(ip);
-            _tcpClientConnectRequestListener = new TcpListener(
-                IPAddress.Any, port);
-
             // SendQueueListenerServer listens to the sending queue and
             // sends the packets whenever they comes into the queue
             // it also notifies all modules when a client disconnects
@@ -108,7 +96,13 @@ namespace PlexShareNetwork.Communication
                 "CommunicatorServer.Start() function called.");
             try
             {
-                // start the tcp client connect request listener
+                // find ip address and port of the current machine and
+                // initialize and start tcp client connect request
+                // listener on this ip address and port
+                IPAddress ip = IPAddress.Parse(FindIpAddress());
+                int port = FindFreePort(ip);
+                _tcpClientConnectRequestListener = new TcpListener(
+                    IPAddress.Any, port);
                 _tcpClientConnectRequestListener.Start();
 
                 // start all threads

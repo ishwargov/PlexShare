@@ -66,6 +66,7 @@ namespace PlexShareTests.NetworkTests.Sockets
             NetworkTestGlobals.SendPackets(sendPackets, clientSocket);
             NetworkTestGlobals.PacketsReceiveAssert(
                 sendPackets, receivingQueue, count);
+            socketListener.Stop();
         }
 
         /// <summary>
@@ -120,6 +121,22 @@ namespace PlexShareTests.NetworkTests.Sockets
         {
             PacketsReceiveTest(
                 _largePacketSize, _multiplePacketsCount);
+        }
+
+        /// <summary>
+        /// Tests error catch when starting socket listener
+        /// </summary>
+        /// <returns> void </returns>
+        [Fact]
+        public void SocketListenerStartErrorCatchTest()
+        {
+            // start socket listener without connecting socket
+            // so error must be thrown and catch
+            TcpClient serverSocket = null;
+            ReceivingQueue receivingQueue = new();
+            SocketListener socketListener =
+                new(receivingQueue, serverSocket);
+            socketListener.Start();
         }
     }
 }

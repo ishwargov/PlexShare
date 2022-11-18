@@ -16,7 +16,7 @@ namespace PlexShareNetwork.Sockets
     public class SendQueueListenerClient
     {
         // the thread which will be running
-        private readonly Thread _sendQueueListenerThread;
+        private Thread _sendQueueListenerThread;
         // boolean to tell whether thread is running or stopped
         private bool _runSendQueueListenerThread;
 
@@ -36,7 +36,6 @@ namespace PlexShareNetwork.Sockets
         {
             _sendingQueue = sendingQueue;
             _clientSocket = clientSocket;
-            _sendQueueListenerThread = new Thread(Listen);
         }
 
         /// <summary>
@@ -48,6 +47,7 @@ namespace PlexShareNetwork.Sockets
             Trace.WriteLine("[Networking] " +
                 "SendQueueListenerClient.Start() function called.");
             _runSendQueueListenerThread = true;
+            _sendQueueListenerThread = new Thread(Listen);
             _sendQueueListenerThread.Start();
             Trace.WriteLine("[Networking] SendQueueListenerClient " +
                 "thread started.");
@@ -62,6 +62,7 @@ namespace PlexShareNetwork.Sockets
             Trace.WriteLine("[Networking] " +
                 "SendQueueListenerClient.Stop() function called.");
             _runSendQueueListenerThread = false;
+            _sendQueueListenerThread.Join();
             Trace.WriteLine("[Networking] SendQueueListenerClient " +
                 "thread stopped.");
         }
@@ -77,7 +78,20 @@ namespace PlexShareNetwork.Sockets
                 "SendQueueListenerClient.Listen() function called.");
             while (_runSendQueueListenerThread)
             {
-                _sendingQueue.WaitForPacket();
+                // keep waiting while boolean to run the thread is
+                // set to true and sending queue is empty
+                while (_runSendQueueListenerThread && 
+                    _sendingQueue.IsEmpty())
+                {
+                    Thread.Sleep(100);
+                }
+                // if boolean to run the thread is set to false
+                // then break
+                if (_runSendQueueListenerThread == false)
+                {
+                    break;
+                }
+
                 Packet packet = _sendingQueue.Dequeue();
 
                 // convert packet to string as string can be sent
