@@ -260,7 +260,7 @@
 																FontWeight="light"
 																VerticalAlignment="Center"
 																Margin="10 0 0 0">
-                                `</TextBlock>
+                                </TextBlock>
                             <Slider x:Name="ShapeThicknessSlider" Foreground="Black" Maximum="20" TickPlacement="BottomRight" TickFrequency="5" Margin="5 5 5 5" ValueChanged="ChangeShapeThickness"></Slider>
                         </StackPanel>
                     </Grid>
@@ -286,6 +286,26 @@
                             <Grid Grid.Column="1">
                                 <ToggleButton
 								Name ="ShapeStroke" Style="{StaticResource TopBarStyle}" ToolTip="Border Color" >
+                                    <Image Source="Assets/crayon.png"></Image>
+                                </ToggleButton>
+                            </Grid>
+                        </Grid>
+                    </StackPanel>
+
+                </Border>
+            </DockPanel>
+
+
+            <DockPanel  Name="StrokeToolBar" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility ="Collapsed">
+                <Border Background="WhiteSmoke" CornerRadius="15">
+                    <StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Grid Grid.Column="0">
+                                <ToggleButton
+								Name ="BrushLineStroke" Style="{StaticResource TopBarStyle}" ToolTip="Border Color" >
                                     <Image Source="Assets/crayon.png"></Image>
                                 </ToggleButton>
                             </Grid>
