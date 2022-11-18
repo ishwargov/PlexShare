@@ -24,7 +24,6 @@ namespace PlexShareApp
             InitializeComponent();
             ScreenshareClientViewModel viewModel = new();
             this.DataContext = viewModel;
-            viewModel.SharingScreen = false;
         }
 
         /// <summary>

@@ -121,15 +121,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Resource Include="Icons\NextPageButton.png" />
-		<Resource Include="Icons\NoClient.gif" />
-		<Resource Include="Icons\NotSharedScreenBackground.webp" />
-		<Resource Include="Icons\PinButton.png" />
-		<Resource Include="Icons\PreviousPageButton.png" />
-		<Resource Include="Icons\SharedScreenBackground.jpeg" />
-		<Resource Include="Icons\StartShare.png" />
-		<Resource Include="Icons\StopShare.png" />
-		<Resource Include="Icons\UnpinButton.png" />
+		<Resource Include="ScreenshareIcons\NextPageButton.png" />
+		<Resource Include="ScreenshareIcons\NoClient.gif" />
+		<Resource Include="ScreenshareIcons\NotSharedScreenBackground.webp" />
+		<Resource Include="ScreenshareIcons\PinButton.png" />
+		<Resource Include="ScreenshareIcons\PreviousPageButton.png" />
+		<Resource Include="ScreenshareIcons\SharedScreenBackground.jpeg" />
+		<Resource Include="ScreenshareIcons\StartShare.png" />
+		<Resource Include="ScreenshareIcons\StopShare.png" />
+		<Resource Include="ScreenshareIcons\UnpinButton.png" />
 		<Resource Include="Icons\download.png" />
 		<Resource Include="Icons\file.png" />
 		<Resource Include="Icons\online-chat.png" />

@@ -75,7 +75,7 @@
                     </Style>
                 </Button.Resources>
                 <!-- Give an icon to the button -->
-                <Image Source = "\Icons\PreviousPageButton.png" Height="30"/>
+                <Image Source = "ScreenshareIcons/PreviousPageButton.png" Height="30"/>
             </Button>
             
             <!-- Create a Textblock to write the current page number and total number of pages -->
@@ -115,7 +115,7 @@
                     </Style>
                 </Button.Resources>
                 <!-- Give an image to the button -->
-                <Image Source = "\Icons\NextPageButton.png" Height="30"/>
+                <Image Source = "ScreenshareIcons/NextPageButton.png" Height="30"/>
             </Button >
         </DockPanel >
 
@@ -139,7 +139,7 @@
         <StackPanel Orientation="Vertical" Grid.Row="0">
             
             <!-- Give an animated GIF -->
-            <Image gif:AnimationBehavior.SourceUri="Icons/NoClient.gif" Height="300" VerticalAlignment="Center" 
+            <Image gif:AnimationBehavior.SourceUri="ScreenshareIcons/NoClient.gif" Height="300" VerticalAlignment="Center" 
                    HorizontalAlignment="Center" Margin="0,200,0,20"/>
 
             <!-- Create a textblock to write a msg -->
@@ -190,7 +190,7 @@
                                         ToolTip="Pin User" BorderThickness="0" Cursor="Hand" Opacity="0.7">
                                     
                                     <!-- Assign an icon to it -->
-                                    <Image Source="Icons/PinButton.png" Height="23" Width="23" Margin="0,3,0,0"/>
+                                    <Image Source="ScreenshareIcons/PinButton.png" Height="23" Width="23" Margin="0,3,0,0"/>
                                     
                                     <!-- This button will be shown only when mouse is hovered over the tile -->
                                     <!-- And the tile should be in unpin state -->
@@ -220,7 +220,7 @@
                                         Click="OnUnpinButtonClicked" ToolTip="Unpin User" BorderThickness="0" CommandParameter ="{Binding Id, Mode=OneWay}">
                                     
                                     <!-- Assign an icon to the button -->
-                                    <Image Source="Icons/UnpinButton.png" Width="25" Height="25"/>
+                                    <Image Source="ScreenshareIcons/UnpinButton.png" Width="25" Height="25"/>
                                     
                                     <!-- This button which will be shown only on hovering over the tile -->
                                     <!-- The tile should be in pinned state -->

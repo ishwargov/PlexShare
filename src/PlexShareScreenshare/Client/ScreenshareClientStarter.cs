@@ -115,11 +115,10 @@ namespace PlexShareScreenshare.Client
                 // if it is SEND packet then start image sending (if not already started) and 
                 // set the resolution as in the packet
                 Trace.WriteLine(Utils.GetDebugMessage("Got SEND packet from server", withTimeStamp: true));
-                if (!_isScreenSharing)
-                {
-                    // starting capturer, processor and Image Sending
-                    StartImageSending();
-                }
+
+                // starting capturer, processor and Image Sending
+                StartImageSending();
+
                 int windowCount = int.Parse(dataPacket.Data);
                 _processor.SetNewResolution(windowCount);
                 Trace.WriteLine(Utils.GetDebugMessage("Successfully set the new resolution", withTimeStamp: true));
@@ -149,20 +148,13 @@ namespace PlexShareScreenshare.Client
             {
                 _imageCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
-                Frame img = _processor.GetFrame(_imageCancellationTokenSource.Token);
-                // if the difference between the current and the new image is nothing then
-                // dont send a packet to the server
-                if (img.Pixels.Count == 0) continue;
-
-                // else serialize the processed frame and send it to the server
-                string serializedImg = JsonSerializer.Serialize(img);
-                Debug.Assert(_id != null, Utils.GetDebugMessage("_id property found null", withTimeStamp: true));
-                Debug.Assert(_name != null, Utils.GetDebugMessage("_name property found null", withTimeStamp: true));
+                string serializedImg = _processor.GetFrame(_imageCancellationTokenSource.Token);
 
                 DataPacket dataPacket = new(_id, _name, ClientDataHeader.Image.ToString(), serializedImg);
                 string serializedData = JsonSerializer.Serialize(dataPacket);
 
                 _communicator.Send(serializedData, Utils.ModuleIdentifier, null);
+                Trace.WriteLine(Utils.GetDebugMessage($"Sent frame of size {serializedData.Length}", withTimeStamp: true));
             }
         }
 

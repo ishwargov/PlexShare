@@ -5,14 +5,17 @@
 /// the image bits that are different from the previous image
 ///</summary>
 
+using K4os.Compression.LZ4;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Runtime.InteropServices;
+using System.IO;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+
 
 namespace PlexShareScreenshare.Client
 {
@@ -23,7 +26,7 @@ namespace PlexShareScreenshare.Client
     {
         // The queue in which the image will be enqueued after
         // processing it
-        private readonly Queue<Frame> _processedFrame;
+        private readonly Queue<string> _processedFrame;
 
         // Processing task
         private Task? _processorTask;
@@ -46,6 +49,9 @@ namespace PlexShareScreenshare.Client
         // Storing the previous frame
         Bitmap? prevImage;
 
+        private byte[] _compressionBuffer;
+        private byte[] _compressedBuffer;
+
         /// <summary>
         /// Called by ScreenshareClient.
         /// Initializes queue, oldRes, newRes, cancellation token and the previous image.
@@ -53,15 +59,19 @@ namespace PlexShareScreenshare.Client
         public ScreenProcessor(ScreenCapturer Capturer)
         {
             _capturer = Capturer;
-            _processedFrame = new Queue<Frame>();
+            _processedFrame = new Queue<string>();
             ResolutionLock = new();
+
+            _compressionBuffer = new byte[1280 * 720 * 4];
+            _compressedBuffer = new byte[LZ4Codec.MaximumOutputSize(this._compressionBuffer.Length) + 4];
+
             Trace.WriteLine(Utils.GetDebugMessage("Successfully created an instance of ScreenProcessor", withTimeStamp: true));
         }
 
         /// <summary>
         /// Pops and return the image from the queue
         /// </summary>
-        public Frame GetFrame(CancellationToken token)
+        public string GetFrame(CancellationToken token)
         {
             while (_processedFrame.Count == 0 && !token.IsCancellationRequested)
             {
@@ -88,66 +98,56 @@ namespace PlexShareScreenshare.Client
         /// In this function we go through every pixel of both the images and
         /// returns list of those pixels which are different in both the images
         /// </summary>
-        public static List<Pixel> ProcessUsingLockbits(Bitmap processedBitmap, Bitmap processedBitmap1)
+        private unsafe Bitmap Process(Bitmap curr, Bitmap prev)
         {
-            // List for storing the difference in pixels
-            List<Pixel> tmp = new();
-            int count = 0;
-            // Getting BitmapData from the Bitmap of first image
-            // by locking the bits
-            BitmapData bitmapData = processedBitmap.LockBits(new Rectangle(0, 0, processedBitmap.Width, processedBitmap.Height), ImageLockMode.ReadWrite, processedBitmap.PixelFormat);
+            BitmapData currData = curr.LockBits(new Rectangle(0, 0, curr.Width, curr.Height), ImageLockMode.ReadWrite, curr.PixelFormat);
+            BitmapData prevData = prev.LockBits(new Rectangle(0, 0, prev.Width, prev.Height), ImageLockMode.ReadWrite, prev.PixelFormat);
 
-            // Flattening of image into an array
-            int bytesPerPixel = Bitmap.GetPixelFormatSize(processedBitmap.PixelFormat) / 8;
-            int byteCount = bitmapData.Stride * processedBitmap.Height;
-            byte[] pixels = new byte[byteCount];
-            IntPtr ptrFirstPixel = bitmapData.Scan0;
-            Marshal.Copy(ptrFirstPixel, pixels, 0, pixels.Length);
-            int heightInPixels = bitmapData.Height;
-            int widthInBytes = bitmapData.Width * bytesPerPixel;
-            processedBitmap.UnlockBits(bitmapData);
+            int bytesPerPixel = Bitmap.GetPixelFormatSize(curr.PixelFormat) / 8;
+            int heightInPixels = currData.Height;
+            int widthInBytes = currData.Width * bytesPerPixel;
 
-            // Getting BitmapData from the Bitmap of second image
-            BitmapData bitmapData1 = processedBitmap1.LockBits(new Rectangle(0, 0, processedBitmap1.Width, processedBitmap1.Height), ImageLockMode.ReadWrite, processedBitmap1.PixelFormat);
+            byte* currptr = (byte*)currData.Scan0;
+            byte* prevptr = (byte*)prevData.Scan0;
 
-            // Flattening of image into an array
-            int byteCount1 = bitmapData1.Stride * processedBitmap1.Height;
-            byte[] pixels1 = new byte[byteCount1];
-            IntPtr ptrFirstPixel1 = bitmapData1.Scan0;
-            Marshal.Copy(ptrFirstPixel1, pixels1, 0, pixels1.Length);
-            processedBitmap1.UnlockBits(bitmapData1);
+            Bitmap newb = new Bitmap(curr.Width, curr.Height);
+            BitmapData bmd = newb.LockBits(new Rectangle(0, 0, 10, 10), System.Drawing.Imaging.ImageLockMode.ReadOnly, newb.PixelFormat);
+            byte* ptr = (byte*)bmd.Scan0;
 
-            // Now iterating over the image array and checking the difference 
-            // in pixel values
+            int diff = 0;
+
             for (int y = 0; y < heightInPixels; y++)
             {
-                int currentLine = y * bitmapData.Stride;
-                int currentLine1 = y * bitmapData1.Stride;
+                int currentLine = y * currData.Stride;
+
                 for (int x = 0; x < widthInBytes; x += bytesPerPixel)
                 {
-                    // getting the color values from the two images
-                    int oldBlue = pixels[currentLine + x];
-                    int oldGreen = pixels[currentLine + x + 1];
-                    int oldRed = pixels[currentLine + x + 2];
+                    int oldBlue = currptr[currentLine + x];
+                    int oldGreen = currptr[currentLine + x + 1];
+                    int oldRed = currptr[currentLine + x + 2];
+                    int oldAlpha = currptr[currentLine + x + 3];
 
-                    int newBlue = pixels1[currentLine1 + x];
-                    int newGreen = pixels1[currentLine1 + x + 1];
-                    int newRed = pixels1[currentLine1 + x + 2];
+                    int newBlue = prevptr[currentLine + x];
+                    int newGreen = prevptr[currentLine + x + 1];
+                    int newRed = prevptr[currentLine + x + 2];
+                    int newAlpha = prevptr[currentLine + x + 3];
 
-                    // now if anyone of them is different then start save this pixel 
-                    // coordinates and the RGB value of the second image
-                    if (oldBlue != newBlue || oldGreen != newGreen || oldRed != newRed)
-                    {
-                        Coordinates coordinates = new() { X = x / bytesPerPixel, Y = y };
-                        RGB rgb = new() { R = newRed, G = newGreen, B = newBlue };
-                        Pixel tmpVal = new() { Coordinates = coordinates, RGB = rgb };
-                        tmp.Add(tmpVal);
-                        count++;
-                    }
+                    ptr[currentLine + x] = (byte)(oldBlue ^ newBlue);
+                    ptr[currentLine + x + 1] = (byte)(oldGreen ^ newGreen);
+                    ptr[currentLine + x + 2] = (byte)(oldRed ^ newRed);
+                    ptr[currentLine + x + 3] = (byte)(oldAlpha ^ newAlpha);
+
+                    if ((oldBlue != newBlue) || (oldGreen != newGreen) || (oldRed != newRed) || (oldAlpha != newAlpha))
+                        diff++;
                 }
             }
-            // returning these pixel details
-            return tmp;
+
+            curr.UnlockBits(currData);
+            prev.UnlockBits(prevData);
+            newb.UnlockBits(bmd);
+
+            if (diff >= 500) return null;
+            return newb;
         }
 
         /// <summary>
@@ -161,11 +161,12 @@ namespace PlexShareScreenshare.Client
             {
                 _cancellationTokenSource.Token.ThrowIfCancellationRequested();
                 Bitmap img = _capturer.GetImage(_cancellationTokenSource.Token);
-                img = Compress(img);
-                List<Pixel> DiffList = ProcessUsingLockbits(prevImage!, img);
+
+                string serialized_buffer = Compress(img);
+
                 lock (_processedFrame)
                 {
-                    _processedFrame.Enqueue(new Frame() { Resolution = NewRes, Pixels = DiffList });
+                    _processedFrame.Enqueue(serialized_buffer);
                 }
                 prevImage = img;
             }
@@ -275,18 +276,41 @@ namespace PlexShareScreenshare.Client
         /// Called by StartProcessing if the image resolution has changed then set
         /// the new image resolution and inititalise prevImage variable.
         /// </summary>
-        public Bitmap Compress(Bitmap img)
+        public string Compress(Bitmap img)
         {
+            Bitmap? new_img = null;
+
             lock (ResolutionLock)
             {
-                if (NewRes != CurrentRes)
-                {
-                    prevImage = new Bitmap(NewRes.Height, NewRes.Width);
-                    CurrentRes = NewRes;
-                }
+                // TODO: change this later
+                //if (prevImage != null && NewRes == CurrentRes)
+                //{
+                //new_img = Process(img, prevImage);
+                //}
+                new_img = null;
             }
-            img = new Bitmap(img, NewRes.Height, NewRes.Width);
-            return img;
+
+            if (new_img == null)
+            {
+                MemoryStream ms = new();
+                img.Save(ms, ImageFormat.Jpeg);
+                return Convert.ToBase64String(ms.ToArray()) + "1";
+            }
+            else
+            {
+                MemoryStream ms = new();
+                new_img.Save(ms, ImageFormat.Bmp);
+                _compressionBuffer = ms.ToArray();
+
+                int new_sz = LZ4Codec.Encode(
+                this._compressionBuffer, 0, this._compressionBuffer.Length,
+                _compressedBuffer, 4, _compressedBuffer.Length - 4);
+
+                Buffer.BlockCopy(BitConverter.GetBytes(new_sz), 0, _compressedBuffer, 0, 4);
+                byte[] data = new byte[new_sz + 4];
+                Array.Copy(_compressedBuffer, 0, data, 0, new_sz + 4);
+                return JsonSerializer.Serialize(data) + "0";
+            }
         }
     }
 }

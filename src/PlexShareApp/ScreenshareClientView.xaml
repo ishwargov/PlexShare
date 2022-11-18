@@ -24,7 +24,7 @@
         <StackPanel Name ="SharedScreen" Orientation="Vertical" Grid.Row="0">
 
             <!-- An image when the screen is being shared -->
-            <Image Source="Icons/SharedScreenBackground.jpeg" Height="300" Margin="0,100,0,20"/>
+            <Image Source="ScreenshareIcons/SharedScreenBackground.jpeg" Height="300" Margin="0,100,0,20"/>
 
             <!-- Text shown when the image is being shared -->
             <TextBlock Text="You are being watched!" Foreground="IndianRed" 
@@ -48,7 +48,7 @@
         <StackPanel Name="NotSharedScreen" Orientation="Vertical" Grid.Row="0">
 
             <!-- An image when the screen is being shared -->
-            <Image gif:AnimationBehavior.SourceUri="Icons/NotSharedScreenBackground.webp" Name="Main" Height="400" Margin="0,100,0,20"/>
+            <Image gif:AnimationBehavior.SourceUri="ScreenshareIcons/NotSharedScreenBackground.webp" Name="Main" Height="400" Margin="0,100,0,20"/>
 
             <!-- Text shown when the image is being shared -->
             <TextBlock Name="MainText" Text="You are not sharing your screen" Foreground="IndianRed" 
@@ -76,7 +76,7 @@
                     Grid.Row="1" BorderThickness="0" VerticalAlignment="Top" Cursor="Hand">
 
                 <!-- Assign an icon to it -->
-                <Image Source = "\Icons\StartShare.png" Width="63"/>
+                <Image Source = "ScreenshareIcons/StartShare.png" Width="63"/>
                 <!-- Style the button -->
                 <Button.Resources>
                     <!-- When the button is active, it will have certain colour -->
@@ -105,7 +105,7 @@
                     Height="60" Width="60" VerticalAlignment="Top" Cursor="Hand">
 
                 <!-- Assign an icon to it -->
-                <Image Source = "\Icons\StopShare.png" Height="27"/>
+                <Image Source = "ScreenshareIcons/StopShare.png" Height="27"/>
                 <!-- Style the button -->
                 <Button.Resources>
                     <!-- Make the button rounded -->
