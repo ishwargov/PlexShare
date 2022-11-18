@@ -46,10 +46,9 @@ namespace PlexShareWhiteboard.BoardComponents
         }
         public ShapeItem ConvertToShapeItem(SerializableShapeItem x)
         {
-
-            Trace.WriteLine("[WhiteBoard] converting to shape item " + x.GeometryString);
             if (x == null)
                 return null;
+            Trace.WriteLine("[WhiteBoard] converting to shape item " + x.GeometryString);
             Trace.WriteLine("[WhiteBoard] converting to shape item chk -1" + x.GeometryString);
 
             Geometry g = null;
