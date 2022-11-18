@@ -29,7 +29,8 @@ namespace PlexShareNetwork.Serialization
             }
             catch(InvalidOperationException e)
             {
-                // Arises if the class 'T' does not have an empty constructor
+                Trace.WriteLine("[Networking] Exception caught in Serializer.Serialize() function.");
+                Trace.WriteLine("[Networking] Could not create a Serializer for the given type.");
                 Trace.WriteLine($"{e.StackTrace}");
                 return null;
             }
@@ -45,6 +46,8 @@ namespace PlexShareNetwork.Serialization
             }
             catch(ArgumentNullException e)
             {
+                Trace.WriteLine("[Networking] Exception caught in Serializer.Serialize() function.");
+                Trace.WriteLine("[Networking] StringWriter object is null.");
                 Trace.WriteLine($"{e.StackTrace}");
                 return null;
             }
@@ -56,6 +59,8 @@ namespace PlexShareNetwork.Serialization
             }
             catch(InvalidOperationException e)
             {
+                Trace.WriteLine("[Networking] Exception caught in Serializer.Serialize() function.");
+                Trace.WriteLine("[Networking] Could not serialize the object of the given type.");
                 Trace.WriteLine($"{e.StackTrace}");
                 return null;
             }
@@ -71,7 +76,7 @@ namespace PlexShareNetwork.Serialization
             T genericObject = default(T);
 
             // Getting the wrapper object which contains the generic object and its datatype
-            Wrapper<T> wrapperObject = returnDeserializedWrapperObject<T>(serializedString);
+            Wrapper<T> wrapperObject = ReturnDeserializedWrapperObject<T>(serializedString);
 
             try
             {
@@ -79,6 +84,8 @@ namespace PlexShareNetwork.Serialization
             }
             catch(NullReferenceException e)
             {
+                Trace.WriteLine("[Networking] Exception caught in Serializer.Deserialize() function.");
+                Trace.WriteLine("[Networking] The wrapper object is null.");
                 Trace.WriteLine($"{e.StackTrace}");
             }
 
@@ -93,7 +100,7 @@ namespace PlexShareNetwork.Serialization
             string dataType = null;
 
             // Getting the wrapper object which contains the generic object and its datatype
-            Wrapper<T> wrapperObject = returnDeserializedWrapperObject<T>(serializedString);
+            Wrapper<T> wrapperObject = ReturnDeserializedWrapperObject<T>(serializedString);
 
             try
             {
@@ -101,6 +108,8 @@ namespace PlexShareNetwork.Serialization
             }
             catch (NullReferenceException e)
             {
+                Trace.WriteLine("[Networking] Exception caught in Serializer.Deserialize() function.");
+                Trace.WriteLine("[Networking] The wrapper object is null.");
                 Trace.WriteLine($"{e.StackTrace}");
             }
 
@@ -110,7 +119,7 @@ namespace PlexShareNetwork.Serialization
         /// <summary>
         /// Given a serialized string in XML format, the method converts it into the wrapper object and returns it
         /// </summary>
-        private Wrapper<T> returnDeserializedWrapperObject<T>(string serializedString)
+        private Wrapper<T> ReturnDeserializedWrapperObject<T>(string serializedString)
         {
             XmlSerializer xmlWrapperSerializer;
             try
@@ -119,7 +128,8 @@ namespace PlexShareNetwork.Serialization
             }
             catch (InvalidOperationException e)
             {
-                // Arises if the class 'T' does not have an empty constructor
+                Trace.WriteLine("[Networking] Exception caught in Serializer.ReturnDeserializedWrapperObject() function.");
+                Trace.WriteLine("[Networking] Could not create a Serializer for the given type.");
                 Trace.WriteLine($"{e.StackTrace}");
                 return default(Wrapper<T>);
             }
@@ -132,6 +142,8 @@ namespace PlexShareNetwork.Serialization
             }
             catch (ArgumentNullException e)
             {
+                Trace.WriteLine("[Networking] Exception caught in Serializer.ReturnDeserializedWrapperObject() function.");
+                Trace.WriteLine("[Networking] The serialized string is null.");
                 Trace.WriteLine($"{e.StackTrace}");
                 return default(Wrapper<T>);
             }
@@ -144,6 +156,8 @@ namespace PlexShareNetwork.Serialization
             }
             catch (ArgumentNullException e)
             {
+                Trace.WriteLine("[Networking] Exception caught in Serializer.ReturnDeserializedWrapperObject() function.");
+                Trace.WriteLine("[Networking] Could not deserialize the object of the given type.");
                 Trace.WriteLine($"{e.StackTrace}");
                 return null;
             }

@@ -36,6 +36,7 @@ namespace PlexShareNetwork.Queues
         /// </summary>
         public bool RegisterModule(string moduleName, bool isHighPriority)
         {
+            Trace.WriteLine("[Networking] SendingQueue.RegisterModule() function called.");
             bool isSuccessful = true;
 
             // Adding the priority of the module into the dictionary
@@ -48,6 +49,7 @@ namespace PlexShareNetwork.Queues
                     _modulesToPriorityMap.Add(moduleName, isHighPriority);
             }
 
+            Trace.WriteLine("[Networking] SendingQueue.RegisterModule() function returned.");
             return isSuccessful;
         }
 
@@ -56,6 +58,8 @@ namespace PlexShareNetwork.Queues
         /// </summary>
         public bool Enqueue(Packet packet)
         {
+            Trace.WriteLine("[Networking] SendingQueue.Enqueue() function called.");
+
             string moduleName = packet.moduleOfPacket;
             bool isHighPriority, containsKey;
 
@@ -91,6 +95,8 @@ namespace PlexShareNetwork.Queues
         /// </summary>
         public Packet Dequeue()
         {
+            Trace.WriteLine("[Networking] SendingQueue.Dequeue() function called.");
+
             Packet packet = null;
 
             // Dequeueing based on priority

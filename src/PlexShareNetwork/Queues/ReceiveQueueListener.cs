@@ -46,7 +46,7 @@ namespace PlexShareNetwork.Queues
                 else
                     _modulesToNotificationHandlerMap.Add(moduleName, notificationHandler);
             }
-
+            Trace.WriteLine("[Networking] ReceiveQueueListener.RegisterModule() function returned.");
             return isSuccessful;
         }
 
