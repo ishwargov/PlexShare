@@ -498,8 +498,8 @@
                                             BorderThickness="1" Background="{DynamicResource DynamicReplyBox}"
                                             Opacity="0.5">
                                         <TextBlock Name="ReplyTextBox" Style="{StaticResource ReplyText}"
-                                                   Foreground="{DynamicResource DynamicTextClr}" TextWrapping="Wrap"
-                                                   Width="425" FontSize="16" Padding="8,5,8,5" />
+                                                   Foreground="{DynamicResource DynamicTextClr}" 
+                                                   Width="425" MaxHeight="40" FontSize="16" Padding="8,5,8,5" />
                                     </Border>
                                 </Grid>
                                 <!--.HorizontalScrollBarVisibility="Auto"
