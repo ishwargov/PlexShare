@@ -44,11 +44,12 @@ namespace PlexShareDashboard.Dashboard
             }
             catch (Exception ex)
             {
-                Trace.WriteLine($"[Networking] Error while serializing: {ex.Message}");
+                
                 throw;
             }
         }
 
+        /*
         /// <inheritdoc />
         string IDashboardSerializer.GetObjectType(string serializedString, string nameSpace)
         {
@@ -56,7 +57,7 @@ namespace PlexShareDashboard.Dashboard
             var obj = DeserializeJson<MetaObject>(serializedString);
             return obj.typ;
         }
-
+        */
         /// <inheritdoc />
         T IDashboardSerializer.Deserialize<T>(string serializedString)
         {
@@ -67,7 +68,6 @@ namespace PlexShareDashboard.Dashboard
             }
             catch (Exception ex)
             {
-                Trace.WriteLine($"[Networking] Error while deserializing: {ex.Message}");
                 throw;
             }
         }

@@ -1,4 +1,15 @@
-﻿using System;
+﻿ /***********************************
+ *Filename = WhiteBoardPage.xaml.cs
+ *
+ *Author = Parvathy S Kumar
+ *
+ * Product     = Plex Share
+ * 
+ * Project     = White Board
+ *
+ * Description = Whiteboard View
+ *************************************/
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -14,6 +25,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Client.Models;
 using PlexShareWhiteboard;
 using PlexShareWhiteboard.BoardComponents;
 
@@ -26,52 +38,95 @@ namespace PlexShareApp
     {
         WhiteBoardViewModel viewModel;
         string currentTool;
+        bool singleTrigger = true;
+        int val;
+
         public WhiteBoardPage(int serverID)
         {
             InitializeComponent();
             //viewModel = new WhiteBoardViewModel();
             viewModel = WhiteBoardViewModel.Instance;
+            Trace.WriteLine("[WhiteBoard] White Board Page is initialised serverId: " + serverID + "viewModel.userId : " + viewModel.userId);
+             
+            if (serverID == 0)
+                viewModel.isServer = true;
+            else
+                viewModel.isServer = false;
+
+            //if (viewModel.canDraw == true && serverID == 0)
+            // init means noone called, ! means someone called (server) and we found out that it is not server
+            if (!viewModel.userId.Equals("init") && serverID != 0)
+            {
+                Trace.WriteLine("[WhiteBoard] recalling setuserid");
+                // this might be that the dashboard had called this before
+                // default it is not a server so we need to reiniiliase only if this is server
+                int passId = Int32.Parse(viewModel.userId);
+                viewModel.SetUserId(passId);
+            }
             viewModel.ShapeItems = new ObservableCollection<ShapeItem>();
             this.DataContext = viewModel;
             this.currentTool = "Select";
+            this.RestorFrameDropDown.SelectionChanged += RestorFrameDropDownSelectionChanged;
         }
 
+        /// <summary>
+        /// Mouse Click Event for the WhiteBorad
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CanvasMouseDown(object sender, MouseButtonEventArgs e)
         {
-            var a = e.GetPosition(sender as Canvas);
-            viewModel.ShapeStart(a);
-            if (viewModel.select.ifSelected)
+            Trace.WriteLine("[WhiteBoard Xaml] candraw "+ viewModel.canDraw);
+            if (viewModel.canDraw)
             {
-
-                string shapeName = viewModel.select.selectedObject.Geometry.GetType().Name;
-                if (shapeName == "EllipseGeometry" || shapeName == "RectangleGeometry" || shapeName == "PathGeometry" || shapeName == "LineGeometry")
+                var a = e.GetPosition(sender as Canvas);
+                viewModel.ShapeStart(a);
+                singleTrigger = true;
+                if (viewModel.select.ifSelected)
                 {
-                    if (this.ShapeToolBar.Visibility == Visibility.Collapsed)
-                        this.ShapeToolBar.Visibility = Visibility.Visible;
-                }
 
+                    string shapeName = viewModel.select.selectedObject.Geometry.GetType().Name;
+                    if (shapeName == "EllipseGeometry" || shapeName == "RectangleGeometry" || shapeName == "PathGeometry" || shapeName == "LineGeometry")
+                    {
+                        if (this.ShapeToolBar.Visibility == Visibility.Collapsed)
+                            this.ShapeToolBar.Visibility = Visibility.Visible;
+                    }
+
+                    else
+                    {
+                        if (this.ShapeToolBar.Visibility == Visibility.Visible)
+                            this.ShapeToolBar.Visibility = Visibility.Collapsed;
+                    }
+
+
+
+                }
                 else
                 {
                     if (this.ShapeToolBar.Visibility == Visibility.Visible)
                         this.ShapeToolBar.Visibility = Visibility.Collapsed;
+
                 }
-
-
-
             }
         }
 
+        /// <summary>
+        /// Event capturing the mouse move
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CanvasMouseMove(object sender, MouseEventArgs e)
         {
             var a = e.GetPosition(sender as Canvas);
             viewModel.ShapeBuilding(a);
+
         }
 
-        private void CanvasMouseUp(object sender, MouseEventArgs e)
-        {
-            var a = e.GetPosition(sender as Canvas);
-            viewModel.ShapeFinished(a);
-        }
+        //private void CanvasMouseUp(object sender, MouseEventArgs e)
+        //{
+        //    var a = e.GetPosition(sender as Canvas);
+        //    viewModel.ShapeFinished(a);
+        //}
         private void CanvasMouseEnter(object sender, MouseEventArgs e)
         {
             //Debug.WriteLine(this.currentTool + " Got it \n");
@@ -94,6 +149,12 @@ namespace PlexShareApp
                 case "Eraser":
                     Cursor = Cursors.Arrow;
                     break;
+                case "text":
+                    Cursor = Cursors.Arrow;
+                    break;
+                case "Line":
+                    Cursor = Cursors.Cross;
+                    break;
                 default:
                     Cursor = Cursors.Arrow;
                     break;
@@ -108,17 +169,44 @@ namespace PlexShareApp
             Cursor = Cursors.Arrow;
 
         }
+
+        private void CanvasMouseUp(object sender, MouseEventArgs e)
+        {
+            if (singleTrigger == true)
+            {
+                Debug.WriteLine("canvas mouse up 11 ");
+                var a = e.GetPosition(sender as Canvas);
+                viewModel.ShapeFinished(a);
+                e.Handled = true;
+            }
+            singleTrigger = false;
+        }
+
+        private void CanvasMouseUp1(object sender, MouseEventArgs e)
+        {
+            if (singleTrigger == true)
+            {
+                Debug.WriteLine("canvas mouse up 11 ");
+                var a = e.GetPosition(sender as Canvas);
+                viewModel.ShapeFinished(a);
+                e.Handled = true;
+            }
+            singleTrigger = false;
+        }
         private void RectangleCreateMode(object sender, RoutedEventArgs e)
         {
             viewModel.UnHighLightIt();
+            viewModel.select.ifSelected = false;
             this.currentTool = "Rectangle";
             if (this.ShapeToolBar.Visibility == Visibility.Collapsed)
                 this.ShapeToolBar.Visibility = Visibility.Visible;
             viewModel.ChangeMode("create_rectangle");
         }
+
         private void EllipseCreateMode(object sender, RoutedEventArgs e)
         {
             viewModel.UnHighLightIt();
+            viewModel.select.ifSelected = false;
             this.currentTool = "Ellipse";
             if (this.ShapeToolBar.Visibility == Visibility.Collapsed)
                 this.ShapeToolBar.Visibility = Visibility.Visible;
@@ -129,24 +217,40 @@ namespace PlexShareApp
         private void FreehandCreateMode(object sender, RoutedEventArgs e)
         {
             viewModel.UnHighLightIt();
+            viewModel.select.ifSelected = false;
             Cursor = Cursors.Pen;
-            if (this.ShapeToolBar.Visibility == Visibility.Collapsed)
-                this.ShapeToolBar.Visibility = Visibility.Visible;
+            if (this.ShapeToolBar.Visibility == Visibility.Visible)
+                this.ShapeToolBar.Visibility = Visibility.Collapsed;
             this.currentTool = "Freehand";
 
             viewModel.ChangeMode("create_freehand");
 
         }
-        private void Textbox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+
+        private void TextboxKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
             Debug.WriteLine("Enter text mode");
             Debug.WriteLine(e.Key);
             viewModel.TextBoxStart(e.Key);
         }
 
+        private void TextboxPreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == Key.Space)
+            {
+                Debug.WriteLine("Space inserted");
+                viewModel.TextBoxStart(e.Key);
+            }
+
+        }
+
         private void TextboxCreateMode(object sender, RoutedEventArgs e)
         {
+
+            this.currentTool = "text";
+
             viewModel.UnHighLightIt();
+            viewModel.select.ifSelected = false;
             Cursor = Cursors.Pen;
             if (this.ShapeToolBar.Visibility == Visibility.Visible)
                 this.ShapeToolBar.Visibility = Visibility.Collapsed;
@@ -155,6 +259,7 @@ namespace PlexShareApp
             viewModel.ChangeMode("create_textbox");
 
         }
+
         private void ColorGreen(object sender, RoutedEventArgs e)
         {
             viewModel.ChangeFillBrush(Brushes.Green);
@@ -171,9 +276,9 @@ namespace PlexShareApp
             viewModel.ChangeFillBrush(Brushes.Yellow);
         }
 
-        private void ColorWhite(object sender, RoutedEventArgs e)
+        private void ColorNull(object sender, RoutedEventArgs e)
         {
-            viewModel.ChangeFillBrush(Brushes.White);
+            viewModel.ChangeFillBrush(null);
         }
 
         private void ColorBlue(object sender, RoutedEventArgs e)
@@ -221,6 +326,7 @@ namespace PlexShareApp
         private void DeleteMode(object sender, RoutedEventArgs e)
         {
             viewModel.UnHighLightIt();
+            viewModel.select.ifSelected = false;
             this.currentTool = "Eraser";
             if (this.ShapeToolBar.Visibility == Visibility.Visible)
                 this.ShapeToolBar.Visibility = Visibility.Collapsed;
@@ -238,15 +344,29 @@ namespace PlexShareApp
         private void ClearMode(object sender, RoutedEventArgs e)
         {
             viewModel.UnHighLightIt();
+            viewModel.select.ifSelected = false;
             if (this.ShapeToolBar.Visibility == Visibility.Visible)
                 this.ShapeToolBar.Visibility = Visibility.Collapsed;
-            viewModel.ClearAllShapes();
+            MessageBoxResult result = MessageBox.Show("Are you sure you want to clear the canvas ? Cick on Save to save your progress.",
+                          "Confirmation", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+            if (result == MessageBoxResult.OK)
+            {
+                viewModel.ClearAllShapes();
+                return;
+            }
+            else
+            {
+                return;
+            }
+
 
         }
 
         private void LineMode(object sender, RoutedEventArgs e)
         {
+            this.currentTool = "Line";
             viewModel.UnHighLightIt();
+            viewModel.select.ifSelected = false;
             if (this.ShapeToolBar.Visibility == Visibility.Visible)
                 this.ShapeToolBar.Visibility = Visibility.Collapsed;
             viewModel.ChangeMode("create_line");
@@ -255,19 +375,91 @@ namespace PlexShareApp
         private void UndoMode(object sender, RoutedEventArgs e)
         {
             viewModel.UnHighLightIt();
+            viewModel.select.ifSelected = false;
             if (this.ShapeToolBar.Visibility == Visibility.Visible)
                 this.ShapeToolBar.Visibility = Visibility.Collapsed;
             viewModel.CallUndo();
             Debug.WriteLine("Undo called xaml");
+            viewModel.modeForUndo = "";
         }
 
         private void RedoMode(object sender, RoutedEventArgs e)
         {
             viewModel.UnHighLightIt();
+            viewModel.select.ifSelected = false;
             if (this.ShapeToolBar.Visibility == Visibility.Visible)
                 this.ShapeToolBar.Visibility = Visibility.Collapsed;
 
             viewModel.CallRedo();
         }
+
+        private void SaveMode(object sender, RoutedEventArgs e)
+        {
+            viewModel.UnHighLightIt();
+            if (this.ShapeToolBar.Visibility == Visibility.Visible)
+                this.ShapeToolBar.Visibility = Visibility.Collapsed;
+            viewModel.SaveSnapshot();
+        }
+
+        private void RestorFrameDropDownSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ListBox listbox = (ListBox)sender;
+
+            if (this.RestorFrameDropDown.SelectedItem != null)
+            {
+
+                string item = listbox.SelectedItem.ToString();
+                string numeric = new String(item.Where(Char.IsDigit).ToArray());
+                int cp = int.Parse(numeric);
+
+                MessageBoxResult result = MessageBox.Show("Are you sure you want to load checkpoint " + numeric + " ? All progress since the last checkpoint would be lost!",
+                              "Confirmation", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.OK)
+                {
+                    viewModel.LoadSnapshot(cp);
+                    this.RestorFrameDropDown.SelectedItem = null;
+                    return;
+                }
+                else
+                {
+                    this.RestorFrameDropDown.SelectedItem = null;
+                    return;
+                }
+            }
+            else
+            {
+                return;
+            }
+        }
+
+        public void ChangeThickness(object sender, RoutedEventArgs e)
+        {
+            int thickness = (int)ThicknessSlider.Value;
+            viewModel.ChangeStrokeThickness(thickness);
+            ShapeThicknessSlider.Value = thickness;
+            LineThicknessSlider.Value = thickness;
+            
+
+        }
+
+        public void ChangeShapeThickness(object sender, RoutedEventArgs e)
+        {
+            int thickness = (int)ShapeThicknessSlider.Value;
+            viewModel.ChangeStrokeThickness(thickness);
+            LineThicknessSlider.Value = thickness;
+            ThicknessSlider.Value = thickness;
+
+        }
+
+        public void LineThicknessChange(object sender, RoutedEventArgs e)
+        {
+            int thickness = (int)LineThicknessSlider.Value;
+            viewModel.ChangeStrokeThickness(thickness);
+            ShapeThicknessSlider.Value = thickness;
+            ThicknessSlider.Value = thickness;
+        }
+
+
+
     }
 }

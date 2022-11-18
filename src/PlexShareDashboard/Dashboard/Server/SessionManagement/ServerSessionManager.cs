@@ -1,4 +1,4 @@
-﻿// This file contains the implementation of Server session manager.
+// This file contains the implementation of Server session manager.
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,12 +13,9 @@ using PlexShareDashboard.Dashboard;
 using PlexShareDashboard.Dashboard.Server.SessionManagement;
 using PlexShareScreenshare.Server;
 using PlexShareWhiteboard;
-using PlexShareDashboard.Dashboard.Server.SessionManagement;
-using PlexShareDashboard.Dashboard;
 using PlexShareNetwork.Communication;
 using PlexShareContent.Server;
-//using PlexShareNetwork.Serialization;
-using PlexShareDashboard.Dashboard;
+using PlexShareContent.DataModels;
 using PlexShareNetwork;
 using System.Threading;
 
@@ -83,11 +80,12 @@ namespace Dashboard.Server.SessionManagement
             _sessionData = new SessionData();
             _serializer = new DashboardSerializer();
             _telemetrySubscribers = new List<ITelemetryNotifications>();
-            //  _summarizer = SummarizerFactory.GetSummarizer();
+             _summarizer = SummarizerFactory.GetSummarizer();
             //  _screenShareServer = ScreenShareFactory.GetScreenShareServer();
 
             //   TraceManager traceManager = new();
             // traceManager.TraceListener();
+            // _communicator = CommunicationFactory.GetCommunicator(false);
 
             userCount = 0;
             moduleIdentifier = "serverSessionManager";
@@ -104,12 +102,13 @@ namespace Dashboard.Server.SessionManagement
         // The  SocketObject received from the networking module is then passed again but with a unique ID to identify object uniquely.
         public void OnClientJoined(TcpClient socketObject)
         {
+            Trace.WriteLine("[Dashboard Server] Assigning the UserID to user");
             lock (this)
             {
                 userCount += 1;
                 if (userCount == 1)
                     _telemetry = testmode ? new Telemetry() : TelemetryFactory.GetTelemetryInstance();
-                UserData tempUser = new("dummy", userCount,null,null);
+                UserData tempUser = new(null, userCount,null,null);
                 _communicator.AddClient(userCount.ToString(), socketObject);
                 SendDataToClient("newID", null, null, null, tempUser, userCount);
             }
@@ -131,7 +130,6 @@ namespace Dashboard.Server.SessionManagement
             if (serializedObject == null)
             {
                 throw new ArgumentNullException("Null serializedObject Exception");
-                return;
             }
 
             // the object is obtained by deserializing the string and handling the cases 
@@ -192,6 +190,7 @@ namespace Dashboard.Server.SessionManagement
         {
             try
             {
+                Trace.WriteLine("[Dashboard] Asking Network to create Server");
                 var meetAddress = _communicator.Start();
 
                 // Invalid credentials results in a returnign a null object
@@ -204,7 +203,9 @@ namespace Dashboard.Server.SessionManagement
                 var ipAddress = meetAddress[..meetAddress.IndexOf(':')];
                 var port = Convert.ToInt32(meetAddress[(meetAddress.IndexOf(':') + 1)..]);
 
-                return _meetingCredentials = new MeetingCredentials(ipAddress, port);
+                 _meetingCredentials = new MeetingCredentials(ipAddress, port);
+                Trace.WriteLine("[Dashboard] Server Created Succesfully");
+                return _meetingCredentials;
             }
             catch (Exception e)
             {
@@ -231,10 +232,7 @@ namespace Dashboard.Server.SessionManagement
         {
             //calling function to toggle the session mode
             _sessionData.ToggleMode();
-
-            // Notify Telemetry about the change in the session object.
-          //  NotifyTelemetryModule();
-
+            Trace.WriteLine("[Dashboard Server] Session Mode changed in Session Data");
             // serialize and broadcast the data back to the client side.
             SendDataToClient("toggleSessionMode", _sessionData, null, null, null);
 
@@ -243,7 +241,7 @@ namespace Dashboard.Server.SessionManagement
 
         //    When client is added this function updates the session, notifies telemetry and
         //     broadcast the new session data to all users.
-        private void ClientArrivalProcedure(ClientToServerData arrivedClient)
+        public void ClientArrivalProcedure(ClientToServerData arrivedClient)
         {
             // create a new user and add it to the session. 
             var user = CreateUser(arrivedClient.userID, arrivedClient.username, arrivedClient.userEmail, arrivedClient.photoUrl);
@@ -257,19 +255,7 @@ namespace Dashboard.Server.SessionManagement
             SendDataToClient("addClient", _sessionData, null, null, user);
         }
 
-        //this method is added for unit testing purpose to check users are added into SessionData
-        public void FakeClientArrivalProcedure(ClientToServerData arrivedClient)
-        {
-            // create a new user and add it to the session. 
-            var user = new UserData(arrivedClient.username, arrivedClient.userID, arrivedClient.userEmail, arrivedClient.photoUrl);
-            AddUserToSession(user);
-
-            // Notify Telemetry about the change in the session object.
-            NotifyTelemetryModule();
-
-            // serialize and broadcast the data back to the client side.
-            SendDataToClient("addClient", _sessionData, null, null, user);
-        }
+        
 
         //     Creates a new user based on the data arrived from the
         //     client side.
@@ -290,32 +276,33 @@ namespace Dashboard.Server.SessionManagement
         private SummaryData CreateSummary()
         {
 
-            if (testmode == true)
-            {
-                _sessionSummary = "This is the summary of the chats that happened in the session";
-                return new SummaryData(_sessionSummary);
-            }
-
             try
             {
-                // fetching all the chats from the content module.
-                PlexShareContent.DataModels.ChatThread[] allChatsTillNow;
-                allChatsTillNow = _contentServer.GetAllMessages().ToArray();
-
-                // creating the summary from the chats
-                  _sessionSummary = _summarizer.GetSummary(allChatsTillNow);
-                //_sessionSummary = "This is temporary Summary";
-
-                // returning the summary
-                return new SummaryData(_sessionSummary);
+                Trace.WriteLine("[Dashboard] Calling Chat Module to provide Chats");
+                if (testmode == false)
+                {
+                    // fetching all the chats from the content module.
+                    ChatThread[] allChatsTillNow;
+                    allChatsTillNow = _contentServer.GetAllMessages().ToArray();
+                   // Trace.WriteLine("[Dashboard] Chats recieved. Calling summary subModule to give summary");
+                    // creating the summary from the chats
+                    _sessionSummary = _summarizer.GetSummary(allChatsTillNow);
+                    // returning the summary
+                    return new SummaryData(_sessionSummary);
+                }
+                else
+                {
+                    _sessionSummary = "This is testing summary";
+                    return new SummaryData(_sessionSummary);
+                }
+                
             }
             catch (Exception e)
             {
+                Trace.WriteLine("[Dashboard] Summary not created");
                 return null;
             }
         }
-
-
 
 
 
@@ -324,27 +311,31 @@ namespace Dashboard.Server.SessionManagement
         //     meet and the client side session manager is also provided with the same information.
         private void EndMeetProcedure(ClientToServerData receivedObject)
         {
+            Trace.WriteLine("[Dashboard] EndMeet Procedure...");
+            
             var tries = 3;
             try
             {
+                Trace.WriteLine("[Dashboard] Trying to Save summary and Analytics...");
                 // n tries are made to save summary and analytics before ending the meet
                 while (tries > 0 && summarySaved == false)
                 {
+                    if(testmode == false)
+                    {
+                        var allChats = _contentServer.GetAllMessages().ToArray();
+                        summarySaved = _summarizer.SaveSummary(allChats);
+                        _telemetry.SaveAnalytics(allChats);
+                    }
                     // Fetching all the chats from the content module
-                    //    var allChats = _contentServer.SGetAllMessages().ToArray();
-
-                    //    summarySaved = _summarizer.SaveSummary(allChats);
-                    //     _telemetry.SaveAnalytics(allChats);
-
-                    if (testmode == true)
+                    
+                    if(testmode == true)
                     {
                         summarySaved = true;
                     }
-
                     tries--;
                 }
                 _sessionData.users.Clear();
-
+                Trace.WriteLine("[Dashboard Server] Sending Client endMeet event");
                 SendDataToClient("endMeet", _sessionData, null, null, null);
             }
             catch (Exception e)
@@ -357,7 +348,12 @@ namespace Dashboard.Server.SessionManagement
             // stopping the communicator and notifying UX server about the End Meet event.
             _communicator.Stop();
             //   _screenShareServer.Dispose();
-            MeetingEnded?.Invoke();
+             MeetingEnded?.Invoke();
+            if(testmode == false)
+            {
+               // Environment.Exit(0);
+                
+            }              
         }
 
 
@@ -368,19 +364,22 @@ namespace Dashboard.Server.SessionManagement
         {
             UserData user = new(receivedObject.username, receivedObject.userID, receivedObject.userEmail, receivedObject.photoUrl);
 
-            if (testmode == true)
-            {
-
-                _sessionAnalytics = new SessionAnalytics();
-                SendDataToClient("getAnalytics", null, null, _sessionAnalytics, user);
-                return;
-            }
+            
 
             try
             {
                 // Fetching the chats and creating analytics on them
-                   var allChats = _contentServer.GetAllMessages().ToArray();
-                   _sessionAnalytics = _telemetry.GetTelemetryAnalytics(allChats);
+               if(testmode == false)
+                {
+                    var allChats = _contentServer.GetAllMessages().ToArray();
+                    _sessionAnalytics = _telemetry.GetTelemetryAnalytics(allChats);
+                }
+                else
+                {
+                    _sessionAnalytics = new SessionAnalytics();
+                }
+               
+                
                 SendDataToClient("getAnalytics", null, null, _sessionAnalytics, user);
             }
             catch (Exception e)
@@ -397,16 +396,11 @@ namespace Dashboard.Server.SessionManagement
         }
 
 
-
-
-        //this function is just for testing 
+        //this function is for UX  
         public SessionData GetSessionData()
         {
             return _sessionData;
         }
-
-
-
 
 
         //     This method is called when a request for getting summary reaches the server side.
@@ -416,6 +410,7 @@ namespace Dashboard.Server.SessionManagement
         {
             var summaryData = CreateSummary();
             UserData user = new(receivedObject.username, receivedObject.userID, receivedObject.userEmail, receivedObject.photoUrl);
+            Trace.WriteLine("Sending summary to client");
             SendDataToClient("getSummary", null, summaryData, null, user);
         }
 
@@ -462,11 +457,17 @@ namespace Dashboard.Server.SessionManagement
         //     Notifies telemetry about it. The new session is then broadcasted to all the users.
         private void RemoveClientProcedure(ClientToServerData receivedObject, int userID = -1)
         {
+            Trace.WriteLine("[Dashboard Server] In RemoveClientProcedure() removing user from sessionData");
             int userIDToRemove;
             if (userID == -1)
+            {
                 userIDToRemove = receivedObject.userID;
+            }
             else
+            {
+                Trace.WriteLine("[Dashboard] Network called the RemoveClientProcedure() to remove user from sessionData");
                 userIDToRemove = userID;
+            }
 
             var removedUser = _sessionData.RemoveUserFromSession(userIDToRemove);
             _communicator.RemoveClient(userIDToRemove.ToString());
@@ -497,9 +498,16 @@ namespace Dashboard.Server.SessionManagement
                 string serializedSessionData = _serializer.Serialize(serverToClientData);
 
                 if (userId == -1)
+                {
+                    Trace.WriteLine("Sending To Network to braoadcast");
                     _communicator.Send(serializedSessionData, moduleIdentifier, null);
+                }
                 else
+                {
+                    Trace.WriteLine("Sending To Network to notify to client ID:" + userId);
                     _communicator.Send(serializedSessionData, moduleIdentifier, userId.ToString());
+
+                }
             }
         }
     }
