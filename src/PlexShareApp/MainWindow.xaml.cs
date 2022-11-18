@@ -24,9 +24,23 @@ namespace PlexShareApp
         public MainWindow()
         {
             InitializeComponent();
-            AuthenticationView authView = new AuthenticationView();
+            
+            /*
+             *  Main Code :
+             */
+            AuthenticationView authView = new();
+
             authView.Show();
             this.Close();
+
+            /*
+             *  If everyone does not like to go through authentication while testing
+             *  Comment the above lines and uncomment the below lines
+             */ 
+
+            //HomePageView Homeview = new HomePageView("Neel","111901057@smail.iitpkd.ac.in", "https://images.unsplash.com/photo-1661956602868-6ae368943878?ixlib=rb-4.0.3&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80");
+            //Homeview.Show();
+            //this.Close();
         }
 
     }

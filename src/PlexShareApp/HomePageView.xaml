@@ -1,4 +1,16 @@
-﻿<Window x:Class="PlexShareApp.HomePageView"
+﻿ <!--/************************************************************
+ * Filename    = HomaPageView.xaml.cs
+ *
+ * Author      = Jasir
+ *
+ * Product     = PlexShare
+ * 
+ * Project     = UX Team
+ *
+ * Description = Interaction Logic for HomePageView.xaml
+ * 
+ ************************************************************-->
+    <Window x:Class="PlexShareApp.HomePageView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,10 +18,12 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:PlexShareApp"
         mc:Ignorable="d"
-        WindowStartupLocation = "Manual"
-        Left="0" Top="0"
+        WindowStartupLocation = "CenterScreen"
         Title="HomePageView"
-        MinWidth="1411" MinHeight="800" WindowStyle="None" Height="722" Width="1291">
+        MinWidth="1411" MinHeight="800" WindowStyle="None" Height="722" Width="1291"
+        ResizeMode="CanResizeWithGrip"
+        AllowsTransparency="True"
+        SizeChanged="Window_SizeChanged" >
     <Window.Resources>
         <Style TargetType="TextBox" x:Key="Round_textbox">
             <Setter Property="Height" Value="50"/>
@@ -121,7 +135,7 @@
             <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="5" Grid.ColumnSpan="2" HorizontalAlignment="Right">
                 <!--Maximize Button-->
                 <Button Width="25"  Height="20" Click="MinimizeApp"
-                                Background="Transparent" ToolTip="Maximise"
+                                Background="Transparent" 
                                 BorderBrush="Transparent">
                     <materialDesign:PackIcon Kind="WindowMinimize" Width="16" Height="16" VerticalAlignment="Center"/>
                 </Button>
@@ -278,7 +292,7 @@
         <!--Join Button-->
         <Button Name="Join_Meeting_Button" Click="Join_Meeting_Button_Click" Grid.Row="4"   Grid.Column="3" Background="{DynamicResource Color4Bg}">
             <Grid Grid.Column="3" HorizontalAlignment="Center" Grid.Row="4">
-                <Image Name="Join_Meeting_image" Source="/Resources/[removal.ai]_tmp-6350549d077ef.png" Stretch="Fill" Margin="55,12,55,12"/>
+                <Image Name="Join_Meeting_image" Source="/Resources/[removal.ai]_tmp-635051040cac5.png" Stretch="Fill" Margin="85,25,65,22" />
             </Grid>
             <Button.Resources>
                 <Style TargetType="Border">
@@ -289,7 +303,7 @@
         <!--New Meeting-->
         <Button Name="New_Meeting_Button" Click="New_Meeting_Button_Click"  Grid.Row="4"   Grid.Column="1" Background="{DynamicResource Color4Bg}">
             <Grid Grid.Column="1" HorizontalAlignment="Center" Grid.Row="4">
-                <Image Name="New_Meeting_image" Source="/Resources/[removal.ai]_tmp-635051040cac5.png" Stretch="Fill" Margin="85,25,65,22"/>
+                <Image Name="New_Meeting_image" Source="/Resources/[removal.ai]_tmp-6350549d077ef.png" Stretch="Fill" Margin="55,12,55,12"/> 
             </Grid>
             <Button.Resources>
                 <Style TargetType="Border">
@@ -324,13 +338,13 @@
             <TextBlock Name="Date" Text="Monday, August 24, 2022" Foreground="White" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" FontSize="26" FontFamily="Yu Gothic UI Semibold" FontWeight="Bold" TextWrapping="Wrap" />
         </Grid>
         <!--PlexShare Title-->
-        <TextBlock Foreground="{DynamicResource Color5Bg}" Grid.ColumnSpan="2" Grid.RowSpan="2" HorizontalAlignment="Left" FontSize="48" FontStyle="Normal" FontFamily="Cascadia Code SemiBold" Grid.Row="2" Grid.Column="1" TextWrapping="Wrap" Text="PlexShare" Width="300"/>
+        <TextBlock Foreground="{DynamicResource Color5Bg}" Grid.ColumnSpan="2" Grid.RowSpan="1" HorizontalAlignment="Left" FontSize="48" FontStyle="Normal" FontFamily="Cascadia Code SemiBold" Grid.Row="3" Grid.Column="1" TextWrapping="Wrap" Text="PlexShare" Width="300"/>
         <!--New Meeting Textbox-->
         <TextBlock Foreground="{DynamicResource Color5Bg}" Name="New_Meeting1" Grid.Column="1" Grid.Row="5" FontFamily="Cascadia Code SemiBold" TextWrapping="Wrap" Text="New Meeting" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="28"/>
         <!--Join Meeting Textbox-->
         <TextBlock Foreground="{DynamicResource Color5Bg}" Name="Join_Meeting" Grid.Column="3" Grid.Row="5" FontFamily="Cascadia Code SemiBold" TextWrapping="Wrap" Text="Join Meeting" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="28"/>
         <!--Session button-->
-        <Button Grid.Column="6" FontSize="18" Background="{DynamicResource Color1Bg}" Foreground="White" FontWeight="DemiBold" Margin="0,5,0,0" Padding="0,0,0,5" Content="Session"  VerticalAlignment="Top"  Grid.Row="1">
+        <Button Grid.Column="6" FontSize="18" Background="{DynamicResource Color1Bg}" Foreground="White" FontWeight="DemiBold" Margin="0,5,0,0" Padding="0,0,0,5" Content="Session"  Click="Button_Click" VerticalAlignment="Top"  Grid.Row="1" Name="Session">
             <Button.Resources>
                 <Style TargetType="Border">
                     <Setter Property="CornerRadius" Value="16"/>
@@ -350,6 +364,22 @@
             <ToggleButton Name="Theme_toggle_button" Click="Theme_toggle_button_Click"  HorizontalAlignment="Left" Height="26" VerticalAlignment="Center" Width="44"  Cursor="Hand" />
             <TextBlock Foreground="{DynamicResource Color5Bg}" Text="Theme" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="24" FontFamily="Cascadia Code SemiBold"/>
         </DockPanel>
-
+        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Bottom">
+            <ProgressBar x:Name="pb1" Height="10" Width="1000"  Orientation="Horizontal" Background="Transparent"  BorderThickness="0" Foreground="{DynamicResource Color1Bg}"></ProgressBar>
+        </StackPanel>
+        <StackPanel Grid.Row="2" Grid.RowSpan="2" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Center">
+            <ProgressBar x:Name="pb3" Height="10" Width="1000"  Orientation="Horizontal" Background="Transparent"  BorderThickness="0" Foreground="{DynamicResource Color6Bg}"></ProgressBar>
+        </StackPanel>
+        <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" VerticalAlignment="Center">
+            <ProgressBar x:Name="pb2" Height="15" Width="1000"  Orientation="Horizontal" Background="Transparent"   BorderThickness="0" Foreground="{DynamicResource Color1Bg}"></ProgressBar>
+        </StackPanel>
+        <StackPanel Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="5" VerticalAlignment="Center">
+            <ProgressBar x:Name="pb4" Height="20" Width="1000"  Orientation="Horizontal" Background="Transparent"   BorderThickness="0" Foreground="{DynamicResource Color1Bg}"></ProgressBar>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Grid.Column="0" Grid.RowSpan="7" HorizontalAlignment="Center">
+            <ProgressBar x:Name="pb5" Height="1000" Width="15"  Orientation="Vertical" Background="Transparent"   BorderThickness="0" Foreground="{DynamicResource Color6Bg}"></ProgressBar>
+        </StackPanel>
+        <!--Cloud session page-->
+        <Frame x:Name="SessionPage" NavigationUIVisibility="Hidden" Grid.Column="1" Grid.ColumnSpan="5" Grid.Row="3" Grid.RowSpan="4"/>
     </Grid>
 </Window>

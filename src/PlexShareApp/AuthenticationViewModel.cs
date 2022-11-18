@@ -1,28 +1,27 @@
-﻿using Newtonsoft.Json;
+﻿/******************************************************************************
+ * Filename    = AuthenticationView.xaml.cs
+ *
+ * Author      = Parichita Das
+ *
+ * Product     = PlexShare
+ * 
+ * Project     = PlexShareApp
+ *
+ * Description = ViewModel for the Authentication Module which will authorize the app to useclient information.
+ * 
+ *****************************************************************************/
+
+using Newtonsoft.Json;
 using System;
-using System.Drawing;
 using System.Threading;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
 using System.Net;
-using System.Net.Sockets;
 using System.Text;
-using System.Windows;
 using System.Security.Cryptography;
-using System.Threading;
 using System.Threading.Tasks;
-using Google.Apis.PeopleService.v1.Data;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using PlexShareApp;
-using System.Text.Json.Nodes;
 using Newtonsoft.Json.Linq;
-using System.Windows.Controls;
 using System.Diagnostics;
-using System.Reflection;
 
 namespace AuthViewModel;
 
@@ -40,15 +39,18 @@ public class AuthenticationViewModel
 
     public AuthenticationViewModel()
     {
-       var  _ = new TraceFile();
     }
- 
+
     /// <summary>
     /// This will be the main function called by the View to authenticate the user
     /// </summary>
-    /// <returns></returns>
+    /// <returns>string with a bool denoting success of Authentication</returns>
+    /// <returns>User Name</returns>
+    /// <returns>Smail ID</returns>
+    /// <returns>Profile Picture URL</returns>
     public async Task<List<string>> AuthenticateUser()
     {
+        Trace.WriteLine("[UX] Creating State and Redirect URI on port 8080");
         // Creating state and redirect URI using port 8080 on Loopback address
         string state = GenerateDataBase(32);
         string code_verifier = GenerateDataBase(32);
@@ -56,13 +58,15 @@ public class AuthenticationViewModel
         const string code_challenge_method = "S256";
         string redirectURI = string.Format("http://{0}:{1}/", IPAddress.Loopback, "8080");
         List<string> result = new List<string>();
-        
+
+        Trace.WriteLine("[UX] Creating HTTP Listener");
         // Creating HTTP listener
         var http = new HttpListener();
         http.Prefixes.Add(redirectURI);
-        Debug.WriteLine("Listening..");
+        Trace.WriteLine("[UX] Listening on HTTP");
         http.Start();
 
+        Trace.WriteLine("[UX] Sending Authorization Request");
         // Creating an authorization request for OAuth 2.0
         string authorizationRequest = string.Format("{0}?response_type=code&scope=openid%20email%20profile&redirect_uri={1}&client_id={2}&state={3}&code_challenge={4}&code_challenge_method={5}",
                 authorizationEndpoint,
@@ -81,16 +85,28 @@ public class AuthenticationViewModel
         {
             if (noBrowser.ErrorCode == -2147467259)
             {
-                Debug.WriteLine("Error finding browser");
+                Trace.WriteLine("[UX] Error finding browser");
             }
         }
         catch (Exception other)
         {
-            Debug.WriteLine(other.Message);
+            Trace.WriteLine(other.Message);
         }
 
         // Sending HTTP request to browser and displaying response
-        var context = await http.GetContextAsync();
+        var taskData = http.GetContextAsync();
+
+        // If no response is recorded, then we do a timeout after 3 minutes.
+        // This may happen because of closing the browser
+        if (await Task.WhenAny(taskData, Task.Delay(180000)) != taskData)
+        {
+            Trace.WriteLine("[UX] Timeout occurred before getting response");
+            http.Stop();
+            result.Add("false");
+            return result;
+        }
+
+        var context = taskData.Result;
         var response = context.Response;
         string responseString = string.Format("<html><head><meta http-equiv='refresh' content='10;url=https://google.com'></head><body><center><h1>Authentication is complete! You will be redirected to your app in a few seconds!</h1></center></body></html>");
         var buffer = Encoding.UTF8.GetBytes(responseString);
@@ -100,20 +116,20 @@ public class AuthenticationViewModel
         {
             responseOutput.Close();
             http.Stop();
-            Debug.WriteLine("HTTP server stopped.");
+            Trace.WriteLine("[UX] HTTP server stopped.");
         });
 
         // In case of errors, return to Sign In window
         if (context.Request.QueryString.Get("error") != null)
         {
-            Debug.WriteLine(String.Format("OAuth authorization error: {0}.", context.Request.QueryString.Get("error")));
+            Trace.WriteLine(String.Format("OAuth authorization error: {0}.", context.Request.QueryString.Get("error")));
             result.Add("false");
             return result;
         }
 
         if (context.Request.QueryString.Get("code") == null || context.Request.QueryString.Get("state") == null)
         {
-            Debug.WriteLine("Malformed authorization response. " + context.Request.QueryString);
+            Trace.WriteLine("[UX] Malformed authorization response. " + context.Request.QueryString);
             result.Add("false");
             return result;
         }
@@ -125,18 +141,17 @@ public class AuthenticationViewModel
         // Comparing state to expected value
         if (incoming_state != state)
         {
-            Debug.WriteLine(String.Format("Received request with invalid state ({0})", incoming_state));
+            Trace.WriteLine(String.Format("Received request with invalid state ({0})", incoming_state));
             result.Add("false");
             return result;
         }
 
+        Trace.WriteLine("[UX] No Errors Occurred");
         // A new thread to wait for the GetUserData to get all required information
         Task task = Task.Factory.StartNew(() => GetUserData(code, code_verifier, redirectURI));
         Task.WaitAll(task);
 
-        Debug.WriteLine("Above tasks are finished!\n" + userName + " " + userEmail + " " + imageName);
         result.Add("true");
-
         while(userName == "" || userEmail == "" || imageName == "" )
         {
             // Thread sleeps until information is received
@@ -178,7 +193,7 @@ public class AuthenticationViewModel
     }
 
     /// <summary>
-    /// Getting a URI data with given input length
+    /// Generating a random cryptographic number oh length 32
     /// </summary>
     /// <param name="length"></param>
     /// <returns></returns>
@@ -198,11 +213,12 @@ public class AuthenticationViewModel
     /// <param name="redirectURI"></param>
     async void GetUserData(string code, string code_verifier, string redirectURI)
     {
+        Trace.WriteLine("[UX] Getting Data From User");
         // Building the  request
         string tokenRequestURI = "https://www.googleapis.com/oauth2/v4/token";
         string tokenRequestBody = string.Format("code={0}&redirect_uri={1}&client_id={2}&code_verifier={3}&client_secret={4}&scope=&grant_type=authorization_code",
             code,
-            System.Uri.EscapeDataString(redirectURI),
+            Uri.EscapeDataString(redirectURI),
             clientId,
             code_verifier,
             clientSecret
@@ -228,7 +244,7 @@ public class AuthenticationViewModel
             {
                 // Reading response body
                 string responseText = await reader.ReadToEndAsync();
-                Debug.WriteLine(responseText);
+                Trace.WriteLine(responseText);
                 // Converting to dictionary
                 Dictionary<string, string> tokenEndpointDecoded = JsonConvert.DeserializeObject<Dictionary<string, string>>(responseText);
                 string access_token = tokenEndpointDecoded["access_token"];
@@ -242,12 +258,12 @@ public class AuthenticationViewModel
                 var response = ex.Response as HttpWebResponse;
                 if (response != null)
                 {
-                    Debug.WriteLine("HTTP: " + response.StatusCode);
+                    Trace.WriteLine("[UX] HTTP: " + response.StatusCode);
                     using (StreamReader reader = new StreamReader(response.GetResponseStream()))
                     {
                         // Reading response body
                         string responseText = await reader.ReadToEndAsync();
-                        Debug.WriteLine(responseText);
+                        Trace.WriteLine(responseText);
                     }
                 }
             }
@@ -277,7 +293,7 @@ public class AuthenticationViewModel
         {
             // Reading response body
             string userinfoResponseText = await userinfoResponseReader.ReadToEndAsync();
-            System.Diagnostics.Debug.WriteLine("USER INFO:\n" + userinfoResponseText);
+            Trace.WriteLine("[UX] USER INFO:\n" + userinfoResponseText);
             var json = JObject.Parse(userinfoResponseText);
 
             // Storing Data from Json file received

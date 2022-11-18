@@ -49,24 +49,18 @@ namespace PlexShareTests.DashboardTests.Persistence
 
             var telemetryPersist = new TelemetryPersistence();
             var userCountVsTimeStamp = new Dictionary<DateTime, int>();
-            var chatCountVsUserId = new Dictionary<int, int>();
-            var insincereList = new List<int>();
-            insincereList.Add(11);
-            insincereList.Add(21);
-            insincereList.Add(39);
-            insincereList.Add(42);
+            var userNameVsChatCount = new Dictionary<string, int>();
 
             userCountVsTimeStamp.Add(DateTime.Now, 12);
             userCountVsTimeStamp.Add(DateTime.Now.AddHours(1), 15);
             userCountVsTimeStamp.Add(DateTime.Now.AddHours(2), 18);
 
-            chatCountVsUserId.Add(1000, 10);
-            chatCountVsUserId.Add(2000, 20);
-            chatCountVsUserId.Add(3000, 30);
+            userNameVsChatCount.Add("Hrishi", 10);
+            userNameVsChatCount.Add("Rupesh", 20);
+            userNameVsChatCount.Add("Saurabh", 30);
             var sessionAnalytics = new SessionAnalytics();
-            sessionAnalytics.chatCountForEachUser = chatCountVsUserId;
+            sessionAnalytics.userNameVsChatCount = userNameVsChatCount;
             sessionAnalytics.userCountVsTimeStamp = userCountVsTimeStamp;
-            sessionAnalytics.listOfInSincereMembers = insincereList;
 
             var Path1 = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             var folderPath = Path.Combine(Path1, "plexshare");
@@ -76,10 +70,10 @@ namespace PlexShareTests.DashboardTests.Persistence
             var response = telemetryPersist.Save(sessionAnalytics);
 
             var IsChatCountForUserSaved = File.Exists(Path.Combine(TelemetryAnalyticsPath, "ChatCountVsUserID.png"));
-            var IsInsincereMembersSaved = File.Exists(Path.Combine(TelemetryAnalyticsPath, "insincereMembersList.txt"));
+            var IsInsincereMembersSaved = File.Exists(Path.Combine(TelemetryAnalyticsPath, "serverData.xml"));
             var IsUserCountAtAnyTimeSaved = File.Exists(Path.Combine(TelemetryAnalyticsPath, "UserCountVsTimeStamp.png"));
             File.Delete(Path.Combine(TelemetryAnalyticsPath, "ChatCountVsUserID.png"));
-            File.Delete(Path.Combine(TelemetryAnalyticsPath, "insincereMembersList.txt"));
+            File.Delete(Path.Combine(TelemetryAnalyticsPath, "serverData.xml"));
             File.Delete(Path.Combine(TelemetryAnalyticsPath, "UserCountVsTimeStamp.png"));
             Assert.True(IsChatCountForUserSaved && IsInsincereMembersSaved && IsUserCountAtAnyTimeSaved);
                 }

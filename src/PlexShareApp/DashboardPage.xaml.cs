@@ -1,4 +1,8 @@
-﻿using PlexShareDashboard.Dashboard.UI.ViewModel;
+﻿using Dashboard;
+using MaterialDesignThemes.Wpf;
+using PlexShare.Dashboard;
+using PlexShareDashboard.Dashboard.Client.SessionManagement;
+using PlexShareDashboard.Dashboard.UI.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,28 +25,17 @@ namespace PlexShareApp
     /// </summary>
     public partial class DashboardPage : Page
     {
-        //public DashboardPage()
-        //{
-        //    InitializeComponent();
-        //}
+        
 
         public DashboardViewModel DashboardViewModelInstance { get; set; }
         public DashboardPage()
         {
             InitializeComponent();
-
-            //here i can initialise the dashboard view model to be able to use 
-            //and to be able to utilise the functionality to update the vm whenever the refresh button is clicked for this purpose 
+            
 
             this.DashboardViewModelInstance = new DashboardViewModel();
             this.DataContext = DashboardViewModelInstance;
         }
-
-        //private void InitializeComponent()
-        //{
-        //    InitializeComponent();
-        //}
-
 
         //defining the onrefreshButtonClick event for this purpose 
         public void OnRefreshButtonClick(object sender, RoutedEventArgs e)
@@ -71,13 +64,6 @@ namespace PlexShareApp
             this.DashboardViewModelInstance.LeaveMeetingProcedure();
         }
 
-        public void OnUploadButtonClick(object sender, RoutedEventArgs e)
-        {
-            //i have to call the view of the cloud UI to give option to upload the file
-            //the file will be directly send to the viewmodel of the cloud team 
-            //i have to call the view of the cloud UI to give option to upload the file
-            //the file will be directly send to the viewmodel of the cloud team 
-
-        }
+       
     }
 }

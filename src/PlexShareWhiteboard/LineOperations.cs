@@ -27,7 +27,15 @@ namespace PlexShareWhiteboard
             };
             return s;
         }
-
+        public Geometry GenerateBoundingLine(ShapeItem shape)
+        {
+            LineGeometry boundingLine = new();
+            //bound-ingLine.X1 = select.selectedObject.anchorPoint.X;
+            //boundingLine.Y1 = select.selectedObject.anchorPoint.Y;
+            boundingLine.StartPoint = new Point(shape.Start.X, shape.Start.Y);
+            boundingLine.EndPoint = new Point(shape.End.X, shape.End.Y);
+            return boundingLine;
+        }
         public void HelperSelectLine(Rect boundingBox, int tempZIndex, int i, Point a)
         {
             if ((boundingBox.Width == 0 || boundingBox.Height == 0))
@@ -49,7 +57,7 @@ namespace PlexShareWhiteboard
                 move_point = shape.Start;
                 //lastShape=CreateShape(a, shape.End, "LineGeometry", shape.Id);
                 lastShape= UpdateShape(a, shape.End, "LineGeometry", shape);
-                //Debug.WriteLine("Start point selected for transform in line");
+                //Trace.WriteLine("[Whiteboard]  " + "Start point selected for transform in line");
             }
             else
             {
@@ -57,6 +65,9 @@ namespace PlexShareWhiteboard
                 //lastShape=CreateShape(shape.Start, a, "LineGeometry", shape.Id);
                 lastShape= UpdateShape(shape.Start, a, "LineGeometry", shape);
             }
+            LineGeometry boundingLine = (LineGeometry)GenerateBoundingLine(lastShape);
+            Debug.WriteLine("selected boundingline " + boundingLine.StartPoint + " " + boundingLine.EndPoint);
+            HighLightIt(boundingLine);
         }
 
         public void TranslatingLine(Rect boundingBox, ShapeItem shape, Point p1, Point p2, double width, double height)
@@ -64,7 +75,7 @@ namespace PlexShareWhiteboard
             // p1 : 
             // p2 :  
 
-            Debug.WriteLine(" asha " + p1.ToString() + " " + p2.ToString() + "   " + shape.AnchorPoint.ToString());
+            Trace.WriteLine("[Whiteboard]  " + " Translating Line " + p1.ToString() + " " + p2.ToString() + "   " + shape.AnchorPoint.ToString());
             if (
                 (Math.Abs(boundingBox.X - shape.Start.X) < 5 && Math.Abs(boundingBox.Y - shape.Start.Y) < 5)
                 ||
@@ -93,7 +104,9 @@ namespace PlexShareWhiteboard
             }
 
             lastShape=UpdateShape(p1, p2, shape.Geometry.GetType().Name, shape, shape.TextString);
-            HighLightIt(p1, p2);
+            LineGeometry boundingLine = (LineGeometry)GenerateBoundingLine(lastShape);
+            Debug.WriteLine("selected boundingline " + boundingLine.StartPoint + " " + boundingLine.EndPoint);
+            HighLightIt(boundingLine);
         }
     }
 }

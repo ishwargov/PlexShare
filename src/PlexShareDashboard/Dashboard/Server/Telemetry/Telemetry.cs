@@ -1,4 +1,10 @@
-﻿using Client.Models;
+﻿/// <author>Rupesh Kumar</author>
+/// <summary>
+/// This file implements the logic to show the temetric data of the session. This is implementing the ITelemetry and ITelemetryNotifications.
+/// </summary>
+
+
+using Client.Models;
 using PlexShareDashboard.Dashboard.Server.SessionManagement;
 using PlexShare.Dashboard;
 using System;
@@ -8,8 +14,6 @@ using System.Text;
 using System.Threading.Tasks;
 using PlexShareDashboard;
 using PlexShareContent.DataModels;
-//using Dashboard.Server.Persistence;
-//using PlexShareDashboard.Dashboard.Server.Persistent;
 using Dashboard.Server.Persistence;
 using Dashboard;
 using System.Runtime.InteropServices;
@@ -18,19 +22,30 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
 {
     public class Telemetry : ITelemetry, ITelemetryNotifications
     {
-        //getting the sessionmanager and persistence instance using the corresponding factory
+        //getting the sessionmanager and persistence instance using the factories
         private readonly ITelemetrySessionManager serverSessionManager = SessionManagerFactory.GetServerSessionManager();
         private readonly TelemetryPersistence persistence = PersistenceFactory.GetTelemetryPersistenceInstance();
         private readonly int thresholdTime = 30;
 
 
-        //defining the variables to store the telemteric data 
+
+
+        //defining the dictionaries  to store the telemteric data 
         public Dictionary<DateTime, int> userCountVsEachTimeStamp = new Dictionary<DateTime, int>();
+
+        //stores the each user entry time in the meeting 
         public Dictionary<UserData,DateTime> eachUserEnterTimeInMeeting  = new Dictionary<UserData,DateTime>();
+
+        //stores each users exit time from the meeting 
         public Dictionary<UserData, DateTime> eachUserExitTime = new Dictionary<UserData, DateTime>();
+
+        //stores chatcount for each userid 
         public Dictionary<int, int> userIdVsChatCount = new Dictionary<int, int>();
+
+        //stores the list of insincere members 
         public List<int> listOfInSincereMembers = new List<int>();
 
+        //stores the start time of session 
         private DateTime sessionStartTime;
 
 
@@ -44,17 +59,24 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
         //Dictionary to store the value of the username vs chat count
         Dictionary<string, int> userNameVsChatCount = new Dictionary<string, int>();
 
+
+       
+
+
         //constructor for telemetry module 
-        
         public Telemetry()
         {
             sessionStartTime = DateTime.Now;
+
             //we have to subscribe to the ITelemetryNotifications 
             serverSessionManager.Subscribe(this);
             
         }
 
-        //function to find the username vs chat count to show on the UX 
+
+        /// <summary>
+        ///     function to find the username vs chat count to show on the UX.
+        /// </summary>
         public void UpdateUserNameVsChatCount()
         {
             userNameVsChatCount.Clear();
@@ -64,7 +86,16 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
                 //we have to update the value of the chat count correspoding to the username for this purpose 
                 string currEmailId = userIdVsEmailId[currUserChatCount.Key];
                 string currUserName = emailIdVsUserName[currEmailId];
-                userNameVsChatCount[currUserName] = currUserChatCount.Value;
+                if (userNameVsChatCount.ContainsKey(currUserName) == false)
+                {
+                    userNameVsChatCount[currUserName] = 0 + currUserChatCount.Value;
+
+                }
+                else
+                { 
+                    userNameVsChatCount[currUserName] = userNameVsChatCount[currUserName] + currUserChatCount.Value;
+                
+                }
             
             }
 
@@ -72,17 +103,25 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             return;
         }
 
-        //function to fetch the telemetry analytics and then give it back to the session manager 
+
+        /// <summary>
+        ///     function to fetch the telemetry analytics and then give it back to the session manager.This function will be called whenever the user refreshes the dashboard. This function will calculate the telemetry based on the current data.
+        /// </summary>
+         /// <params name="allMessages"> Array of ChatThread objects which contains information about messages of each thread </params>
+
         public SessionAnalytics GetTelemetryAnalytics(PlexShareContent.DataModels.ChatThread[] allChatMessages)
         {
             DateTime currTime = DateTime.Now;
+
+            //updating the userid vs chat count given this all chat messages 
             GetUserIdVsChatCount(allChatMessages);
 
             //Calling the function to update the username vs chatcount value for this purpose 
             UpdateUserNameVsChatCount();
 
-
+            //function to calculate the insincere members 
             GetListOfInsincereMembers(currTime);
+
 
             var currTotalChatCount = 0;
             var currTotalUser = 0;
@@ -97,12 +136,14 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
 
 
 
-            //here goes the implementation 
+            //Now we have to update the session Analytics and send this session analytics to the UX/session manager
             SessionAnalytics currSessionAnalytics = new SessionAnalytics();
             currSessionAnalytics.chatCountForEachUser = userIdVsChatCount;
             currSessionAnalytics.listOfInSincereMembers = listOfInSincereMembers;
             currSessionAnalytics.userCountVsTimeStamp = userCountVsEachTimeStamp;
             currSessionAnalytics.userNameVsChatCount = userNameVsChatCount;
+            
+            //calculating the session summary 
             SessionSummary sessionSummary = new SessionSummary();
             sessionSummary.userCount = currTotalUser;
             sessionSummary.chatCount = currTotalChatCount;
@@ -110,20 +151,28 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             
             currSessionAnalytics.sessionSummary = sessionSummary;
 
+
+            //say everything went fine 
             return currSessionAnalytics;
         }
 
 
+        /// <summary>
+        ///     This function is called just before the session ends and this will call the persistence to save the final telemtric data in the server/faculty laptop
+        /// </summary>
+        /// <params name="allMessages"> Array of ChatThread objects which contains information about messages of each thread </params>
 
-        //function fetch the details from the chatcontext and then giving it to persistent to save the analytics on the server 
         public void SaveAnalytics(PlexShareContent.DataModels.ChatThread[] allChatMessages)
         {
             DateTime currDateTime = DateTime.Now;
-            GetUserIdVsChatCount(allChatMessages);
 
-            //updating the username vs the chat count to be able to save in persistent for this purpose 
+
+            //calculating the anaytics by calling the functions below 
+            GetUserIdVsChatCount(allChatMessages);
             UpdateUserNameVsChatCount();
             GetListOfInsincereMembers(currDateTime);
+
+
             var currTotalUser = 0;
             var currTotalChatCount = 0;
 
@@ -135,13 +184,16 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             }
 
 
+            //calculating the final session analytics just before the meeting 
             var finalSessionAnalyticsToSave = new SessionAnalytics();
             finalSessionAnalyticsToSave.chatCountForEachUser = userIdVsChatCount;
             finalSessionAnalyticsToSave.listOfInSincereMembers = listOfInSincereMembers;
             finalSessionAnalyticsToSave.userCountVsTimeStamp = userCountVsEachTimeStamp;
             finalSessionAnalyticsToSave.userNameVsChatCount = userNameVsChatCount;
-            finalSessionAnalyticsToSave.sessionSummary.chatCount = currTotalChatCount;
-            finalSessionAnalyticsToSave.sessionSummary.userCount = currTotalUser;
+            SessionSummary sessionSummary = new SessionSummary();
+            sessionSummary.chatCount = currTotalChatCount;
+            sessionSummary.userCount = currTotalUser;
+            finalSessionAnalyticsToSave.sessionSummary = sessionSummary;
 
 
             //calling the persistent module to save these analytics 
@@ -152,6 +204,12 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             return;
         }
 
+
+
+        /// <summary>
+        ///    this function calculates the userid vs chat count that that user has sent in the meeting 
+        /// </summary>
+        /// <params name="allMessages"> Array of ChatThread objects which contains information about messages of each thread </params>
         public void GetUserIdVsChatCount(PlexShareContent.DataModels.ChatThread[] allMessages)
         {
             //we have to implement when we start integrating with the chat module 
@@ -163,7 +221,7 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             {
                 foreach (var currMessage in currThread.MessageList)
                 {
-                    //using the if else statement 
+                    //update the chat count using the senders id from chatthread 
                     if (userIdVsChatCount.ContainsKey(currMessage.SenderID)) userIdVsChatCount[currMessage.SenderID]++;
                     else
                         userIdVsChatCount.Add(currMessage.SenderID, 1);
@@ -176,13 +234,16 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
         }
 
 
-        //function to calculate the insincere members when the meeting ends and the session manager tells to save the details and the insincere members list will only be calculated then only
+
+        /// <summary>
+        ///     function to calculate the insincere members when the meeting ends and the session manager tells to save the details and the insincere members list will only be calculated then only
+        /// </summary>
+        /// <params name="currTime"> curr time at which this function called  </params>
         public void GetListOfInsincereMembers(DateTime currTime)
         {
             //clearing the list to recalculate the insincere members whenever the 
             listOfInSincereMembers.Clear();
 
-            //we have to calculate the threshold time here to find the attentie and non attentive users for this purpose 
 
             //using the for loop to find who all users are insincere 
             foreach (var currElelement in eachUserEnterTimeInMeeting)
@@ -196,12 +257,20 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
                     listOfInSincereMembers.Add(currUserData.userID);
                 }
             }
+
+
             //say everything went fine 
             return;
         }
 
 
 
+
+
+        /// <summary>
+        ///     this function updates the userid vs emailid dictionary every time when the session data changes 
+        /// </summary>
+        /// <params name="newSession"> new session data received from the session manager </params>
         public void UpdateUserIdVsEamilId(SessionData newSession)
         {
             //using the for loop for this purpose 
@@ -220,6 +289,11 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
         
         }
 
+
+        /// <summary>
+        ///     this function updates the emailid vs username dictionary every time when the session data changes 
+        /// </summary>
+        /// <params name="newSession"> new session data received from the session manager </params>
         public void UpdateEmailIdVsUserName(SessionData newSession)
         {
             foreach (var currUser in newSession.users)
@@ -239,24 +313,33 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
 
 
 
-        //this function will be called whenever the session analytics will be changed at the server side session manager using publisher subscriber model 
+        /// <summary>
+        ///     this function will be called whenever the session analytics will be changed at the server side session manager using publisher subscriber model 
+        /// </summary>
+        /// <params name="newSession"> new session data received from the session manager </params>
         public void OnAnalyticsChanged(SessionData newSession)
         {
             var currTime = DateTime.Now;
 
-            //we have to update the useidvsemail and emailvsusername 
+            //we have to update the telemetric analytics by calling the following functions 
             UpdateUserIdVsEamilId(newSession);
             UpdateEmailIdVsUserName(newSession);
-            //we have to recalculate and  update the telemetric analytics
             CalculateUserCountVsTimeStamp(newSession, currTime);
             CalculateArrivalExitTimeOfUser(newSession, currTime);
             GetListOfInsincereMembers(currTime);
 
+
+            //say everything went fine 
             return;
 
         }
 
-        //function defined for testing purpose so that we can overload the function 
+
+        /// <summary>
+        ///function defined for testing purpose so that we can overload the function 
+        /// </summary>
+        /// <params name="newSession"> new session data received from the session manager </params>
+        ///  /// <params name="currTime"> current time </params>
         public void OnAnalyticsChanged(SessionData newSession, DateTime currTime)
         {
             //var currTime = DateTime.Now;
@@ -269,16 +352,27 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
 
         }
 
-
-        //function to update calculateUserCountVsTimeStamp 
+        /// <summary>
+        ///function to update calculateUserCountVsTimeStamp 
+        /// </summary>
+        /// <params name="newSession"> new session data received from the session manager </params>
+        ///  /// <params name="currTime"> current time </params>
         public void CalculateUserCountVsTimeStamp(SessionData newSession, DateTime currTime)
         {
             userCountVsEachTimeStamp[currTime] = newSession.users.Count;
+
+            //say everything went fine 
+            return;
         
         }
 
 
-        //function to calculate the arrival and exit time of the users 
+        /// <summary>
+        ///function to calculate the arrival and exit time of the users 
+        /// </summary>
+        /// <params name="newSession"> new session data received from the session manager </params>
+        ///  /// <params name="currTime"> current time </params>
+
         public void CalculateArrivalExitTimeOfUser(SessionData newSession, DateTime currTime)
         {
             foreach (var currUser in newSession.users)
@@ -292,22 +386,15 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             }
             //checking for the left users 
             foreach (var currUser in eachUserEnterTimeInMeeting)
-            { 
+            {
                 if (newSession.users.Contains(currUser.Key) == false && eachUserExitTime.ContainsKey(currUser.Key) == false)
                     eachUserExitTime[currUser.Key] = currTime;
-            
+
             }
 
             //say everything went fine 
             return;
         }
 
-
-
-
-        //function to get the useridvschatcount 
-        //public 
-        //ading some comments 
-        //adding some commetnsadfadsj
     }
 }

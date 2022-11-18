@@ -1,4 +1,9 @@
-﻿using Dashboard;
+﻿/// <author>Rupesh Kumar</author>
+/// <summary>
+/// Unit tests for telemetry submodule
+/// </summary>
+
+using Dashboard;
 using Dashboard.Server.Persistence;
 using PlexShareDashboard.Dashboard.Server.Telemetry;
 using System;
@@ -20,7 +25,10 @@ namespace PlexShareTests.DashboardTests.Telemetry
         //defining  the persistence factory for this purpose 
         private readonly TelemetryPersistence persistenceInstance = new TelemetryPersistence();
 
-        //checking the test case for singleton design pattern 
+        /// <summary>
+        ///     checking the test case for singleton design pattern 
+        /// </summary>
+        
         [Fact]
         public void SingletonFactory_Test_Check()
         {
@@ -32,8 +40,12 @@ namespace PlexShareTests.DashboardTests.Telemetry
 
         }
 
+
+        /// <summary>
+        ///      writing the first test for checking the function CalculateUserCountVsTimeStamp 
+        /// </summary>
+
         [Fact]
-        //writing the first test to checking the function CalculateUserCountVsTimeStamp 
         public void CalculateUserCountVsTimeStamp_ShouldGiveUserCountAtTimeStamp_Simple_Test()
         {
             //Arrange 
@@ -42,18 +54,23 @@ namespace PlexShareTests.DashboardTests.Telemetry
 
             //defining the new session 
             SessionData sessionData1 = new SessionData();
+
+
             //adding the new user to the session data to hardcode the users list 
             sessionData1.AddUser(user1);
 
             //ACT ==> now we have to bring the telemetry module in action to check whether it is working fine or not
 
             DateTime currDateTime = DateTime.Now;
+
             //defining the instance for the telemetry 
             var telemetryInstance = TelemetryFactory.GetTelemetryInstance();
 
             //calling the function to find the user count vs the time stamp 
             telemetryInstance.CalculateUserCountVsTimeStamp(sessionData1, currDateTime);
             int result1 = telemetryInstance.userCountVsEachTimeStamp[currDateTime];
+
+
 
             //ASSERT ==> now we have to check whether the output is the correct or not 
             var check1 = false;
@@ -70,8 +87,11 @@ namespace PlexShareTests.DashboardTests.Telemetry
 
 
         }
+
+        /// <summary>
+        ///     Complex test case to check the calculate user count vs time stamp function 
+        /// </summary>
         [Fact]
-        //Complex test case to check the calculate user count vs time stamp function 
         public void CalculateUserCountVsTimeStamp_ShouldGiveUserCountAtTimeStamp_Complex_Test()
         {
             //Arrange ==> defining the users 
@@ -110,10 +130,13 @@ namespace PlexShareTests.DashboardTests.Telemetry
             sessionData.AddUser(user7);
             sessionData.AddUser(user8);
 
+
+            //calling the function to calculate the usercount vs time stamp 
             telemetryInstance.CalculateUserCountVsTimeStamp(sessionData, currDateTime3);
             int result3 = telemetryInstance.userCountVsEachTimeStamp[currDateTime3];
 
 
+            //now checking the final results after using the telemtry module 
             bool check1 = false;
             bool check2 = false;
             bool check3 = false;
@@ -142,8 +165,9 @@ namespace PlexShareTests.DashboardTests.Telemetry
 
 
 
-
-        //Testing for calculation of entry time of the users 
+        /// <summary>
+        ///Testing for calculation of entry time of the users 
+        /// </summary>
         [Fact]
         public void CalculateArrivalExitTimeOfUser_Test_Entry_Time_Calculation()
         {
@@ -221,9 +245,10 @@ namespace PlexShareTests.DashboardTests.Telemetry
 
 
 
-
+        /// <summary>
+        ///function to test the exit time of the users when no user exits 
+        /// </summary>
         [Fact]
-        //function to test the exit time of the users when no user exits 
         public void CalculateArrivalExitTimeOfUser_Test_Exit_Time_Calculation_When_No_User_Exits()
         {
             UserData user1 = new UserData("Rupesh Kumar", 1);
@@ -261,7 +286,9 @@ namespace PlexShareTests.DashboardTests.Telemetry
         }
 
 
-        //function to check the exit time 
+        /// <summary>
+        ///     function to check the exit time 
+        /// </summary>
         [Fact]
         public void CalculateArrivalExitTimeOfUser_Test_Exit_Time_Calculation_Complex_Test()
         {
@@ -299,8 +326,10 @@ namespace PlexShareTests.DashboardTests.Telemetry
         }
 
 
+        /// <summary>
+        ///     adding test case for GetListOfInsincereMembers 
+        /// </summary>
         [Fact]
-        //adding test case for GetListOfInsincereMembers
         public void GetListOfInsincereMembers_Complex_Test()
         {
             UserData user1 = new UserData("Rupesh Kumar", 1);
@@ -384,8 +413,11 @@ namespace PlexShareTests.DashboardTests.Telemetry
 
         }
 
+
+        /// <summary>
+        ///     function to check the onAnalytics function 
+        /// </summary>
         [Fact]
-        //fucntion to check the onAnalytics function 
         public void OnAnalyticsChanged_Test()
         {
             UserData user1 = new UserData("Rupesh Kumar", 1);
@@ -511,6 +543,10 @@ namespace PlexShareTests.DashboardTests.Telemetry
 
         }
 
+
+        /// <summary>
+        ///     function to test the getUserIdVsChatCount 
+        /// </summary>
         [Fact]
 
         public void  GetUserIdVsChatCount_Test()
@@ -567,6 +603,10 @@ namespace PlexShareTests.DashboardTests.Telemetry
        
         }
 
+        /// <summary>
+        ///     checking the function save analytics 
+        /// </summary>
+        [Fact]
         public void SaveAnalytics_Test()
         {
 
@@ -611,7 +651,11 @@ namespace PlexShareTests.DashboardTests.Telemetry
             telemetryInstance.eachUserEnterTimeInMeeting.Clear();
             telemetryInstance.eachUserExitTime.Clear();
             telemetryInstance.listOfInSincereMembers.Clear();
+            telemetryInstance.userIdVsEmailId[1] = "111901045@smail.iitpkd.ac.in";
+            telemetryInstance.userIdVsEmailId[2] = "111901054@smail.iitpkd.ac.in";
 
+            telemetryInstance.emailIdVsUserName["111901045@smail.iitpkd.ac.in"] = "Rupesh Kumar";
+            telemetryInstance.emailIdVsUserName["111901054@smail.iitpkd.ac.in"] = "Hrishi Raaj";
             telemetryInstance.SaveAnalytics(allMessages);
 
             Assert.Equal(1, 1);
@@ -620,8 +664,10 @@ namespace PlexShareTests.DashboardTests.Telemetry
             return;
         }
 
+        /// <summary>
+        ///     checking get telemetry analytics test 
+        /// </summary>
         [Fact]
-
         public void GetTelemetryAnalytics_Test()
         {
             PlexShareContent.DataModels.ReceiveContentData message1 = new PlexShareContent.DataModels.ReceiveContentData();
@@ -660,11 +706,20 @@ namespace PlexShareTests.DashboardTests.Telemetry
             allMessages[0] = chat1;
             allMessages[1] = chat2;
 
+
+
             var telemetryInstance = TelemetryFactory.GetTelemetryInstance();
             telemetryInstance.userIdVsChatCount.Clear();
             telemetryInstance.eachUserEnterTimeInMeeting.Clear();
             telemetryInstance.eachUserExitTime.Clear();
             telemetryInstance.listOfInSincereMembers.Clear();
+
+            telemetryInstance.userIdVsEmailId[1] = "111901045@smail.iitpkd.ac.in";
+            telemetryInstance.userIdVsEmailId[2] = "111901054@smail.iitpkd.ac.in";
+
+            telemetryInstance.emailIdVsUserName["111901045@smail.iitpkd.ac.in"] = "Rupesh Kumar";
+            telemetryInstance.emailIdVsUserName["111901054@smail.iitpkd.ac.in"] = "Hrishi Raaj";
+
 
             telemetryInstance.GetTelemetryAnalytics(allMessages);
 
