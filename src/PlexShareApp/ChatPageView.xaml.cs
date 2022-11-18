@@ -190,9 +190,11 @@ namespace PlexShareApp
         /// <param name="e"> Routed Event Data </param>
         private void SendButtonClick(object sender, RoutedEventArgs e)
         {
-            if(!string.IsNullOrEmpty(SendTextBox.Text))
+            string msg = SendTextBox.Text;
+            msg = msg.Trim();
+            if (!string.IsNullOrEmpty(msg))
             {
-                if(SendTextBox.Text.Length > 300)
+                if(msg.Length > 300)
                 {
                     MessageBox.Show("Please enter less than 300 characters!");
                     return;
@@ -201,11 +203,11 @@ namespace PlexShareApp
 
                 if(string.IsNullOrEmpty(ReplyTextBox.Text))
                 {
-                    viewModel.SendMessage(SendTextBox.Text, -1, "Chat");
+                    viewModel.SendMessage(msg, -1, "Chat");
                 }
                 else
                 {
-                    viewModel.SendMessage(SendTextBox.Text, ReplyMsgId, "Chat");
+                    viewModel.SendMessage(msg, ReplyMsgId, "Chat");
                 }
                 //var chumma = SendTextBox.Text;
                 //addNewMessage = new Message();
