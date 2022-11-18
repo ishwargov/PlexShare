@@ -21,9 +21,22 @@ namespace PlexShareWhiteboard
                 Fill = f1,
                 Stroke = s1,
                 ZIndex = zi,
-                Id = id
+                Id = id,
+                StrokeThickness = 1
             };
             return s;
+        }
+
+        public void HighLightTextBox(Rect rect)
+        {
+            double x = rect.X;
+            double y = rect.Y;
+            double height = rect.Height;
+            double width = rect.Width;
+
+            ShapeItem hsBody = GenerateRectangleXYWidthHeight(x, y, width, height, null, Brushes.DodgerBlue, "hsBody", 100000);
+            highlightShapes.Add(hsBody);
+            ShapeItems.Add(hsBody);
         }
 
         public void HighLightIt(Rect rect)
@@ -67,14 +80,14 @@ namespace PlexShareWhiteboard
                 ShapeItems.Add(si);
         }
         //deon
-        public void HighLightIt(Line line)
+        public void HighLightIt(LineGeometry line)
         {
-            double x1 = line.X1;
-            double y1 = line.Y1;
-            double x2 = line.X2;
-            double y2 = line.Y2;
+            double x1 = line.StartPoint.X;
+            double y1 = line.StartPoint.Y;
+            double x2 = line.EndPoint.X;
+            double y2 = line.EndPoint.Y;
 
-            Debug.WriteLine("Entering line hightlighting with " + x1 + "  " + y1 + " " + x2 + " " + y2);
+            Trace.WriteLine("[Whiteboard]  " + "Entering line hightlighting with " + x1 + "  " + y1 + " " + x2 + " " + y2);
 
             ShapeItem hsBody = GenerateLine(x1, y1, x2, y2, null, Brushes.DodgerBlue, "hsBody", currentZIndex);
             highlightShapes.Add(hsBody);

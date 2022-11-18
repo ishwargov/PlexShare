@@ -9,7 +9,7 @@ namespace PlexShareWhiteboard
     {
         public void ShapeBuilding(Point a)
         {
-            //Debug.WriteLine("Entering Shape Building......\n");
+            //Trace.WriteLine("[Whiteboard]  " + "Entering Shape Building......\n");
 
             if (mode == "transform_mode")
             {
@@ -61,12 +61,16 @@ namespace PlexShareWhiteboard
             }
             else if (mode == "translate_mode")
             {
-                modeForUndo = "modify";
+                if (select.selectedObject.Geometry.GetType().Name == "GeometryGroup")
+                    modeForUndo = "textbox_translate";
+                else
+                    modeForUndo = "modify";
                 UnHighLightIt();
 
                 ShapeItem shape = select.selectedObject;
                 Rect boundingBox = shape.Geometry.Bounds;
-                Debug.WriteLine(" tranlsating line " + shape.AnchorPoint.ToString() + "   start : " + shape.Start.ToString());
+
+                Trace.WriteLine("[Whiteboard] : "+ " tranlsating line " + shape.AnchorPoint.ToString() + "   start : " + shape.Start.ToString());
                 double bx = shape.AnchorPoint.X + (a.X - select.initialSelectionPoint.X);
                 double by = shape.AnchorPoint.Y + (a.Y - select.initialSelectionPoint.Y);
                 double width = boundingBox.Width;
@@ -137,10 +141,10 @@ namespace PlexShareWhiteboard
             }
             else
             {
-                //Debug.WriteLine("In unknown mode\n");
+                //Trace.WriteLine("[Whiteboard]  " + "In unknown mode\n");
             }
 
-            //Debug.WriteLine("Exiting Shape Building......\n");
+            //Trace.WriteLine("[Whiteboard]  " + "Exiting Shape Building......\n");
         }
     }
 }

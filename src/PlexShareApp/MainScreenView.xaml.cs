@@ -85,6 +85,9 @@ namespace PlexShareApp
             UserData user = clientSessionManager.GetUser();
             uploadPage = new UploadPage(sessionData.sessionId.ToString(), user.userEmail);
 
+            //this is to disable backspace to avoid switch tabs
+            NavigationCommands.BrowseBack.InputGestures.Clear();
+
         }
 
         /// <summary>
