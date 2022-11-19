@@ -11,7 +11,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
-using System.Threading;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
@@ -523,19 +522,17 @@ namespace PlexShareScreenshare.Server
                     // The lambda function takes the final image from the final image queue
                     // of the client and set it as the "CurrentImage" variable for the client
                     // and notify the UX about the same
-                    client.StartProcessing(new Action<CancellationToken>((token) =>
+                    client.StartProcessing(new Utils.ActionRef<bool>((ref bool cancellationToken) =>
                     {
-                        // If the task was already canceled
-                        token.ThrowIfCancellationRequested();
-
                         // Loop till the task is not canceled
-                        while (!token.IsCancellationRequested)
+                        while (!cancellationToken)
                         {
-                            // End the task when cancellation is requested
-                            token.ThrowIfCancellationRequested();
-
                             try
                             {
+                                Bitmap? finalImage = client.GetFinalImage(ref cancellationToken);
+
+                                if (finalImage == null) continue;
+
                                 // Update the current image of the client on the screen
                                 // by taking the processed images from its final image queue
                                 _ = ApplicationMainThreadDispatcher.BeginInvoke(
@@ -552,12 +549,8 @@ namespace PlexShareScreenshare.Server
                                                 }
                                             }
                                         }),
-                                        client.GetFinalImage(token)
+                                        finalImage
                                     );
-                            }
-                            catch (OperationCanceledException e)
-                            {
-                                Trace.WriteLine(Utils.GetDebugMessage($"Task canceled for the client with id {client.Id}: {e.Message}", withTimeStamp: true));
                             }
                             catch (Exception e)
                             {
@@ -590,7 +583,7 @@ namespace PlexShareScreenshare.Server
             {
                 try
                 {
-                    client.StopProcessing().Wait();
+                    _ = client.StopProcessing();
                 }
                 catch (OperationCanceledException e)
                 {

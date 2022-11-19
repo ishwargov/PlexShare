@@ -19,7 +19,7 @@ namespace PlexShareScreenshare.Server
         /// This will happen when a client either starts or stops screen sharing.
         /// </summary>
         /// <param name="subscribers">
-        /// Updated list of the subscribers
+        /// Updated list of the subscribers.
         /// </param>
         public void OnSubscribersChanged(List<SharedClientScreen> subscribers);
     }
