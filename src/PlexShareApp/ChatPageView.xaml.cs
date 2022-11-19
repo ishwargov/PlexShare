@@ -74,14 +74,14 @@ namespace PlexShareApp
             {
                 // Adding the new message to our collection(_allMessage) which in turn adds a chat bubble in the UX listbox
                 _allMessages.Add(viewModel.ReceivedMsg);
-                Debug.WriteLine(_allMessages);
+                Trace.WriteLine("[ChatPageView] New message has been added.");
                 UpdateScrollBar(MainChat);
             }
             else if(propertyName == "ReceivedAllMsgs")
             {
                 // Adding all the messages for the new user from the session to our collection(_allMessage) which in turn adds a chat bubble in the UX listbox
                 _allMessages.Add(viewModel.ReceivedMsg);
-                Debug.WriteLine(_allMessages);
+                Trace.WriteLine("[ChatPageView] Restoring session chat messages.");
                 UpdateScrollBar(MainChat);
             }
             else if(propertyName == "EditOrDelete")
@@ -89,6 +89,8 @@ namespace PlexShareApp
                 Message updatedMsg = null;
                 string replyMsgOld = "";
                 string replyMsgNew = "";
+                // We find the Message in our Observable Collection containing all the messages and update this entry
+                // We store its text message in replyMsgOld for later updating the ReplyMessage of the messages containing this text message
                 for (int i = 0; i < _allMessages.Count; i++)
                 {
                     var message = _allMessages[i];
@@ -110,7 +112,7 @@ namespace PlexShareApp
                     }
                 }
 
-                // Updating all the Chat bubbles which all have replied to this message that has been Editted/Deleted
+                // Updating all the Chat bubbles which all have replied to the message that has been Edited/Deleted
                 for (int i=0;i < _allMessages.Count;i++)
                 {
                     var message = _allMessages[i];
@@ -129,8 +131,7 @@ namespace PlexShareApp
                         updatedMsg = _allMessages[i];
                     }
                 }
-                Debug.WriteLine($"Message ID {updatedMsg.MessageID} was updated with {updatedMsg.IncomingMessage}");
-                Debug.WriteLine(_allMessages);
+                Trace.WriteLine($"[ChatPageView] Message ID {updatedMsg.MessageID} was updated with {updatedMsg.IncomingMessage}.");
             }
         }
 
@@ -162,6 +163,7 @@ namespace PlexShareApp
                     {
                         viewModel.SendMessage(openFileDialog.FileName, ReplyMsgId, "File");
                     }
+                    Trace.WriteLine($"[ChatPageView] {openFileDialog.SafeFileName} File sent for uploading from view.");
 
                     // Uncomment the below codes for testing when the network is down
                     //addNewMessage = new Message();
@@ -209,6 +211,7 @@ namespace PlexShareApp
                 {
                     viewModel.SendMessage(msg, ReplyMsgId, "Chat");
                 }
+                Trace.WriteLine("[ChatPageView] Sending a message from view.");
 
                 // Uncomment the below codes for testing when the network is down
                 //addNewMessage = new Message();
@@ -240,10 +243,11 @@ namespace PlexShareApp
                 if(senderButton.DataContext is Message)
                 {
                     Message msg = (Message)senderButton.DataContext;
-                    if(msg.IncomingMessage!= "Message Deleted.")
+                    if(msg.IncomingMessage!= "Message deleted.")
                     {
                         ReplyTextBox.Text = msg.IncomingMessage;
                         ReplyMsgId = msg.MessageID;
+                        Trace.WriteLine("[ChatPageView] Reply button clicked.");
                     }
                 }
             }
@@ -255,6 +259,7 @@ namespace PlexShareApp
             {
                 Button senderButton = (Button)sender;
                 ReplyTextBox.Text = null;
+                Trace.WriteLine("[ChatPageView] Reply text box cleared.");
             }
         }
 
@@ -279,6 +284,7 @@ namespace PlexShareApp
                             var ourEditMessage = SendTextBox.Text;
                             viewModel.EditChatMsg(msg.MessageID, ourEditMessage);
                             SendTextBox.Text = string.Empty;
+                            Trace.WriteLine("[ChatPageView] Message has been deleted.");
                         }
                     }
                 }
@@ -300,6 +306,7 @@ namespace PlexShareApp
                     var viewModel = DataContext as ChatPageViewModel;
                     Message msg = (Message)senderButton.DataContext;
                     viewModel.DeleteChatMsg(msg.MessageID);
+                    Trace.WriteLine("[ChatPageView] Delete button clicked.");
                 }
             }
         }
@@ -319,8 +326,8 @@ namespace PlexShareApp
                 if (senderRadioButton.DataContext is Message)
                 {
                     Message msg = (Message)senderRadioButton.DataContext;
-                    //var viewModel = DataContext as ChatPageViewModel;
                     viewModel.StarChatMsg(msg.MessageID);
+                    Trace.WriteLine("[ChatPageView] Message has been starred.");
                 }
 
             }
@@ -358,6 +365,7 @@ namespace PlexShareApp
                     if (result == true)
                     {
                         viewModel.DownloadFile(dailogFile.FileName, message.MessageID);
+                        Trace.WriteLine("[ChatPageView] Download button clicked.");
                     }
                 }
             }
@@ -374,6 +382,7 @@ namespace PlexShareApp
                 var border = (Border)VisualTreeHelper.GetChild(listBox, 0);
                 var scrollViewer = (ScrollViewer)VisualTreeHelper.GetChild(border, 0);
                 scrollViewer.ScrollToBottom();
+                Trace.WriteLine("[ChatPageView] ScrollBar Updated.");
             }
         }
 
