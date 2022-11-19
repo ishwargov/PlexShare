@@ -53,9 +53,6 @@ namespace PlexShareApp
             _allMessages = new ObservableCollection<Message>();
             MainChat.ItemsSource = _allMessages;
 
-            // Inserting the emoji picked into our richtextbox
-            EditorPicker.Picked += (o, e) =>
-                SendTextBox.CaretPosition.InsertTextInRun(e.Emoji); SendTextBox.CaretPosition = SendTextBox.CaretPosition.DocumentEnd;
         }
 
         /// <summary>
