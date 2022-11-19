@@ -48,9 +48,7 @@ namespace PlexShareWhiteboard
                              {
                                  try
                                  {
-                                     Trace.WriteLine("[WhiteBoard] WBMessageHandler check0");
                                      WBServerShape deserializedObject = serializer.DeserializeWBServerShape(serializedData);
-                                     Trace.WriteLine("[WhiteBoard] WBMessageHandler check1");
                                      List<ShapeItem> shapeItems = serializer.ConvertToShapeItem(deserializedObject.ShapeItems);
                                      Trace.WriteLine("[Whiteboard] WBMessageHandler.onDataReceived(Server): Receiving the json string " + deserializedObject.Op);
                                      
@@ -92,7 +90,7 @@ namespace PlexShareWhiteboard
                                              serverSide.NewUserHandler(deserializedObject);
                                              break;
                                          default:
-                                             Console.WriteLine("[Whiteboard] WBMessageHandler.onDataReceived(Server): Unidentified Operation at ServerBoardCommunicator");
+                                             Trace.WriteLine("[Whiteboard] WBMessageHandler.onDataReceived(Server): Unidentified Operation at ServerBoardCommunicator");
                                              break;
                                      }
 
@@ -157,12 +155,12 @@ namespace PlexShareWhiteboard
         }
         
 
-        private void DisplayMessage(string userID, int snapshotNumber)
+        public void DisplayMessage(string userID, int snapshotNumber)
         {
             throw new NotImplementedException();
         }
 
-        private void LoadBoard(List<ShapeItem> shapeItems, bool isNewUser = false)
+        public void LoadBoard(List<ShapeItem> shapeItems, bool isNewUser = false)
         {
             if (!isNewUser)
             {

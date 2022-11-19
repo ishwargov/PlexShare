@@ -28,7 +28,7 @@ namespace PlexShareWhiteboard.Client
     public class ClientSide : IShapeListener
     {
         // Instance of ClientCommunicator for sending to Server
-        ClientCommunicator _communicator;
+        IClientCommunicator _communicator;
         Serializer _serializer;
         ClientSnapshotHandler _snapshotHandler;
 
@@ -110,6 +110,10 @@ namespace PlexShareWhiteboard.Client
         public void SetSnapshotNumber(int snapshotNumber)
         {
             _snapshotHandler.SnapshotNumber = snapshotNumber;
+        }
+        public void SetCommunicator(IClientCommunicator communicator)
+        {
+            _communicator = communicator;
         }
     }
 }

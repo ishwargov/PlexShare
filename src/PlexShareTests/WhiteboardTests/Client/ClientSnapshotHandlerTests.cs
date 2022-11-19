@@ -45,5 +45,10 @@ namespace PlexShareTests.WhiteboardTests.Client
                 It.Is<WBServerShape>(obj => Utility.CompareBoardServerShapes(obj, expected))
             ), Times.Once());
         }
+        [Fact]
+        public void RestoreSnapshot_GenerateException()
+        { 
+            Assert.Throws<Exception>(() => _clientSnapshotHandler.RestoreSnapshot(1000, "randomID"));
+        }
     }
 }

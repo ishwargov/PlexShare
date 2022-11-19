@@ -32,7 +32,7 @@ namespace PlexShareWhiteboard.Server
     {
 
         // An instance of the ServerCommunicator
-        private static ServerCommunicator _communicator;
+        private static IServerCommunicator _communicator;
         private static ServerSide instance;
         private WhiteBoardViewModel _vm;
         private Serializer _serializer;
@@ -212,7 +212,7 @@ namespace PlexShareWhiteboard.Server
         public int CreateSnapshotHandler(WBServerShape deserializedObject)
         {
             int n =_serverSnapshotHandler.SaveBoard(objIdToObjectMap.Values.ToList(), deserializedObject.UserID);
-            _communicator.Broadcast(deserializedObject);
+            _communicator.Broadcast(deserializedObject,null);
             return n;
         }
 
@@ -254,6 +254,10 @@ namespace PlexShareWhiteboard.Server
         public void SetSnapshotNumber(int snapshotNumber)
         {
             _serverSnapshotHandler.SnapshotNumber = snapshotNumber;
+        }
+        public void SetCommunicator(IServerCommunicator communicator)
+        {
+            _communicator = communicator;
         }
     }
 }

@@ -27,22 +27,20 @@ namespace PlexShareWhiteboard.Client
             {
                 if (snapshotNumber <= SnapshotNumber)
                 {
-                    //creating boardServerShape object with FetchCheckpoint object
-                    //List<ShapeItem> boardShape = null;
-
                     //sending boardServerShape object to _clientBoardCommunicator
                     WBServerShape wBServerShape = new WBServerShape(null, Operation.RestoreSnapshot, UserId, snapshotNumber);
                     _clientCommunicator.SendToServer(wBServerShape);
                 }
                 else
                 {
-                    throw new ArgumentException("invalid checkpointNumber");
+                    throw new ArgumentException("Invalid snapshotNumber");
                 }
             }
             catch (Exception e)
             {
                 Trace.WriteLine("[Whiteboard] ClientSnapshotHandler.RestoreSnapshot: An exception occured.");
                 Trace.WriteLine(e.Message);
+                throw new Exception();
             }
         }
 
@@ -52,9 +50,6 @@ namespace PlexShareWhiteboard.Client
             {
                 // increasing the checkpoint number by one
                 SnapshotNumber++;
-
-                //creating boardServerShape object with CreateCheckpoint object
-                //List<ShapeItem> boardShape = null;
 
                 //sending boardServerShape object to _clientBoardCommunicator
                 WBServerShape wBServerShape = new WBServerShape(null, Operation.CreateSnapshot, UserId, SnapshotNumber);
@@ -73,13 +68,5 @@ namespace PlexShareWhiteboard.Client
         {
             _clientCommunicator = communicator;
         }
-        //public int GetSnapshotNumber()
-        //{
-        //    return SnapshotNumber;
-        //}
-        //public void SetSnapshotNumber()
-        //{
-        //    return _snapshotNumber;
-        //}
     }
 }
