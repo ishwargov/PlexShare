@@ -304,11 +304,21 @@ namespace PlexShareScreenshare.Server
             // and unmanaged resources.
             if (disposing)
             {
-                foreach (SharedClientScreen client in _subscribers.Values.ToList())
+                List<SharedClientScreen> sharedClientScreens;
+
+                // Acquire lock because timer threads could also execute simultaneously.
+                lock (_subscribers)
+                {
+                    sharedClientScreens = _subscribers.Values.ToList();
+                    _subscribers.Clear();
+                }
+
+                // Deregister all the clients.
+                foreach (SharedClientScreen client in sharedClientScreens)
                 {
                     DeregisterClient(client.Id);
                 }
-                _subscribers.Clear();
+
                 _instance = null;
             }
 
@@ -352,9 +362,9 @@ namespace PlexShareScreenshare.Server
                     Trace.WriteLine(Utils.GetDebugMessage($"Error adding client to the list of screen sharers: {e.Message}", withTimeStamp: true));
                     return;
                 }
-
-                NotifyUX();
             }
+
+            NotifyUX();
 
             Trace.WriteLine(Utils.GetDebugMessage($"Successfully registered the client- Id: {clientId}, Name: {clientName}", withTimeStamp: true));
         }
@@ -386,9 +396,9 @@ namespace PlexShareScreenshare.Server
                 // Remove the client from the list of screen sharers.
                 client = _subscribers[clientId];
                 _ = _subscribers.Remove(clientId);
-
-                NotifyUX();
             }
+
+            NotifyUX();
 
             // Stop all processing for this client.
             try
@@ -424,22 +434,26 @@ namespace PlexShareScreenshare.Server
         {
             Debug.Assert(_subscribers != null, Utils.GetDebugMessage("_subscribers is found null"));
 
-            // Check if the clientId is present in the screen sharers list.
-            if (!_subscribers.ContainsKey(clientId))
+            // Acquire lock because timer threads could also execute simultaneously.
+            lock (_subscribers)
             {
-                Trace.WriteLine(Utils.GetDebugMessage($"Client with id {clientId} is not present in subscribers list", withTimeStamp: true));
-                return;
-            }
+                // Check if the clientId is present in the screen sharers list.
+                if (!_subscribers.ContainsKey(clientId))
+                {
+                    Trace.WriteLine(Utils.GetDebugMessage($"Client with id {clientId} is not present in subscribers list", withTimeStamp: true));
+                    return;
+                }
 
-            // Put the image to the client's image queue.
-            try
-            {
-                SharedClientScreen client = _subscribers[clientId];
-                client.PutImage(image);
-            }
-            catch (Exception e)
-            {
-                Trace.WriteLine(Utils.GetDebugMessage($"Exception while processing the received image: {e.Message}", withTimeStamp: true));
+                // Put the image to the client's image queue.
+                try
+                {
+                    SharedClientScreen client = _subscribers[clientId];
+                    client.PutImage(image);
+                }
+                catch (Exception e)
+                {
+                    Trace.WriteLine(Utils.GetDebugMessage($"Exception while processing the received image: {e.Message}", withTimeStamp: true));
+                }
             }
         }
 
@@ -453,26 +467,30 @@ namespace PlexShareScreenshare.Server
         {
             Debug.Assert(_subscribers != null, Utils.GetDebugMessage("_subscribers is found null"));
 
-            // Check if the clientId is present in the screen sharers list.
-            if (!_subscribers.ContainsKey(clientId))
+            // Acquire lock because timer threads could also execute simultaneously.
+            lock (_subscribers)
             {
-                Trace.WriteLine(Utils.GetDebugMessage($"Client with id {clientId} is not present in subscribers list", withTimeStamp: true));
-                return;
-            }
+                // Check if the clientId is present in the screen sharers list.
+                if (!_subscribers.ContainsKey(clientId))
+                {
+                    Trace.WriteLine(Utils.GetDebugMessage($"Client with id {clientId} is not present in subscribers list", withTimeStamp: true));
+                    return;
+                }
 
-            // Reset the timer for the client.
-            try
-            {
-                SharedClientScreen client = _subscribers[clientId];
-                client.UpdateTimer();
+                // Reset the timer for the client.
+                try
+                {
+                    SharedClientScreen client = _subscribers[clientId];
+                    client.UpdateTimer();
 
-                //// This is disabled for now as the client is not making use of this.
-                //// Send Confirmation packet back to the client.
-                //BroadcastClients(new() { clientId }, nameof(ServerDataHeader.Confirmation), (0, 0));
-            }
-            catch (Exception e)
-            {
-                Trace.WriteLine(Utils.GetDebugMessage($"Failed to update the timer for the client with id {clientId}: {e.Message}", withTimeStamp: true));
+                    //// This is disabled for now as the client is not making use of this.
+                    //// Send Confirmation packet back to the client.
+                    //BroadcastClients(new() { clientId }, nameof(ServerDataHeader.Confirmation), (0, 0));
+                }
+                catch (Exception e)
+                {
+                    Trace.WriteLine(Utils.GetDebugMessage($"Failed to update the timer for the client with id {clientId}: {e.Message}", withTimeStamp: true));
+                }
             }
         }
 
@@ -484,7 +502,15 @@ namespace PlexShareScreenshare.Server
             Debug.Assert(_subscribers != null, Utils.GetDebugMessage("_subscribers is found null"));
             Debug.Assert(_listener != null, Utils.GetDebugMessage("_listener is found null"));
 
-            _listener.OnSubscribersChanged(_subscribers.Values.ToList());
+            List<SharedClientScreen> sharedClientScreens;
+
+            // Acquire lock because timer threads could also execute simultaneously.
+            lock (_subscribers)
+            {
+                sharedClientScreens = _subscribers.Values.ToList();
+            }
+
+            _listener.OnSubscribersChanged(sharedClientScreens);
         }
     }
 }
