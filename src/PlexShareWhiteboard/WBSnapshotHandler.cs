@@ -1,4 +1,5 @@
 ﻿using PlexShareWhiteboard.BoardComponents;
+using PlexShareWhiteboard.Client.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -42,6 +43,11 @@ namespace PlexShareWhiteboard
                 foreach(ShapeItem s in shapeList)
                     ShapeItems.Add(s);
             }
+        }
+
+        public void SetMachine(IShapeListener mockMachine)
+        {
+            machine = mockMachine;
         }
     }
 }

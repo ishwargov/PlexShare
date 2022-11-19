@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 
 namespace PlexShareWhiteboard.Client.Interfaces
 {
-    internal interface IShapeListener
+    public interface IShapeListener
     {
         void OnShapeReceived(ShapeItem newShape, Operation op);
         void SetUserId(string userId);

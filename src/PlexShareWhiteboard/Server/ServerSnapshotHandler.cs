@@ -78,17 +78,5 @@ namespace PlexShareWhiteboard.Server
             }
             return SnapshotNumber;
         }
-        //public int GetSnapshotNumber()
-        //{
-        //    return SnapshotNumber;
-        //}
-        //public void SetSnapshotNumber(int snapshotNumber)
-        //{
-        //    SnapshotNumber = snapshotNumber;
-        //}
-        public List<Tuple<int, string, List<ShapeItem>>> Summary()
-        {
-            return _snapshotSummary;
-        }
     }
 }

@@ -58,7 +58,7 @@ namespace PlexShareWhiteboard.Server
             Broadcast(clientUpdate);
         }
 
-        public void Broadcast(WBServerShape clientUpdate, string? ipAddress=null)
+        public void Broadcast(WBServerShape clientUpdate, string? userID=null)
         {
             try
             {
@@ -70,7 +70,7 @@ namespace PlexShareWhiteboard.Server
 
                 }
                 var serializedObj = serializer.SerializeWBServerShape(clientUpdate);
-                communicator.Send(serializedObj, moduleIdentifier, ipAddress);
+                communicator.Send(serializedObj, moduleIdentifier, userID);
                 Trace.WriteLine("[Whiteboard] ServerCommunicator.Broadcast: Sent objects to client");
             }
             catch (Exception e)

@@ -14,12 +14,12 @@ using System.Threading.Tasks;
 
 namespace PlexShareWhiteboard.Server.Interfaces
 {
-    internal interface IServerCommunicator
+    public interface IServerCommunicator
     {
         public void Broadcast(ShapeItem newShape, Operation op);
 
         public void Broadcast(List<ShapeItem> newShapes, Operation op);
 
-        public void Broadcast(WBServerShape clientUpdate, string? ipAddress);
+        public void Broadcast(WBServerShape clientUpdate, string? userID);
     }
 }
