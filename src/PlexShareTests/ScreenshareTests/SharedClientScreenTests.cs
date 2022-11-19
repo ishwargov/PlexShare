@@ -197,9 +197,10 @@ namespace PlexShareTests.ScreenshareTests
 
             // Assert.
             // Check if the retrieved images are same and in order.
+            bool cancellationToken = false;
             for (int i = 0; i < numImages; ++i)
             {
-                string? receivedImage = client.GetImage(CancellationToken.None);
+                string? receivedImage = client.GetImage(ref cancellationToken);
                 Assert.NotNull(receivedImage);
                 Assert.True(clientImages[i] == receivedImage);
             }
@@ -234,9 +235,10 @@ namespace PlexShareTests.ScreenshareTests
 
             // Assert.
             // Check if the retrieved final images are same and in order.
+            bool cancellationToken = false;
             for (int i = 0; i < numImages; ++i)
             {
-                Bitmap? receivedImage = client.GetFinalImage(CancellationToken.None);
+                Bitmap? receivedImage = client.GetFinalImage(ref cancellationToken);
                 Assert.NotNull(receivedImage);
                 Assert.True(clientImages[i] == receivedImage);
             }
@@ -274,18 +276,12 @@ namespace PlexShareTests.ScreenshareTests
             // Start the processing of the images for the client.
             // The task will take the image from the final image queue
             // of the client and will update its "CurrentImage" variable.
-            client.StartProcessing(new((token) =>
+            client.StartProcessing(new((ref bool cancellationToken) =>
             {
-                // If the task was already canceled.
-                token.ThrowIfCancellationRequested();
-
                 // Loop till the task is not canceled.
-                while (!token.IsCancellationRequested)
+                while (!cancellationToken)
                 {
-                    // End the task when cancellation is requested.
-                    token.ThrowIfCancellationRequested();
-
-                    Bitmap? finalImage = client.GetFinalImage(token);
+                    Bitmap? finalImage = client.GetFinalImage(ref cancellationToken);
 
                     if (finalImage != null)
                     {
@@ -300,7 +296,7 @@ namespace PlexShareTests.ScreenshareTests
             Thread.Sleep(10000);
 
             // Trying to start an already started task.
-            client.StartProcessing(new((token) => { return; }));
+            client.StartProcessing(new((ref bool _) => { return; }));
 
             // Stop the processing of the images for the client.
             client.StopProcessing().Wait();

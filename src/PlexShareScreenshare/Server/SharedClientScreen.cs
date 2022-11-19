@@ -63,9 +63,10 @@ namespace PlexShareScreenshare.Server
         private Task? _imageSendTask;
 
         /// <summary>
-        /// Source token for killing the image send task.
+        /// Token for killing the image send task.
+        /// It is set as true when cancellation of the task is requested, fast otherwise.
         /// </summary>
-        private CancellationTokenSource? _tokenSource;
+        private bool _cancellationToken;
 
         /// <summary>
         /// Track whether Dispose has been called.
@@ -128,11 +129,11 @@ namespace PlexShareScreenshare.Server
 
             // Initialize these variables as null.
             _imageSendTask = null;
-            _tokenSource = null;
             _currentImage = null;
 
             // Initialize rest of the properties.
             _disposed = false;
+            _cancellationToken = false;
             _tileHeight = 0;
             _tileWidth = 0;
 
@@ -272,26 +273,23 @@ namespace PlexShareScreenshare.Server
         /// <summary>
         /// Pops and returns the received image at the beginning of the received image queue.
         /// </summary>
-        /// <param name="token">
+        /// <param name="cancellationToken">
         /// Cancellation token of the task in which this function is being called.
         /// </param>
         /// <returns>
         /// The received image that is removed from the beginning.
         /// </returns>
-        public string? GetImage(CancellationToken token)
+        public string? GetImage(ref bool cancellationToken)
         {
             Debug.Assert(_imageQueue != null, Utils.GetDebugMessage("_imageQueue is found null"));
 
-            token.ThrowIfCancellationRequested();
-
             // Wait until the queue is empty.
-            while (_imageQueue.Count == 0 && !token.IsCancellationRequested)
+            while (_imageQueue.Count == 0)
             {
-                token.ThrowIfCancellationRequested();
+                // Return if the cancellation of the task is requested.
+                if (cancellationToken) return "";
                 Thread.Sleep(100);
             }
-
-            token.ThrowIfCancellationRequested();
 
             lock (_imageQueue)
             {
@@ -326,26 +324,23 @@ namespace PlexShareScreenshare.Server
         /// <summary>
         /// Pops and returns the final Image at the beginning of the final image queue.
         /// </summary>
-        /// <param name="token">
+        /// <param name="cancellationToken">
         /// Cancellation token of the task in which this function is being called.
         /// </param>
         /// <returns>
         /// The final image to be displayed that is removed from the beginning.
         /// </returns>
-        public Bitmap? GetFinalImage(CancellationToken token)
+        public Bitmap? GetFinalImage(ref bool cancellationToken)
         {
             Debug.Assert(_finalImageQueue != null, Utils.GetDebugMessage("_finalImageQueue is found null"));
 
-            token.ThrowIfCancellationRequested();
-
             // Wait until the queue is not empty.
-            while (_finalImageQueue.Count == 0 && !token.IsCancellationRequested)
+            while (_finalImageQueue.Count == 0)
             {
-                token.ThrowIfCancellationRequested();
+                // Return if the cancellation of the task is requested.
+                if (cancellationToken) return null;
                 Thread.Sleep(100);
             }
-
-            token.ThrowIfCancellationRequested();
 
             lock (_finalImageQueue)
             {
@@ -386,7 +381,7 @@ namespace PlexShareScreenshare.Server
         /// Task to be executed for updating current image of the client and notifying the view.
         /// </param>
         /// <exception cref="Exception"></exception>
-        public void StartProcessing(Action<CancellationToken> task)
+        public void StartProcessing(Utils.ActionRef<bool> task)
         {
             Debug.Assert(_stitcher != null, Utils.GetDebugMessage("_stitcher is found null"));
 
@@ -396,8 +391,8 @@ namespace PlexShareScreenshare.Server
                 return;
             }
 
-            // Create a new cancellation token.
-            _tokenSource = new();
+            // Reset the cancellation token.
+            _cancellationToken = false;
 
             try
             {
@@ -405,12 +400,8 @@ namespace PlexShareScreenshare.Server
                 _stitcher.StartStitching();
 
                 // Create and start a new task.
-                _imageSendTask = new(() => task(_tokenSource.Token), _tokenSource.Token);
+                _imageSendTask = new(() => task(ref _cancellationToken));
                 _imageSendTask.Start();
-            }
-            catch (OperationCanceledException e)
-            {
-                Trace.WriteLine(Utils.GetDebugMessage($"Task canceled for the client with id {Id}: {e.Message}", withTimeStamp: true));
             }
             catch (Exception e)
             {
@@ -432,19 +423,20 @@ namespace PlexShareScreenshare.Server
             Debug.Assert(_stitcher != null, Utils.GetDebugMessage("_stitcher is found null"));
 
             // Check if the task was started before.
-            if (_tokenSource == null || _imageSendTask == null)
+            if (_imageSendTask == null)
             {
                 Trace.WriteLine(Utils.GetDebugMessage($"Trying to stop a task which was never started for the client with Id {this.Id}", withTimeStamp: true));
                 return;
             }
+
+            // Cancel the task and wait for it to finish.
+            _cancellationToken = true;
 
             try
             {
                 // Stop the stitcher.
                 _stitcher.StopStitching();
 
-                // Cancel the task and wait for it to finish.
-                _tokenSource.Cancel();
                 await _imageSendTask;
             }
             catch (OperationCanceledException e)
@@ -458,11 +450,10 @@ namespace PlexShareScreenshare.Server
             }
             finally
             {
-                // Dispose of the token and the task.
-                _tokenSource.Dispose();
+                // Dispose of the task.
                 _imageSendTask.Dispose();
 
-                _tokenSource = null;
+                _cancellationToken = false;
                 _imageSendTask = null;
 
                 // Clear both the queues.

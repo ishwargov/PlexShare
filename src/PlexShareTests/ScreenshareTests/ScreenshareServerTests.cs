@@ -200,9 +200,10 @@ namespace PlexShareTests.ScreenshareTests
 
             SharedClientScreen serverClient = subscribers[clientIdx];
             Assert.True(serverClient.GetPrivate<Queue<string>>("_imageQueue").Count == numImages);
+            bool cancellationToken = false;
             for (int i = 0; i < numImages; ++i)
             {
-                string? receivedImage = serverClient.GetImage(CancellationToken.None);
+                string? receivedImage = serverClient.GetImage(ref cancellationToken);
                 Assert.True(receivedImage != null);
                 Assert.True(receivedImage == clientImagePackets[i].MockImage);
             }
