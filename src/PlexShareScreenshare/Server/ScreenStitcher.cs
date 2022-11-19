@@ -11,7 +11,6 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
 
 
@@ -30,7 +29,7 @@ namespace PlexShareScreenshare.Server
         private Resolution? _resolution;
 
         // Token for killing the task
-        private CancellationTokenSource? _tokenSource;
+        private bool _cancellationToken = false;
 
         private byte[] expansionBuffer;
 
@@ -98,18 +97,17 @@ namespace PlexShareScreenshare.Server
         /// </summary>
         public void StartStitching()
         {
-            _tokenSource = new();
+            _cancellationToken = false;
 
             if (_stitchTask == null)
             {
-                _tokenSource.Token.ThrowIfCancellationRequested();
 
                 _stitchTask = new Task(() =>
                 {
-                    while (!_tokenSource.Token.IsCancellationRequested)
+                    while (!_cancellationToken)
                     {
-                        _tokenSource.Token.ThrowIfCancellationRequested();
-                        string? newFrame = _sharedClientScreen.GetImage(_tokenSource.Token);
+                        string? newFrame = _sharedClientScreen.GetImage(ref _cancellationToken);
+                        if (_cancellationToken) break;
                         if (newFrame == null)
                         {
                             Trace.WriteLine($"[ScreenSharing] New frame returned by _sharedClientScreen is null.");
@@ -119,7 +117,7 @@ namespace PlexShareScreenshare.Server
                         _oldImage = stichedImage;
                         _sharedClientScreen.PutFinalImage(stichedImage);
                     }
-                }, _tokenSource.Token);
+                });
 
                 _stitchTask.Start();
             }
@@ -130,7 +128,7 @@ namespace PlexShareScreenshare.Server
         {
             try
             {
-                _tokenSource!.Cancel();
+                _cancellationToken = true;
                 await _stitchTask!;
                 _stitchTask = null;
             }
@@ -144,8 +142,6 @@ namespace PlexShareScreenshare.Server
             }
             finally
             {
-                _tokenSource!.Dispose();
-                _tokenSource = null;
                 _stitchTask = null;
             }
         }
