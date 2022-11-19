@@ -1,3 +1,4 @@
+//<author>Hrishi Raaj Singh Chauhan</author>
 using System;
 using Xunit;
 using System.Diagnostics;
@@ -7,6 +8,7 @@ namespace PlexShareTests.DashboardTests.Persistence
 {
     public class PersistenceUnitTest
     {
+
         // [Fact]
         // public void SaveSummaryNullPathExceptions()
         // {
@@ -18,6 +20,9 @@ namespace PlexShareTests.DashboardTests.Persistence
         //    summaryPersister.SummaryPath = "../../../Persistence/PersistenceDownloads/SummaryDownloads/";
         //    Assert.False(response);
         // }
+        /// <summary>
+        /// Function to check if Summary is getting saved properly.
+        /// </summary>
         [Fact]
         public void SaveSummaryTestOne()
         {
@@ -43,6 +48,10 @@ namespace PlexShareTests.DashboardTests.Persistence
                 Trace.WriteLine("text not saved");
             }
         }
+        /// <summary>
+        /// Function to check if SessionAnalytics is getting saved properly.
+        /// </summary>
+
         [Fact]
         public void SaveTelemetryAnalysisTestOne()
         {
