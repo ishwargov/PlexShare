@@ -34,6 +34,7 @@ namespace PlexShareWhiteboard
             switch (key)
             {
                 case Key.Enter: return '\n';
+                case Key.Back: return '\b';
                 case Key.A: return (iscap ? 'A' : 'a');
                 case Key.B: return (iscap ? 'B' : 'b');
                 case Key.C: return (iscap ? 'C' : 'c');
@@ -104,8 +105,18 @@ namespace PlexShareWhiteboard
                 default: return '\x00';
             }
         }
+     
         public void TextBoxStart(System.Windows.Input.Key c)
         {
+            if (c == Key.Space)
+                TextBoxStartChar(' ');
+            else if (c == Key.Back)
+                TextBoxStartChar('\b');
+            else
+                TextBoxStartChar(KeyToChar(c));
+        }
+        public void TextBoxStartChar(char ch)
+        { 
             UnHighLightIt();
             string text = "";
             Trace.WriteLine("[Whiteboard]  " + "inisde textbox start" + textBoxLastShape);
@@ -115,12 +126,12 @@ namespace PlexShareWhiteboard
                 Trace.WriteLine("[Whiteboard]  " + "msater text " + text + "  id : " + textBoxLastShape.Id);
             }
             //Trace.WriteLine("[Whiteboard]  " + "Inside TextBoxStart function");
-            if (c == Key.Space)
+            if (ch == ' ')
             {
                 Trace.WriteLine("[Whiteboard]  " + "space");
                 text = text + ' ';
             }
-            else if (c == Key.Back)
+            else if (ch == '\b')
             {
                 if (text.Length != 0)
                 {
@@ -136,17 +147,14 @@ namespace PlexShareWhiteboard
                     // lastShape = curShape;
                     // ShapeItems.Add(curShape);
                     // curZindex++;
+
                 }
             }
             else
-            {
-
-                char ch = KeyToChar(c);
-                text += KeyToChar(c);
+                text += ch;
            //     Trace.WriteLine("[Whiteboard]  " + "key down " + ch + "   text is now " + text + "  id : " + lastShape.Id);
 
-            }
-            //Debug.WriteLine(text);
+                    //Debug.WriteLine(text);
             if (mode == "create_textbox" && textBoxLastShape != null)
             {
                 // Create the formatted text based on the properties set.

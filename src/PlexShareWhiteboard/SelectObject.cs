@@ -131,7 +131,6 @@ namespace PlexShareWhiteboard
                 }
                 else if (Child.FillContains(a) && Child.GetType().Name == "LineGeometry")
                 {
-
                     HelperSelectLine(boundingBox, tempZIndex, i, a);
                 }
             }
