@@ -7,6 +7,7 @@
 using Moq;
 using PlexShareScreenshare;
 using PlexShareScreenshare.Server;
+using System.ComponentModel;
 using System.Drawing;
 using System.Text.Json;
 using System.Timers;
@@ -292,6 +293,44 @@ namespace PlexShareTests.ScreenshareTests
             Assert.True(client.CurrentImage != null);
 
             // Cleanup.
+            client.Dispose();
+            server.Dispose();
+        }
+
+
+        /// <summary>
+        /// Tests that the OnPropertyChanged() is invoked successfully when changing the
+        /// properties for the SharedClientScreen object.
+        /// </summary>
+        [Fact]
+        public void TestOnPropertyChanged()
+        {
+            // Arrange.
+            // Create a mock client and the server.
+            var viewmodelMock = new Mock<IMessageListener>();
+            ScreenshareServer server = ScreenshareServer.GetInstance(viewmodelMock.Object, isDebugging: true);
+            SharedClientScreen client = Utils.GetMockClient(server, isDebugging: true);
+
+            // Add the handler to the property changed event.
+            int invokedCount = 0;
+            PropertyChangedEventHandler handler = new((_, _) => ++invokedCount);
+            client.PropertyChanged += handler;
+
+            // Act.
+            // Update the properties which are supposed to raise on property changed event.
+            int numPropertiesChanged = 4;
+            client.CurrentImage = SSUtils.BitmapToBitmapImage(Utils.GetMockBitmap());
+            client.Pinned = true;
+            client.TileHeight = 100;
+            client.TileWidth = 100;
+
+            // Assert.
+            // Check if the property changed event was raised as many times the properties
+            // of the client was changed.
+            Assert.True(invokedCount == numPropertiesChanged);
+
+            // Cleanup.
+            client.PropertyChanged -= handler;
             client.Dispose();
             server.Dispose();
         }
