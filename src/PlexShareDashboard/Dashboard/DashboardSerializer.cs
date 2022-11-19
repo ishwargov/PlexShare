@@ -1,4 +1,9 @@
-﻿
+﻿/*
+ * Name : Saurabh Kumar
+ * Roll : 111901046
+ * File Name: DashboardSerializer.cs
+ * This file contains the implemetation of Json Serializer
+ */
 using System;
 using System.Diagnostics;
 using Newtonsoft.Json;
@@ -49,15 +54,6 @@ namespace PlexShareDashboard.Dashboard
             }
         }
 
-        /*
-        /// <inheritdoc />
-        string IDashboardSerializer.GetObjectType(string serializedString, string nameSpace)
-        {
-            // json string
-            var obj = DeserializeJson<MetaObject>(serializedString);
-            return obj.typ;
-        }
-        */
         /// <inheritdoc />
         T IDashboardSerializer.Deserialize<T>(string serializedString)
         {
