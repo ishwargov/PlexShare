@@ -19,15 +19,54 @@ namespace PlexShareTests.ContentTests.Server
 {
     public class ChatServerTests
     {
-        private Utility _utils;
-        private ContentDB database;
-        private ChatServer ChatServer;
+        public Utility _utils;
+        public ContentDB database;
+        public ChatServer ChatServer;
 
         public void Setup()
         {
             database = new ContentDB();
             ChatServer = new ChatServer(database);
             _utils = new Utility();
+        }
+
+        [Fact]
+        public void GetMessages_ValidInput_ReturnsAllMessages() { 
+            Setup();
+            ContentData msg = _utils.GenerateContentData(MessageType.Chat, data: "Testing Get Messages");
+            ContentData msg1 = ChatServer.Receive(msg);
+            List<ChatThread> allMessage = ChatServer.GetMessages();
+            Assert.NotNull(allMessage);
+        }
+
+        [Fact]
+        public void UpdateChat_ValidInput_ReturnsValidContentData()
+        {
+            Setup();
+            ContentData msg = _utils.GenerateContentData(MessageType.Chat, data: "Testing Update");
+            ContentData msg1 = ChatServer.Receive(msg);
+            ReceiveContentData updatedMsg = ChatServer.UpdateMessage(msg1.ReplyThreadID, msg1.MessageID, "Message Updated");
+            Assert.Equal("Message Updated", updatedMsg.Data);
+        }
+
+        [Fact]
+        public void StarMessage_ValidInput_ReturnsTrue()
+        {
+            Setup();
+            ContentData msg = _utils.GenerateContentData(MessageType.Chat, data: "Testing Starring");
+            ContentData msg1 = ChatServer.Receive(msg);
+            ReceiveContentData starredMsg = ChatServer.StarMessage(msg1.ReplyThreadID, msg1.MessageID);
+            Assert.True(starredMsg.Starred);
+        }
+
+        [Fact]
+        public void DeleteChat_ValidInput_ReturnsValidContentData()
+        {
+            Setup();
+            ContentData msg = _utils.GenerateContentData(MessageType.Chat, data: "Testing Delete");
+            ContentData msg1 = ChatServer.Receive(msg);
+            ReceiveContentData updatedMsg = ChatServer.DeleteMessage(msg1.ReplyThreadID, msg1.MessageID);
+            Assert.Equal("Message Deleted.", updatedMsg.Data);
         }
 
         [Fact]
@@ -156,54 +195,6 @@ namespace PlexShareTests.ContentTests.Server
         }
 
         [Fact]
-        public void Receive_UpdatingMultipleMessages_OnlyTheGivenMessagesAreUpdated()
-        {
-            Setup();
-            database = new ContentDB();                                                                                                                         
-            ChatServer = new ChatServer(database);
-
-            //Receive_StoringMultipleMessages_AllMessagesReturned();
-            var msg1 = _utils.GenerateContentData(data: "Test Message", senderID: 1);
-            ReceiveContentData receivedMsg = ChatServer.Receive(msg1);
-            Assert.Equal(msg1.Data, receivedMsg.Data);
-
-            var msg2 = _utils.GenerateContentData(data: "Test Message2", senderID: 1, replyThreadID: msg1.ReplyThreadID);
-            receivedMsg = ChatServer.Receive(msg2);
-            Assert.Equal(msg2.Data, receivedMsg.Data);
-            Assert.NotEqual(msg2.MessageID, msg1.MessageID);
-
-            var msg3 = _utils.GenerateContentData(data: "Test Message3", senderID: 1);
-            receivedMsg = ChatServer.Receive(msg3);
-            Assert.Equal(msg3.Data, receivedMsg.Data);
-            Assert.NotEqual(msg3.MessageID, msg2.MessageID);
-            Assert.NotEqual(msg3.MessageID, msg1.MessageID);
-
-            msg1 = new ContentData
-            {
-                MessageID = 0,
-                Data = "Test Message",
-                ReplyThreadID = 0,
-                Type = MessageType.Chat,
-                Event = MessageEvent.Edit
-            };
-
-            receivedMsg = ChatServer.Receive(msg1);
-            Assert.Equal("Test Message", receivedMsg.Data);
-
-            msg1 = new ContentData
-            {
-                MessageID = 2,
-                Data = "Updated",
-                ReplyThreadID = 1,
-                Type = MessageType.Chat,
-                Event = MessageEvent.Edit
-            };
-
-            receivedMsg = ChatServer.Receive(msg1);
-            Assert.Equal("Updated", receivedMsg.Data);
-        }
-
-        [Fact]
         public void Receive_DeletingtingMessage_ReturnsMessageDeleted()
         {
             Setup();
@@ -223,5 +214,29 @@ namespace PlexShareTests.ContentTests.Server
             Assert.NotNull(receivedMsg);
             Assert.Equal("Message Deleted.", receivedMsg.Data);
         }
+
+        [Fact]
+        public void Receive_DeletingMessageDoesNotExist_ReturnsNull()
+        {
+            Setup();
+            var msg = _utils.GenerateContentData(data: "Test Message", senderID: 1);
+            ReceiveContentData receivedMsg = ChatServer.Receive(msg);
+            Assert.Equal(msg.Data, receivedMsg.Data);
+
+            var delMessage = new ContentData
+            {
+                MessageID = 1,
+                ReplyThreadID = receivedMsg.ReplyThreadID,
+                Type = MessageType.Chat,
+                Event = MessageEvent.Delete
+            };
+
+            receivedMsg = ChatServer.Receive(delMessage);
+            delMessage.MessageID = 0;
+            delMessage.ReplyThreadID = 1;
+            receivedMsg = ChatServer.Receive(delMessage);
+            Assert.Null(receivedMsg);
+        }
+
     }
 }

@@ -92,7 +92,10 @@ namespace PlexShareApp
             clientSessionManager = SessionManagerFactory.GetClientSessionManager();
             SessionData sessionData = clientSessionManager._clientSessionData;
             UserData user = clientSessionManager.GetUser();
-            uploadPage = new UploadPage(sessionData.sessionId.ToString(), user.userEmail);
+            uploadPage = new UploadPage(sessionData.sessionId.ToString(), user.userEmail, isServer);
+
+            //this is to disable backspace to avoid switch tabs
+            NavigationCommands.BrowseBack.InputGestures.Clear();
 
             submissionsPage = new SubmissionsPage(sessionData.sessionId.ToString(), user.userEmail);
 

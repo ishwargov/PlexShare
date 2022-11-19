@@ -11,8 +11,11 @@
  *               sending messages. 
  *****************************************************************************/
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace PlexShareContent.DataModels
 {
+    [ExcludeFromCodeCoverage]
     public class SendContentData
     {
         /// <summary>
