@@ -23,9 +23,6 @@
         <SolidColorBrush x:Key="DynamicSentReplyMsg" Color="#596e5c" />
 
 
-
-        <!--Custom style trigger for determining action when mouse is and not over the textbox-->
-
         <!--Setting the visibility of the reply text box as collapsed when its empty or null-->
         <Style TargetType="TextBlock" x:Key="ReplyText">
             <Style.Triggers>
@@ -58,13 +55,15 @@
                     <Setter Property="Cursor" Value="Arrow" />
                 </Trigger>
             </Style.Triggers>
+            <Style.Resources>
+                <Style TargetType="{x:Type Border}">
+                    <Setter Property="CornerRadius" Value="8" />
+                </Style>
+            </Style.Resources>
         </Style>
 
         <!--Customizing the Button type-->
         <Style TargetType="{x:Type Button}">
-            <!--<Setter Property="Background" Value="{DynamicResource DynamicButtonBack}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource DynamicButtonBack}" />
-            <Setter Property="Foreground" Value="{DynamicResource DynamicButtonFore}" />-->
             <Setter Property="FontSize" Value="14" />
             <Setter Property="Width" Value="90" />
             <Setter Property="Margin" Value="10" />
@@ -189,6 +188,7 @@
                 </Grid>
             </Grid>
         </DataTemplate>
+        
         <!--Data template for the file message sent by the user-->
         <DataTemplate x:Key="MyToFileTemplate">
             <Grid>
@@ -270,6 +270,7 @@
                 </Grid>
             </Grid>
         </DataTemplate>
+        
         <!--Data template for the chat message received by the user-->
         <DataTemplate x:Key="MyFromMsgTemplate">
             <Grid x:Name="FromBubble" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Top">
@@ -322,19 +323,7 @@
                                     Width="30" Height="20" Margin="0,0,0,0" Click="ClearReplyBox" ToolTip="Undo Reply">
                                 <Image Source="Icons/undo.png" Width="15" Height="15" />
                             </Button>
-                            <!--<Button  Background="Violet" BorderBrush="Transparent" HorizontalAlignment="Right"
-                                    Width="30" Height="20" Margin="0,0,0,0" Click="EditButtonClick">
-                                E
-                            </Button>
-                            <Button Background="Red" BorderBrush="Transparent" HorizontalAlignment="Right"
-                                    Width="30" Height="20" Margin="0,0,0,0" Click="DeleteButtonClick">
-                                D
-                            </Button>-->
                         </StackPanel>
-                        <!--<Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
-                                Width="30" Margin="0,0,0,0" Click="ReplyButtonClick">
-                            <Image Source="Icons/reply.png" Width="15" Height="15" />
-                        </Button>-->
                     </Grid>
                     <Grid Grid.Row="3">
                         <Grid.ColumnDefinitions>
@@ -442,11 +431,6 @@
             </Border.Effect>
         </Border>
         <StackPanel>
-            <StackPanel Orientation="Horizontal" Background="{DynamicResource DynamicHeader}" HorizontalAlignment="Stretch">
-                <!--<Image Width="20" Height="20" Margin="4" Source="Icons/online-chat.png" HorizontalAlignment="Center"/>
-                <TextBlock Foreground="White" Grid.Column="1" Margin="4 0 0 0" FontSize="20" HorizontalAlignment="Stretch"
-                           Text="" Background="{DynamicResource DynamicHeader}" />-->
-            </StackPanel>
             <!--Grid layout for listbox and textbox-->
             <Grid>
                 <Grid.RowDefinitions>
@@ -485,8 +469,8 @@
                         <ColumnDefinition Width="6*" />
                         <ColumnDefinition Width="1*" />
                     </Grid.ColumnDefinitions>
-                    <Border Grid.Column="0" CornerRadius="8" Background="{DynamicResource DynamicSendBox}"
-                            BorderBrush="{DynamicResource DynamicSendBox}" BorderThickness="2" Margin="7,0,0,0">
+                    <Border Grid.Column="0" CornerRadius="8" 
+                             BorderThickness="2" Margin="7,0,0,0">
                         <Grid VerticalAlignment="Bottom">
                             <Grid>
                                 <Grid.RowDefinitions>
@@ -502,29 +486,27 @@
                                                    Width="425" MaxHeight="40" FontSize="16" Padding="8,5,8,5" />
                                     </Border>
                                 </Grid>
-                                <!--.HorizontalScrollBarVisibility="Auto"
-                                            ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True"-->
-                                <!--<TextBox Grid.Row="1" Name="SendTextBox" Foreground="black" SpellCheck.IsEnabled="True" Background="Transparent"
-                                         BorderThickness="0" Height="60" FontSize="15" VerticalAlignment="Bottom"
-                                         Text="" AcceptsReturn="True" />-->
-                                <TextBox Grid.Row="1" Name="SendTextBox" Foreground="white" SpellCheck.IsEnabled="True" Background="Transparent"
-                                         BorderThickness="0" Height="30" FontSize="15" VerticalAlignment="Bottom"
-                                         Text="" AcceptsReturn="True"></TextBox>
+                                <Grid Grid.Row="1">
+                                    <TextBox Grid.Row="1" Name="SendTextBox" Foreground="White" SpellCheck.IsEnabled="True"
+                                         Height="30" FontSize="15" VerticalAlignment="Bottom"  BorderThickness="0"
+                                         Text="" AcceptsReturn="True" Background="{DynamicResource DynamicSendBox}">
+                                    </TextBox>
+                                </Grid>
                             </Grid>
                         </Grid>
                     </Border>
                     <Border Grid.Column="1" CornerRadius="8" Background="{DynamicResource DynamicSendBox}"
-                            BorderBrush="{DynamicResource DynamicSendBox}" BorderThickness="0" Height="35" Width="35"
-                            Margin="0,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Center">
-                        <Button Background="Transparent" HorizontalAlignment="Center" Width="30" Margin="3,5,2,6"
+                            BorderBrush="{DynamicResource DynamicSendBox}" BorderThickness="0" Height="30" Width="30"
+                            Margin="0,0,0,0" VerticalAlignment="Top">
+                        <Button Background="Transparent" HorizontalAlignment="Center" Width="30" Margin="3,3,3,3"
                                     Click="UploadButtonClick" VerticalAlignment="Bottom" ToolTip="Upload">
-                            <Image Source="Icons/upload-file.png" Width="20" Height="20" />
+                            <Image Source="Icons/upload-file.png" Width="20" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Button>
                     </Border>
                     <Border Grid.Column="1" CornerRadius="8" Background="{DynamicResource DynamicSendBox}"
                             BorderBrush="{DynamicResource DynamicSendBox}" BorderThickness="0" Height="30" Width="30"
-                            Margin="0,0,0,0" VerticalAlignment="Bottom" HorizontalAlignment="Center">
-                        <Button  Background="Transparent" HorizontalAlignment="Center" Width="30" Margin="3,5,0,5"
+                            Margin="0,0,0,0" VerticalAlignment="Bottom">
+                        <Button  Background="Transparent" HorizontalAlignment="Center" Width="30" Margin="3,3,3,3"
                                 Click="SendButtonClick" ToolTip="Send">
                             <Image Source="Icons/send-mail.png" HorizontalAlignment="Center" Width="18" Height="18" />
                         </Button>
