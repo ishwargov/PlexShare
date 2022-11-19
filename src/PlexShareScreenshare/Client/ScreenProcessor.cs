@@ -180,6 +180,7 @@ namespace PlexShareScreenshare.Client
         public void StartProcessing()
         {
             // dropping one frame to set the previous image value
+            _cancellationToken = false;
             Bitmap? img = null;
             try
             {
