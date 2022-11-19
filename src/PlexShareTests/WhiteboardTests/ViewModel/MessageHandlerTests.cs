@@ -51,9 +51,9 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             var newSerializedShapes = _serializer.ConvertToSerializableShapeItem(newShapes);
             WBServerShape wbShape = new WBServerShape(newSerializedShapes, Operation.Creation);
             string jsonString = _serializer.SerializeWBServerShape(wbShape);
-            viewModel.OnDataReceived(jsonString);
+            viewModel.DataHandler(jsonString);
 
-            Assert.Equal(viewModel.ShapeItems[0], sh);
+            Assert.True(Utility.CompareShapeItems(viewModel.ShapeItems[0], sh));
         }
     }
 }
