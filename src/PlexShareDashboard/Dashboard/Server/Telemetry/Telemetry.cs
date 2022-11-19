@@ -17,6 +17,7 @@ using PlexShareContent.DataModels;
 using Dashboard.Server.Persistence;
 using Dashboard;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace PlexShareDashboard.Dashboard.Server.Telemetry
 {
@@ -151,7 +152,7 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             
             currSessionAnalytics.sessionSummary = sessionSummary;
 
-
+            Trace.WriteLine("[Telemetry Submodule] Get Telemetry Analytics function called. Successfully send the updated the telemetric data to session Manager");
             //say everything went fine 
             return currSessionAnalytics;
         }
@@ -198,7 +199,7 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
 
             //calling the persistent module to save these analytics 
             persistence.Save(finalSessionAnalyticsToSave);
-
+            Trace.WriteLine("[Telemetry Submodule] SaveAnalytics function called to save the telemetric data by the persistence submodule.");
 
             //say everything went fine 
             return;
@@ -328,7 +329,7 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             CalculateArrivalExitTimeOfUser(newSession, currTime);
             GetListOfInsincereMembers(currTime);
 
-
+            Trace.WriteLine("[Telemetry Submodule] OnAnalytics function get called, successfully updated the telemetric data on the server.");
             //say everything went fine 
             return;
 
