@@ -30,6 +30,8 @@ namespace PlexShareApp
     {
         private bool chatOn;
         private bool cloudOn;
+        private bool submissionsOn;
+        private static SubmissionsPage submissionsPage;
         private static DashboardPage dashboardPage;
         private static WhiteBoardPage whiteBoardPage;
         private static ChatPageView chatPage;
@@ -44,9 +46,9 @@ namespace PlexShareApp
         public MainScreenView(string name, string email, string picPath, string url, string ip, string port, bool isServer)
         {
 
-
             isClient = !isServer;
             cloudOn = false;
+            submissionsOn = false;
             // The client/server was verified to be correct.
             // We can add the client to meeting, and instantiate all modules.
             InitializeComponent();
@@ -71,6 +73,11 @@ namespace PlexShareApp
                 Trace.WriteLine("[UX] The Whiteboard Client has started");
                 screenshareClientView = new ScreenshareClientView();
                 Trace.WriteLine("[UX] The Screenshare Client has started");
+                
+                // Clients should now be able to see the submissions Page
+                Submissions.Visibility = Visibility.Hidden;
+
+
             }
 
             Main.Content = dashboardPage;
@@ -79,6 +86,8 @@ namespace PlexShareApp
             Trace.WriteLine("[UX] Setting the IP:Port");
             ServerIPandPort.Text = "Server IP : " + ip + "    Port : " + port;
 
+            // This is to get the sessionID and userEmail from the dashBoard 
+            // Because the cloud team needs it in their constructor
             ClientSessionManager clientSessionManager;
             clientSessionManager = SessionManagerFactory.GetClientSessionManager();
             SessionData sessionData = clientSessionManager._clientSessionData;
@@ -88,6 +97,23 @@ namespace PlexShareApp
             //this is to disable backspace to avoid switch tabs
             NavigationCommands.BrowseBack.InputGestures.Clear();
 
+            submissionsPage = new SubmissionsPage(sessionData.sessionId.ToString(), user.userEmail);
+
+            // this is to disable backspace so backspace does not switch tabs
+            NavigationCommands.BrowseBack.InputGestures.Clear();
+
+        }
+
+        /// <summary>
+        /// Disable the space key for whiteboard
+        /// </summary>
+        /// <param name="e"></param>
+        protected override void OnPreviewKeyDown(KeyEventArgs e)
+        {
+            if (e.Key == Key.Space)
+            {
+                e.Handled = true;
+            }
         }
 
         /// <summary>
@@ -171,8 +197,28 @@ namespace PlexShareApp
             else
             {
                 Cloud.Background = Brushes.DarkCyan;
+                submissionsOn = false;
+                Submissions.Background = Brushes.Transparent;
                 cloudOn = true;
                 CloudPage.Content = uploadPage;
+            }
+        }
+
+        private void SubmissionsClick(object sender, RoutedEventArgs e)
+        {
+            if (submissionsOn)
+            {
+                Submissions.Background = Brushes.Transparent;
+                submissionsOn = false;
+                CloudPage.Content = null;
+            }
+            else
+            {
+                Submissions.Background = Brushes.DarkCyan; 
+                Cloud.Background = Brushes.Transparent;
+                cloudOn = false;
+                submissionsOn = true; 
+                CloudPage.Content = submissionsPage;
             }
         }
 

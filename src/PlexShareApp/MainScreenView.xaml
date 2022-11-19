@@ -8,14 +8,14 @@
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         Title="PlexShare"
-        MinHeight= "600"
-        MinWidth="1300"
+        MinHeight= "800"
+        MinWidth="1500"
         WindowStyle="None"
         ResizeMode="CanResizeWithGrip"
         AllowsTransparency="True"
-        SizeChanged="Window_SizeChanged"
-    >
+        SizeChanged="Window_SizeChanged" >
 
+    <!--Setting up the window resources-->
     <Window.Resources>
         <Style x:Key="FocusVisual">
             <Setter Property="Control.Template">
@@ -62,13 +62,11 @@
             </Setter>
         </Style>
     </Window.Resources>
-
-
+    
+    <!--Borders of the grid-->
     <Border BorderThickness="0">
         <Grid Background="White">
             <Grid>
-                
-                
                 <!--Column and Row Deifinitions-->
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="0.5*"/>
@@ -77,8 +75,10 @@
                     <ColumnDefinition Width="3*"/>
                     <ColumnDefinition Width="0.25*"/>
                     <ColumnDefinition Width="3*"/>
-                    <ColumnDefinition Width="11*"/>
+                    <ColumnDefinition Width="9.75*"/>
                     <ColumnDefinition Width="3.5*"/>
+                    <ColumnDefinition Width="2.5*"/>
+                    <ColumnDefinition Width="0.25*"/>
                     <ColumnDefinition Width="1.5*"/>
                     <ColumnDefinition Width="0.25*"/>
                     <ColumnDefinition Width="1.5*"/>
@@ -99,6 +99,7 @@
                                    VerticalAlignment="Center" Foreground="Black"> PlexShare
                     </TextBlock>
                     <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1000" HorizontalAlignment="Right">
+                       
                         <!--Maximize Button-->
                         <Button Width="25"  Height="20" Click="MinimizeApp"
                                 Background="Transparent" 
@@ -130,9 +131,6 @@
                         <Style TargetType="Border">
                             <Setter Property="CornerRadius" Value="15,15,15,15"/>
                         </Style>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="Text" Value="Dashboard"/>
-                        </Style>
                     </Button.Resources>
                 </Button>
 
@@ -161,7 +159,7 @@
                 </Button>
 
                 <!--Chat Tab-->
-                <Button  Style="{DynamicResource RoundedButtonStyle}" Name="Chat" Grid.Column="10" Grid.Row="1" Click="ChatButtonClick"
+                <Button  Style="{DynamicResource RoundedButtonStyle}" Name="Chat" Grid.Column="12" Grid.Row="1" Click="ChatButtonClick"
                     Background="Transparent" Height="27" VerticalAlignment="Center" BorderThickness="0"
                     FontFamily="Cascadia Mono" FontSize="12"
                     Content="Chat" Foreground="WhiteSmoke">
@@ -172,8 +170,8 @@
                     </Button.Resources>
                 </Button>
                 
-                <!--Cloud Button-->
-                <Button  Style="{DynamicResource RoundedButtonStyle}" Name="Cloud" Grid.Column="8" Grid.Row="1" Click="UploadClick"
+                <!--Cloud Upload Button-->
+                <Button  Style="{DynamicResource RoundedButtonStyle}" Name="Cloud" Grid.Column="10" Grid.Row="1" Click="UploadClick"
                     Background="Transparent" Height="27" VerticalAlignment="Center" BorderThickness="0"
                     FontFamily="Cascadia Mono" FontSize="12"
                     Content="Upload" Foreground="WhiteSmoke">
@@ -187,8 +185,30 @@
                     </Button.Resources>
                 </Button>
 
+                <!--Cloud Submissions Button-->
+                <Button  Style="{DynamicResource RoundedButtonStyle}" Name="Submissions" Click="SubmissionsClick"
+                Background="Transparent" Height="27" VerticalAlignment="Center" BorderThickness="0" 
+                FontFamily="Cascadia Mono" FontSize="12" Grid.Row="1" Grid.Column="8"
+                Content="Submissions" Foreground="WhiteSmoke">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="15,15,15,15"/>
+                        </Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Text" Value="Dashboard"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+
+                <!--Server IP and Port Box-->
+                <TextBlock Margin ="0,0,0,0" x:Name="ServerIPandPort"  FontFamily="Cascadia Mono ExtraLight" FontSize="12"
+                        Grid.Column="6" Grid.ColumnSpan="1" Grid.Row ="1" HorizontalAlignment="Right" Text="IP : PORT : "
+                        Foreground="WhiteSmoke" VerticalAlignment="Center" Background="Transparent" Visibility="Hidden">
+                </TextBlock>
+                
+
                 <!--Info Button-->
-                <Button  Style="{DynamicResource RoundedButtonStyle}" Name="Info" Grid.Column="12" Grid.Row="1" MouseEnter="ShowIpandPort" 
+                <Button  Style="{DynamicResource RoundedButtonStyle}" Name="Info" Grid.Column="14" Grid.Row="1" MouseEnter="ShowIpandPort" 
                          MouseLeave="HideIpandPort" Background="Transparent" Height="27" VerticalAlignment="Center" BorderThickness="0"
                          FontFamily="Harlow Solid Italic" FontSize="20"
                          Content="i" Foreground="WhiteSmoke">
@@ -199,33 +219,33 @@
                     </Button.Resources>
                 </Button>
 
-                <!--ServerIPandPort-->
-                <TextBlock Margin ="0,0,0,0" x:Name="ServerIPandPort"  FontFamily="Cascadia Mono ExtraLight" FontSize="12"
-                           Grid.Column="6" Grid.ColumnSpan="1" Grid.Row ="1" HorizontalAlignment="Right" Text="IP : PORT : "
-                           Foreground="WhiteSmoke" VerticalAlignment="Center" Background="Transparent" Visibility="Hidden">
-                </TextBlock>
+                
 
             </Grid>
-
+            
+            <!--Grid for all frames-->
             <Grid Margin="0,55,0,0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="191*"/>
+                    <ColumnDefinition Width="100*"/>
+                    <ColumnDefinition Width="60*"/>
+                    <ColumnDefinition Width="31*"/>
                     <ColumnDefinition Width="69*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="0.4*"/>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="0.4*"/>
                 </Grid.RowDefinitions>
                 <!--Frame Definitions-->
+
                 <!--Main Frame-->
-                <Frame x:Name="Main" NavigationUIVisibility="Hidden" Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Grid.ColumnSpan="1000"/>
+                <Frame x:Name="Main" NavigationUIVisibility="Hidden" Grid.Row="0" Grid.RowSpan="30" Grid.Column="0" Grid.ColumnSpan="1000"/>
                 <!--Chat Frame-->
-                <Frame x:Name="ScreenWithChat" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Grid.ColumnSpan="1" NavigationUIVisibility="Hidden"></Frame>
+                <Frame x:Name="ScreenWithChat" Grid.Column="10" Grid.Row="0" Grid.RowSpan="3" Grid.ColumnSpan="1" NavigationUIVisibility="Hidden"></Frame>
                 <!--Cloud Frame-->
-                <Frame x:Name="CloudPage" NavigationUIVisibility="Hidden" Grid.Column="0" Grid.ColumnSpan="1" Grid.Row="0" />
+                <Frame x:Name="CloudPage" NavigationUIVisibility="Hidden" Grid.Column="1" Grid.Row="1" />
+
             </Grid>
-
-
         </Grid>
     </Border>
 
