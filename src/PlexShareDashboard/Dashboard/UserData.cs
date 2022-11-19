@@ -1,6 +1,9 @@
-﻿
-/// This file contains the SessionData class used to store the list of users in the session.
-
+﻿/*
+ * Name : Saurabh Kumar
+ * Roll : 111901046
+ * File Name: UserData.cs
+ * This file contains the SessionData class used to store the list of users in the session.
+ */
 
 using System.Collections.Generic;
 
@@ -14,11 +17,11 @@ namespace Dashboard
     {
         public int userID;
 
-        public string? username;
+        public string username;
 
-        public string userEmail;
+        public string? userEmail;
 
-        public string userPhotoUrl;
+        public string? userPhotoUrl;
 
 
 
@@ -28,19 +31,18 @@ namespace Dashboard
         }
 
         //parametrized constructor
-        public UserData( string clientName, int clientID, string clientEmail = null , string clientPhotoUrl = null )
+        public UserData( string clientName, int clientID, string? clientEmail = null , string? clientPhotoUrl = null )
         {
             userID = clientID;
             username = clientName;
             userEmail = clientEmail;
             userPhotoUrl = clientPhotoUrl;
         }
-
-        public override string ToString()
-        {
-            return "UserName: " + username + "\n UserID: " + userID + "\n " + userEmail + "\n";
-        }
-
+        /// <summary>
+        /// This is used to compare two users
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public bool Equals(UserData other)
         {
             if (other == null)
@@ -52,14 +54,6 @@ namespace Dashboard
                        username != null &&
                        username.Equals(other.username)
                    );
-        }
-
-        ///     IEquatable interface consists of this function. This servers as the default
-        ///     hash function.
-        /// <returns> A hash code of the current object</returns>
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
         }
 
     }

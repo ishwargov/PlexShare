@@ -1,4 +1,11 @@
-﻿using Dashboard;
+﻿/*
+ * Name : Saurabh Kumar
+ * Roll : 111901046
+ * File Name: ServerToClientData.cs
+ * This file is for creating class for datamodel of ServerToClient data
+ */
+
+using Dashboard;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +19,6 @@ namespace PlexShareDashboard.Dashboard
     public class ServerToClientData
     {
         public UserData _user;
-
         public string eventType;
         public SessionAnalytics sessionAnalytics;
         public SessionData sessionData;

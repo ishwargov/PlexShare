@@ -1,4 +1,10 @@
-// This file contains the implementation of Server session manager.
+/*
+ * Name : Saurabh Kumar
+ * Roll : 111901046
+ * File Name : ServerSessionManager.cs
+ * This file contains the implementation of Server session manager.
+ */
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -45,12 +51,15 @@ namespace Dashboard.Server.SessionManagement
         private int userCount;
         private ScreenshareServer _screenShareServer;
 
-        //Constructor for the ServerSessionManager.
-        //It initialises whiteboard module,content module, screenshare module,
-        //networking module,summary module, telemetry module
-        //and creates a list for telemetry subscribers .
-        //Session manager is also subscribes to the communicator for notifications.
-        //It maintains the userCount.
+
+        /// <summary>
+        /// Constructor for the ServerSessionManager.
+        ///It initialises whiteboard module,content module, screenshare module,
+        ///networking module,summary module
+        ///and creates a list for telemetry subscribers .
+        ///Session manager is also subscribes to the communicator for notifications.
+        ///It maintains the userCount.
+        /// </summary>
         public ServerSessionManager()
         {
 
@@ -66,14 +75,15 @@ namespace Dashboard.Server.SessionManagement
             _communicator = CommunicationFactory.GetCommunicator(false);
             _communicator.Subscribe(moduleIdentifier, this);
 
-            //------------------------------------_telemetry = new Telemetry.Telemetry();
             //  _ = ServerBoardCommunicator.Instance;
             //  _screenShareServer = ScreenShareFactory.GetScreenShareServer();
-              _contentServer = ContentServerFactory.GetInstance();
+            _contentServer = ContentServerFactory.GetInstance();
         }
 
-
-        //constructor for testing to be added 
+        /// <summary>
+        /// constructor for testing to be added
+        /// </summary>
+        /// <param name="communicator"></param>
         public ServerSessionManager(ICommunicator communicator)
         {
             //  _contentServer = contentServer;
@@ -81,12 +91,7 @@ namespace Dashboard.Server.SessionManagement
             _serializer = new DashboardSerializer();
             _telemetrySubscribers = new List<ITelemetryNotifications>();
              _summarizer = SummarizerFactory.GetSummarizer();
-            //  _screenShareServer = ScreenShareFactory.GetScreenShareServer();
-
-            //   TraceManager traceManager = new();
-            // traceManager.TraceListener();
-            // _communicator = CommunicationFactory.GetCommunicator(false);
-
+            
             userCount = 0;
             moduleIdentifier = "serverSessionManager";
 
@@ -94,8 +99,7 @@ namespace Dashboard.Server.SessionManagement
             _communicator.Subscribe(moduleIdentifier, this);
             summarySaved = false;
             testmode = true;
-            // if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E") return;
-            //  _ = ScreenShareFactory.GetScreenShareServer();
+            
         }
 
         // This function is called by the networking module when a user joins the meeting.
@@ -114,8 +118,11 @@ namespace Dashboard.Server.SessionManagement
             }
 
         }
-
-        //     This function is called by the networking module when the user is disconnected from the meet.
+     
+        /// <summary>
+        /// This function is called by the networking module when the user is disconnected from the meet.
+        /// </summary>
+        /// <param name="userIDString"></param>
         public void OnClientLeft(string userIDString)
         {
             var userIDInt = int.Parse(userIDString);
@@ -152,16 +159,13 @@ namespace Dashboard.Server.SessionManagement
                     ClientArrivalProcedure(deserializedObj);
                     return;
 
-
                 case "getSummary":
                     GetSummaryProcedure(deserializedObj);
                     return;
 
-
                 case "getAnalytics":
                     GetAnalyticsProcedure(deserializedObj);
                     return;
-
 
                 case "removeClient":
                     RemoveClientProcedure(deserializedObj);
@@ -193,7 +197,7 @@ namespace Dashboard.Server.SessionManagement
                 Trace.WriteLine("[Dashboard] Asking Network to create Server");
                 var meetAddress = _communicator.Start();
 
-                // Invalid credentials results in a returnign a null object
+                // Invalid credentials results in a returning a null object
                 if (IsValidIPAddress(meetAddress) != true)
                 {
                     return null;
@@ -245,7 +249,6 @@ namespace Dashboard.Server.SessionManagement
         {
             // create a new user and add it to the session. 
             var user = CreateUser(arrivedClient.userID, arrivedClient.username, arrivedClient.userEmail, arrivedClient.photoUrl);
-                //new UserData(arrivedClient.username, arrivedClient.userID, arrivedClient.userEmail, arrivedClient.photoUrl);
             AddUserToSession(user);
 
             // Notify Telemetry about the change in the session object.
@@ -284,9 +287,10 @@ namespace Dashboard.Server.SessionManagement
                     // fetching all the chats from the content module.
                     ChatThread[] allChatsTillNow;
                     allChatsTillNow = _contentServer.GetAllMessages().ToArray();
-                   // Trace.WriteLine("[Dashboard] Chats recieved. Calling summary subModule to give summary");
+
                     // creating the summary from the chats
                     _sessionSummary = _summarizer.GetSummary(allChatsTillNow);
+
                     // returning the summary
                     return new SummaryData(_sessionSummary);
                 }
@@ -395,8 +399,10 @@ namespace Dashboard.Server.SessionManagement
             return _sessionSummary;
         }
 
-
-        //this function is for UX  
+        /// <summary>
+        /// This function is for UX  to get session id info and session Mode
+        /// </summary>
+        /// <returns></returns>
         public SessionData GetSessionData()
         {
             return _sessionData;
@@ -485,26 +491,32 @@ namespace Dashboard.Server.SessionManagement
             }
         }
 
-        //Function to send data from Server to client side of the session manager.
+        /// <summary>
+        /// Function to send data from Server to client side of the session manager.
+        /// </summary>
+        /// <param name="eventName"></param>
+        /// <param name="sessionData"></param>
+        /// <param name="summaryData"></param>
+        /// <param name="sessionAnalytics"></param>
+        /// <param name="user"></param>
+        /// <param name="userId"></param>
         private void SendDataToClient(string eventName, SessionData sessionData, SummaryData summaryData,
            SessionAnalytics sessionAnalytics, UserData user, int userId = -1)
         {
             ServerToClientData serverToClientData;
             lock (this)
             {
-                serverToClientData =
-                    new ServerToClientData(eventName, sessionData, summaryData, sessionAnalytics, user);
-                // Sending data to the client
+                serverToClientData = new ServerToClientData(eventName, sessionData, summaryData, sessionAnalytics, user);
                 string serializedSessionData = _serializer.Serialize(serverToClientData);
 
                 if (userId == -1)
                 {
-                    Trace.WriteLine("Sending To Network to braoadcast");
+                    Trace.WriteLine("[Dashboard]Sending To Network to braoadcast");
                     _communicator.Send(serializedSessionData, moduleIdentifier, null);
                 }
                 else
                 {
-                    Trace.WriteLine("Sending To Network to notify to client ID:" + userId);
+                    Trace.WriteLine("[Dashboard] Sending To Network to notify to client ID:" + userId);
                     _communicator.Send(serializedSessionData, moduleIdentifier, userId.ToString());
 
                 }
