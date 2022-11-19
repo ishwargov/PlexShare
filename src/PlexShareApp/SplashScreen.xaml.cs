@@ -13,7 +13,7 @@ namespace PlexShareApp
             InitializeComponent();
             // MainBox.Text = "PlexShare";
             this.Show();
-            Thread.Sleep(500);
+            Thread.Sleep(750);
             this.MainBox.Dispatcher.Invoke(() => MainBox.Text = "P   S   e", System.Windows.Threading.DispatcherPriority.Render);
             Thread.Sleep(500);
 
@@ -23,7 +23,7 @@ namespace PlexShareApp
             this.MainBox.Dispatcher.Invoke(() => MainBox.Text = "Ple Sha e", System.Windows.Threading.DispatcherPriority.Render);
             Thread.Sleep(500);
 
-            this.MainBox.Dispatcher.Invoke(() => MainBox.Text = "PlexShare", System.Windows.Threading.DispatcherPriority.Render);
+            this.MainBox.Dispatcher.Invoke(() => MainBox.Text = "PlexShare", System.Windows.Threading.DispatcherPriority.Background);
             Thread.Sleep(500);
 
         }

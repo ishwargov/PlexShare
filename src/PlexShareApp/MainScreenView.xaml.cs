@@ -30,6 +30,8 @@ namespace PlexShareApp
     {
         private bool chatOn;
         private bool cloudOn;
+        private bool submissionsOn;
+        private static SubmissionsPage submissionsPage;
         private static DashboardPage dashboardPage;
         private static WhiteBoardPage whiteBoardPage;
         private static ChatPageView chatPage;
@@ -46,6 +48,7 @@ namespace PlexShareApp
 
             isClient = !isServer;
             cloudOn = false;
+            submissionsOn = false;
             // The client/server was verified to be correct.
             // We can add the client to meeting, and instantiate all modules.
             InitializeComponent();
@@ -70,6 +73,11 @@ namespace PlexShareApp
                 Trace.WriteLine("[UX] The Whiteboard Client has started");
                 screenshareClientView = new ScreenshareClientView();
                 Trace.WriteLine("[UX] The Screenshare Client has started");
+                
+                // Clients should now be able to see the submissions Page
+                Submissions.Visibility = Visibility.Hidden;
+
+
             }
 
             Main.Content = dashboardPage;
@@ -85,6 +93,8 @@ namespace PlexShareApp
             SessionData sessionData = clientSessionManager._clientSessionData;
             UserData user = clientSessionManager.GetUser();
             uploadPage = new UploadPage(sessionData.sessionId.ToString(), user.userEmail);
+
+            submissionsPage = new SubmissionsPage(sessionData.sessionId.ToString(), user.userEmail);
 
             // this is to disable backspace so backspace does not switch tabs
             NavigationCommands.BrowseBack.InputGestures.Clear();
@@ -184,8 +194,28 @@ namespace PlexShareApp
             else
             {
                 Cloud.Background = Brushes.DarkCyan;
+                submissionsOn = false;
+                Submissions.Background = Brushes.Transparent;
                 cloudOn = true;
                 CloudPage.Content = uploadPage;
+            }
+        }
+
+        private void SubmissionsClick(object sender, RoutedEventArgs e)
+        {
+            if (submissionsOn)
+            {
+                Submissions.Background = Brushes.Transparent;
+                submissionsOn = false;
+                CloudPage.Content = null;
+            }
+            else
+            {
+                Submissions.Background = Brushes.DarkCyan; 
+                Cloud.Background = Brushes.Transparent;
+                cloudOn = false;
+                submissionsOn = true; 
+                CloudPage.Content = submissionsPage;
             }
         }
 

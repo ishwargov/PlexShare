@@ -28,17 +28,12 @@ namespace PlexShareApp
              *  Main Code :
              */
             SplashScreen splashScreen = new();
-
             splashScreen.Show();
             
+            // Instantiate the authentication view in background
             AuthenticationView authenticationView = new AuthenticationView();
-            authenticationView.Hide();
 
-            for(int i = 0; i<100; i++)
-            {
-                Thread.Sleep(i);
-            }
-
+            // Close the splash screen, and open the Authentication Page
             splashScreen.Close();
             Thread.Sleep(500);
             authenticationView.Show();
