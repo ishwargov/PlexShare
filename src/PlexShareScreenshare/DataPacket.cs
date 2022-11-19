@@ -12,21 +12,33 @@ namespace PlexShareScreenshare
     public class DataPacket
     {
         /// <summary>
+        /// Creates an instance of the DataPacket with empty string values for all
+        /// the fields.
+        /// </summary>
+        public DataPacket()
+        {
+            Id = "";
+            Name = "";
+            Header = "";
+            Data = "";
+        }
+
+        /// <summary>
         /// Creates an instance of the DataPacket containing the header field
         /// and data field in the packet used for communication between server
         /// and client.
         /// </summary>
         /// <param name="id">
-        /// Id of the client/server
+        /// Id of the client/server.
         /// </param>
         /// <param name="name">
-        /// Name of the client/server
+        /// Name of the client/server.
         /// </param>
         /// <param name="header">
-        /// Header of the packet
+        /// Header of the packet.
         /// </param>
         /// <param name="data">
-        /// Data contained in the packet
+        /// Data contained in the packet.
         /// </param>
         public DataPacket(string id, string name, string header, string data)
         {
