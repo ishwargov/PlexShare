@@ -39,19 +39,13 @@ namespace PlexShareScreenshare.Client
 
         private async void StopConfirmationSending()
         {
-            Debug.Assert(_confirmationCancellationTokenSource != null,
-                Utils.GetDebugMessage("_confirmationCancellationTokenSource is not null, cannot stop image sending"));
             Debug.Assert(_sendConfirmationTask != null,
                 Utils.GetDebugMessage("_sendConfirmationTask is not null, cannot stop confirmation sending"));
 
             try
             {
-                _confirmationCancellationTokenSource.Cancel();
-                await _sendConfirmationTask;
-            }
-            catch (OperationCanceledException e)
-            {
-                Trace.WriteLine(Utils.GetDebugMessage($"Confirmation sending task cancelled: {e.Message}", withTimeStamp: true));
+                _confirmationCancellationToken = true;
+                _sendConfirmationTask.Wait();
             }
             catch (Exception e)
             {
@@ -71,19 +65,13 @@ namespace PlexShareScreenshare.Client
             _processor.StopProcessing().Wait();
             Trace.WriteLine(Utils.GetDebugMessage("Successfully stopped capturer and processor"));
 
-            Debug.Assert(_imageCancellationTokenSource != null,
-                Utils.GetDebugMessage("_imageCancellationTokenSource is not null, cannot stop image sending"));
             Debug.Assert(_sendImageTask != null,
                 Utils.GetDebugMessage("_sendImageTask is not null, cannot stop image sending"));
 
             try
             {
-                _imageCancellationTokenSource.Cancel();
-                await _sendImageTask;
-            }
-            catch (OperationCanceledException e)
-            {
-                Trace.WriteLine(Utils.GetDebugMessage($"Image sending task cancelled: {e.Message}", withTimeStamp: true));
+                _imageCancellationToken = true;
+                _sendImageTask.Wait();
             }
             catch (Exception e)
             {
@@ -99,7 +87,7 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         private void SendConfirmationPacket()
         {
-            _confirmationCancellationTokenSource = new();
+            _confirmationCancellationToken = true;
             Debug.Assert(_id != null, Utils.GetDebugMessage("_id property found null"));
             Debug.Assert(_name != null, Utils.GetDebugMessage("_name property found null"));
             DataPacket confirmationPacket = new(_id, _name, ClientDataHeader.Confirmation.ToString(), "");
@@ -107,14 +95,12 @@ namespace PlexShareScreenshare.Client
 
             _sendConfirmationTask = new Task(() =>
             {
-                _confirmationCancellationTokenSource.Token.ThrowIfCancellationRequested();
-                while (!_confirmationCancellationTokenSource.Token.IsCancellationRequested)
+                while (!_confirmationCancellationToken)
                 {
-                    _confirmationCancellationTokenSource.Token.ThrowIfCancellationRequested();
                     _communicator.Send(serializedConfirmationPacket, Utils.ModuleIdentifier, null);
                     Thread.Sleep(1000);
                 }
-            }, _confirmationCancellationTokenSource.Token);
+            });
 
             Trace.WriteLine(Utils.GetDebugMessage("Starting Confirmation packet sending", withTimeStamp: true));
             _sendConfirmationTask.Start();

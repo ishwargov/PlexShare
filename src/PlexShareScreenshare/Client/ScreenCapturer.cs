@@ -24,7 +24,7 @@ namespace PlexShareScreenshare.Client
         public const int MaxQueueLength = 50;
 
         // Token and its source for killing the task
-        private CancellationTokenSource? _cancellationTokenSource;
+        private bool _cancellationToken;
 
         private Task? _captureTask;
 
@@ -40,11 +40,13 @@ namespace PlexShareScreenshare.Client
         /// Returns the bitmap image at the front of _capturedFrame queue. 
         /// </summary>
         /// <returns>Bitmap image of 720p dimension</returns>
-        public Bitmap GetImage(CancellationToken token)
+        public Bitmap GetImage(ref bool cancellationToken)
         {
-            while (_capturedFrame.Count == 0 && !token.IsCancellationRequested)
+
+            while (_capturedFrame.Count == 0)
             {
-                token.ThrowIfCancellationRequested();
+                if (cancellationToken)
+                    return null;
                 Thread.Sleep(100);
             }
 
@@ -72,12 +74,11 @@ namespace PlexShareScreenshare.Client
         public void StartCapture()
         {
 
-            _cancellationTokenSource = new();
+            _cancellationToken = false;
             _captureTask = new Task(() =>
             {
-                while (!_cancellationTokenSource.Token.IsCancellationRequested)
+                while (!_cancellationToken)
                 {
-                    _cancellationTokenSource.Token.ThrowIfCancellationRequested();
                     if (_capturedFrame.Count < MaxQueueLength)
                     {
                         lock (_capturedFrame)
@@ -100,7 +101,7 @@ namespace PlexShareScreenshare.Client
                         Thread.Sleep(100);
                     }
                 }
-            }, _cancellationTokenSource.Token);
+            });
 
             _captureTask.Start();
         }
@@ -120,18 +121,12 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         public async Task StopCapture()
         {
-            Debug.Assert(_cancellationTokenSource != null,
-                Utils.GetDebugMessage("_cancellationTokenSource is null, cannot stop image capture"));
             Debug.Assert(_captureTask != null,
                 Utils.GetDebugMessage("_cancellationTask is null, cannot stop image capture"));
             try
             {
-                _cancellationTokenSource.Cancel();
-                await _captureTask;
-            }
-            catch (OperationCanceledException e)
-            {
-                Trace.WriteLine(Utils.GetDebugMessage($"Capturer task cancelled: {e.Message}", withTimeStamp: true));
+                _cancellationToken = true;
+                _captureTask.Wait();
             }
             catch (Exception e)
             {

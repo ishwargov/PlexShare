@@ -18,10 +18,10 @@ namespace PlexShareTests.ScreenshareTests
             screenCapturer.StartCapture();
             Thread.Sleep(1000);
             int count = 0;
-            CancellationTokenSource source = new();
+            bool token = false;
             for (int i = 0; i < 50; i++)
             {
-                Bitmap frame = screenCapturer.GetImage(source.Token);
+                Bitmap frame = screenCapturer.GetImage(ref token);
                 if (frame != null)
                     count++;
             }

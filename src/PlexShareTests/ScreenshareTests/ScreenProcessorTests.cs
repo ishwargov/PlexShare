@@ -51,10 +51,10 @@ namespace PlexShareTests.ScreenshareTests
         public void TestSameImagePixelDiffZero()
         {
             ScreenCapturer screenCapturer = new();
-            CancellationTokenSource source = new();
+            bool token = false;
 
             screenCapturer.StartCapture();
-            Bitmap img = screenCapturer.GetImage(source.Token);
+            Bitmap img = screenCapturer.GetImage(ref token);
             screenCapturer.StopCapture().Wait();
 
             //List<Pixel> tmp = ScreenProcessor.ProcessUsingLockbits(img, img);

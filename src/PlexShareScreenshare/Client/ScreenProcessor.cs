@@ -44,7 +44,7 @@ namespace PlexShareScreenshare.Client
         int CapturedImageWidth;
 
         // Tokens added to be able to stop the thread execution
-        private CancellationTokenSource? _cancellationTokenSource;
+        private bool _cancellationToken;
 
         // Storing the previous frame
         Bitmap? prevImage;
@@ -71,11 +71,12 @@ namespace PlexShareScreenshare.Client
         /// <summary>
         /// Pops and return the image from the queue
         /// </summary>
-        public string GetFrame(CancellationToken token)
+        public string GetFrame(ref bool cancellationToken)
         {
-            while (_processedFrame.Count == 0 && !token.IsCancellationRequested)
+            while (_processedFrame.Count == 0)
             {
-                token.ThrowIfCancellationRequested();
+                if (cancellationToken)
+                    return "";
                 Thread.Sleep(100);
             }
             lock (_processedFrame)
@@ -156,11 +157,11 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         private void Processing()
         {
-            _cancellationTokenSource!.Token.ThrowIfCancellationRequested();
-            while (!_cancellationTokenSource.Token.IsCancellationRequested)
+            while (!_cancellationToken)
             {
-                _cancellationTokenSource.Token.ThrowIfCancellationRequested();
-                Bitmap img = _capturer.GetImage(_cancellationTokenSource.Token);
+                Bitmap img = _capturer.GetImage(ref _cancellationToken);
+                if (_cancellationToken)
+                    break;
 
                 string serialized_buffer = Compress(img);
 
@@ -179,15 +180,11 @@ namespace PlexShareScreenshare.Client
         public void StartProcessing()
         {
             // dropping one frame to set the previous image value
-            _cancellationTokenSource = new();
             Bitmap? img = null;
             try
             {
-                img = _capturer.GetImage(_cancellationTokenSource.Token);
-            }
-            catch (OperationCanceledException e)
-            {
-                Trace.WriteLine(Utils.GetDebugMessage($"Processor task cancelled: {e.Message}", withTimeStamp: true));
+                img = _capturer.GetImage(ref _cancellationToken);
+                Debug.Assert(!_cancellationToken);
             }
             catch (Exception e)
             {
@@ -207,7 +204,7 @@ namespace PlexShareScreenshare.Client
 
             try
             {
-                _processorTask = new Task(Processing, _cancellationTokenSource.Token);
+                _processorTask = new Task(Processing);
                 _processorTask.Start();
             }
             catch (OperationCanceledException e)
@@ -228,16 +225,11 @@ namespace PlexShareScreenshare.Client
         public async Task StopProcessing()
         {
             Debug.Assert(_processorTask != null, Utils.GetDebugMessage("_processorTask was null, cannot call cancel."));
-            Debug.Assert(_cancellationTokenSource != null, Utils.GetDebugMessage("_cancellationTokenSource was null, cannot call cancel."));
 
             try
             {
-                _cancellationTokenSource.Cancel();
-                await _processorTask;
-            }
-            catch (OperationCanceledException e)
-            {
-                Trace.WriteLine(Utils.GetDebugMessage($"Processor task cancelled: {e.Message}", withTimeStamp: true));
+                _cancellationToken = true;
+                _processorTask.Wait();
             }
             catch (Exception e)
             {

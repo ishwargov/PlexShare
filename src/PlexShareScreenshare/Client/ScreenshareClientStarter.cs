@@ -9,7 +9,6 @@ using PlexShareNetwork;
 using PlexShareNetwork.Communication;
 using System.Diagnostics;
 using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace PlexShareScreenshare.Client
@@ -40,8 +39,8 @@ namespace PlexShareScreenshare.Client
         private string? _id;
 
         // Tokens added to be able to stop the thread execution
-        private CancellationTokenSource? _confirmationCancellationTokenSource;
-        private CancellationTokenSource? _imageCancellationTokenSource;
+        private bool _confirmationCancellationToken;
+        private bool _imageCancellationToken;
 
         // Varible to store if screen share is active
         private bool _isScreenSharing = false;
@@ -129,7 +128,8 @@ namespace PlexShareScreenshare.Client
                     Utils.GetDebugMessage("Header from server is neither SEND nor STOP"));
                 // else if it was a STOP packet then stop image sending
                 Trace.WriteLine(Utils.GetDebugMessage("Got STOP packet from server", withTimeStamp: true));
-                StopImageSending();
+                if (_sendImageTask != null)
+                    StopImageSending();
             }
         }
 
@@ -140,21 +140,19 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         private void ImageSending()
         {
-            Debug.Assert(_imageCancellationTokenSource != null,
-                Utils.GetDebugMessage("_imageCancellationTokenSource is not null, cannot start ImageSending"));
-            _imageCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
-            while (!_imageCancellationTokenSource.Token.IsCancellationRequested)
+            int cnt = 0;
+            while (!_imageCancellationToken)
             {
-                _imageCancellationTokenSource.Token.ThrowIfCancellationRequested();
-
-                string serializedImg = _processor.GetFrame(_imageCancellationTokenSource.Token);
+                string serializedImg = _processor.GetFrame(ref _imageCancellationToken);
+                if (_imageCancellationToken) break;
 
                 DataPacket dataPacket = new(_id, _name, ClientDataHeader.Image.ToString(), serializedImg);
                 string serializedData = JsonSerializer.Serialize(dataPacket);
 
+                Trace.WriteLine(Utils.GetDebugMessage($"Sent frame {cnt} of size {serializedData.Length}", withTimeStamp: true));
                 _communicator.Send(serializedData, Utils.ModuleIdentifier, null);
-                Trace.WriteLine(Utils.GetDebugMessage($"Sent frame of size {serializedData.Length}", withTimeStamp: true));
+                cnt++;
             }
         }
 
@@ -167,8 +165,8 @@ namespace PlexShareScreenshare.Client
             _processor.StartProcessing();
             Trace.WriteLine(Utils.GetDebugMessage("Successfully started capturer and processor"));
 
-            _imageCancellationTokenSource = new();
-            _sendImageTask = new Task(ImageSending, _imageCancellationTokenSource.Token);
+            _imageCancellationToken = false;
+            _sendImageTask = new Task(ImageSending);
             _sendImageTask.Start();
             Trace.WriteLine(Utils.GetDebugMessage("Successfully started image sending"));
         }
