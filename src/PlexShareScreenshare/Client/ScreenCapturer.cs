@@ -21,7 +21,7 @@ namespace PlexShareScreenshare.Client
         readonly Queue<Bitmap> _capturedFrame;
 
         // Limits the number of frames in the queue
-        public const int MaxQueueLength = 50;
+        public const short MaxQueueLength = 20;
 
         // Token and its source for killing the task
         private bool _cancellationToken;
@@ -43,6 +43,7 @@ namespace PlexShareScreenshare.Client
         public Bitmap GetImage(ref bool cancellationToken)
         {
 
+            Trace.WriteLine(Utils.GetDebugMessage($"Queue size - {_capturedFrame.Count}", withTimeStamp: true));
             while (_capturedFrame.Count == 0)
             {
                 if (cancellationToken)
@@ -79,26 +80,31 @@ namespace PlexShareScreenshare.Client
             {
                 while (!_cancellationToken)
                 {
-                    if (_capturedFrame.Count < MaxQueueLength)
+                    lock (_capturedFrame)
                     {
-                        lock (_capturedFrame)
+                        if (_capturedFrame.Count < MaxQueueLength)
                         {
                             try
                             {
                                 Bitmap img = _screenshot.MakeScreenshot();
                                 if (img != null)
+                                {
+                                    Thread.Sleep(100);
                                     _capturedFrame.Enqueue(img);
+                                }
                             }
                             catch (Exception e)
                             {
                                 Trace.WriteLine($"[ScreenSharing] Could not capture screenshot: {e.Message}");
                             }
                         }
-                    }
-                    else
-                    {
-                        // Sleep for some time, if queue is filled 
-                        Thread.Sleep(100);
+                        else
+                        {
+                            // Sleep for some time, if queue is filled 
+                            while (_capturedFrame.Count > MaxQueueLength / 2)
+                                _capturedFrame.Dequeue();
+
+                        }
                     }
                 }
             });
