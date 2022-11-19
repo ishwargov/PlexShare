@@ -1,8 +1,6 @@
 /// <author>Hrishi Raaj Singh</author>
-/// <created>1/11/2022</created>
 /// <summary>
-///     It contains the SummaryPersistence class
-///     It implements the ISummaryPersistence interface functions.
+///     It contains the SummaryPersistence class which implements the ISummaryPersistence
 /// </summary> 
 
 using System;
@@ -12,6 +10,7 @@ using System.Reflection;
 
 namespace Dashboard.Server.Persistence
 {
+    // Implementing the ISummaryPersistence Interface
     public class SummaryPersistence : ISummaryPersistence
     {
         public SummaryPersistence()
@@ -19,15 +18,19 @@ namespace Dashboard.Server.Persistence
             var configPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             var folderPath = Path.Combine(configPath, "plexshare");
             string path = folderPath + "/Server/Persistence/PersistenceDownloads/SummaryDownloads/";
-            // path = path +"_"+ DateTime.Now.ToString("MM/dd/yyyy")+"_";
             SummaryPath = path;
             SummaryPath = SummaryPath + "Summary_" + DateTime.Now.ToString("MM/dd/yyyy");
         }
 
         public string SummaryPath { get; set; }
-
+        /// <summary>
+        /// Saves the summary of the session
+        /// </summary>
+        /// <param name="message">Takes a message string as input</param>
+        /// <returns>True if saved successfully</returns>
         public bool SaveSummary(string message)
         {
+            // Summary creation
             var sessionId1 = "Summary_of_the_session";
             var createText = "Summary : --------- " + Environment.NewLine + message + Environment.NewLine;
 
@@ -35,10 +38,11 @@ namespace Dashboard.Server.Persistence
             try
             {
                 bool t = Directory.Exists(SummaryPath);
+                // If directory does not exists create that directory
                 if (!Directory.Exists(SummaryPath)) Directory.CreateDirectory(SummaryPath);
-
+                // Writing into the text file
                 File.WriteAllText(Path.Combine(SummaryPath, sessionId1 + ".txt"), createText);
-                Trace.WriteLine("Summary saved Suceessfully!!");
+                Trace.WriteLine("Summary saved");
                 bool isSaved = true;
                 return isSaved;
             }

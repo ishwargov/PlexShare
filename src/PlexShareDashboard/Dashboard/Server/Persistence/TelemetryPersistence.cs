@@ -1,4 +1,8 @@
-﻿using System;
+﻿/// <author>Hrishi Raaj Singh</author>
+///<summary>
+///     It contains the TelemetryPersistence class which implements the ITelemetryPersistence
+///</summary>
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -31,17 +35,28 @@ namespace Dashboard.Server.Persistence
 
 
 
-
+        /// <summary>
+        /// Save the plot of UserNameVsChatCount UserCountVSTimeStamp and also save the XML file containing the info of the session like most engaged person etc.
+        /// </summary>
+        /// <param name="sessionAnalyticsData">Takes sessionAnaytics as input from the Telemetry</param>
+        /// <returns>True if saved successfully</returns>
         public bool Save(SessionAnalytics sessionAnalyticsData)
         {
             var sessionId = "Analytics";
-            bool t1 = UserCountVsTimeStamp_PlotUtil(sessionAnalyticsData.userCountVsTimeStamp, sessionId);
-
-            bool t2 = ChatCountVsUserName_PlotUtil(sessionAnalyticsData.userNameVsChatCount, sessionId);
+            // To plot the UserCountVSTimeStamp
+            bool t1 = UserCountVsTimeStamp(sessionAnalyticsData.userCountVsTimeStamp, sessionId);
+            // To plot the UserNameVSChatCount
+            bool t2 = ChatCountVsUserName(sessionAnalyticsData.userNameVsChatCount, sessionId);
+            // TO save the xml file containing information of the session
             bool t3 = XML_save(sessionAnalyticsData,sessionId);
             bool isSaved = t1 & t2 & t3;
             return isSaved;
         }
+        /// <summary>
+        /// Saves the XML file of the session containing the session information
+        /// </summary>
+        /// <param name="sessionanalytics">Takes session data to be saved in the file</param>
+        /// <returns>returns true if saved successfully</returns>
         private bool XML_save(SessionAnalytics sessionanalytics,string sessionId)
         {
             var score = "0";
@@ -51,6 +66,7 @@ namespace Dashboard.Server.Persistence
             var mostengaged = "None";
             var temp = 0;
             var maxcount = 0;
+            // finding maximum user count in the session at a time
             var val = sessionanalytics.userCountVsTimeStamp.Values.ToArray();
             if (val != null)
             {
@@ -59,12 +75,13 @@ namespace Dashboard.Server.Persistence
                     if (maxcount < val[i]) maxcount = val[i];
                 }
             }
+            // finding most engaged user
             var val1 = sessionanalytics.userNameVsChatCount;
             if (val1 != null)
             {
                 foreach (var i in val1)
                 {
-                    if (i.Value < temp)
+                    if (i.Value > temp)
                     {
                         temp = i.Value;
                         mostengaged = i.Key;
@@ -74,7 +91,9 @@ namespace Dashboard.Server.Persistence
             try
             {
 
+                // if directory does not exist create the directory
                 if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+                // Writing the XML file
                     XmlTextWriter xwwrite = new XmlTextWriter(Path.Combine(path,"serverData.xml"), Encoding.UTF8);
                     xwwrite.Formatting = Formatting.Indented;
                     xwwrite.WriteStartElement("SessionTime");
@@ -101,7 +120,13 @@ namespace Dashboard.Server.Persistence
             }
 
         }
-       private bool ChatCountVsUserName_PlotUtil(Dictionary<string, int> ChatCountForEachUser, string sessionId)
+        /// <summary>
+        /// Plotting ChatCountVsUserName
+        /// </summary>
+        /// <param name="ChatCountForEachUser"> using session data from Telemetry </param>
+        /// <returns>returns true if saved successfully</returns>
+
+        private bool ChatCountVsUserName(Dictionary<string, int> ChatCountForEachUser, string sessionId)
         {
             var p1 = TelemetryAnalyticsPath + sessionId;
             if(ChatCountForEachUser == null)
@@ -109,6 +134,7 @@ namespace Dashboard.Server.Persistence
                 Trace.WriteLine("null exception at chat count");
                 return false;
             }
+            // converting data into the format required to save using scottplot
             var val1 = ChatCountForEachUser.Values.ToArray();
             var values1 = new double[val1.Length];
             int ik = 0;
@@ -126,11 +152,11 @@ namespace Dashboard.Server.Persistence
                 lb1.Add(k1.ToString());
                 x1++;
             }
-
+            // create labels
             var labels1 = lb1.ToArray();
-
+            // fixing position of the x axis
             var positions1 = pos1.ToArray();
-
+            // create a plot of the given dimension
             var plt1 = new Plot(600, 400);
 
             plt1.AddBar(values1, positions1);
@@ -145,10 +171,11 @@ namespace Dashboard.Server.Persistence
 
             try
             {
+                // creating directory if not exist already
                 if (!Directory.Exists(p1)) Directory.CreateDirectory(p1);
                 plt1.SaveFig(Path.Combine(p1, "ChatCountVsUserID.png"));
                 bool isSaved = true;
-                Trace.WriteLine("ChatCountVsUserID.png saved Successfully!!");
+                Trace.WriteLine("ChatCountVsUserID.png saved");
                 return isSaved;
             }
             catch (Exception except)
@@ -158,9 +185,16 @@ namespace Dashboard.Server.Persistence
                 return isSaved;
             }
         }
-        private bool UserCountVsTimeStamp_PlotUtil(Dictionary<DateTime, int> UserCountAtAnyTime,
+        /// <summary>
+        /// Plotting UserCountVsTimeStamp
+        /// </summary>
+        /// <param name="UserCountAtAnyTime"> using session data from Telemetry </param>
+        /// <returns>returns true if saved successfully</returns>
+
+        private bool UserCountVsTimeStamp(Dictionary<DateTime, int> UserCountAtAnyTime,
             string sessionId)
         {
+            // converting data into the format required by the scottplot
             var val = UserCountAtAnyTime.Values.ToArray();
             var values = new double[val.Length];
             for (var i = 0; i < val.Length; i++) values[i] = val[i];
@@ -187,16 +221,17 @@ namespace Dashboard.Server.Persistence
             plt.YAxis.ManualTickSpacing(1);
             plt.SetAxisLimits(yMin: 0);
 
-            temp.FillColor = Color.Green;
+            temp.FillColor = Color.Yellow;
 
             plt.XLabel("TimeStamp");
             plt.YLabel("UserCount At Any Instant");
             var p1 = TelemetryAnalyticsPath + sessionId;
             try
             {
+                // creating a Directory if path already does not exist
                 if (!Directory.Exists(p1)) Directory.CreateDirectory(p1);
                 plt.SaveFig(Path.Combine(p1, "UserCountVsTimeStamp.png"));
-                Trace.WriteLine("UserCountVsTimeStamp.png saved Successfully!!");
+                Trace.WriteLine("UserCountVsTimeStamp.png saved");
                 bool isSaved = true;
                 return isSaved;
             }
