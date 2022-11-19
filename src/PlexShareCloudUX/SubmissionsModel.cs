@@ -23,8 +23,8 @@ namespace PlexShareCloudUX
 {
     public class SubmissionsModel
     {
-        private const string SubmissionUrl = @"http://localhost:7213/api/submission";
-        private const string SessionUrl = @"http://localhost:7213/api/session";
+        private const string SubmissionUrl = @"https://plexsharecloud20221118104530.azurewebsites.net/api/submission";
+        private const string SessionUrl = @"https://plexsharecloud20221118104530.azurewebsites.net/api/session";
         private FileDownloadApi fileDownloadApi; //creating an instance of the FiledowloadApi.
 
         public SubmissionsModel() //constructor for the submissionmodel class. 
@@ -41,7 +41,7 @@ namespace PlexShareCloudUX
         /// <returns>Returns the submission entity for given session id</returns>
         public async Task<IReadOnlyList<SubmissionEntity>> GetSubmissions(string sessionId)
         {
-            IReadOnlyList<SubmissionEntity>? getEntity = await fileDownloadApi.GetFilesBySessionIdAsync("sessionId");
+            IReadOnlyList<SubmissionEntity>? getEntity = await fileDownloadApi.GetFilesBySessionIdAsync(sessionId);
             SubmissionsList = getEntity;
             return getEntity;
         }

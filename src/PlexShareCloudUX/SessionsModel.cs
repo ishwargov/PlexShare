@@ -21,8 +21,8 @@ namespace PlexShareCloudUX
 {
     internal class SessionsModel
     {
-        private const string SubmissionUrl = @"http://localhost:7213/api/submission";
-        private const string SessionUrl = @"http://localhost:7213/api/session";
+        private const string SubmissionUrl = @"https://plexsharecloud20221118104530.azurewebsites.net/api/submission";
+        private const string SessionUrl = @"https://plexsharecloud20221118104530.azurewebsites.net/api/session";
         private FileDownloadApi fileDownloadApi;
         public SessionsModel()
         {
