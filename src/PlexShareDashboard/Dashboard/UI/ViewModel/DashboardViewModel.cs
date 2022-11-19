@@ -837,7 +837,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
             CalculatePercentageOfAttentiveAndNonAttentiveUsers(currNonAttentiveUsers, currAttentiveUsers);
 
-            Trace.WriteLine("[Dashboard ViewModel] Updated the telemtric data on the view model.")
+            Trace.WriteLine("[Dashboard ViewModel] Updated the telemtric data on the view model.");
 
 
             //say everything went fine 

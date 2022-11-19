@@ -152,7 +152,7 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             
             currSessionAnalytics.sessionSummary = sessionSummary;
 
-            Trace.WriteLine("[Telemetry Submodule] Get Telemetry Analytics function called. Successfully send the updated the telemetric data to session Manager")
+            Trace.WriteLine("[Telemetry Submodule] Get Telemetry Analytics function called. Successfully send the updated the telemetric data to session Manager");
             //say everything went fine 
             return currSessionAnalytics;
         }
