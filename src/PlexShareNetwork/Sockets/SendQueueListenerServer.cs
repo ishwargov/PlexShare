@@ -202,7 +202,8 @@ namespace PlexShareNetwork.Sockets
         {
             Trace.WriteLine("[Networking] SendQueueListenerServer." +
                 "TryReconnectingToClient() function called.");
-            TcpClient clientSocket = _clientIdToClientSocketMap[clientId];
+            TcpClient clientSocket = 
+                _clientIdToClientSocketMap[clientId];
             var isSent = false;
             // try to reconnect 3 times
             for (var i = 0; i < 3 && !isSent; i++)
@@ -211,7 +212,8 @@ namespace PlexShareNetwork.Sockets
                 Thread.Sleep(100);
 
                 // if client is now connected then send the data
-                if (!(clientSocket.Client.Poll(1, SelectMode.SelectRead)
+                if (!(clientSocket.Client.Poll(
+                    1, SelectMode.SelectRead)
                     && clientSocket.Client.Available == 0))
                 {
                     Trace.WriteLine("[Networking] Client: " +
@@ -233,7 +235,8 @@ namespace PlexShareNetwork.Sockets
                 foreach (var moduleToNotificationHandler in 
                     _moduleToNotificationHandlerMap)
                 {
-                    string moduleName = moduleToNotificationHandler.Key;
+                    string moduleName = 
+                        moduleToNotificationHandler.Key;
                     var notificationHandler =
                         moduleToNotificationHandler.Value;
                     notificationHandler.OnClientLeft(clientId);

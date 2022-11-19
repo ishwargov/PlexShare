@@ -70,7 +70,7 @@ namespace PlexShareNetwork.Communication
         /// <param name="serializedData">
         /// The serialzed data to be sent.
         /// </param>
-        /// <param name="moduleName"> 
+        /// <param name="moduleOfPacket"> 
         /// Name of module sending the data.
         /// </param>
         /// <param name="destination">

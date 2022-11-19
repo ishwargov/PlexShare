@@ -297,7 +297,7 @@ namespace PlexShareTests.NetworkTests.Sockets
         }
 
         /// <summary>
-        /// Tests error catch when starting SendQueueListenerClient
+        /// Tests error catch in SendQueueListenerClient
         /// </summary>
         /// <returns> void </returns>
         [Fact]
@@ -316,8 +316,12 @@ namespace PlexShareTests.NetworkTests.Sockets
             SendQueueListenerServer sendQueueListenerServer = new(
                 sendingQueue, clientIdToSocket, subscribedModules);
             sendQueueListenerServer.Start();
-            Packet packet = new("Data", null, "Module");
+            Packet packet = new("Data", null, _module);
             sendingQueue.Enqueue(packet);
+            while (sendingQueue.Size() != 0)
+            {
+                Thread.Sleep(100);
+            }
             sendQueueListenerServer.Stop();
         }
     }

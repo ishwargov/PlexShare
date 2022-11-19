@@ -34,10 +34,12 @@ namespace PlexShareTests.NetworkTests.Communication
                 communicatorServer, communicatorsClient, _clientId);
             NetworkTestGlobals.StopServerAndClients(
                 communicatorServer, communicatorsClient);
-            CommunicatorClient communicatorClient = new();
 
             // now test error catch on start client and server
-            communicatorClient.Start("0", "0");
+            CommunicatorClient communicatorClient = new();
+            communicatorClient.Stop();
+            communicatorServer.Stop();
+            communicatorClient.Start("abc", "0");
             communicatorServer.Start();
         }
 
@@ -97,6 +99,18 @@ namespace PlexShareTests.NetworkTests.Communication
             // stop client and server
             NetworkTestGlobals.StopServerAndClients(
                 communicatorServer, communicatorsClient);
+        }
+
+        [Fact]
+        public void AddAndRemoveClientOnServerTest()
+        {
+            // start server and clients
+            CommunicatorServer communicatorServer = new();
+            CommunicatorClient[] communicatorsClient =
+                NetworkTestGlobals.GetCommunicatorsClient(1);
+            NetworkTestGlobals.StartServerAndClients(
+                communicatorServer, communicatorsClient, _clientId);
+            communicatorServer.RemoveClient(_clientId + 0);
         }
 
         /// <summary>
@@ -324,6 +338,20 @@ namespace PlexShareTests.NetworkTests.Communication
             // stop server and client
             NetworkTestGlobals.StopServerAndClients(
                 communicatorServer, communicatorsClient);
+        }
+
+        /// <summary>
+        /// Tests all error catch cases in communicator
+        /// </summary>
+        /// <returns> void </returns>
+        [Fact]
+        public void CommunicatorErrorCatchTest()
+        {
+            CommunicatorServer communicatorServer = new();
+            communicatorServer.Start();
+            communicatorServer.AddClient(null, null);
+            communicatorServer.RemoveClient(null);
+            communicatorServer.Send("Data", "Module", "Client Id1");
         }
     }
 }

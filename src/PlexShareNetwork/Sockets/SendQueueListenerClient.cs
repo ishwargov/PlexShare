@@ -27,7 +27,9 @@ namespace PlexShareNetwork.Sockets
         /// <summary>
         /// Constructor initializes the queue and socket.
         /// </summary>
-        /// <param name="sendingQueue"> The the send queue. </param>
+        /// <param name="sendingQueue">
+        /// The the sending queue.
+        /// </param>
         /// <param name="clientSocket">
         /// The socket object which is connected to the server.
         /// </param>

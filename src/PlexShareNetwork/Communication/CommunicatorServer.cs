@@ -113,7 +113,7 @@ namespace PlexShareNetwork.Communication
 
                 Trace.WriteLine("[Networking] CommunicatorServer " +
                     "started on IP: " + ip + " and Port: "  + port);
-                return ip + ":" + port;
+                return (ip + ":" + port);
             }
             catch (Exception e)
             {
@@ -331,14 +331,14 @@ namespace PlexShareNetwork.Communication
                     _receivingQueue, socket);
                 _clientIdToSocketListener[clientId] = socketListener;
                 socketListener.Start();
+                Trace.WriteLine("[Networking] Client added with " +
+                "clientID: " + clientId);
             }
             catch (Exception e)
             {
                 Trace.WriteLine("[Networking] Error in " +
                     "CommunicatorServer.AddClient(): " + e.Message);
             }
-            Trace.WriteLine("[Networking] Client added with " +
-                "clientID: " + clientId);
         }
 
         /// <summary>
@@ -352,23 +352,29 @@ namespace PlexShareNetwork.Communication
         {
             Trace.WriteLine("[Networking] " +
                 "CommunicatorServer.RemoveClient() function called.");
+            try
+            {
+                // stop listening to this client and remove the client
+                // socket listener from the respective map
+                SocketListener socketListener =
+                    _clientIdToSocketListener[clientId];
+                socketListener.Stop();
+                _clientIdToSocketListener.Remove(clientId);
 
-            // stop listening to this client and remove the client
-            // socket listener from the respective map
-            SocketListener socketListener = 
-                _clientIdToSocketListener[clientId];
-            socketListener.Stop();
-            _clientIdToSocketListener.Remove(clientId);
-
-            // close the connection to the client and remove the
-            // client socket from the respective map
-            TcpClient socket = _clientIdToClientSocket[clientId];
-            socket.GetStream().Close();
-            socket.Close();
-            _clientIdToClientSocket.Remove(clientId);
-
-            Trace.WriteLine("[Networking] Client removed with " +
-                "clientID: " + clientId);
+                // close the connection to the client and remove the
+                // client socket from the respective map
+                TcpClient socket = _clientIdToClientSocket[clientId];
+                socket.GetStream().Close();
+                socket.Close();
+                _clientIdToClientSocket.Remove(clientId);
+                Trace.WriteLine("[Networking] Client removed with " +
+                    "clientID: " + clientId);
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine("[Networking] Error in " +
+                    "CommunicatorServer.RemoveClient(): " + e.Message);
+            }
         }
 
         /// <summary>
