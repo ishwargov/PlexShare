@@ -94,6 +94,17 @@ namespace PlexShareScreenshare
         public const string ModuleIdentifier = "ScreenShare";
 
         /// <summary>
+        /// Represents an action delegate which takes one parameter by reference.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The type of the referenced parameter passed.
+        /// </typeparam>
+        /// <param name="item">
+        /// The referenced parameter passed.
+        /// </param>
+        public delegate void ActionRef<T>(ref T item);
+
+        /// <summary>
         /// Static method to get a nice debug message wrapped with useful information.
         /// </summary>
         /// <param name="message">
