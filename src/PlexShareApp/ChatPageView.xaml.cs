@@ -56,12 +56,12 @@ namespace PlexShareApp
         }
 
         /// <summary>
-        /// Replied message's Message ID 
+        ///     Replied message's Message ID 
         /// </summary>
         public int ReplyMsgId { get; set; }
 
         /// <summary>
-        /// Property Changed Event in which the view gets updated with new messages
+        ///     Property Changed Event in which the view gets updated with new messages
         /// </summary>
         /// <param name="sender"> Sender Notifying the event </param>
         /// <param name="e"> Property Changed Event </param>
@@ -72,15 +72,17 @@ namespace PlexShareApp
 
             if(propertyName == "ReceivedMsg")
             {
+                // Adding the new message to our collection(_allMessage) which in turn adds a chat bubble in the UX listbox
                 _allMessages.Add(viewModel.ReceivedMsg);
                 Debug.WriteLine(_allMessages);
                 UpdateScrollBar(MainChat);
             }
             else if(propertyName == "ReceivedAllMsgs")
             {
+                // Adding all the messages for the new user from the session to our collection(_allMessage) which in turn adds a chat bubble in the UX listbox
                 _allMessages.Add(viewModel.ReceivedMsg);
                 Debug.WriteLine(_allMessages);
-                //UpdateScrollBar(MainChat);
+                UpdateScrollBar(MainChat);
             }
             else if(propertyName == "EditOrDelete")
             {
@@ -130,18 +132,13 @@ namespace PlexShareApp
                 Debug.WriteLine($"Message ID {updatedMsg.MessageID} was updated with {updatedMsg.IncomingMessage}");
                 Debug.WriteLine(_allMessages);
             }
-            //else if (propertyName == "StarMessage")
-            //{
-            //    for (int i = 0; i < _allMessages.Count; i++)
-            //    {
-            //        if (_allMessages[i].MessageID == viewModel.ReceivedMsg.MessageID)
-            //        {
-            //            _allMessages[i].
-            //        }
-            //    }
-            //}
         }
 
+        /// <summary>
+        ///     Event Handler upon clicking upload button to send file
+        /// </summary>
+        /// <param name="sender"> Notification Sender </param>
+        /// <param name="e"> Routed Event Data </param>
         private void UploadButtonClick(object sender, RoutedEventArgs e)
         {
             if(ReplyTextBox.Text == String.Empty)
@@ -165,6 +162,8 @@ namespace PlexShareApp
                     {
                         viewModel.SendMessage(openFileDialog.FileName, ReplyMsgId, "File");
                     }
+
+                    // Uncomment the below codes for testing when the network is down
                     //addNewMessage = new Message();
                     //addNewMessage.MessageID = -1;
                     //addNewMessage.Sender = null;
@@ -175,16 +174,14 @@ namespace PlexShareApp
                     //addNewMessage.ToFrom = true;
                     //_allMessages.Add(addNewMessage);
 
-
                     SendTextBox.Text = string.Empty;
                     ReplyTextBox.Text = string.Empty;
-                    //ReplyTextBox.Text = "";
                 }
             }
         }
 
         /// <summary>
-        /// Event Handler on Clicking Send Button
+        ///     Event Handler on Clicking Send Button
         /// </summary>
         /// <param name="sender"> Notification Sender </param>
         /// <param name="e"> Routed Event Data </param>
@@ -192,8 +189,10 @@ namespace PlexShareApp
         {
             string msg = SendTextBox.Text;
             msg = msg.Trim();
+            // We send a message only when the text box is not empty
             if (!string.IsNullOrEmpty(msg))
             {
+                // Character limit set to avoid long paragraphs
                 if(msg.Length > 300)
                 {
                     MessageBox.Show("Please enter less than 300 characters!");
@@ -201,6 +200,7 @@ namespace PlexShareApp
                 }
                 var viewModel = DataContext as ChatPageViewModel;
 
+                // If ReplyTextBox is not empty, that means we are replying to a message and we shall pass the corresponding reference ReplyMsgId
                 if(string.IsNullOrEmpty(ReplyTextBox.Text))
                 {
                     viewModel.SendMessage(msg, -1, "Chat");
@@ -209,7 +209,8 @@ namespace PlexShareApp
                 {
                     viewModel.SendMessage(msg, ReplyMsgId, "Chat");
                 }
-                //var chumma = SendTextBox.Text;
+
+                // Uncomment the below codes for testing when the network is down
                 //addNewMessage = new Message();
                 //addNewMessage.MessageID = 2;
                 //addNewMessage.Sender = null;
@@ -219,7 +220,6 @@ namespace PlexShareApp
                 //addNewMessage.IncomingMessage = chumma;//SendTextBox.Text;
                 //addNewMessage.ToFrom = true;
                 //_allMessages.Add(addNewMessage);
-
 
                 SendTextBox.Text = string.Empty;
                 ReplyTextBox.Text = string.Empty;
