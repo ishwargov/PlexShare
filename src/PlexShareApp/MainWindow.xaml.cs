@@ -32,10 +32,12 @@ namespace PlexShareApp
             
             // Instantiate the authentication view in background
             AuthenticationView authenticationView = new AuthenticationView();
+            authenticationView.Hide();
 
             // Close the splash screen, and open the Authentication Page
             splashScreen.Close();
             Thread.Sleep(500);
+
             authenticationView.Show();
             this.Close();
 
