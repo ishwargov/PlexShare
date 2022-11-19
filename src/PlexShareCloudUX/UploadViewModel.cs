@@ -31,9 +31,9 @@ namespace PlexShareCloudUX
         /// <param name="sessionId">Id of the session of the current session.</param>
         /// <param name="userName">The username of the user.</param>
         /// </summary>
-        public UploadViewModel(string sessionId, string userName)
+        public UploadViewModel(string sessionId, string userName, bool isServer)
         {
-            _model = new UploadModel(sessionId, userName);
+            _model = new UploadModel(sessionId, userName, isServer);
         }
         
         /// <summary>

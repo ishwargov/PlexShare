@@ -27,6 +27,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using PlexShareCloudUX;
 using PlexShareCloud;
+using System.Diagnostics;
 
 namespace PlexShareApp
 {
@@ -41,10 +42,11 @@ namespace PlexShareApp
             InitializeComponent();
 
             UserName = userName;
-            //viewModel = new SessionsViewModel(userName);
-            //this.DataContext = viewModel;
-            //viewModel.PropertyChanged += Listener;
-            //sessions = new List<SessionEntity> { };
+            viewModel = new SessionsViewModel(userName);
+            this.DataContext = viewModel;
+            viewModel.PropertyChanged += Listener;
+            sessions = new List<SessionEntity> { };
+            Trace.WriteLine("[Cloud] Session View created Successfully");
         }
 
         /// <summary>
@@ -80,55 +82,23 @@ namespace PlexShareApp
                 };
                 Stack.Children.Add(label);
 
-                Button backButton1 = new Button()
-                {
-                    Width = 60,
-                    Height = 20,
-                    HorizontalAlignment = HorizontalAlignment.Center,
-                    Margin = new Thickness(10, 10, 10, 10),
-                    Content = "Back"
-                };
-                backButton1.Click += BackButtonClick;
-                Stack.Children.Add(backButton1);
-
                 return;
             }
 
             /*
              * Building the UI when there are list of sessions conducted.
              */
-            for (int i = 0; i < sessions?.Count; i += 4)
+            for (int i = 0; i < sessions?.Count; i++)
             {
-                StackPanel newStackPanel = new StackPanel();
-                newStackPanel.Orientation = Orientation.Vertical;
-                newStackPanel.Margin = new Thickness(10, 10, 10, 10);
-
-                for (int j = 0; (j < 4 && (i + j) < sessions.Count); j++)
-                {
-                    Button newButton = new Button();
-                    newButton.Height = 100;
-                    newButton.Width = 100;
-                    newButton.Padding = new Thickness(10, 10, 10, 10);
-                    newButton.Margin = new Thickness(25, 0, 25, 0);
-                    newButton.Name = sessions[i + j].SessionId;
-                    newButton.Content = $"Session Conducted on - {sessions[i + j].Timestamp}";
-                    newButton.Click += OnButtonClick;
-                    newStackPanel.Children.Add(newButton);
-                }
-
-                Stack.Children.Add(newStackPanel);
+                Button newButton = new Button();
+                newButton.Height = 30;
+                newButton.Margin = new Thickness(0, 5, 0, 5);
+                newButton.Name = "Button" + i.ToString();
+                newButton.Content = $"Session on - {sessions[i].Timestamp}";
+                newButton.Click += OnButtonClick;
+                
+                Stack.Children.Add(newButton);
             }
-
-            Button backButton = new Button()
-            {
-                Width = 60,
-                Height = 20,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                Margin = new Thickness(10, 10, 10, 10),
-                Content = "Back"
-            };
-            backButton.Click += BackButtonClick;
-            Stack.Children.Add(backButton);
 
         }
 
@@ -138,17 +108,11 @@ namespace PlexShareApp
         private void OnButtonClick(object sender, RoutedEventArgs e)
         {
             Button caller = (Button)sender;
-            submissionsPage = new SubmissionsPage(caller.Name, UserName);
+            int index = Convert.ToInt32(caller.Name.Split('n')[1]);
+            submissionsPage = new SubmissionsPage( sessions[index].SessionId, UserName);
             //Shift to submissions view
+            SubmissionsPage.Content = submissionsPage;
         }
-
-        /// <summary>
-        /// Handler to the back button press.
-        /// </summary>
-        private void BackButtonClick(object sender, RoutedEventArgs e)
-        {
-            //Remove the current page
-        } 
 
     }
 }
