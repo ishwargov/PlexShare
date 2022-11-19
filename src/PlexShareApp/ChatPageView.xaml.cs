@@ -192,6 +192,11 @@ namespace PlexShareApp
         {
             if(!string.IsNullOrEmpty(SendTextBox.Text))
             {
+                if(SendTextBox.Text.Length > 300)
+                {
+                    MessageBox.Show("Please enter less than 300 characters!");
+                    return;
+                }
                 var viewModel = DataContext as ChatPageViewModel;
 
                 if(string.IsNullOrEmpty(ReplyTextBox.Text))

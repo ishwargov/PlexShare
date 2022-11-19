@@ -8,14 +8,30 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="SessionsPage">
 
-    <Grid Background="AntiqueWhite">
-        <StackPanel Margin="0,0,0,0">
-            <Label HorizontalAlignment="Center" FontFamily="Times New Roman" FontSize="20" HorizontalContentAlignment="Center" Margin="0,0,0,20" Width="800" Background="Azure">Sessions Conducted</Label>
-            <ScrollViewer Height="365" Margin="0,0,0,50" Padding="10">
+    <Grid Background="{DynamicResource Color1Bg}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.5*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="0.5*"/>
+            <RowDefinition Height="10*"/>
+            <RowDefinition Height="0.5*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.5*"/>
+            <ColumnDefinition Width="2.5*"/>
+            <ColumnDefinition Width="0.5*"/>
+            <ColumnDefinition Width="7*"/>
+            <ColumnDefinition Width="0.5*"/>
+        </Grid.ColumnDefinitions>
+        <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5" FontFamily="Times New Roman" FontSize="20" HorizontalContentAlignment="Center" Background="{DynamicResource Color2Bg}" Margin="10,0,10,0">Sessions Conducted</Label>
+        <StackPanel Margin="0,0,0,0" Grid.Row="3" Grid.Column="1">
+            <Label Content="Select Session" HorizontalContentAlignment="Center" BorderBrush="White" BorderThickness="1,1,1,0" Background="{DynamicResource Color2Bg}"/>
+            <ScrollViewer Padding="10" Height="348" BorderBrush="White" BorderThickness="1,0,1,1">
                 <StackPanel x:Name="Stack" Orientation="Vertical">
                     
                 </StackPanel>
             </ScrollViewer>
         </StackPanel>
+        <Frame x:Name="SubmissionsPage" NavigationUIVisibility="Hidden" Grid.Column="3" Grid.Row="3" BorderBrush="White" BorderThickness="1"/>
     </Grid>
 </Page>
