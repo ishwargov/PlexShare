@@ -201,7 +201,7 @@ namespace PlexShareScreenshare.Server
         /// SharedClientScreen which represents the maximum time to wait for the arrival
         /// of the packet from the client with the CONFIRMATION header.
         /// </summary>
-        public static double Timeout { get; } = 5000;
+        public static double Timeout { get; } = 20 * 1000;
 
         /// <summary>
         /// Gets the ID of the client sharing this screen.
