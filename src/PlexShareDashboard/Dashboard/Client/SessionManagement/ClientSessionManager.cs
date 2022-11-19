@@ -1,3 +1,9 @@
+/*
+ * Name : Saurabh Kumar
+ * Roll : 111901046
+ *  File Name :  ClientSessionManager.cs
+ *  This file contains the implemetation of ClientSessionManager
+ */
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,7 +17,6 @@ using PlexShareDashboard.Dashboard.Client.SessionManagement;
 using PlexShareScreenshare.Client;
 using PlexShareWhiteboard;
 using PlexShare.Dashboard.Client.SessionManagement;
-using PlexShareDashboard.Dashboard;
 using PlexShareNetwork.Communication;
 using Client.Models;
 using System.Windows;
@@ -28,16 +33,17 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
 
     public delegate void NotifySessionModeChanged(string sessionMode);
 
-    //     ClientSessionManager class is used to maintain the client side
-    //     session data and requests from the user. It communicates to the server session manager
-    //     to update the current session or to fetch summary and analytics.
+    /// <summary>
+    ///  ClientSessionManager class is used to maintain the client side
+    ///     session data and requests from the user. It communicates to the server session manager
+    ///     to update the current session or to fetch summary and analytics.
+    /// </summary>  
     public class ClientSessionManager : IUXClientSessionManager, INotificationHandler
     {
         private readonly List<IClientSessionNotifications> _clients;
         private readonly ICommunicator _communicator;
         private readonly IContentClient _contentClient;
         private readonly IDashboardSerializer _serializer;
-        // private readonly IClientBoardStateManager clientBoardStateManager;
         private readonly string moduleIdentifier;
 
         private string _chatSummary;
@@ -60,17 +66,12 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
             _serializer = new DashboardSerializer();
             _communicator = CommunicationFactory.GetCommunicator();
             _communicator.Subscribe(moduleIdentifier, this);
-            
             _contentClient = ContentClientFactory.GetInstance();
-            //  clientBoardStateManager = ClientBoardStateManager.Instance;
-            //  clientBoardStateManager.Start();
-
             if (_clients == null) _clients = new List<IClientSessionNotifications>();
             _clientSessionData = new SessionData();
             _user = null;
             _chatSummary = null;
             screenshareClient = ScreenshareClient.GetInstance();
-            // _screenShareClient = ScreenShareFactory.GetScreenShareClient();
             Trace.WriteLine("[Dashboard] Created Client Session Manager");
         }
 
@@ -82,7 +83,6 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
             _serializer = new DashboardSerializer();
             _communicator = communicator;
             _communicator.Subscribe(moduleIdentifier, this);
-            // _screenShareClient = ScreenShareFactory.GetScreenShareClient();
             if (_clients == null) _clients = new List<IClientSessionNotifications>();
             _clientSessionData = new SessionData();
             _chatSummary = null;
@@ -245,18 +245,8 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
             if (testmode == false)
             {
                 CloseProgram();
-               /*
-                Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
-                {
-                    Application.Current.Shutdown();
-                });
-                Environment.Exit(0);
-                // Disposing the Screen Share Client.
-                // _screenShareClient.Dispose();  
-                Trace.WriteLine("[Dashboard] Removed the client from the client side. ");
-               */
+              
             }
-           
   
         }
 
@@ -325,8 +315,6 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
 
 
                         // ScreenShare's user ID and username set.
-                        // if (Environment.GetEnvironmentVariable("TEST_MODE") != "E2E")
-                        //   _screenShareClient.SetUser(_user.userID.ToString(), _user.username);
                         screenshareClient.SetUser(_user.userID.ToString(), _user.username);
 
                         ContentClientFactory.SetUser(_user.userID);
@@ -353,7 +341,7 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
 
         }
          
-        private void UpdateAnalytics(ServerToClientData receivedData)   //not added
+        private void UpdateAnalytics(ServerToClientData receivedData)   
         {
             _sessionAnalytics = receivedData.sessionAnalytics;
             var receiveduser = receivedData.GetUser();
@@ -453,10 +441,10 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
                 Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
                 {
                     Application.Current.Shutdown();
+                    System.Environment.Exit(0);
                 });
-
-              //  Environment.Exit(0);
             }
+            return;
         }
 
     }

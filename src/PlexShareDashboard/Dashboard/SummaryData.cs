@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*
+ * Name : Saurabh Kumar
+ * Roll : 111901046
+ * File Name: SummaryData.cs
+ * This file contains the class for SummaryData model
+ */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,10 +12,9 @@ using System.Threading.Tasks;
 
 namespace PlexShareDashboard.Dashboard
 {
-    
-    //     Class to store the summary, it also
-    //     implemets the IReceivedFromServer interface so that it
-    //     can be sent to the client side (from the server side)
+    /// <summary>
+    /// Class to store the summary
+    /// </summary>
     
     public class SummaryData
     {
