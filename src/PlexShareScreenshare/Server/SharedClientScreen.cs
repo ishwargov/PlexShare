@@ -13,7 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
-// The Timer class object
+// The Timer class object.
 using Timer = System.Timers.Timer;
 
 namespace PlexShareScreenshare.Server
@@ -23,15 +23,8 @@ namespace PlexShareScreenshare.Server
     /// </summary>
     public class SharedClientScreen :
         INotifyPropertyChanged, // Notifies the UX that a property value has changed.
-        IDisposable             // Handle cleanup work for the allocated resources
+        IDisposable             // Handle cleanup work for the allocated resources.
     {
-        /// <summary>
-        /// The timeout value in "milliseconds" defining the timeout for the timer in
-        /// SharedClientScreen which represents the maximum time to wait for the arrival
-        /// of the packet from the client with the CONFIRMATION header.
-        /// </summary>
-        public static readonly double Timeout = 5000;
-
         /// <summary>
         /// Timer object which keeps track of the time the CONFIRMATION packet
         /// was received last from the client to tell that the client is still
@@ -50,13 +43,13 @@ namespace PlexShareScreenshare.Server
         private readonly ScreenStitcher _stitcher;
 
         /// <summary>
-        /// Stores the frame received from the clients.
+        /// Stores the image received from the clients.
         /// </summary>
         private readonly Queue<string> _imageQueue;
 
         /// <summary>
         /// The final stitched images received after stitching the previous
-        /// screen image of the client with the new frame. It contains the images
+        /// screen image of the client with the new image. It contains the images
         /// which are ready to be displayed.
         /// </summary>
         private readonly Queue<Bitmap> _finalImageQueue;
@@ -112,6 +105,9 @@ namespace PlexShareScreenshare.Server
         /// <param name="server">
         /// The timer manager implementing the callback for the timer object.
         /// </param>
+        /// <param name="isDebugging">
+        /// If we are in debugging/testing mode.
+        /// </param>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="Exception"></exception>
         public SharedClientScreen(string clientId, string clientName, ITimerManager server, bool isDebugging = false)
@@ -120,22 +116,22 @@ namespace PlexShareScreenshare.Server
             this.Name = clientName ?? throw new ArgumentNullException(nameof(clientName));
             _server = server ?? throw new ArgumentNullException(nameof(server));
 
-            // Create a new stitcher object associated to this client
+            // Create a new stitcher object associated to this client.
             _stitcher = new(this);
 
-            // Initialize the queues to be empty
+            // Initialize the queues to be empty.
             _imageQueue = new();
             _finalImageQueue = new();
 
-            // Mark the client as not pinned initially
+            // Mark the client as not pinned initially.
             _pinned = false;
 
-            // Initialize these variables as null
+            // Initialize these variables as null.
             _imageSendTask = null;
             _tokenSource = null;
             _currentImage = null;
 
-            // Initialize rest of the properties
+            // Initialize rest of the properties.
             _disposed = false;
             _tileHeight = 0;
             _tileWidth = 0;
@@ -144,17 +140,17 @@ namespace PlexShareScreenshare.Server
             {
                 if (!isDebugging)
                 {
-                    // Create the timer for this client
+                    // Create the timer for this client.
                     _timer = new Timer();
                     _timer.Elapsed += new((sender, e) => _server.OnTimeOut(sender, e, Id));
 
-                    // The timer should be invoked only once
+                    // The timer should be invoked only once.
                     _timer.AutoReset = false;
 
-                    // Set the time interval for the timer
+                    // Set the time interval for the timer.
                     this.UpdateTimer();
 
-                    // Start the timer
+                    // Start the timer.
                     _timer.Enabled = true;
                 }
             }
@@ -196,9 +192,16 @@ namespace PlexShareScreenshare.Server
             // Therefore, we should call GC.SuppressFinalize to
             // take this object off the finalization queue
             // and prevent finalization code for this object
-            // from executing a second time
+            // from executing a second time.
             GC.SuppressFinalize(this);
         }
+
+        /// <summary>
+        /// The timeout value in "milliseconds" defining the timeout for the timer in
+        /// SharedClientScreen which represents the maximum time to wait for the arrival
+        /// of the packet from the client with the CONFIRMATION header.
+        /// </summary>
+        public static double Timeout { get; } = 5000;
 
         /// <summary>
         /// Gets the ID of the client sharing this screen.
@@ -267,10 +270,13 @@ namespace PlexShareScreenshare.Server
         }
 
         /// <summary>
-        /// Pops and returns the received Frame at the beginning of the received image queue.
+        /// Pops and returns the received image at the beginning of the received image queue.
         /// </summary>
+        /// <param name="token">
+        /// Cancellation token of the task in which this function is being called.
+        /// </param>
         /// <returns>
-        /// The received Frame that is removed from the beginning.
+        /// The received image that is removed from the beginning.
         /// </returns>
         public string? GetImage(CancellationToken token)
         {
@@ -278,7 +284,7 @@ namespace PlexShareScreenshare.Server
 
             token.ThrowIfCancellationRequested();
 
-            // Wait until the queue is empty
+            // Wait until the queue is empty.
             while (_imageQueue.Count == 0 && !token.IsCancellationRequested)
             {
                 token.ThrowIfCancellationRequested();
@@ -302,24 +308,27 @@ namespace PlexShareScreenshare.Server
         }
 
         /// <summary>
-        /// Insert the received Frame into the received image queue.
+        /// Insert the received image into the received image queue.
         /// </summary>
-        /// <param name="frame">
-        /// Frame to be inserted.
+        /// <param name="image">
+        /// Image to be inserted.
         /// </param>
-        public void PutImage(string frame)
+        public void PutImage(string image)
         {
             Debug.Assert(_imageQueue != null, Utils.GetDebugMessage("_imageQueue is found null"));
 
             lock (_imageQueue)
             {
-                _imageQueue.Enqueue(frame);
+                _imageQueue.Enqueue(image);
             }
         }
 
         /// <summary>
         /// Pops and returns the final Image at the beginning of the final image queue.
         /// </summary>
+        /// <param name="token">
+        /// Cancellation token of the task in which this function is being called.
+        /// </param>
         /// <returns>
         /// The final image to be displayed that is removed from the beginning.
         /// </returns>
@@ -329,7 +338,7 @@ namespace PlexShareScreenshare.Server
 
             token.ThrowIfCancellationRequested();
 
-            // Wait until the queue is not empty
+            // Wait until the queue is not empty.
             while (_finalImageQueue.Count == 0 && !token.IsCancellationRequested)
             {
                 token.ThrowIfCancellationRequested();
@@ -373,7 +382,9 @@ namespace PlexShareScreenshare.Server
         /// It will also create (if not exist) and start the task for updating the displayed
         /// images and notify the UX.
         /// </summary>
-        /// <param name="task"></param>
+        /// <param name="task">
+        /// Task to be executed for updating current image of the client and notifying the view.
+        /// </param>
         /// <exception cref="Exception"></exception>
         public void StartProcessing(Action<CancellationToken> task)
         {
@@ -385,15 +396,15 @@ namespace PlexShareScreenshare.Server
                 return;
             }
 
-            // Create a new cancellation token
+            // Create a new cancellation token.
             _tokenSource = new();
 
             try
             {
-                // Start the stitcher
+                // Start the stitcher.
                 _stitcher.StartStitching();
 
-                // Create and start a new task
+                // Create and start a new task.
                 _imageSendTask = new(() => task(_tokenSource.Token), _tokenSource.Token);
                 _imageSendTask.Start();
             }
@@ -413,14 +424,14 @@ namespace PlexShareScreenshare.Server
         /// <summary>
         /// Stops the processing of the images by stopping the underlying stitcher.
         /// Cancels the task for updating the displayed images and clear the queues
-        /// containing frames and images.
+        /// containing images.
         /// </summary>
         /// <exception cref="Exception"></exception>
         public async Task StopProcessing()
         {
             Debug.Assert(_stitcher != null, Utils.GetDebugMessage("_stitcher is found null"));
 
-            // Check if the task was started before
+            // Check if the task was started before.
             if (_tokenSource == null || _imageSendTask == null)
             {
                 Trace.WriteLine(Utils.GetDebugMessage($"Trying to stop a task which was never started for the client with Id {this.Id}", withTimeStamp: true));
@@ -429,10 +440,10 @@ namespace PlexShareScreenshare.Server
 
             try
             {
-                // Stop the stitcher
+                // Stop the stitcher.
                 _stitcher.StopStitching();
 
-                // Cancel the task and wait for it to finish
+                // Cancel the task and wait for it to finish.
                 _tokenSource.Cancel();
                 await _imageSendTask;
             }
@@ -447,14 +458,14 @@ namespace PlexShareScreenshare.Server
             }
             finally
             {
-                // Dispose of the token and the task
+                // Dispose of the token and the task.
                 _tokenSource.Dispose();
                 _imageSendTask.Dispose();
 
                 _tokenSource = null;
                 _imageSendTask = null;
 
-                // Clear both the queues
+                // Clear both the queues.
                 lock (_imageQueue)
                 {
                     _imageQueue.Clear();
@@ -479,8 +490,8 @@ namespace PlexShareScreenshare.Server
 
             try
             {
-                // It will reset the timer to start again
-                _timer.Interval = Timeout;
+                // It will reset the timer to start again.
+                _timer.Interval = SharedClientScreen.Timeout;
             }
             catch (Exception e)
             {
@@ -499,7 +510,7 @@ namespace PlexShareScreenshare.Server
         /// other objects. Only unmanaged resources can be disposed.
         /// </summary>
         /// <param name="disposing">
-        /// Indicates if we are disposing this object
+        /// Indicates if we are disposing this object.
         /// </param>
         protected virtual void Dispose(bool disposing)
         {
@@ -507,22 +518,22 @@ namespace PlexShareScreenshare.Server
             if (_disposed) return;
 
             // If disposing equals true, dispose all managed
-            // and unmanaged resources
+            // and unmanaged resources.
             if (disposing)
             {
                 StopProcessing().Wait();
 
                 if (_timer != null)
                 {
-                    // Stop and dispose the timer object
+                    // Stop and dispose the timer object.
                     _timer.Enabled = false;
                     _timer.Dispose();
                 }
             }
 
-            // Call the appropriate methods to clean up unmanaged resources here
+            // Call the appropriate methods to clean up unmanaged resources here.
 
-            // Now disposing has been done
+            // Now disposing has been done.
             _disposed = true;
         }
 
@@ -530,7 +541,7 @@ namespace PlexShareScreenshare.Server
         /// Handles the property changed event raised on a component.
         /// </summary>
         /// <param name="property">
-        /// The name of the property that is changed
+        /// The name of the property that is changed.
         /// </param>
         private void OnPropertyChanged(string property)
         {
