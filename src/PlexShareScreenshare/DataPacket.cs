@@ -4,6 +4,8 @@
 /// from server to client or the other way.
 /// </summary>
 
+using System.Text.Json.Serialization;
+
 namespace PlexShareScreenshare
 {
     /// <summary>
@@ -40,6 +42,7 @@ namespace PlexShareScreenshare
         /// <param name="data">
         /// Data contained in the packet.
         /// </param>
+        [JsonConstructor]
         public DataPacket(string id, string name, string header, string data)
         {
             Id = id;
