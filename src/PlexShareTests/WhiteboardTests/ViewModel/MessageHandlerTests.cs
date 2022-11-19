@@ -18,42 +18,154 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
     [Collection("Sequential")]
     public class MessageHandlerTests
     {
-        private WhiteBoardViewModel viewModel;
-        private Mock<IClientCommunicator> _mockClientCommunicator;
-        private Mock<IServerCommunicator> _mockServerCommunicator;
-        private Serializer _serializer;
+        WhiteBoardViewModel viewModel;
+        Mock<IClientCommunicator> _mockClientCommunicator;
+        Mock<IServerCommunicator> _mockServerCommunicator;
+        Serializer _serializer;
+        Utility utility;
+
 
         public MessageHandlerTests()
         {
-            //viewModel.Setup(m => m.LoadBoard(It.IsAny<List<ShapeItem>>(), It.IsAny<bool>()));
-            //viewModel.Setup(m => m.UpdateCheckList(It.IsAny<int>()));
-            //viewModel.Setup(m => m.DeleteIncomingShape(It.IsAny<ShapeItem>()));
-            //viewModel.Setup(m => m.CreateIncomingShape(It.IsAny<ShapeItem>()));
-            //viewModel.Setup(m => m.ModifyIncomingShape(It.IsAny<ShapeItem>()));
             _mockClientCommunicator = new Mock<IClientCommunicator>();
             _mockServerCommunicator = new Mock<IServerCommunicator>();
             viewModel = WhiteBoardViewModel.Instance;
             _mockClientCommunicator.Setup(m => m.SendToServer(It.IsAny<WBServerShape>()));
             _mockServerCommunicator.Setup(m => m.Broadcast(It.IsAny<WBServerShape>(), It.IsAny<string>()));
             _serializer = new Serializer();
+            utility = new Utility();
         }
-
+        
         [Fact]
-        public void OnDataReceived_Server_CreationTest()
+        public void OnDataReceived_ServerCreationTest()
         {
             viewModel.isServer = true;
             viewModel.ShapeItems.Clear();
 
-            Point start = new Point(0, 0);
-            Point end = new Point(5, 5);
-            ShapeItem sh = Utility.CreateShape(start, end, "EllipseGeometry", "randomID");
+            ShapeItem sh = utility.CreateRandomShape();
             List<ShapeItem> newShapes = new List<ShapeItem>() { sh };
-            var newSerializedShapes = _serializer.ConvertToSerializableShapeItem(newShapes);
-            WBServerShape wbShape = new WBServerShape(newSerializedShapes, Operation.Creation);
-            string jsonString = _serializer.SerializeWBServerShape(wbShape);
+            string jsonString = utility.SendThroughServer(newShapes, Operation.Creation);
+            viewModel.DataHandler(jsonString);
+            Assert.True(utility.CompareShapeItems(viewModel.ShapeItems[0], sh));
+        }
+        
+        [Fact]
+        public void OnDataReceived_ServerDeletionTest()
+        {
+            viewModel.isServer = true;
+            viewModel.ShapeItems.Clear();
+            ShapeItem sh = utility.CreateRandomShape();
+            viewModel.ShapeItems.Add(sh);
+            List<ShapeItem> newShapes = new List<ShapeItem>() { sh };
+            string jsonString = utility.SendThroughServer(newShapes, Operation.Deletion);
             viewModel.DataHandler(jsonString);
 
-            Assert.True(Utility.CompareShapeItems(viewModel.ShapeItems[0], sh));
+            Assert.Equal(viewModel.ShapeItems.Count, 0);
+        }
+        [Fact]
+        public void OnDataReceived_ServerModifyTest()
+        {
+            viewModel.isServer = true;
+            viewModel.ShapeItems.Clear();
+            ShapeItem sh = utility.CreateRandomShape();
+            viewModel.ShapeItems.Add(sh);
+            sh.Start = new Point(0, 0);
+            List<ShapeItem> newShapes = new List<ShapeItem>() { sh };
+            string jsonString = utility.SendThroughServer(newShapes, Operation.ModifyShape);
+            viewModel.DataHandler(jsonString);
+
+            Assert.True(utility.CompareShapeItems(viewModel.ShapeItems[0], sh));
+        }
+        [Fact]
+        public void OnDataReceived_ServerClearTest()
+        {
+            viewModel.isServer = true;
+            viewModel.ShapeItems.Clear();
+            List<ShapeItem> shapes = utility.GenerateRandomBoardShapes(10);
+            foreach (ShapeItem sh in shapes)
+                viewModel.ShapeItems.Add(sh);
+            List<ShapeItem> newShapes = null;
+            string jsonString = utility.SendThroughServer(newShapes, Operation.Clear);
+            viewModel.DataHandler(jsonString);
+
+            Assert.Equal(viewModel.ShapeItems.Count, 0);
+        }
+        [Fact]
+        public void OnDataReceived_ServerNewUserTest()
+        {
+            viewModel.isServer = true;
+            viewModel.ShapeItems.Clear();
+            List<ShapeItem> newShapes = utility.GenerateRandomBoardShapes(5);
+            string jsonString = utility.SendThroughServer(newShapes, Operation.NewUser);
+            viewModel.DataHandler(jsonString);
+            //Assert.Equal(newShapes, viewModel.ShapeItems.ToList());
+
+            Assert.True(utility.CompareShapeItems(newShapes, viewModel.ShapeItems.ToList()));
+        }
+        [Fact]
+        public void OnDataReceived_ClientCreationTest()
+        {
+            viewModel.ShapeItems.Clear();
+            viewModel.isServer = false;
+
+            ShapeItem sh = utility.CreateRandomShape();
+            List<ShapeItem> newShapes = new List<ShapeItem>() { sh };
+            string jsonString = utility.SendThroughServer(newShapes, Operation.Creation);
+            viewModel.DataHandler(jsonString);
+            Assert.True(utility.CompareShapeItems(viewModel.ShapeItems[0], sh));
+        }
+
+        [Fact]
+        public void OnDataReceived_ClientDeletionTest()
+        { 
+            viewModel.isServer = false;
+            viewModel.ShapeItems.Clear();
+            ShapeItem sh = utility.CreateRandomShape();
+            viewModel.ShapeItems.Add(sh);
+            List<ShapeItem> newShapes = new List<ShapeItem>() { sh };
+            string jsonString = utility.SendThroughServer(newShapes, Operation.Deletion);
+            viewModel.DataHandler(jsonString);
+
+            Assert.Equal(viewModel.ShapeItems.Count, 0);
+        }
+        [Fact]
+        public void OnDataReceived_ClientModifyTest()
+        {
+            viewModel.isServer = false;
+            viewModel.ShapeItems.Clear();
+            ShapeItem sh = utility.CreateRandomShape();
+            viewModel.ShapeItems.Add(sh);
+            sh.Start = new Point(0, 0);
+            List<ShapeItem> newShapes = new List<ShapeItem>() { sh };
+            string jsonString = utility.SendThroughServer(newShapes, Operation.ModifyShape);
+            viewModel.DataHandler(jsonString);
+
+            Assert.True(utility.CompareShapeItems(viewModel.ShapeItems[0], sh));
+        }
+        [Fact]
+        public void OnDataReceived_ClientClearTest()
+        {
+            viewModel.isServer = false;
+            viewModel.ShapeItems.Clear();
+            List<ShapeItem> shapes = utility.GenerateRandomBoardShapes(10);
+            foreach (ShapeItem sh in shapes)
+                viewModel.ShapeItems.Add(sh);
+            List<ShapeItem> newShapes = null;
+            string jsonString = utility.SendThroughServer(newShapes, Operation.Clear);
+            viewModel.DataHandler(jsonString);
+
+            Assert.Equal(viewModel.ShapeItems.Count, 0);
+        }
+        [Fact]
+        public void OnDataReceived_ClientNewUserTest()
+        {
+            viewModel.ShapeItems.Clear();
+            viewModel.isServer = false;
+            List<ShapeItem> newShapes = utility.GenerateRandomBoardShapes(5);
+            string jsonString = utility.SendThroughServer(newShapes, Operation.NewUser);
+            viewModel.DataHandler(jsonString);
+
+            Assert.True(utility.CompareShapeItems(newShapes, viewModel.ShapeItems.ToList()));
         }
     }
 }

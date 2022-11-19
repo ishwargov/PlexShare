@@ -19,12 +19,14 @@ namespace PlexShareTests.WhiteboardTests
         WhiteBoardViewModel whiteBoardViewModel;
         Stack<UndoStackElement> undoStack;
         Stack<UndoStackElement> redoStack;
+        Utility utility;
         public UndoRedoTests()
         {
             whiteBoardViewModel = WhiteBoardViewModel.Instance;
             whiteBoardViewModel.SetUserId(2);
             undoStack = whiteBoardViewModel.undoStack;
             redoStack = whiteBoardViewModel.redoStack;
+            utility = new Utility();
         }
 
         [Fact]
@@ -52,7 +54,7 @@ namespace PlexShareTests.WhiteboardTests
             //Act
             Point start = new Point(1, 1);
             Point end = new Point(2, 2);
-            ShapeItem lastShape = Utility.CreateShape(start, end, "EllipseGeometry", "randomID");
+            ShapeItem lastShape = utility.CreateShape(start, end, "EllipseGeometry", "randomID");
             UndoStackElement undoStackElement = new UndoStackElement(lastShape, lastShape, Operation.Creation);
             whiteBoardViewModel.InsertIntoStack(undoStackElement);
 
@@ -70,7 +72,7 @@ namespace PlexShareTests.WhiteboardTests
         {
             Point start = new Point(1, 1);
             Point end = new Point(2, 2);
-            ShapeItem lastShape = Utility.CreateShape(start, end, "EllipseGeometry", "randomID");
+            ShapeItem lastShape = utility.CreateShape(start, end, "EllipseGeometry", "randomID");
             UndoStackElement undoStackElement = new UndoStackElement(lastShape, lastShape, Operation.Deletion);
             whiteBoardViewModel.InsertIntoStack(undoStackElement);
 
@@ -88,7 +90,7 @@ namespace PlexShareTests.WhiteboardTests
         {
             Point start = new Point(1, 1);
             Point end = new Point(2, 2);
-            ShapeItem lastShape = Utility.CreateShape(start, end, "EllipseGeometry", "randomID");
+            ShapeItem lastShape = utility.CreateShape(start, end, "EllipseGeometry", "randomID");
             UndoStackElement undoStackElement = new UndoStackElement(lastShape, lastShape, Operation.Creation);
             whiteBoardViewModel.InsertIntoStack(undoStackElement);
             Assert.Equal(undoStack.Count(), 1);
@@ -153,7 +155,7 @@ namespace PlexShareTests.WhiteboardTests
             whiteBoardViewModel.InsertIntoStack(undoStackElement);
 
             UndoStackElement ShapeSentToServer = whiteBoardViewModel.Undo();
-            Assert.True(Utility.CompareShapeItems(ShapeSentToServer.PrvShape, prvShape));
+            Assert.True(utility.CompareShapeItems(ShapeSentToServer.PrvShape, prvShape));
 
 
         }

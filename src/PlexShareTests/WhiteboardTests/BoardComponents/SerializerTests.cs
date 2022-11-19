@@ -13,9 +13,11 @@ namespace PlexShareTests.WhiteboardTests.BoardComponents
     public class SerializerTests
     {
         Serializer _serializer;
+        Utility utility;
         public SerializerTests()
         {
             _serializer = new Serializer();
+            utility = new Utility();
         }
 
         [Fact]
@@ -24,16 +26,16 @@ namespace PlexShareTests.WhiteboardTests.BoardComponents
             List<ShapeItem> shapeItems = new List<ShapeItem>();
             Point start = new Point(1, 1);
             Point end = new Point(2, 2);
-            shapeItems.Add(Utility.CreateShape(start, end, "EllipseGeometry", "randomID"));
-            shapeItems.Add(Utility.CreateShape(start, end, "RectangleGeometry", "randomID"));
-            shapeItems.Add(Utility.CreateShape(start, end, "LineGeometry", "randomID"));
-            shapeItems.Add(Utility.CreateShape(start, end, "GeometryGroup", "randomID"));
-            shapeItems.Add(Utility.CreateShape(start, end, "PathGeometry", "randomID"));
+            shapeItems.Add(utility.CreateShape(start, end, "EllipseGeometry", "randomID"));
+            shapeItems.Add(utility.CreateShape(start, end, "RectangleGeometry", "randomID"));
+            shapeItems.Add(utility.CreateShape(start, end, "LineGeometry", "randomID"));
+            shapeItems.Add(utility.CreateShape(start, end, "GeometryGroup", "randomID"));
+            shapeItems.Add(utility.CreateShape(start, end, "PathGeometry", "randomID"));
 
             var jsonString = _serializer.SerializeShapeItems(shapeItems);
             List<ShapeItem> deserializedObject = _serializer.DeserializeShapeItems(jsonString);
 
-            Assert.True(Utility.CompareShapeItems(shapeItems, deserializedObject));
+            Assert.True(utility.CompareShapeItems(shapeItems, deserializedObject));
 
         }
 
@@ -49,8 +51,8 @@ namespace PlexShareTests.WhiteboardTests.BoardComponents
             var jsonString2 = _serializer.SerializeWBServerShape(wBServerShape2);
             WBServerShape deserializedObject2 = _serializer.DeserializeWBServerShape(jsonString2);
 
-            Assert.True(Utility.CompareBoardServerShapes(wBServerShape1,deserializedObject1) 
-                && Utility.CompareBoardServerShapes(wBServerShape2, deserializedObject2));
+            Assert.True(utility.CompareBoardServerShapes(wBServerShape1,deserializedObject1) 
+                && utility.CompareBoardServerShapes(wBServerShape2, deserializedObject2));
         }
         [Fact]
         public void ConvertToSerializableShapeItem_NullReturnsNull()

@@ -52,7 +52,6 @@ namespace PlexShareWhiteboard
 
             Serializer serializer = new Serializer();
             ServerSide serverSide = ServerSide.Instance;
-            ServerCommunicator serverCommunicator = ServerCommunicator.Instance;
             if (isServer)
             {
                 try
@@ -60,10 +59,6 @@ namespace PlexShareWhiteboard
                     WBServerShape deserializedObject = serializer.DeserializeWBServerShape(serializedData);
                     List<ShapeItem> shapeItems = serializer.ConvertToShapeItem(deserializedObject.ShapeItems);
                     Trace.WriteLine("[Whiteboard] WBMessageHandler.onDataReceived(Server): Receiving the json string " + deserializedObject.Op);
-
-                    //if(shapeItems.Count > 0)
-                    //    Trace.WriteLine("[Whiteboard] Abhm :" + shapeItems[0].TextString + shapeItems[0].Id);
-                    var userId = deserializedObject.UserID;
                     switch (deserializedObject.Op)
                     {
                         case Operation.RestoreSnapshot:
@@ -72,12 +67,10 @@ namespace PlexShareWhiteboard
                             break;
                         case Operation.CreateSnapshot:
                             serverSide.CreateSnapshotHandler(deserializedObject);
-                            //DisplayMessage(deserializedObject.UserID, deserializedObject.SnapshotNumber); 
                             UpdateCheckList(deserializedObject.SnapshotNumber);
                             break;
                         case Operation.Creation:
                             CreateIncomingShape(shapeItems[0]);
-                            Trace.WriteLine("[Whiteboard] Abhm :" + shapeItems[0].TextString + shapeItems[0].Id);
                             serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
                             break;
                         case Operation.Deletion:
@@ -97,9 +90,6 @@ namespace PlexShareWhiteboard
                         case Operation.NewUser:
                             LoadBoard(shapeItems, true);
                             serverSide.NewUserHandler(deserializedObject);
-                            break;
-                        default:
-                            Trace.WriteLine("[Whiteboard] WBMessageHandler.onDataReceived(Server): Unidentified Operation at ServerBoardCommunicator");
                             break;
                     }
 
