@@ -17,8 +17,7 @@ using SSUtils = PlexShareScreenshare.Utils;
 namespace PlexShareTests.ScreenshareTests
 {
     /// <summary>
-    /// Defines the "SharedClientScreenTests" class which contains tests for
-    /// methods defined in "SharedClientScreen" class.
+    /// Contains tests for methods defined in "SharedClientScreen" class.
     /// </summary>
     /// <remarks>
     /// It is marked sequential to run the tests sequentially so that each test
@@ -28,6 +27,28 @@ namespace PlexShareTests.ScreenshareTests
     public class SharedClientScreenTests
     {
         /// <summary>
+        /// Update time values after the timeout time.
+        /// </summary>
+        public static IEnumerable<object[]> PostTimeoutTime =>
+            new List<object[]>
+            {
+                new object[] { SharedClientScreen.Timeout + 100 },
+                new object[] { SharedClientScreen.Timeout + 1000 },
+                new object[] { SharedClientScreen.Timeout + 2000 },
+            };
+
+        /// <summary>
+        /// Update time values before the timeout time.
+        /// </summary>
+        public static IEnumerable<object[]> PreTimeoutTime =>
+            new List<object[]>
+            {
+                new object[] { SharedClientScreen.Timeout - 2000 },
+                new object[] { SharedClientScreen.Timeout - 1000 },
+                new object[] { SharedClientScreen.Timeout - 100 },
+            };
+
+        /// <summary>
         /// Tests the successful execution of timer callback once the timeout occurs.
         /// </summary>
         /// <param name="timeOfUpdation">
@@ -35,9 +56,7 @@ namespace PlexShareTests.ScreenshareTests
         /// TIMEOUT for this test.
         /// </param>
         [Theory]
-        [InlineData(5100)]
-        [InlineData(6000)]
-        [InlineData(7000)]
+        [MemberData(nameof(PostTimeoutTime))]
         public void TestSuccessfulTimeout(int timeOfUpdation)
         {
             // Arrange.
@@ -66,16 +85,14 @@ namespace PlexShareTests.ScreenshareTests
         /// it should be less than the TIMEOUT time value.
         /// </param>
         [Theory]
-        [InlineData(2000)]
-        [InlineData(1000)]
-        [InlineData(100)]
-        public void TestSuccessfulTimerReset(int timeLeft)
+        [MemberData(nameof(PreTimeoutTime))]
+        public void TestSuccessfulTimerReset(int timeOfUpdation)
         {
             // Arrange.
             // Create a client which will start the underlying timer.
             var serverMock = new Mock<ITimerManager>();
             SharedClientScreen client = Utils.GetMockClient(serverMock.Object);
-            int timeOfUpdation = (int)SharedClientScreen.Timeout - timeLeft;
+            int timeLeft = (int)SharedClientScreen.Timeout - timeOfUpdation;
 
             // Act.
             // Sleep for time less than the timer TIMEOUT time.
