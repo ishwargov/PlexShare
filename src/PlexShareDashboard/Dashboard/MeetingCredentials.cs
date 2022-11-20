@@ -1,9 +1,10 @@
-﻿/*
+﻿/***************************************
  * Name : Saurabh Kumar
  * Roll : 111901046
+ * Module : Dashboard
  * FileName: MeetingCredentials.cs
  *  this file implemets the datastructure for the Meeting Credential
- */
+ ***************************************/
 
 namespace Dashboard
 {

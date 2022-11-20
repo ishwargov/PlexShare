@@ -1,13 +1,9 @@
-﻿/*
+﻿/****************************************
  * Name : Saurabh Kumar
  * Roll : 111901046
+ * Module : Dashboard
  * FileName: IDashboardSerializer
- */
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+ ****************************************/
 
 namespace PlexShareDashboard.Dashboard
 {
@@ -21,7 +17,7 @@ namespace PlexShareDashboard.Dashboard
         /// <returns>Serialized XML string.</returns>
         string Serialize<T>(T objectToSerialize) where T : new();
 
-       
+
         /// <summary>
         ///     Deserializes the XML string into the corresponding object.
         /// </summary>

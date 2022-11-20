@@ -1,9 +1,10 @@
-﻿/*
+﻿/****************************************
  * Name : Saurabh Kumar
  * Roll : 111901046
+ * Module : Dashboard
  * File Name : SessionData.cs
  * This file contains the SessionData class used to store the list of users in the session.
- */
+ *****************************************/
 
 
 using System;
@@ -15,10 +16,10 @@ namespace Dashboard
     ///     This class is used to store the data about the
     ///      current session
     /// </summary>
-    
+
     public class SessionData
     {
-       // the List of users in the meeting 
+        // the List of users in the meeting 
         public List<UserData> users;
 
         // default SessionMode is LabMode
@@ -34,8 +35,8 @@ namespace Dashboard
         {
             Random rnd = new Random();
             if (users == null) users = new List<UserData>();
-             sessionMode = "LabMode";
-             sessionId = rnd.Next();
+            sessionMode = "LabMode";
+            sessionId = rnd.Next();
         }
 
         /// <summary>
@@ -85,7 +86,7 @@ namespace Dashboard
         }
 
 
-        
+
 
     }
 }
