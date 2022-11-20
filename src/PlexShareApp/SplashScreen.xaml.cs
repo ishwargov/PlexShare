@@ -1,4 +1,17 @@
-﻿using System.Threading;
+﻿/******************************************************************************
+ * Filename    = SplashScreen.xaml.cs
+ *
+ * Author      = Neel Kabra
+ *
+ * Product     = PlexShare
+ * 
+ * Project     = PlexShareApp
+ *
+ * Description = This is start view of the application.
+ * 
+ *****************************************************************************/
+
+using System.Threading;
 using System.Windows;
 
 namespace PlexShareApp
@@ -11,7 +24,6 @@ namespace PlexShareApp
         public SplashScreen()
         {
             InitializeComponent();
-            // MainBox.Text = "PlexShare";
             this.Show();
             Thread.Sleep(750);
             this.MainBox.Dispatcher.Invoke(() => MainBox.Text = "P   S   e", System.Windows.Threading.DispatcherPriority.Render);
@@ -25,10 +37,6 @@ namespace PlexShareApp
 
             this.MainBox.Dispatcher.Invoke(() => MainBox.Text = "PlexShare", System.Windows.Threading.DispatcherPriority.Background);
             Thread.Sleep(500);
-
-            //this.Close();
-            //Thread.Sleep(1000);
-
         }
     }
 }

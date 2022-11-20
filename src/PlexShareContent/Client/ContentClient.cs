@@ -226,10 +226,16 @@ namespace PlexShareContent.Client
             return allReceivers;
         }
 
+        /// <summary>
+        /// Function to check if path is accessible and a file can be created
+        /// </summary>
+        /// <param name="path">File path</param>
+        /// <exception cref="ArgumentException"></exception>
         private void CheckFilePath(string path)
         {
             try
             {
+                // check if a file can be created and delete it on close
                 using (var fs = File.Create(path, 1, FileOptions.DeleteOnClose))
                 { }
             }
@@ -284,8 +290,6 @@ namespace PlexShareContent.Client
                     throw new ArgumentException($"Invalid Message Field Type : {contentData.Type}");
             }
         }
-
-        
 
         ///<inheritdoc/>
         public void ClientSubscribe(IContentListener subscriber)
@@ -348,8 +352,6 @@ namespace PlexShareContent.Client
             Trace.WriteLine("[ContentClient] Using chat handler to send delete event to server");
             _chatHandler.DeleteChat(messageID, message.ReplyThreadID);
         }
-
-        
 
         /// <inheritdoc/>
         public void ClientDownload(int messageID, string savePath)
@@ -651,6 +653,7 @@ namespace PlexShareContent.Client
             {
                 throw new ArgumentException("Received null message!");
             }
+            Trace.WriteLine("[ContentClient] Received message from server");
             _messageEventHandler[receivedMessage.Event](receivedMessage);
         }
 
