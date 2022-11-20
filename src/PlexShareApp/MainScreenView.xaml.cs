@@ -300,5 +300,29 @@ namespace PlexShareApp
                 this.BorderThickness = new System.Windows.Thickness(0);
             }
         }
+
+        /// <summary>
+        /// Changes the theme using the toggle button. It changes the resource file 
+        /// that is connected from App.xaml, using which we can dynamically change the colour 
+        /// and background colour of different objects
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ThemeToggleButtonClick(object sender, RoutedEventArgs e)
+        {
+            var dict = new ResourceDictionary();
+            if (themeButtonToggle.IsChecked != true)
+            {
+                dict.Source = new Uri("Theme1.xaml", UriKind.Relative);
+                Application.Current.Resources.MergedDictionaries.Clear();
+                Application.Current.Resources.MergedDictionaries.Add(dict);
+            }
+            else
+            {
+                dict.Source = new Uri("Theme2.xaml", UriKind.Relative);
+                Application.Current.Resources.MergedDictionaries.Clear();
+                Application.Current.Resources.MergedDictionaries.Add(dict);
+            }
+        }
     }
 }
