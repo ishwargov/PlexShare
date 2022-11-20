@@ -301,6 +301,8 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             //subscribing to the session manager to get the updated session data whenever the session data changes 
             clientSessionManager.SubscribeSession(this);
 
+            clientSessionManager.ToggleSessionMode();
+
 
 
             ////defining the sessionanalytics to store the information about the sessionanalytics 
