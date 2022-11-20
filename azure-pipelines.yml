@@ -1,119 +1,115 @@
-# .NET Desktop
-
-# Build and run tests for .NET Desktop or Windows classic desktop solutions.
-# Add steps that publish symbols, save build artifacts, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/apps/windows/dot-net
+# PlexShare Azure Pipeline
+# Author : Ishwar Govind
 
 trigger:
-- main
+  - main
 
 pool: selfBot
 
 variables:
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
+  solution: "**/*.sln"
+  buildPlatform: "Any CPU"
+  buildConfiguration: "Release"
 
 steps:
-- task: NuGetToolInstaller@1
+  - task: NuGetToolInstaller@1
 
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'build'
-    projects: '**/PlexShareNetwork.csproj'
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: "build"
+      projects: "**/PlexShareNetwork.csproj"
 
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'build'
-    projects: '**/PlexShareDashboard.csproj'
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: "build"
+      projects: "**/PlexShareDashboard.csproj"
 
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'build'
-    projects: '**/PlexShareCloud.csproj'
-    
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'build'
-    projects: '**/PlexShareCloudUX.csproj'
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: "build"
+      projects: "**/PlexShareCloud.csproj"
 
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'build'
-    projects: '**/PlexShareContent.csproj'
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: "build"
+      projects: "**/PlexShareCloudUX.csproj"
 
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'build'
-    projects: '**/PlexShareWhiteboard.csproj'
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: "build"
+      projects: "**/PlexShareContent.csproj"
 
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'build'
-    projects: '**/PlexShareApp.csproj'
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: "build"
+      projects: "**/PlexShareWhiteboard.csproj"
 
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'build'
-    projects: '**/PlexShareScreenshare.csproj'
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: "build"
+      projects: "**/PlexShareApp.csproj"
 
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'build'
-    projects: '**/PlexShareTests.csproj'
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: "build"
+      projects: "**/PlexShareScreenshare.csproj"
 
-- task: VSBuild@1
-  inputs:
-    solution: '$(solution)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-    
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: "build"
+      projects: "**/PlexShareTests.csproj"
 
-- task: DotNetCoreCLI@2
-  continueOnError: true 
-  inputs:
-    command: 'test'
-    projects: '**/PlexShareTests.csproj'
-    arguments: '--filter:"NetworkTests"'
-    
-- task: DotNetCoreCLI@2
-  continueOnError: true 
-  inputs:
-    command: 'test'
-    projects: '**/PlexShareTests.csproj'
-    arguments: '--filter:"WhiteboardTests"'
+  - task: VSBuild@1
+    inputs:
+      solution: "$(solution)"
+      platform: "$(buildPlatform)"
+      configuration: "$(buildConfiguration)"
 
-- task: DotNetCoreCLI@2
-  continueOnError: true 
-  inputs:
-    command: 'test'
-    projects: '**/PlexShareTests.csproj'
-    arguments: '--filter:"UXTests"'
+  - task: DotNetCoreCLI@2
+    continueOnError: true
+    inputs:
+      command: "test"
+      projects: "**/PlexShareTests.csproj"
+      arguments: '--filter:"NetworkTests"'
 
-- task: DotNetCoreCLI@2
-  continueOnError: true 
-  inputs:
-    command: 'test'
-    projects: '**/PlexShareTests.csproj'
-    arguments: '--filter:"ScreenShareTests"'
+  - task: DotNetCoreCLI@2
+    continueOnError: true
+    inputs:
+      command: "test"
+      projects: "**/PlexShareTests.csproj"
+      arguments: '--filter:"WhiteboardTests"'
 
-- task: DotNetCoreCLI@2
-  continueOnError: true 
-  inputs:
-    command: 'test'
-    projects: '**/PlexShareTests.csproj'
-    arguments: '--filter:"DashboardTests"'
+  - task: DotNetCoreCLI@2
+    continueOnError: true
+    inputs:
+      command: "test"
+      projects: "**/PlexShareTests.csproj"
+      arguments: '--filter:"UXTests"'
 
-- task: DotNetCoreCLI@2
-  continueOnError: true 
-  inputs:
-    command: 'test'
-    projects: '**/PlexShareTests.csproj'
-    arguments: '--filter:"ContentTests"'
+  - task: DotNetCoreCLI@2
+    continueOnError: true
+    inputs:
+      command: "test"
+      projects: "**/PlexShareTests.csproj"
+      arguments: '--filter:"ScreenShareTests"'
 
-- task: DotNetCoreCLI@2
-  continueOnError: true 
-  inputs:
-    command: 'test'
-    projects: '**/PlexShareTests.csproj'
-    arguments: '--filter:"CloudTests"'
+  - task: DotNetCoreCLI@2
+    continueOnError: true
+    inputs:
+      command: "test"
+      projects: "**/PlexShareTests.csproj"
+      arguments: '--filter:"DashboardTests"'
+
+  - task: DotNetCoreCLI@2
+    continueOnError: true
+    inputs:
+      command: "test"
+      projects: "**/PlexShareTests.csproj"
+      arguments: '--filter:"ContentTests"'
+
+  - task: DotNetCoreCLI@2
+    continueOnError: true
+    inputs:
+      command: "test"
+      projects: "**/PlexShareTests.csproj"
+      arguments: '--filter:"CloudTests"'
