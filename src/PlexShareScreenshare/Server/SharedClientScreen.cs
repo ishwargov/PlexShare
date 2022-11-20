@@ -223,8 +223,11 @@ namespace PlexShareScreenshare.Server
 
             set
             {
-                _currentImage = value;
-                this.OnPropertyChanged(nameof(CurrentImage));
+                if (_currentImage != value)
+                {
+                    _currentImage = value;
+                    this.OnPropertyChanged(nameof(CurrentImage));
+                }
             }
         }
 
@@ -237,8 +240,11 @@ namespace PlexShareScreenshare.Server
 
             set
             {
-                _pinned = value;
-                this.OnPropertyChanged(nameof(Pinned));
+                if (_pinned != value)
+                {
+                    _pinned = value;
+                    this.OnPropertyChanged(nameof(Pinned));
+                }
             }
         }
 
@@ -251,8 +257,11 @@ namespace PlexShareScreenshare.Server
 
             set
             {
-                _tileHeight = value;
-                this.OnPropertyChanged(nameof(TileHeight));
+                if (_tileHeight != value)
+                {
+                    _tileHeight = value;
+                    this.OnPropertyChanged(nameof(TileHeight));
+                }
             }
         }
 
@@ -265,8 +274,11 @@ namespace PlexShareScreenshare.Server
 
             set
             {
-                _tileWidth = value;
-                this.OnPropertyChanged(nameof(TileWidth));
+                if (_tileWidth != value)
+                {
+                    _tileWidth = value;
+                    this.OnPropertyChanged(nameof(TileWidth));
+                }
             }
         }
 
