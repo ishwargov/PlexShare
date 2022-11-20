@@ -4,13 +4,12 @@
 ///screen stitching functionality. It is used by ScreenshareServer.
 ///</summary>
 
-using K4os.Compression.LZ4;
 using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Text.Json;
+using System.IO.Compression;
 using System.Threading.Tasks;
 
 
@@ -114,6 +113,7 @@ namespace PlexShareScreenshare.Server
                             continue;
                         }
                         Bitmap stichedImage = Stitch(_oldImage, newFrame);
+                        Trace.WriteLine(Utils.GetDebugMessage($"STITCHED image from client {cnt++}", withTimeStamp: true));
                         _oldImage = stichedImage;
                         _sharedClientScreen.PutFinalImage(stichedImage);
                     }
@@ -124,12 +124,12 @@ namespace PlexShareScreenshare.Server
         }
 
         // Kills the task `_stitchTask`
-        public async void StopStitching()
+        public void StopStitching()
         {
             try
             {
                 _cancellationToken = true;
-                await _stitchTask!;
+                _stitchTask!.Wait();
                 _stitchTask = null;
             }
             catch (OperationCanceledException e)
@@ -146,6 +146,17 @@ namespace PlexShareScreenshare.Server
             }
         }
 
+        public static byte[] DecompressByteArray(byte[] data)
+        {
+            MemoryStream input = new MemoryStream(data);
+            MemoryStream output = new MemoryStream();
+            using (DeflateStream dstream = new DeflateStream(input, CompressionMode.Decompress))
+            {
+                dstream.CopyTo(output);
+            }
+            return output.ToArray();
+        }
+
         /// <summary>
         /// Function to stitch the new image over the old image
         /// If resolution is changed update whole Image, else update the changed pixels
@@ -153,6 +164,7 @@ namespace PlexShareScreenshare.Server
         /// <param name="oldImage">The previous image of client's screen</param>
         /// <param name="newFrame">The list of the updated pixels, list of : { x, y, (R, G, B)}</param>
         /// <returns>The updated new image of client's screen</returns>
+        private int cnt = 0;
         private Bitmap Stitch(Bitmap? oldImage, string newFrame)
         {
 
@@ -161,19 +173,8 @@ namespace PlexShareScreenshare.Server
 
             byte[]? deser;
 
-            if (isCompleteFrame == '0')
-            {
-                deser = JsonSerializer.Deserialize<byte[]>(newFrame);
-                Debug.Assert(deser != null && deser.Length > 0);
-                int length = LZ4Codec.Decode(deser, 4, deser.Length - 4,
-                                expansionBuffer, 0, expansionBuffer.Length);
-                Buffer.BlockCopy(BitConverter.GetBytes(length), 0, deser, 0, 4);
-                deser = expansionBuffer;
-            }
-            else
-            {
-                deser = Convert.FromBase64String(newFrame);
-            }
+            deser = Convert.FromBase64String(newFrame);
+            deser = DecompressByteArray(deser);
 
             MemoryStream ms = new(deser);
             var xor_bitmap = new Bitmap(ms);
