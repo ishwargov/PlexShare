@@ -321,6 +321,61 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             Trace.WriteLine("[Dashboard ViewModel]Initializing the Dashboard ViewModel");
         }
 
+        public DashboardViewModel(int testGateway)
+        {
+
+
+            sessionData = new SessionData();
+
+            //initialising the observable collection and chartvalues
+            ParticipantsList = new ObservableCollection<User>();
+            UserCountList = new ChartValues<int>();
+            TimeStampsList = new ObservableCollection<string>();
+            ChatCountListForUserId = new ChartValues<int>();
+            ChatCountListForUserName = new ChartValues<int>();
+            UserIdList = new ObservableCollection<string>();
+            UserNameList = new ObservableCollection<string>();
+
+
+            //initialising the private attributes 
+            AttentiveUsersSetter = 100;
+            NonAttentiveUsersSetter = 0;
+            TotalParticipantsCountSetter = 1;
+            MaxTotalParticipantsCountSetter = 1;
+            TotalMessageCountSetter = 0;
+            EngagementRateSetter = "0";
+            SessionModeSetter = "LabMode";
+            SessionScoreSetter = 0;
+            ButtonContentSetter = "Switch Mode";
+            SummaryContentSetter = "Refresh To get the updated summary";
+
+
+            //getting the instane of the client session manager 
+            clientSessionManager = SessionManagerFactory.GetClientSessionManager();
+
+            //subscribing to the session manager to get the updated session data whenever the session data changes 
+            //clientSessionManager.SubscribeSession(this);
+
+            //clientSessionManager.ToggleSessionMode();
+
+
+
+            ////defining the sessionanalytics to store the information about the sessionanalytics 
+            sessionAnalytics = new SessionAnalytics();
+            sessionAnalytics.chatCountForEachUser = new Dictionary<int, int>();
+            sessionAnalytics.listOfInSincereMembers = new List<int>();
+            sessionAnalytics.userCountVsTimeStamp = new Dictionary<DateTime, int>();
+            sessionAnalytics.sessionSummary = new SessionSummary();
+
+            //these functions will be called whenever these will be invoked by the client session manager 
+            clientSessionManager.AnalyticsCreated += (latestAnalytics) => OnAnalyticsChanged(latestAnalytics);
+            clientSessionManager.SummaryCreated += (latestSummary) => OnSummaryChanged(latestSummary);
+
+
+
+            Trace.WriteLine("[Dashboard ViewModel]Initializing the Dashboard ViewModel");
+        }
+
 
 
 

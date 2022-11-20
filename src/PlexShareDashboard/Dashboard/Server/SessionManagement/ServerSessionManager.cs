@@ -14,7 +14,6 @@ using PlexShareDashboard.Dashboard.Server.Summary;
 using PlexShareDashboard.Dashboard.Server.Telemetry;
 using PlexShareNetwork;
 using PlexShareNetwork.Communication;
-using PlexShareScreenshare.Server;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -46,7 +45,6 @@ namespace Dashboard.Server.SessionManagement
         private ITelemetry _telemetry;
         public bool summarySaved;
         private int userCount;
-        private ScreenshareServer _screenShareServer;
 
 
         /// <summary>
@@ -66,14 +64,9 @@ namespace Dashboard.Server.SessionManagement
             _serializer = new DashboardSerializer();
             _telemetrySubscribers = new List<ITelemetryNotifications>();
             _summarizer = SummarizerFactory.GetSummarizer();
-
             userCount = 0;
-
             _communicator = CommunicationFactory.GetCommunicator(false);
             _communicator.Subscribe(moduleIdentifier, this);
-
-            //  _ = ServerBoardCommunicator.Instance;
-            //  _screenShareServer = ScreenShareFactory.GetScreenShareServer();
             _contentServer = ContentServerFactory.GetInstance();
         }
 
@@ -91,7 +84,6 @@ namespace Dashboard.Server.SessionManagement
 
             userCount = 0;
             moduleIdentifier = "serverSessionManager";
-
             _communicator = communicator;
             _communicator.Subscribe(moduleIdentifier, this);
             summarySaved = false;
@@ -348,13 +340,8 @@ namespace Dashboard.Server.SessionManagement
             Thread.Sleep(2000);
             // stopping the communicator and notifying UX server about the End Meet event.
             _communicator.Stop();
-            //   _screenShareServer.Dispose();
             MeetingEnded?.Invoke();
-            if (testmode == false)
-            {
-                // Environment.Exit(0);
 
-            }
         }
 
 
