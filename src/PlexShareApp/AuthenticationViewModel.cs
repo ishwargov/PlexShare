@@ -7,7 +7,7 @@
  * 
  * Project     = PlexShareApp
  *
- * Description = ViewModel for the Authentication Module which will authorize the app to useclient information.
+ * Description = ViewModel for the Authentication Module which will authorize the app to use client information.
  * 
  *****************************************************************************/
 
@@ -37,6 +37,9 @@ public class AuthenticationViewModel
     string userEmail = "";
     string imageName = "";
 
+    /// <summary>
+    /// Constructor for AuthenticationViewModel
+    /// </summary>
     public AuthenticationViewModel()
     {
     }
@@ -44,13 +47,14 @@ public class AuthenticationViewModel
     /// <summary>
     /// This will be the main function called by the View to authenticate the user
     /// </summary>
+    /// <param name="timeOut"></param>
     /// <returns>string with a bool denoting success of Authentication</returns>
     /// <returns>User Name</returns>
     /// <returns>Smail ID</returns>
     /// <returns>Profile Picture URL</returns>
     public async Task<List<string>> AuthenticateUser(int timeOut = 180000)
     {
-        Trace.WriteLine("[UX] Creating State and Redirect URI on port 8080");
+        Trace.WriteLine("[UX] Creating State and Redirecting URI on port 8080");
         // Creating state and redirect URI using port 8080 on Loopback address
         string state = GenerateDataBase(32);
         string code_verifier = GenerateDataBase(32);
@@ -167,7 +171,7 @@ public class AuthenticationViewModel
     /// Creating a non-padded base64 URL encoding
     /// </summary>
     /// <param name="buffer"></param>
-    /// <returns></returns>
+    /// <returns>String: Encoded Base 64</returns>
     public static string EncodeInputBuffer(byte[] buffer)
     {
         string base64 = Convert.ToBase64String(buffer);
@@ -184,7 +188,7 @@ public class AuthenticationViewModel
     /// For getting the SHA256 hashing of the inputString
     /// </summary>
     /// <param name="inputString"></param>
-    /// <returns></returns>
+    /// <returns>Byte Array: Sha256 Hashing</returns>
     public static byte[] Sha256(string inputString)
     {
         byte[] bytes = Encoding.ASCII.GetBytes(inputString);
@@ -196,7 +200,7 @@ public class AuthenticationViewModel
     /// Generating a random cryptographic number oh length 32
     /// </summary>
     /// <param name="length"></param>
-    /// <returns></returns>
+    /// <returns>String: Encrypted Data Base</returns>
     public static string GenerateDataBase(uint length)
     {
         RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
