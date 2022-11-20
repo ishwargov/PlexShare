@@ -1,3 +1,9 @@
+<!-- Filename    = AuthenticationView.xaml-->
+<!-- Author      = Parichita Das-->
+<!-- Product     = PlexShare-->
+<!-- Project     = PlexShareApp-->
+<!-- Description = View for the Authentication Page-->
+
 <Window x:Class="PlexShareApp.AuthenticationView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
@@ -65,11 +71,11 @@
         </StackPanel>
 
         <Image Grid.Column="0" Grid.RowSpan="7" Grid.Row="1" Source="/Resources/AuthScreenImg.jpg" Stretch="UniformToFill" MaxWidth="700"/>
-        
+
         <!-- Welcome Block -->
         <TextBlock Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="5" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="40" FontFamily="MV Boli" MaxHeight="50" >Welcome To</TextBlock>
         <TextBlock Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="5" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="80" FontFamily="MV Boli" MaxHeight="100">PlexShare</TextBlock>
-        
+
         <!-- Sign In Button -->
         <Button Grid.Column="1" Grid.ColumnSpan="5" Click="Home_Click" Grid.Row="6" MaxWidth="500" MaxHeight="300" BorderBrush="Gray" BorderThickness="2" Background="Transparent">
             <Button.Resources>
@@ -103,7 +109,7 @@
         <StackPanel Grid.Row="1" Grid.RowSpan="7" Grid.Column="1">
             <ProgressBar x:Name="pb1" Height="1000" Width="10" Orientation="Vertical" Background="Transparent" BorderThickness="0"  Foreground="BurlyWood"></ProgressBar>
         </StackPanel>
-        
+
         <StackPanel Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="4">
             <ProgressBar x:Name="pb2" Height="10" Width="1000" Background="Transparent" BorderThickness="0" Foreground="Wheat"></ProgressBar>
         </StackPanel>

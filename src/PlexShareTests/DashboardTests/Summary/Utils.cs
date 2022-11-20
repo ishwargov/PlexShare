@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-//using PlexShareDashboard.Dashboard.Server.Telemetry;
+using PlexShareContent;
 
 namespace PlexShareTests.DashboardTests.Summary
 {
@@ -34,7 +34,7 @@ namespace PlexShareTests.DashboardTests.Summary
                     ReceiveContentData data = new();
                     // All null messages but users are initialized.
                     data.Data = "";
-                    ////data.Type = MessageType.Chat;
+                    data.Type = MessageType.Chat;
                     data.Starred = false;
                     ChatThread c = new();
                     List<ReceiveContentData> ReceiveContentDatas = new();
@@ -58,7 +58,7 @@ namespace PlexShareTests.DashboardTests.Summary
                         ReceiveContentData data = new();
                         // A constant message CONST is sent by all the users.
                         data.Data = "CONST";
-                        //data.Type = MessageType.Chat;
+                        data.Type = MessageType.Chat;
                         data.Starred = false;
                         ReceiveContentDatas.Add(data);
                     }
@@ -78,27 +78,27 @@ namespace PlexShareTests.DashboardTests.Summary
                 List<ReceiveContentData> ReceiveContentDatas = new();
                 ReceiveContentData step1 = new();
                 step1.Data = "caresses. plastered. troubled. happy";
-                //step1.Type = MessageType.Chat;
+                step1.Type = MessageType.Chat;
                 step1.Starred = false;
                 ReceiveContentDatas.Add(step1);
                 ReceiveContentData step2 = new();
                 step2.Data = "relational. hesitanci. vietnamization";
-                //step2.Type = MessageType.Chat;
+                step2.Type = MessageType.Chat;
                 step2.Starred = false;
                 ReceiveContentDatas.Add(step2);
                 ReceiveContentData step3 = new();
                 step3.Data = "triplicate. formalize. electrical";
-                //step3.Type = MessageType.Chat;
+                step3.Type = MessageType.Chat;
                 step3.Starred = true;
                 ReceiveContentDatas.Add(step3);
                 ReceiveContentData step4 = new();
                 step4.Data = "allowance. defensible. homologous";
-                //step4.Type = MessageType.Chat;
+                step4.Type = MessageType.Chat;
                 step4.Starred = false;
                 ReceiveContentDatas.Add(step4);
                 ReceiveContentData step5 = new();
                 step5.Data = "probate. controll. roll";
-                //step5.Type = MessageType.Chat;
+                step5.Type = MessageType.Chat;
                 step5.Starred = false;
                 ReceiveContentDatas.Add(step5);
                 c.MessageList   = ReceiveContentDatas;
@@ -119,7 +119,7 @@ namespace PlexShareTests.DashboardTests.Summary
                         data.Data = "Hi from " + (i + j);
                         if (i % 5 == 0)
                             data.Data += ".This is special";
-                        //data.Type = MessageType.Chat;
+                        data.Type = MessageType.Chat;
                         data.Starred = i % 5 == 0;
                         ReceiveContentDatas.Add(data);
                     }
