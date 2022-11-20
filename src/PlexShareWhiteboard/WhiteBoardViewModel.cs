@@ -187,6 +187,7 @@ namespace PlexShareWhiteboard
 
             if (select.ifSelected == true)
             {
+
                 ShapeItem updateSelectShape = null;
 
                 foreach(ShapeItem s in ShapeItems)
