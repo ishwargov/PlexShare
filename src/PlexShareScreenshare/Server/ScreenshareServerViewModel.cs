@@ -144,10 +144,10 @@ namespace PlexShareScreenshare.Server
                 // Move the subscribers marked as pinned to the front of the list
                 // keeping the lexicographical order of their name.
                 _subscribers = RearrangeSubscribers(subscribers);
-
-                // Recompute the current window clients to notify the UX.
-                RecomputeCurrentWindowClients(this.CurrentPage);
             }
+
+            // Recompute the current window clients to notify the UX.
+            RecomputeCurrentWindowClients(this.CurrentPage);
 
             Trace.WriteLine(Utils.GetDebugMessage($"Successfully updated the subscribers list", withTimeStamp: true));
         }
@@ -352,42 +352,49 @@ namespace PlexShareScreenshare.Server
                 return;
             }
 
-            // Get the total number of pages.
-            int newTotalPages = GetTotalPages();
+            int newTotalPages = 0, newNumRows = 1, newNumCols = 1;
+            List<SharedClientScreen> previousWindowClients, newWindowClients;
+            (int Height, int Width) newTileDimensions = (0, 0);
 
-            Debug.Assert(newPageNum <= newTotalPages, Utils.GetDebugMessage("page number should be less than the total number of pages"));
+            lock (_subscribers)
+            {
+                // Get the total number of pages.
+                newTotalPages = GetTotalPages();
 
-            // Total count of all the subscribers sharing screen.
-            int totalCount = _subscribers.Count;
+                Debug.Assert(newPageNum <= newTotalPages, Utils.GetDebugMessage("page number should be less than the total number of pages"));
 
-            // Get the count of subscribers to skip for the current page.
-            int countToSkip = GetCountToSkip(newPageNum);
+                // Total count of all the subscribers sharing screen.
+                int totalCount = _subscribers.Count;
 
-            Debug.Assert(countToSkip >= 0, Utils.GetDebugMessage("count to skip should be non-negative"));
-            Debug.Assert(countToSkip <= totalCount, Utils.GetDebugMessage("count to skip should be less than or equal to the total count"));
+                // Get the count of subscribers to skip for the current page.
+                int countToSkip = GetCountToSkip(newPageNum);
 
-            int remainingCount = totalCount - countToSkip;
+                Debug.Assert(countToSkip >= 0, Utils.GetDebugMessage("count to skip should be non-negative"));
+                Debug.Assert(countToSkip <= totalCount, Utils.GetDebugMessage("count to skip should be less than or equal to the total count"));
 
-            // Number of subscribers that will show up on the current page.
-            int limit = _subscribers[countToSkip].Pinned ? 1 : Math.Min(remainingCount, MaxTiles);
+                int remainingCount = totalCount - countToSkip;
 
-            Debug.Assert(limit <= MaxTiles, Utils.GetDebugMessage("Number of tiles on the current page should be less than or equal to the maximum number of tiles"));
+                // Number of subscribers that will show up on the current page.
+                int limit = _subscribers[countToSkip].Pinned ? 1 : Math.Min(remainingCount, MaxTiles);
 
-            // Get the new window clients to be displayed on the current page.
-            List<SharedClientScreen> newWindowClients = _subscribers.GetRange(countToSkip, limit);
-            int numNewWindowClients = newWindowClients.Count;
+                Debug.Assert(limit <= MaxTiles, Utils.GetDebugMessage("Number of tiles on the current page should be less than or equal to the maximum number of tiles"));
 
-            // Save the previous window clients which are not there in the current window.
-            List<SharedClientScreen> previousWindowClients = this.CurrentWindowClients.ToList();
-            previousWindowClients = previousWindowClients
-                                    .Where(client => newWindowClients.FindIndex(n => n.Id == client.Id) == -1)
-                                    .ToList();
+                // Get the new window clients to be displayed on the current page.
+                newWindowClients = _subscribers.GetRange(countToSkip, limit);
+                int numNewWindowClients = newWindowClients.Count;
 
-            // The new number of rows and columns to be displayed based on new number of clients.
-            var (newNumRows, newNumCols) = NumRowsColumns[numNewWindowClients];
+                // Save the previous window clients which are not there in the current window.
+                previousWindowClients = this.CurrentWindowClients.ToList();
+                previousWindowClients = previousWindowClients
+                                        .Where(client => newWindowClients.FindIndex(n => n.Id == client.Id) == -1)
+                                        .ToList();
 
-            // The new tile dimensions of screen image to be displayed based on new number of clients.
-            (int Height, int Width) newTileDimensions = GetTileDimensions(newNumRows, newNumCols);
+                // The new number of rows and columns to be displayed based on new number of clients.
+                (newNumRows, newNumCols) = NumRowsColumns[numNewWindowClients];
+
+                // The new tile dimensions of screen image to be displayed based on new number of clients.
+                newTileDimensions = GetTileDimensions(newNumRows, newNumCols);
+            }
 
             // Update the view with the new fields.
             UpdateView(
@@ -418,6 +425,9 @@ namespace PlexShareScreenshare.Server
             Debug.Assert(_subscribers != null, Utils.GetDebugMessage("_subscribers is found null"));
             Debug.Assert(_subscribers.Count != 0, Utils.GetDebugMessage("_subscribers has count 0"));
 
+            // The new page on which this pinned client will be displayed.
+            int pinnedClientPage = 1;
+
             // Acquire lock because timer threads could also execute simultaneously.
             lock (_subscribers)
             {
@@ -441,9 +451,11 @@ namespace PlexShareScreenshare.Server
                 // keeping the lexicographical order of their name.
                 _subscribers = RearrangeSubscribers(_subscribers);
 
-                // Switch to the page of the client.
-                RecomputeCurrentWindowClients(GetClientPage(pinnedScreen.Id));
+                pinnedClientPage = GetClientPage(pinnedScreen.Id);
             }
+
+            // Switch to the page of the client.
+            RecomputeCurrentWindowClients(pinnedClientPage);
 
             Trace.WriteLine(Utils.GetDebugMessage($"Successfully pinned the client with id: {clientId}", withTimeStamp: true));
         }
@@ -482,10 +494,10 @@ namespace PlexShareScreenshare.Server
                 // Move the subscribers marked as pinned to the front of the list
                 // keeping the lexicographical order of their name.
                 _subscribers = RearrangeSubscribers(_subscribers);
-
-                //  Switch to the previous (or the first) page.
-                RecomputeCurrentWindowClients(Math.Max(1, this.CurrentPage - 1));
             }
+
+            //  Switch to the previous (or the first) page.
+            RecomputeCurrentWindowClients(Math.Max(1, this.CurrentPage - 1));
 
             Trace.WriteLine(Utils.GetDebugMessage($"Successfully unpinned the client with id: {clientId}", withTimeStamp: true));
         }
@@ -667,10 +679,6 @@ namespace PlexShareScreenshare.Server
                     }));
                 }
             }
-            catch (OperationCanceledException e)
-            {
-                Trace.WriteLine(Utils.GetDebugMessage($"Task canceled for the client: {e.Message}", withTimeStamp: true));
-            }
             catch (Exception e)
             {
                 Trace.WriteLine(Utils.GetDebugMessage($"Failed to start the processing: {e.Message}", withTimeStamp: true));
@@ -690,10 +698,6 @@ namespace PlexShareScreenshare.Server
                 try
                 {
                     _ = client.StopProcessing();
-                }
-                catch (OperationCanceledException e)
-                {
-                    Trace.WriteLine(Utils.GetDebugMessage($"Task canceled for the client: {e.Message}", withTimeStamp: true));
                 }
                 catch (Exception e)
                 {
