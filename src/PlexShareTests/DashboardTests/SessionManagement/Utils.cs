@@ -5,11 +5,6 @@
  * This file is have data of users so that we can use user for inserting while testing
  */
 using Dashboard;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PlexShareTests.DashboardTests.SessionManagement
 {

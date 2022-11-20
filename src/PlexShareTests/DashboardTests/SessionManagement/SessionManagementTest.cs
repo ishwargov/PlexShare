@@ -7,9 +7,9 @@
 using Dashboard;
 using Dashboard.Server.SessionManagement;
 using PlexShare.Dashboard;
+using PlexShareDashboard.Dashboard;
 using PlexShareDashboard.Dashboard.Client.SessionManagement;
 using PlexShareDashboard.Dashboard.Server.SessionManagement;
-using PlexShareDashboard.Dashboard;
 using PlexShareTests.DashboardTests.SessionManagement.TestModules;
 
 
@@ -19,7 +19,7 @@ namespace PlexShareTests.DashboardTests.SessionManagement
     {
         private FakeCommunicator _fakeCommunicator = new FakeCommunicator();
         private IDashboardSerializer _serializer = new DashboardSerializer();
-        private ClientSessionManager _clientSessionManager; 
+        private ClientSessionManager _clientSessionManager;
         private ClientSessionManager _clientSessionManagerLast;
         private ClientSessionManager _clientSessionManagerNew;
         private ServerSessionManager _serverSessionManager;
@@ -78,7 +78,7 @@ namespace PlexShareTests.DashboardTests.SessionManagement
             //Act
             //get one user from the util
             var users = Utils.GetUsers();
-           //Add the user in the Session
+            //Add the user in the Session
             _clientSessionManager.SetSessionUsers(users);
             //Notify the UX about the changes made in the client side
             _clientSessionManager.NotifyUXSession();
@@ -142,7 +142,7 @@ namespace PlexShareTests.DashboardTests.SessionManagement
             ClientToServerData clientToServerData1 = new ClientToServerData("addClient", "Saurabh", 2);
             var serialized = _serializer.Serialize(clientToServerData1);
             ClientToServerData clienToServerData2 = _serializer.Deserialize<ClientToServerData>(serialized);
-            Assert.True(clientToServerData1.eventType==clienToServerData2.eventType);
+            Assert.True(clientToServerData1.eventType == clienToServerData2.eventType);
             Assert.True(clientToServerData1.userID == clienToServerData2.userID);
             Assert.True(clientToServerData1.username == clienToServerData2.username);
 
@@ -204,15 +204,15 @@ namespace PlexShareTests.DashboardTests.SessionManagement
         public void ClientArrivalProcedure_ClientArrives_BroadcastsNewUser(string ipAddress, int port, string username)
         {
             Setup();
-           
+
             Console.WriteLine("Session Before\n\t" + _clientSessionManager.GetSessionData());
             var clientAdded = _clientSessionManager.AddClient(ipAddress, port, username);
             //Network would call the OnClientJoined() 
             _serverSessionManager.OnClientJoined(null);
-     
+
             ServerToClientData serverToClientData = _serializer.Deserialize<ServerToClientData>(_fakeCommunicator.transferredData);
             int userID = serverToClientData._user.userID;
-            ClientToServerData clientToServerData = new ClientToServerData("addClient",username, userID);
+            ClientToServerData clientToServerData = new ClientToServerData("addClient", username, userID);
             var serialized = _serializer.Serialize(clientToServerData);
 
             //serverSessionManager when recieves the data from network about addclient event,
@@ -227,9 +227,9 @@ namespace PlexShareTests.DashboardTests.SessionManagement
             Assert.Equal(s1, _fakeCommunicator.transferredData);
             Console.WriteLine("Session After\n\t" + _clientSessionManager.GetSessionData());
             UserData updatedUser = _clientSessionManager.GetUser();
-            Assert.Equal(username,updatedUser.username);
+            Assert.Equal(username, updatedUser.username);
             Assert.NotNull(updatedUser.userID);
-         }
+        }
 
         /// <summary>
         /// This is used to test when user is joining to meeting in clientsession and AddClientProcedure in the server side
@@ -237,11 +237,11 @@ namespace PlexShareTests.DashboardTests.SessionManagement
         /// <param name="username"></param>
         [Theory]
         [InlineData("Jake")]
-        [InlineData (null)]
+        [InlineData(null)]
         public void AddClientProcedureServerSide_ClientArrives_NewClientAddedToServer(string username)
         {
             Setup();
-            _clientSessionManager.SetUser(username,-1);
+            _clientSessionManager.SetUser(username, -1);
             ClientToServerData clientToServerData = new("addClient", username);
             string serializedData = _serializer.Serialize(clientToServerData);
             _serverSessionManager.OnClientJoined(null);
@@ -254,12 +254,12 @@ namespace PlexShareTests.DashboardTests.SessionManagement
                 var receiveduser = serverToClientData.GetUser();
                 Assert.Equal("addClient", serverToClientData.eventType);
                 Assert.Equal(receiveduser.username, username);
-                Assert.NotEqual(-1, _clientSessionManager.GetUser().userID );
+                Assert.NotEqual(-1, _clientSessionManager.GetUser().userID);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Assert.Equal("Value cannot be null.", e.Message);
-            }        
+            }
         }
 
         /// <summary>
@@ -358,13 +358,13 @@ namespace PlexShareTests.DashboardTests.SessionManagement
 
             SessionData sessionDataNew = _clientSessionManagerNew.GetSessionData();
             SessionData sessionDataLast = _clientSessionManagerLast.GetSessionData();
-            for(int i = 0; i < sessionDataNew.users.Count; i++)
+            for (int i = 0; i < sessionDataNew.users.Count; i++)
             {
                 Assert.Equal(sessionDataNew.users[i].username, sessionDataLast.users[i].username);
                 Assert.Equal(sessionDataNew.users[i].userID, sessionDataLast.users[i].userID);
             }
-           
-            Assert.Equal(serverSession.users.Count,_clientSessionManagerLast.GetSessionData().users.Count );
+
+            Assert.Equal(serverSession.users.Count, _clientSessionManagerLast.GetSessionData().users.Count);
         }
 
         /// <summary>
@@ -383,7 +383,7 @@ namespace PlexShareTests.DashboardTests.SessionManagement
 
             _clientSessionManager.SetUser(user.username, user.userID);
             _clientSessionManager.SetSessionUsers(new List<UserData> { user });
-         
+
             ClientToServerData clientToServerData = new("addClient", user.username);
             var serializedData = _serializer.Serialize(clientToServerData);
             _serverSessionManager.OnClientJoined(null);
@@ -391,13 +391,13 @@ namespace PlexShareTests.DashboardTests.SessionManagement
             _clientSessionManager.GetSummary();
             _serverSessionManager.OnDataReceived(_fakeCommunicator.transferredData);
             _clientSessionManager.OnDataReceived(_fakeCommunicator.transferredData);
-        
+
             var clientSummary = _clientSessionManager.GetStoredSummary();
             var serverSummary = _serverSessionManager.GetStoredSummary();
             //Assert
             Assert.NotNull(clientSummary);
             Assert.NotNull(serverSummary);
-            Assert.NotNull(fakeClientUX.sessionSummary); 
+            Assert.NotNull(fakeClientUX.sessionSummary);
         }
 
         /// <summary>
@@ -416,11 +416,11 @@ namespace PlexShareTests.DashboardTests.SessionManagement
 
             _clientSessionManager.SetUser(user.username, user.userID);
             _clientSessionManager.SetSessionUsers(new List<UserData> { user });
-         
+
             _clientSessionManager.GetAnalytics();
-         
+
             _serverSessionManager.OnDataReceived(_fakeCommunicator.transferredData);
-            
+
             _clientSessionManager.OnDataReceived(_fakeCommunicator.transferredData);
 
             //Assert
@@ -432,7 +432,7 @@ namespace PlexShareTests.DashboardTests.SessionManagement
         /// This is used test functionality of ToggleSession Mode
         /// </summary>
         [Fact]
-       public void ToggleSessionMode_ReauestedSessionChange_ServerSessionModeUpdatedAndNotifyUX()
+        public void ToggleSessionMode_ReauestedSessionChange_ServerSessionModeUpdatedAndNotifyUX()
         {
             //Arrange 
             Setup();
@@ -443,7 +443,7 @@ namespace PlexShareTests.DashboardTests.SessionManagement
             //Act
             _clientSessionManager.SetUser(user.username, user.userID);
             _clientSessionManager.SetSessionUsers(new List<UserData> { user });
-            
+
             _clientSessionManager.ToggleSessionMode();
             _serverSessionManager.OnDataReceived(_fakeCommunicator.transferredData);
             _clientSessionManager.OnDataReceived(_fakeCommunicator.transferredData);
@@ -491,11 +491,11 @@ namespace PlexShareTests.DashboardTests.SessionManagement
             _clientSessionManager.RemoveClient();
             _serverSessionManager.OnDataReceived(_fakeCommunicator.transferredData);
             _clientSessionManager.OnDataReceived(_fakeCommunicator.transferredData);
-        
+
             //Assert
             Assert.Null(_clientSessionManager.GetUser());
             Assert.Null(_clientSessionManager.GetSessionData());
-            Assert.Equal(users.Count, _serverSessionManager.GetSessionData().users.Count); 
+            Assert.Equal(users.Count, _serverSessionManager.GetSessionData().users.Count);
         }
 
         /// <summary>
@@ -622,7 +622,7 @@ namespace PlexShareTests.DashboardTests.SessionManagement
 
             //Adding the users 
             List<UserData> users = new();
-            users.Add(new UserData("Justin", 1));  
+            users.Add(new UserData("Justin", 1));
             for (int i = 0; i < users.Count; i++)
             {
                 ClientToServerData _clientToServerData = new("addClient", users[i].username, users[i].userID);
@@ -646,7 +646,7 @@ namespace PlexShareTests.DashboardTests.SessionManagement
             Assert.True(_serverSessionManager.summarySaved);
         }
 
-       
+
     }
 
 }

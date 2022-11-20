@@ -5,8 +5,6 @@
  * This file contains the SessionData class used to store the list of users in the session.
  */
 
-using System.Collections.Generic;
-
 namespace Dashboard
 {
 
@@ -31,7 +29,7 @@ namespace Dashboard
         }
 
         //parametrized constructor
-        public UserData( string clientName, int clientID, string? clientEmail = null , string? clientPhotoUrl = null )
+        public UserData(string clientName, int clientID, string? clientEmail = null, string? clientPhotoUrl = null)
         {
             userID = clientID;
             username = clientName;
