@@ -9,15 +9,15 @@ namespace PlexShareCloudUX
 {
     public class FileRead
     {
-        public static string[] GetPaths(int offline=0)
+        public static string[] GetPaths(string filename)
         {
             // Store the path of the textfile in your system
-            DirectoryInfo di = new DirectoryInfo("..\\..\\..\\");
+            DirectoryInfo di = new DirectoryInfo("..\\..\\..\\");//For removing directory dependency until bin directory. 
             string currentPath = di.FullName;
             //Console.WriteLine(di.FullName);
-            currentPath += "OfflineSetup_Path.txt";
+            currentPath += filename;
             string file = @currentPath;
-            string[] lines = { "", "" ,currentPath}; //remove the current path from here. 
+            string[] lines = { "", "" }; 
             // To read a text file line by line
             if (File.Exists(file))
             {
@@ -26,6 +26,11 @@ namespace PlexShareCloudUX
 
                 foreach (string ln in lines)
                     Console.WriteLine(ln);
+            }
+            else
+            {
+                //logger for to create file with the urls required. 
+                lines[0] = "File Not Found";
             }
             return lines;
         }
