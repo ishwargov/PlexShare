@@ -1,25 +1,22 @@
-﻿/*
+﻿/*************************************
  * Name : Saurabh Kumar
  * Roll : 111901046
+ * Module : Dashboard
  * File Name: SessionManagerFactory
  * This file contain the implemetation of SessionManager Factory
- */
+ *************************************/
 using Dashboard.Server.SessionManagement;
 using PlexShareDashboard.Dashboard.Client.SessionManagement;
 using PlexShareNetwork.Communication;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PlexShare.Dashboard
 {
     public class SessionManagerFactory
     {
-        private static readonly Lazy<ClientSessionManager> s_clientSessionManager =  new(() => new ClientSessionManager());
+        private static readonly Lazy<ClientSessionManager> s_clientSessionManager = new(() => new ClientSessionManager());
 
-        private static readonly Lazy<ServerSessionManager> s_serverSessionManager =   new(() => new ServerSessionManager());
+        private static readonly Lazy<ServerSessionManager> s_serverSessionManager = new(() => new ServerSessionManager());
 
         /// <summary>
         ///     This method will create a Client sided server

@@ -1,12 +1,12 @@
-﻿/*
+﻿/***********************************************
  * Name : Saurabh Kumar
  * Roll : 111901046
+ * Module : Dashboard
  * File Name: DashboardSerializer.cs
  * This file contains the implemetation of Json Serializer
- */
-using System;
-using System.Diagnostics;
+ **********************************************/
 using Newtonsoft.Json;
+using System;
 
 namespace PlexShareDashboard.Dashboard
 {
@@ -49,7 +49,7 @@ namespace PlexShareDashboard.Dashboard
             }
             catch (Exception ex)
             {
-                
+
                 throw;
             }
         }

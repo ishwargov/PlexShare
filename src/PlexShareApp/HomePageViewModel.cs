@@ -1,5 +1,6 @@
 ﻿using Dashboard;
 using PlexShare.Dashboard;
+using PlexShare.Dashboard.Client.SessionManagement;
 using PlexShareDashboard.Dashboard.Client.SessionManagement;
 using PlexShareDashboard.Dashboard.Server.SessionManagement;
 using System;
@@ -7,20 +8,25 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PlexShareApp
 {
-    public class HomePageViewModel
+    public class HomePageViewModel : IClientSessionNotifications
     {
+    
         bool isServer;
         IUXServerSessionManager serverSessionManager;
         IUXClientSessionManager clientSessionManager;
+        public int sessionID;
+
 
         public HomePageViewModel()
         {
             serverSessionManager = SessionManagerFactory.GetServerSessionManager();
             clientSessionManager = SessionManagerFactory.GetClientSessionManager();
+            clientSessionManager.SubscribeSession(this);
         }
 
         /// <summary>
@@ -55,9 +61,18 @@ namespace PlexShareApp
             result.Add(verified.ToString());
             result.Add(ip);
             result.Add(port);
-
+            Thread.Sleep(1000);
+            result.Add(clientSessionManager.GetSessionData().sessionId.ToString());
+            //result.Add(sessionID.ToString());
             Trace.WriteLine("[UX] The client verification returned : " + verified);
             return result;
         }
+        public void OnClientSessionChanged(SessionData currentSession)
+        {
+            sessionID = currentSession.sessionId;
+        }
     }
+
 }
+
+

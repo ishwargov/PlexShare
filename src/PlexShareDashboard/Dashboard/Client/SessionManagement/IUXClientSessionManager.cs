@@ -1,11 +1,11 @@
-﻿/*
+﻿/**********************************************
  * Name : Saurabh Kumar
  * Roll : 111901046
+ * Module : Dashboard
  * File Name :  IUXClientSessionManager 
- */
+ *********************************************/
 using Dashboard;
 using PlexShare.Dashboard.Client.SessionManagement;
-using System;
 
 
 namespace PlexShareDashboard.Dashboard.Client.SessionManagement

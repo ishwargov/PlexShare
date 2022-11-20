@@ -12,6 +12,7 @@
  ************************************************************/
 using Client.Models;
 using Dashboard;
+using PlexShareDashboard.Dashboard.Client.SessionManagement;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -133,10 +134,10 @@ namespace PlexShareApp
             }
             HomePageViewModel viewModel = new();
             this.DataContext = viewModel;
-
+           
             List<string> verified = viewModel.VerifyCredentials(this.Name_box.Text, "-1", "0", this.Email_textbox.Text, this.Url);
             homaPageanimation = false;
-            MainScreenView mainScreenView = new MainScreenView(this.Name_box.Text, this.Email_textbox.Text, this.absolute_path, this.Url, verified[1], verified[2], true);
+            MainScreenView mainScreenView = new MainScreenView(this.Name_box.Text, this.Email_textbox.Text, this.absolute_path, this.Url, verified[1], verified[2], true, verified[3]);
             mainScreenView.Show();
             this.Close();
         }
@@ -208,7 +209,7 @@ namespace PlexShareApp
                 return;
             }
             homaPageanimation = false;
-            MainScreenView mainScreenView = new MainScreenView(this.Name_box.Text, this.Email_textbox.Text, this.absolute_path, this.Url, verified[1], verified[2], false);
+            MainScreenView mainScreenView = new MainScreenView(this.Name_box.Text, this.Email_textbox.Text, this.absolute_path, this.Url, verified[1], verified[2], false, verified[3]);
             mainScreenView.Show();
             this.Close();
         }

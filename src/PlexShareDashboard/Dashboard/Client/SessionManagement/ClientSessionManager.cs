@@ -1,27 +1,23 @@
-/*
+/***********************************
  * Name : Saurabh Kumar
  * Roll : 111901046
- *  File Name :  ClientSessionManager.cs
- *  This file contains the implemetation of ClientSessionManager
- */
+ * Module : Dashboard
+ * File Name :  ClientSessionManager.cs
+ * This file contains the implemetation of ClientSessionManager
+ ***********************************/
+using Dashboard;
+using PlexShare.Dashboard.Client.SessionManagement;
+using PlexShareContent.Client;
+using PlexShareDashboard.Dashboard.Server.Telemetry;
+using PlexShareNetwork;
+using PlexShareNetwork.Communication;
+using PlexShareScreenshare.Client;
+using PlexShareWhiteboard;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using PlexShareContent;
-using PlexShareDashboard.Dashboard.Server.Telemetry;
-using PlexShareNetwork;
-using PlexShareNetwork.Serialization;
-using PlexShareDashboard.Dashboard;
-using Dashboard;
-using PlexShareDashboard.Dashboard.Client.SessionManagement;
-using PlexShareScreenshare.Client;
-using PlexShareWhiteboard;
-using PlexShare.Dashboard.Client.SessionManagement;
-using PlexShareNetwork.Communication;
-using Client.Models;
-using System.Windows;
 using System.Threading;
-using PlexShareContent.Client;
+using System.Windows;
 
 namespace PlexShareDashboard.Dashboard.Client.SessionManagement
 {
@@ -49,7 +45,7 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
         private string _chatSummary;
         public SessionData _clientSessionData;
 
-         private readonly ScreenshareClient screenshareClient;
+        private readonly ScreenshareClient screenshareClient;
 
         private SessionAnalytics _sessionAnalytics;
 
@@ -60,7 +56,7 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
         //     clientBoardStateManager and user side client data.
         public ClientSessionManager()
         {
-           
+
             moduleIdentifier = "Dashboard";
 
             _serializer = new DashboardSerializer();
@@ -201,7 +197,7 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
         {
             Trace.WriteLine("[Dashboard] GetAnalytics() is called from Dashboard UX");
 
-           SendDataToServer("getAnalytics", _user.username, _user.userID);
+            SendDataToServer("getAnalytics", _user.username, _user.userID);
         }
 
         //     Get the summary of the chats that were sent from the start of the
@@ -245,9 +241,9 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
             if (testmode == false)
             {
                 CloseProgram();
-              
+
             }
-  
+
         }
 
         //     Used to subcribe for any changes in the
@@ -340,8 +336,8 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
             }
 
         }
-         
-        private void UpdateAnalytics(ServerToClientData receivedData)   
+
+        private void UpdateAnalytics(ServerToClientData receivedData)
         {
             _sessionAnalytics = receivedData.sessionAnalytics;
             var receiveduser = receivedData.GetUser();
@@ -432,9 +428,9 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
             Trace.WriteLine("[Dashboard] Calling Network to Stop listening ");
             _communicator.Stop();
             // _screenShareClient.Dispose();
-             MeetingEnded?.Invoke();
-            
-             Trace.WriteLine("[Dashboard] Shutdown Application");
+            MeetingEnded?.Invoke();
+
+            Trace.WriteLine("[Dashboard] Shutdown Application");
 
             if (testmode == false)
             {
