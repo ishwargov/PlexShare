@@ -15,6 +15,10 @@ namespace PlexShareTests.NetworkTests.Queues
     {
         ReceivingQueue _receivingQueue = new ReceivingQueue();
 
+        /// <summary>
+        /// Testing whether a packet is getting inserted into the receiving queue when enqueued
+        /// </summary>
+        /// <returns> void </returns>
         [Fact]
         public void EnqueueOnePacketTest()
         {
@@ -30,6 +34,10 @@ namespace PlexShareTests.NetworkTests.Queues
             Assert.Equal(_receivingQueue.Size(), 1);
         }
 
+        /// <summary>
+        /// Testing whether multiple packets are getting inserted into the receiving queue when enqueued
+        /// </summary>
+        /// <returns> void </returns>
         [Fact]
         public void EnqueueMultiplePacketsTest()
         {
@@ -45,6 +53,10 @@ namespace PlexShareTests.NetworkTests.Queues
             Assert.Equal(_receivingQueue.Size(), number_of_packets);
         }
 
+        /// <summary>
+        /// Testing whether packets are getting inserted into the receiving queue in the order in which they are enqueued
+        /// </summary>
+        /// <returns> void </returns>
         [Fact]
         public void EnqueueOrderMultiplePacketsOrderTest()
         {
@@ -79,6 +91,10 @@ namespace PlexShareTests.NetworkTests.Queues
             Assert.Equal(_receivingQueue.Size(), reverseStack.Count);
         }
 
+        /// <summary>
+        /// Testing whether concurrent insertion of packets into the receiving queue works fine
+        /// </summary>
+        /// <returns> void </returns>
         [Fact]
         public void ConcurrentEnqueuesTest()
         {
@@ -120,6 +136,10 @@ namespace PlexShareTests.NetworkTests.Queues
             Assert.Equal(_receivingQueue.Size(), 2 * number_of_packets);
         }
 
+        /// <summary>
+        /// Testing whether Clear() method of the receiving queue removes all entries in the queue
+        /// </summary>
+        /// <returns> void </returns>
         [Fact]
         public void ClearReceivingQueueTest()
         {
@@ -145,8 +165,12 @@ namespace PlexShareTests.NetworkTests.Queues
             Assert.Equal(_receivingQueue.Size(), 0);
         }
 
+        /// <summary>
+        /// Testing whether concurrent dequeue of a packet in the receiving queue works fine
+        /// </summary>
+        /// <returns> void </returns>
         [Fact]
-        public void concurrentDequeueTest()
+        public void ConcurrentDequeueTest()
         {
             string serializedData = NetworkTestGlobals.RandomString(10);
             string destinationModule = NetworkTestGlobals.RandomString(5);
@@ -176,8 +200,12 @@ namespace PlexShareTests.NetworkTests.Queues
                 Assert.Equal(packet, dequeueTwo);
         }
 
+        /// <summary>
+        /// Testing whether concurrent peek of a packet in the receiving queue works fine
+        /// </summary>
+        /// <returns> void </returns>
         [Fact]
-        public void concurrentPeekTest()
+        public void ConcurrentPeekTest()
         {
             string serializedData = NetworkTestGlobals.RandomString(10);
             string destinationModule = NetworkTestGlobals.RandomString(5);
@@ -204,6 +232,21 @@ namespace PlexShareTests.NetworkTests.Queues
             Assert.Equal(packet, peekOne);
         }
 
+        /// <summary>
+        /// Testing whether peek on an empty receiving queue works fine
+        /// </summary>
+        /// <returns> void </returns>
+        [Fact]
+        public void PeekOnEmptyQueueTest()
+        {
+            Packet packet = _receivingQueue.Peek();
+            Assert.Equal(packet, null);
+        }
+
+        /// <summary>
+        /// Testing whether WaitForPacket() method detects a packet in the receiving queue and returns 'bool : true'
+        /// </summary>
+        /// <returns> void </returns>
         [Fact]
         public void WaitForPacketTest()
         {
@@ -248,6 +291,10 @@ namespace PlexShareTests.NetworkTests.Queues
             Assert.False(isEmpty);
         }
 
+        /// <summary>
+        /// Testing whether WaitForPacket() method keeps waiting forever when no packet arrives at the receiving queue
+        /// </summary>
+        /// <returns> void </returns>
         [Fact]
         public void WaitForeverForPacketTest()
         {

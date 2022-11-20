@@ -10,6 +10,11 @@ using PlexShareNetwork.Sockets;
 using PlexShareNetwork;
 using System.Net.Sockets;
 using System.Text;
+using System.Collections.Generic;
+using System;
+using System.Threading;
+using Xunit;
+using System.Linq;
 
 namespace PlexShareTests.NetworkTests
 {

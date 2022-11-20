@@ -8,8 +8,12 @@ using PlexShareNetwork;
 using PlexShareNetwork.Communication;
 using PlexShareNetwork.Queues;
 using PlexShareNetwork.Sockets;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace PlexShareTests.NetworkTests.Sockets
 {

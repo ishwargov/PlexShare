@@ -6,6 +6,7 @@
 using PlexShareNetwork;
 using PlexShareNetwork.Queues;
 using System.Collections.Generic;
+using System.Net.Sockets;
 using System.Threading;
 using Xunit;
 
@@ -22,8 +23,13 @@ namespace PlexShareTests.NetworkTests.Queues
         // The pivot of this test
         ReceiveQueueListener _receiveQueueListener;
 
+        /// <summary>
+        /// Testing whether the accurate notification handler of a registered module is called when a packet of that module
+        /// ends up in the receiving queue
+        /// </summary>
+        /// <returns> void </returns>
         [Fact]
-        public void CallAccurateHandlerCheck()
+        public void CallAccurateHandlerTest()
         {
             // Clearing the handlers list for fresh testing
             DemoNotificationHandlerIdentifier.notificationHandlerList.Clear();
@@ -55,8 +61,13 @@ namespace PlexShareTests.NetworkTests.Queues
             Assert.Equal(notificationHandler, DemoNotificationHandlerIdentifier.notificationHandlerList[0]);
         }
 
+        /// <summary>
+        /// Testing whether the accurate notification handlers of registered modules are called when packets of these
+        /// modules end up in the receiving queue
+        /// </summary>
+        /// <returns> void </returns>
         [Fact]
-        public void CallMultipleAccurateHandlersCheck()
+        public void CallMultipleAccurateHandlersTest()
         {
             // Clearing the handlers list for fresh testing
             DemoNotificationHandlerIdentifier.notificationHandlerList.Clear();
@@ -89,6 +100,9 @@ namespace PlexShareTests.NetworkTests.Queues
             while (DemoNotificationHandlerIdentifier.notificationHandlerList.Count < listOfHandlersCalled.Count)
                 Thread.Sleep(1000);
 
+            // Asking the listener to stop
+            _receiveQueueListener.Stop();
+
             // The number of handlers called and stored in the demo static class must be equal
             Assert.Equal(listOfHandlersCalled.Count, DemoNotificationHandlerIdentifier.notificationHandlerList.Count);
 
@@ -97,6 +111,27 @@ namespace PlexShareTests.NetworkTests.Queues
             // Checking whether appropriate handlers were called
             for (int i = 0; i < len; ++i)
                 Assert.Equal(listOfHandlersCalled[i], DemoNotificationHandlerIdentifier.notificationHandlerList[i]);
+        }
+
+        /// <summary>
+        /// Testing whether duplicate registration of a module returns 'bool : false'
+        /// </summary>
+        /// <returns> void </returns>
+        [Fact]
+        public void DuplicateRegistrationTest()
+        {
+            _receiveQueueListener = new ReceiveQueueListener(_modulesToNotificationHandlerMap, _receivingQueue);
+
+            string moduleName = NetworkTestGlobals.dashboardName;
+            INotificationHandler notificationHandler = new DemoNotificationHandler();
+
+            // Registering
+            _receiveQueueListener.RegisterModule(moduleName, notificationHandler);
+
+            // Registering again
+            bool isSuccessful = _receiveQueueListener.RegisterModule(moduleName, new DemoNotificationHandler());
+
+            Assert.Equal(isSuccessful, false);
         }
     }
 
@@ -107,6 +142,12 @@ namespace PlexShareTests.NetworkTests.Queues
         {
             DemoNotificationHandlerIdentifier.notificationHandlerList.Add(this);
         }
+
+        public void OnClientJoined(TcpClient socket)
+        { }
+
+        public void OnClientLeft(string clientId)
+        { }
     }
 
     // Stores the instance of notification handler of the module which was called

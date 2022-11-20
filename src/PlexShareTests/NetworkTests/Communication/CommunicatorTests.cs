@@ -5,6 +5,7 @@
 /// </summary>
 
 using PlexShareNetwork.Communication;
+using Xunit;
 
 namespace PlexShareTests.NetworkTests.Communication
 {
@@ -23,12 +24,12 @@ namespace PlexShareTests.NetworkTests.Communication
         /// <param name="numClients"> Number of clients to test.
         /// </param>
         /// <returns> void </returns>
-        private static void ServerAndClientsStartAndStopTest(
+        private void ServerAndClientsStartAndStopTest(
             int numClients)
         {
             // create server and clients and then staart and stop them
             CommunicatorServer communicatorServer = new();
-            CommunicatorClient[] communicatorsClient = 
+            CommunicatorClient[] communicatorsClient =
                 NetworkTestGlobals.GetCommunicatorsClient(numClients);
             NetworkTestGlobals.StartServerAndClients(
                 communicatorServer, communicatorsClient, _clientId);
@@ -120,7 +121,7 @@ namespace PlexShareTests.NetworkTests.Communication
         /// <param name="numClients"> Number of clients to test.
         /// </param>
         /// <returns> void </returns>
-        private static void ClientsSendDataToServerTest(int numClients)
+        private void ClientsSendDataToServerTest(int numClients)
         {
             // start server and clients
             CommunicatorServer communicatorServer = new();
@@ -191,7 +192,7 @@ namespace PlexShareTests.NetworkTests.Communication
         /// Boolean to tell whether to do broadcast or unicast.
         /// </param>
         /// <returns> void </returns>
-        private static void ServerSendDataToClientsTest(int numClients,
+        private void ServerSendDataToClientsTest(int numClients,
             bool doBroadcast)
         {
             // start server and clients

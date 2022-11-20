@@ -6,6 +6,7 @@
 
 using PlexShareNetwork.Queues;
 using PlexShareNetwork.Sockets;
+using Xunit;
 
 namespace PlexShareTests.NetworkTests.Sockets
 {

@@ -6,6 +6,7 @@
 
 using PlexShareNetwork;
 using PlexShareNetwork.Communication;
+using Xunit;
 
 namespace PlexShareTests.NetworkTests.Communication
 {
