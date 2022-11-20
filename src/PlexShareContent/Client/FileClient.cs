@@ -111,6 +111,7 @@ namespace PlexShareContent.Client
         /// <param name="savePath">Path to which the file will be downloaded</param>
         public void DownloadFile(int messageID, string savePath)
         {
+            // check for savePath
             if(savePath == null || savePath == "")
             {
                 throw new ArgumentException("Invalid save path input argument"); 

@@ -47,7 +47,7 @@ namespace PlexShareCloud
         public async Task<SubmissionEntity> PutSubmissionAsync(string sessionId, string userName, byte[] newPdf)
         {
             using HttpResponseMessage response = await _entityClient.PutAsJsonAsync<byte[]>(_submissionUrl + $"/{sessionId}/{userName}", newPdf);
-            //response.EnsureSuccessStatusCode();
+            response.EnsureSuccessStatusCode();
             var result = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions
             {
@@ -67,7 +67,7 @@ namespace PlexShareCloud
         public async Task<SubmissionEntity> PostSubmissionAsync(string sessionId, string userName, byte[] pdf)
         {
             using HttpResponseMessage response = await _entityClient.PostAsJsonAsync<byte[]>(_submissionUrl + $"/{sessionId}/{userName}", pdf);
-            //response.EnsureSuccessStatusCode();
+            response.EnsureSuccessStatusCode();
             var result = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions
             {
@@ -89,7 +89,7 @@ namespace PlexShareCloud
         public async Task<SessionEntity> PostSessionAsync(string sessionId, string userName)
         {
             using HttpResponseMessage response = await _entityClient.PostAsJsonAsync<string>(_sessionUrl + $"/{userName}", sessionId);
-            //response.EnsureSuccessStatusCode();
+            response.EnsureSuccessStatusCode();
             var result = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions
             {

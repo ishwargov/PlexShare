@@ -1,4 +1,9 @@
-﻿using ScottPlot.Palettes;
+﻿/// <author>Morem Jayanth Kumar</author>
+/// <created>3/11/2022</created>
+/// <summary>
+///		This file is the main processor for summary generation and sentiment analysing
+/// </summary>
+using ScottPlot.Palettes;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,14 +12,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-
-using PlexShareContent;
 using System.IO;
 using System.Reflection;
 
+using PlexShareContent;
 using PlexShareDashboard.Dashboard.Server.Summary;
 using PlexShareDashboard.Dashboard.Server.Telemetry;
 
+using Microsoft.ML;
+using Microsoft.ML.Data;
+using Microsoft.ML.Trainers;
 
 namespace PlexShareDashboard.Dashboard.Server.Summary
 {
@@ -26,15 +33,24 @@ namespace PlexShareDashboard.Dashboard.Server.Summary
         public static int SummariesGenerated { get; set; }
         public static List<string> StopWords;
         private static IPorterStemmer _stemmer;
+        private static MLContext mlContext;
+        private static SentimentAnalyzer sentimentAnalyzer;
+        ITransformer mlModel;
+        private static PredictionEngine<ModelInput,ModelOutput> predEngine;
+        private const string MODEL_FILEPATH = @"../../../../PlexShareDashboard/Dashboard/Server/Summary/Resources/MLModel.zip";
 
         public ChatProcessor()
         {
+            mlContext = new MLContext();
             _stemmer = new EnglishPorter2Stemmer();
+            sentimentAnalyzer = new SentimentAnalyzer();
+            mlModel = mlContext.Model.Load(SentimentAnalyzer.GetAbsolutePath(MODEL_FILEPATH), out DataViewSchema inputSchema);
+            predEngine = mlContext.Model.CreatePredictionEngine<ModelInput, ModelOutput>(mlModel);
         }
 
 
         /// <summary>
-        /// Loads stop words (e.g. a/an/the...) from resource file for exclusion from analysis
+        /// Loads stop words (e.g. a/an/the...) from enmbedded resource file for exclusion from analysis
         /// </summary>
         public static void LoadStopWords()
         {
@@ -44,23 +60,36 @@ namespace PlexShareDashboard.Dashboard.Server.Summary
             StopWords = new List<string>(stopwords.Split(new string[] { Environment.NewLine }, StringSplitOptions.None));
         }
 
-
         /// <summary>
-        /// Removes punctuation and case
+        ///     Removes punctuation and converts text to lower-case
         /// </summary>
-        public static List<(string, bool)> CleanChat(List<(string, bool)> discussionChat)
+        /// <param name="discussionChat">
+        ///     List of chat messages
+        /// </param>
+        /// <returns>
+        ///     List of strings representing clean chat messages
+        /// </returns>
+        public static List<string> CleanChat(List<string> discussionChat)
         {
-            List<(string, bool)> cleanedDiscussionChat = new List<(string, bool)>();
+            List<string> cleanedDiscussionChat = new List<string>();
             foreach (var discussionChatItem in discussionChat)
             {
-                string textWithoutPunctuation = Regex.Replace(discussionChatItem.Item1, @"(\p{P})", "").ToLower();
+                string textWithoutPunctuation = Regex.Replace(discussionChatItem, @"(\p{P})", "").ToLower();
                 if (textWithoutPunctuation.Length == 0) continue;
-                cleanedDiscussionChat.Add((textWithoutPunctuation, discussionChatItem.Item2));
+                cleanedDiscussionChat.Add((textWithoutPunctuation));
             }
             return cleanedDiscussionChat;
         }
 
-
+        /// <summary>
+        ///     Returns the words from the sentence
+        /// </summary>
+        /// <param name="chatMessage">
+        ///     Takes in a single chat message
+        /// </param>
+        /// <returns>
+        ///     List of strings containing the words of the sentence
+        /// </returns>
         public static List<string> GetWordsFromSentence(string chatMessage)
         {
             List<string> words = new List<string>(chatMessage.Split());
@@ -69,17 +98,22 @@ namespace PlexShareDashboard.Dashboard.Server.Summary
                 words[i] = words[i].Replace(".", "");
             return words;
         }
-
         /// <summary>
-        /// Find the number of occurances of each non-stop word
+        ///     Find the number of occurances of each non-stop word
         /// </summary>
-        public static Dictionary<string, int> CountWords(List<(string, bool)> discussionChat)
+        /// <param name="discussionChat">
+        ///     Takes in the List of chat messages
+        /// </param>
+        /// <returns>
+        ///     Map from words to their frequency of occurence
+        /// </returns>
+        public static Dictionary<string, int> CountWords(List<string> discussionChat)
         {
             var wordCounts = new Dictionary<string, int>();
 
             foreach (var discussionChatItem in discussionChat)
             {
-                List<string> words = GetWordsFromSentence(discussionChatItem.Item1);
+                List<string> words = GetWordsFromSentence(discussionChatItem);
                 foreach (var word in words)
                 {
                     string stemOfWord = _stemmer.Stem(word);
@@ -99,10 +133,15 @@ namespace PlexShareDashboard.Dashboard.Server.Summary
             return wordCounts;
         }
 
-
         /// <summary>
-        /// Sorts all words that occur more than once by count descending
+        ///     Sorts all words that occur more than once by count descending
         /// </summary>
+        /// <param name="wordCounts">
+        ///     Takes in the map from words to their frequency of occurence
+        /// </param>
+        /// <returns>
+        ///     List of words orderd in descending order of their frequencies
+        /// </returns>
         public static string[] SortWords(Dictionary<string, int> wordCounts)
         {
             var sortedWords = from word in wordCounts
@@ -113,11 +152,15 @@ namespace PlexShareDashboard.Dashboard.Server.Summary
             return sortedWords.ToArray();
         }
 
-
         /// <summary>
-        /// Assigns a score for each word based on what percentile
-        /// it falls in when ordered by count descending
+        ///     Assigns a score for each word based on what percentile it falls in when ordered by count descending
         /// </summary>
+        /// <param name="sortedWords">
+        ///     List of words orderd in descending order of their frequencies
+        /// </param>
+        /// <returns>
+        ///     Map from words to their score
+        /// </returns>
         public static Dictionary<string, int> ScoreWords(string[] sortedWords)
         {
             var wordScores = new Dictionary<string, int>();
@@ -141,29 +184,35 @@ namespace PlexShareDashboard.Dashboard.Server.Summary
 
                 wordScores.Add(sortedWords[i], score);
             }
-
             return wordScores;
         }
 
-
         /// <summary>
-        /// Scores sentences
+        ///     Scores sentences
         /// </summary>
-        public static Dictionary<string, int> ScoreSentences(List<(string, bool)> cleanedDiscussionChat, Dictionary<string, int> wordScores)
+        /// <param name="cleanedDiscussionChat">
+        ///     Cleaned Chat Messages
+        /// </param>
+        /// <param name="wordScores">
+        ///     Map from words to thier scores
+        /// </param>
+        /// <returns>
+        ///     Map from Chat Sentences to their scores
+        /// </returns>
+        public static Dictionary<string, int> ScoreSentences(List<string> cleanedDiscussionChat, Dictionary<string, int> wordScores)
         {
             var sentenceScores = new Dictionary<string, int>();
 
             foreach (var chatMessage in cleanedDiscussionChat)
             {
                 // Separate words
-                List<string> cleanSentenceWords = GetWordsFromSentence(chatMessage.Item1);
+                List<string> cleanSentenceWords = GetWordsFromSentence(chatMessage);
 
                 int score = 0;
 
                 // Tally the score of sentence by summing scores of each word in sentence
                 foreach (string word in cleanSentenceWords)
                 {
-                    Debug.WriteLine("word ==== " + word);
                     string stemOfWord = _stemmer.Stem(word);
                     if(wordScores.ContainsKey(word))
                         score += wordScores[word];
@@ -171,21 +220,24 @@ namespace PlexShareDashboard.Dashboard.Server.Summary
                         score += wordScores[stemOfWord];
                 }
                 // Make sure no duplicate additions are attempted, e.g. two emtpy strings
-                if (!sentenceScores.ContainsKey(chatMessage.Item1))
-                    sentenceScores.Add(chatMessage.Item1, score);
-            }
-
-            foreach (KeyValuePair<string, int> entry in sentenceScores)
-            {
-                Debug.WriteLine(entry.Key+"  "+entry.Value + "\n");
+                if (!sentenceScores.ContainsKey(chatMessage))
+                    sentenceScores.Add(chatMessage, score);
             }
             return sentenceScores;
         }
 
-
         /// <summary>
-        /// Returns only the top XX% of sentences specified by percentToKeep
+        ///     Returns only the top XX% of sentences specified by percentToKeep
         /// </summary>
+        /// <param name="sentenceScores">
+        ///     Map from Chat Sentences to their scores
+        /// </param>
+        /// <param name="percentToKeep">
+        ///     Percentage of Messages to be filtered
+        /// </param>
+        /// <returns>
+        ///     List of sentences with score greater than threshold
+        /// </returns>
         public static string[] SortSentences(Dictionary<string, int> sentenceScores, double percentToKeep = 0.4)
         {
             // Find the top XX% of sentences when ranked by score descending
@@ -204,53 +256,79 @@ namespace PlexShareDashboard.Dashboard.Server.Summary
             return topSentences.ToArray();
         }
 
-
         /// <summary>
-        /// Builds an ordered summary from the final sentences
+        ///     Builds an ordered summary from the final sentences
         /// </summary>
-        public static string BuildSummary(List<(string, bool)> cleanedDiscussionChat, string[] finalSentences, List<(string, bool)> discussionChat)
+        /// <param name="cleanedDiscussionChat">
+        ///     Cleaned Chat Messages
+        /// </param>
+        /// <param name="finalSentences">
+        ///     sentences after processing
+        /// </param>
+        /// <param name="discussionChat">
+        ///     Orginal Chat Messages
+        /// </param>
+        /// <returns>
+        ///     Returns the summary of original messages
+        /// </returns>
+        public static string BuildSummary(List<string> cleanedDiscussionChat, string[] finalSentences, List<string> discussionChat)
         {
             StringBuilder summary = new StringBuilder();
             Dictionary<string, bool> visitedFinalSentence = new();
             for(int i= 0;i < cleanedDiscussionChat.Count;i++)
             {
-                if (finalSentences.Contains(cleanedDiscussionChat[i].Item1) && !visitedFinalSentence.ContainsKey(discussionChat[i].Item1))
+                if (finalSentences.Contains(cleanedDiscussionChat[i]) && !visitedFinalSentence.ContainsKey(discussionChat[i]))
                 {
-                    summary.Append(discussionChat[i].Item1);
+                    summary.Append(discussionChat[i]);
                     summary.Append(". \n\n");
 
-                    visitedFinalSentence[discussionChat[i].Item1] = true;
+                    visitedFinalSentence[discussionChat[i]] = true;
                 }
             }
 
             return summary.ToString();
         }
-
+        /// <summary>
+        ///     Call the ML Model for the sentiment score of the chat discussion
+        /// </summary>
+        /// <param name="cleanedDiscussionChat">
+        ///     Cleaned Chat Messages
+        /// </param>
+        /// <returns>
+        ///     Returns a string representing the sentiment score of the chat discussion
+        /// </returns>
+        public static string BuildSentimentScore(List<string> cleanedDiscussionChat)
+        {
+            string singleStringChatMessages = String.Join(". ", cleanedDiscussionChat.ToArray());
+            if (singleStringChatMessages != "")
+            {
+                ModelInput singleStringChatMessagesModelInput = SentimentAnalyzer.CreateSingleDataSample(singleStringChatMessages);
+                ModelOutput predictionResult = predEngine.Predict(singleStringChatMessagesModelInput);
+                Debug.WriteLine($"Single Prediction --> Prediction for '{singleStringChatMessagesModelInput}' was PositiveSentiment = {predictionResult.Prediction}");
+                Debug.WriteLine("=============== End of process, hit any key to finish ===============");
+                return $"The Sentiment Score for the current Chat is '{predictionResult.Score * 10}'";
+            }
+            return "";
+        }
 
         /// <summary>
-        /// Gemerate summary from chats
+        ///     Gemerate summary from chats
         /// </summary>
-        public string Summarize(List<(string, bool)> discussionChat)
+        /// <param name="discussionChat">
+        ///     Original Chat Messages
+        /// </param>
+        /// <returns>
+        ///     Summary of chat messages
+        /// </returns>
+        public string Summarize(List<string> discussionChat)
         {
             // Load stop words if a summary has not been generated yet
             if (SummariesGenerated == 0)
             {
                 LoadStopWords();
             }
-            //List<(string, bool)> discussionChat = new List<(string, bool)>() {("Usain Bolt rounded off the world championships Sunday by claiming his third gold in Moscow as he anchored Jamaica to victory in the men’s 4x100m relay.\r\nThe fastest man in the world charged clear of United States rival Justin Gatlin as the Jamaican quartet of Nesta Carter, Kemar Bailey-Cole, Nickel Ashmeade and Bolt won in 37.36 seconds.", false),
-            //                  ("The U.S finished second in 37.56 seconds with Canada taking the bronze after Britain were disqualified for a faulty handover.\r\nThe 26-year-old Bolt has now collected eight gold medals at world championships, equaling the record held by American trio Carl Lewis, Michael Johnson and Allyson Felix, not to mention the small matter of six Olympic titles.", true),
-            //                  ("Usain Bolt: I try to clear my mind\r\nThe relay triumph followed individual successes in the 100 and 200 meters in the Russian capital.\r\n“I’m proud of myself and I’ll continue to work to dominate for as long as possible,” Bolt said, having previously expressed his intention to carry on until the 2016 Rio Olympics.", false),
-            //                   ("Victory was never seriously in doubt once he got the baton safely in hand from Ashmeade, while Gatlin and the United States third leg runner Rakieem Salaam had problems.\r\nGatlin strayed out of his lane as he struggled to get full control of their baton and was never able to get on terms with Bolt.\r\nEarlier, Jamaica’s women underlined their dominance in the sprint events by winning the 4x100m relay gold, anchored by Shelly-Ann Fraser-Pryce, who like Bolt was completing a triple.",false),
-            //("Their quartet recorded a championship record of 41.29 seconds, well clear of France, who crossed the line in second place in 42.73 seconds.\r\nDefending champions, the United States, were initially back in the bronze medal position after losing time on the second handover between Alexandria Anderson and English Gardner, but promoted to silver when France were subsequently disqualified for an illegal handover.\r\nThe British quartet, who were initially fourth, were promoted to the bronze which eluded their men’s team.",true),
-            //("Fraser-Pryce, like Bolt aged 26, became the first woman to achieve three golds in the 100-200 and the relay.\r\nIn other final action on the last day of the championships, France’s Teddy Tamgho became the third man to leap over 18m in the triple jump, exceeding the mark by four centimeters to take gold.",false),
-            //("Germany’s Christina Obergfoll finally took gold at global level in the women’s javelin after five previous silvers, while Kenya’s Asbel Kiprop easily won a tactical men’s 1500m final.",false)};
-            // Grab the inner text from the HTML tags and combine into one string
-            //string text = "\r\nCNN\r\n — \r\nUsain Bolt rounded off the world championships Sunday by claiming his third gold in Moscow as he anchored Jamaica to victory in the men’s 4x100m relay.\r\n\r\nThe fastest man in the world charged clear of United States rival Justin Gatlin as the Jamaican quartet of Nesta Carter, Kemar Bailey-Cole, Nickel Ashmeade and Bolt won in 37.36 seconds.\r\n\r\nThe U.S finished second in 37.56 seconds with Canada taking the bronze after Britain were disqualified for a faulty handover.\r\n\r\nThe 26-year-old Bolt has now collected eight gold medals at world championships, equaling the record held by American trio Carl Lewis, Michael Johnson and Allyson Felix, not to mention the small matter of six Olympic titles.\r\n\r\nUsain Bolt: I try to clear my mind\r\nThe relay triumph followed individual successes in the 100 and 200 meters in the Russian capital.\r\n\r\n“I’m proud of myself and I’ll continue to work to dominate for as long as possible,” Bolt said, having previously expressed his intention to carry on until the 2016 Rio Olympics.\r\n\r\nVictory was never seriously in doubt once he got the baton safely in hand from Ashmeade, while Gatlin and the United States third leg runner Rakieem Salaam had problems.\r\n\r\nGatlin strayed out of his lane as he struggled to get full control of their baton and was never able to get on terms with Bolt.\r\n\r\nEarlier, Jamaica’s women underlined their dominance in the sprint events by winning the 4x100m relay gold, anchored by Shelly-Ann Fraser-Pryce, who like Bolt was completing a triple.\r\n\r\nTheir quartet recorded a championship record of 41.29 seconds, well clear of France, who crossed the line in second place in 42.73 seconds.\r\n\r\nDefending champions, the United States, were initially back in the bronze medal position after losing time on the second handover between Alexandria Anderson and English Gardner, but promoted to silver when France were subsequently disqualified for an illegal handover.\r\n\r\nThe British quartet, who were initially fourth, were promoted to the bronze which eluded their men’s team.\r\n\r\nFraser-Pryce, like Bolt aged 26, became the first woman to achieve three golds in the 100-200 and the relay.\r\n\r\nIn other final action on the last day of the championships, France’s Teddy Tamgho became the third man to leap over 18m in the triple jump, exceeding the mark by four centimeters to take gold.\r\n\r\nGermany’s Christina Obergfoll finally took gold at global level in the women’s javelin after five previous silvers, while Kenya’s Asbel Kiprop easily won a tactical men’s 1500m final.\r\n\r\n";
-
             // Remove punctuation and case
-            List<(string, bool)> cleanedDiscussionChat = CleanChat(discussionChat);
-
-            // Find each individual word from the text and remove blanks
+            List<string> cleanedDiscussionChat = CleanChat(discussionChat);
 
             // Tally up word counts for non-stop words
             Dictionary<string, int> wordCounts = CountWords(cleanedDiscussionChat);
@@ -264,25 +342,15 @@ namespace PlexShareDashboard.Dashboard.Server.Summary
             // Score each individual sentence
             Dictionary<string, int> sentenceScores = ScoreSentences(cleanedDiscussionChat, wordScores);
 
-
-            //foreach (KeyValuePair<string, int> entry in sentenceScores)
-            //{
-            //    Debug.WriteLine(entry.Value + "\n");
-            //}
-
             // Score and sort sentences by highest score, only keep top XX%
             string[] finalSentences = SortSentences(sentenceScores);
-
-
-            Debug.WriteLine("<<<<<<<<<<Total Number of Sentences in the Summary : " + finalSentences.Length  + " >>>>>>>>>>>>>>");
 
             // Traverse the sentences array. If the sentence falls in
             // the top XX% (finalSentences), then add it to the summary
             string summary = BuildSummary(cleanedDiscussionChat, finalSentences, discussionChat);
 
-            Debug.WriteLine("<<<<<<<<<<SUMMARY START>>>>>>>>>>>>>>");
-            Debug.WriteLine(summary);
-            Debug.WriteLine("<<<<<<<<<<SUMMARY END>>>>>>>>>>>>>>");
+            // Get the sentiment score
+            summary += BuildSentimentScore(cleanedDiscussionChat);
 
             SummariesGenerated++;
 

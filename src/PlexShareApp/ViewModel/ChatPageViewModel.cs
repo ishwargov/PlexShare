@@ -21,6 +21,7 @@ using PlexShare.Dashboard;
 using System.Diagnostics;
 using System.Collections.ObjectModel;
 using System.Windows.Documents;
+using System.IO;
 
 namespace PlexShareApp.ViewModel
 {
@@ -324,7 +325,7 @@ namespace PlexShareApp.ViewModel
                                   ReceivedMsg = new Message();
                                   ReceivedMsg.MessageID = contentData.MessageID;
                                   ReceivedMsg.Type = contentData.Type == MessageType.Chat;
-                                  ReceivedMsg.IncomingMessage = contentData.Data;
+                                  ReceivedMsg.IncomingMessage = Path.GetFileName(contentData.Data);
                                   //ReceivedMsg.Time = contentData.SentTime.ToString("hh:mm tt ddd"); // 11:09 AM Mon
                                   ReceivedMsg.Time = contentData.SentTime.ToString("hh:mm tt");
                                   ReceivedMsg.Sender = Users.ContainsKey(contentData.SenderID) ? Users[contentData.SenderID] : "Anonymous";
@@ -362,14 +363,6 @@ namespace PlexShareApp.ViewModel
 
                                   OnPropertyChanged("EditOrDelete");
                               }
-                              //else if(contentData.Event == PlexShareContent.Enums.MessageEvent.Star)
-                              //{
-                              //    // since we are only interested in changing the star property of the message with MessageID,
-                              //    // we shall ignore the the remaining property
-                              //    ReceivedMsg = new Message();
-                              //    ReceivedMsg.MessageID = contentData.MessageID;
-                              //    OnPropertyChanged("StarMessage");
-                              //}
                           }
                       }),
                       contentData);

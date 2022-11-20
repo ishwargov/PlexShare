@@ -41,14 +41,14 @@ namespace PlexShareCloudUX
         /// </summary>
         public string UploadFilePath
         {
-            set => Function(value);
+            set => UploadFile(value);
         }
 
         /// <summary>
         /// Function to call the UploadDocument function of the model when the path is given
         /// <param name="path"">Path of the file to be uploaded.</param>
         /// </summary>
-        public void Function(string path)
+        public void UploadFile(string path)
         {
             bool isUploaded = _model.UploadDocument(path);
             _ = this.ApplicationMainThreadDispatcher.BeginInvoke(

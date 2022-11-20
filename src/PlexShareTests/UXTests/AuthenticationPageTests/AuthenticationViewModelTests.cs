@@ -11,32 +11,35 @@
  *****************************************************************************/
 
 using AuthViewModel;
-using Xunit.Abstractions;
 
 namespace PlexShareTests.UXTests.AuthenticationPageTests
 {
     public class AuthenticationViewModelUnitTest
     {
         private AuthenticationViewModel viewModel;
-        //private readonly ITestOutputHelper output;
-        //private TestConte
-        public AuthenticationViewModelUnitTest(ITestOutputHelper output)
+        public AuthenticationViewModelUnitTest()
         {
             viewModel = new AuthenticationViewModel();
-            //this.output = output;
         }
 
+        /// <summary>
+        /// This is used to test any kind of timeout scenario
+        /// 1. If the browser window is closed and never reopened
+        /// 2. Internet is not working
+        /// 3. Not entering credentials for too long
+        /// </summary>
         [Fact]
         public async void WebPageTimeout()
         {
-            // Closing the Webpage
-            // Internet not working
-            // Not entering credentials for too long
+            // Giving a timeout of 50 ms to reduce the wait time
             var returnval = await viewModel.AuthenticateUser(50);
             // Assert
             Assert.Equal("false", returnval[0]);
         }
 
+        /// <summary>
+        /// In case all information have been provided succesfully
+        /// </summary>
         [Fact]
         public async void ValidData()
         {
