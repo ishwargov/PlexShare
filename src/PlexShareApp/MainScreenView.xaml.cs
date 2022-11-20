@@ -42,7 +42,7 @@ namespace PlexShareApp
         public event PropertyChangingEventHandler? PropertyChanged;
         private bool isClient;
 
-        public MainScreenView(string name, string email, string picPath, string url, string ip, string port, bool isServer)
+        public MainScreenView(string name, string email, string picPath, string url, string ip, string port, bool isServer, string sessionID)
         {
 
             isClient = !isServer;
@@ -88,12 +88,12 @@ namespace PlexShareApp
             // Because the cloud team needs it in their constructor
             ClientSessionManager clientSessionManager;
             clientSessionManager = SessionManagerFactory.GetClientSessionManager();
-            SessionData sessionData = clientSessionManager._clientSessionData;
+          //  SessionData sessionData = clientSessionManager.clientSessionData;
             UserData user = clientSessionManager.GetUser();
 
             Trace.WriteLine("[UX] Instantiating Cloud Pages");
-            uploadPage = new UploadPage(sessionData.sessionId.ToString(), user.userEmail, isServer);
-            submissionsPage = new SubmissionsPage(sessionData.sessionId.ToString(), user.userEmail);
+            uploadPage = new UploadPage(sessionID, user.userEmail, isServer);
+            submissionsPage = new SubmissionsPage(sessionID, user.userEmail);
 
             // This is to disable backspace to avoid switch tabs
             // Whiteboard team was not able to use backspace since

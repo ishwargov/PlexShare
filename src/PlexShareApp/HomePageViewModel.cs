@@ -12,6 +12,7 @@
  ************************************************************/
 using Dashboard;
 using PlexShare.Dashboard;
+using PlexShare.Dashboard.Client.SessionManagement;
 using PlexShareDashboard.Dashboard.Client.SessionManagement;
 using PlexShareDashboard.Dashboard.Server.SessionManagement;
 using System;
@@ -26,15 +27,16 @@ using System.Windows;
 
 namespace PlexShareApp
 {
-    public class HomePageViewModel
+    public class HomePageViewModel : IClientSessionNotifications
     {
         IUXServerSessionManager serverSessionManager;
         IUXClientSessionManager clientSessionManager;
-
+        public int sessionID;
         public HomePageViewModel()
         {
             serverSessionManager = SessionManagerFactory.GetServerSessionManager();
             clientSessionManager = SessionManagerFactory.GetClientSessionManager();
+            clientSessionManager.SubscribeSession(this);
         }
 
         public HomePageViewModel(IUXClientSessionManager clientSessionManager, IUXServerSessionManager serverSessionManager)
@@ -212,6 +214,13 @@ namespace PlexShareApp
             result.Add(isVerified.ToString());
             Trace.WriteLine("[UX] The client verification returned : " + isVerified);
             return result;
+        }
+         
+       
+
+        public void OnClientSessionChanged(SessionData session)
+        {
+            sessionID = session.sessionId;
         }
     }
 }
