@@ -17,6 +17,7 @@ using PlexShareDashboard.Dashboard.Client.SessionManagement;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -43,7 +44,7 @@ namespace PlexShareApp
 
         private bool isClient;
 
-        public MainScreenView(string name, string email, string picPath, string url, string ip, string port, bool isServer)
+        public MainScreenView(string name, string email, string picPath, string url, string ip, string port, bool isServer, string sessionID)
         {
 
             isClient = !isServer;
@@ -51,6 +52,7 @@ namespace PlexShareApp
             submissionsOn = false;
             // The client/server was verified to be correct.
             // We can add the client to meeting, and instantiate all modules.
+            //Thread.Sleep(1000);
             InitializeComponent();
 
             dashboardPage = new DashboardPage();
@@ -90,14 +92,13 @@ namespace PlexShareApp
             // Because the cloud team needs it in their constructor
             ClientSessionManager clientSessionManager;
             clientSessionManager = SessionManagerFactory.GetClientSessionManager();
-            SessionData sessionData = clientSessionManager._clientSessionData;
             UserData user = clientSessionManager.GetUser();
-            uploadPage = new UploadPage(sessionData.sessionId.ToString(), user.userEmail, isServer);
+            uploadPage = new UploadPage(sessionID, user.userEmail, isServer);
 
             //this is to disable backspace to avoid switch tabs
             NavigationCommands.BrowseBack.InputGestures.Clear();
 
-            submissionsPage = new SubmissionsPage(sessionData.sessionId.ToString(), user.userEmail);
+            submissionsPage = new SubmissionsPage(sessionID, user.userEmail);
 
             // this is to disable backspace so backspace does not switch tabs
             NavigationCommands.BrowseBack.InputGestures.Clear();
