@@ -22,9 +22,9 @@ namespace PlexShareTests.ScreenshareTests
 
             Thread.Sleep(1000);
 
-            screenCapturer.StopCapture().Wait();
+            screenCapturer.StopCapture();
             int v2 = screenProcessor.GetProcessedFrameLength();
-            screenProcessor.StopProcessing().Wait();
+            screenProcessor.StopProcessing();
 
             Assert.True(v2 > 0);
         }
@@ -40,8 +40,8 @@ namespace PlexShareTests.ScreenshareTests
 
             Thread.Sleep(1000);
 
-            screenCapturer.StopCapture().Wait();
-            screenProcessor.StopProcessing().Wait();
+            screenCapturer.StopCapture();
+            screenProcessor.StopProcessing();
 
             Console.WriteLine($"len = {screenProcessor.GetProcessedFrameLength()}");
             Assert.True(screenProcessor.GetProcessedFrameLength() == 0);
@@ -55,7 +55,7 @@ namespace PlexShareTests.ScreenshareTests
 
             screenCapturer.StartCapture();
             Bitmap img = screenCapturer.GetImage(ref token);
-            screenCapturer.StopCapture().Wait();
+            screenCapturer.StopCapture();
 
             //List<Pixel> tmp = ScreenProcessor.ProcessUsingLockbits(img, img);
             //Assert.True(tmp.Count == 0);
