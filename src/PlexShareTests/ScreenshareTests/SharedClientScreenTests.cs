@@ -132,7 +132,7 @@ namespace PlexShareTests.ScreenshareTests
             // Try disposing again.
             client.Dispose();
             // Try accessing client again.
-            client.StopProcessing().Wait();
+            client.StopProcessing();
 
             // Assert.
             // Check if the timeout callback was never executed.
@@ -271,7 +271,7 @@ namespace PlexShareTests.ScreenshareTests
             }
 
             // Trying to stop a task which was never started.
-            client.StopProcessing().Wait();
+            client.StopProcessing();
 
             // Start the processing of the images for the client.
             // The task will take the image from the final image queue
@@ -299,7 +299,7 @@ namespace PlexShareTests.ScreenshareTests
             client.StartProcessing(new((ref bool _) => { return; }));
 
             // Stop the processing of the images for the client.
-            client.StopProcessing().Wait();
+            client.StopProcessing();
 
             // Assert.
             // The "CurrentImage" variable of the client should not be null at the end.

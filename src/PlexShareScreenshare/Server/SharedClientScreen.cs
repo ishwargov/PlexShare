@@ -223,8 +223,11 @@ namespace PlexShareScreenshare.Server
 
             set
             {
-                _currentImage = value;
-                this.OnPropertyChanged(nameof(CurrentImage));
+                if (_currentImage != value)
+                {
+                    _currentImage = value;
+                    this.OnPropertyChanged(nameof(CurrentImage));
+                }
             }
         }
 
@@ -237,8 +240,11 @@ namespace PlexShareScreenshare.Server
 
             set
             {
-                _pinned = value;
-                this.OnPropertyChanged(nameof(Pinned));
+                if (_pinned != value)
+                {
+                    _pinned = value;
+                    this.OnPropertyChanged(nameof(Pinned));
+                }
             }
         }
 
@@ -251,8 +257,11 @@ namespace PlexShareScreenshare.Server
 
             set
             {
-                _tileHeight = value;
-                this.OnPropertyChanged(nameof(TileHeight));
+                if (_tileHeight != value)
+                {
+                    _tileHeight = value;
+                    this.OnPropertyChanged(nameof(TileHeight));
+                }
             }
         }
 
@@ -265,8 +274,11 @@ namespace PlexShareScreenshare.Server
 
             set
             {
-                _tileWidth = value;
-                this.OnPropertyChanged(nameof(TileWidth));
+                if (_tileWidth != value)
+                {
+                    _tileWidth = value;
+                    this.OnPropertyChanged(nameof(TileWidth));
+                }
             }
         }
 
@@ -418,7 +430,7 @@ namespace PlexShareScreenshare.Server
         /// containing images.
         /// </summary>
         /// <exception cref="Exception"></exception>
-        public async Task StopProcessing()
+        public void StopProcessing()
         {
             Debug.Assert(_stitcher != null, Utils.GetDebugMessage("_stitcher is found null"));
 
@@ -437,7 +449,7 @@ namespace PlexShareScreenshare.Server
                 // Stop the stitcher.
                 _stitcher.StopStitching();
 
-                await _imageSendTask;
+                _imageSendTask.Wait();
             }
             catch (OperationCanceledException e)
             {
@@ -512,7 +524,7 @@ namespace PlexShareScreenshare.Server
             // and unmanaged resources.
             if (disposing)
             {
-                StopProcessing().Wait();
+                StopProcessing();
 
                 if (_timer != null)
                 {
