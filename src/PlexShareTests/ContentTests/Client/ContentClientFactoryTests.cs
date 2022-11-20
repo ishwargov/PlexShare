@@ -30,12 +30,21 @@ namespace PlexShareTests.ContentTests.Client
         {
             IContentClient? instance1 = null;
             IContentClient? instance2 = null;
+            // run the factory on multiple threads
             var t1 = Task.Run(() => { instance1 = ContentClientFactory.GetInstance(); });
             var t2 = Task.Run(() => { instance2 = ContentClientFactory.GetInstance(); });
 
             Task.WaitAll(t1, t2);
 
             Assert.Same(instance1, instance2);
+        }
+
+        [Fact]
+        public void SetUser_ValidInput_SetsValidUserID()
+        {
+            var instance = ContentClientFactory.GetInstance();
+            ContentClientFactory.SetUser(1);
+            Assert.Equal(1, instance.GetUserID());
         }
 
         [Fact]
@@ -50,14 +59,6 @@ namespace PlexShareTests.ContentTests.Client
             var userID2 = instance2.GetUserID();
 
             Assert.Equal(userID1, userID2);
-        }
-
-        [Fact]
-        public void SetUser_ValidInput_SetsValidUserID()
-        {
-            var instance = ContentClientFactory.GetInstance();
-            ContentClientFactory.SetUser(1);
-            Assert.Equal(1, instance.GetUserID());
         }
     }
 }
