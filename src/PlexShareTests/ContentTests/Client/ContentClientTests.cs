@@ -376,24 +376,43 @@ namespace PlexShareTests.ContentTests.Client
             Dispose();
         }
 
-        //[Fact]
-        //public void ClientDownload_ValidDownload_ReturnsValidDataAtServer()
-        //{
-        //    Setup();
-        //    var currentDirectory = Directory.GetCurrentDirectory();
-        //    var pathArray = currentDirectory.Split(new[] { "\\PlexShareTests" }, StringSplitOptions.None);
-        //    string savePath = pathArray[0] + "\\PlexShareTests\\ContentTests\\Save_File.pdf";
-        //    _contentClient.ClientDownload(fileMessage.MessageID, savePath);
-        //    var sentData = _communicator.GetSentData();
-        //    var deserializedData = _serializer.Deserialize<ContentData>(sentData);
+        [Fact]
+        public void ClientDownload_ValidDownload_ReturnsValidDataAtServer()
+        {
+            Setup();
+            string savePath = Path.GetRandomFileName();
+            _contentClient.ClientDownload(fileMessage.MessageID, savePath);
+            var sentData = _communicator.GetSentData();
+            var deserializedData = _serializer.Deserialize<ContentData>(sentData);
 
-        //    Assert.Equal(MessageType.File, deserializedData.Type);
-        //    Assert.Equal(MessageEvent.Download, deserializedData.Event);
-        //    Assert.Equal(fileMessage.MessageID, deserializedData.MessageID);
-        //    Assert.Equal(savePath, deserializedData.Data);
+            Assert.Equal(MessageType.File, deserializedData.Type);
+            Assert.Equal(MessageEvent.Download, deserializedData.Event);
+            Assert.Equal(fileMessage.MessageID, deserializedData.MessageID);
+            Assert.Equal(savePath, deserializedData.Data);
 
-        //    Dispose();
-        //}
+            Dispose();
+        }
+
+        [Fact]
+        public void ClientDownload_InvalidPath_ReturnsArgumentException()
+        {
+            Setup();
+
+            Assert.Throws<ArgumentException>(() => _contentClient.ClientDownload(fileMessage.MessageID, ""));
+
+            Dispose();
+        }
+
+        [Fact]
+        public void ClientDownload_DownloadChatMessage_ReturnsArgumentException()
+        {
+            Setup();
+            string savePath = Path.GetRandomFileName();
+
+            Assert.Throws<ArgumentException>(() => _contentClient.ClientDownload(chatMessage.MessageID, savePath));
+
+            Dispose();
+        }
 
         [Fact]
         public void ClientStar_ValidStar_ReturnsValidDataAtServer()
