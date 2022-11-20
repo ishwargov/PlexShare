@@ -71,7 +71,10 @@ namespace PlexShareApp
             {
                 Label label = new Label()
                 {
-                    Content = "No Submissions Available"
+                    Content = "No Submissions Available",
+                    Foreground = new SolidColorBrush(Colors.White),
+                    HorizontalContentAlignment = HorizontalAlignment.Center,
+                    FontSize = 16
                 };
                 Stack.Children.Add(label);
                 return;
@@ -106,7 +109,7 @@ namespace PlexShareApp
 
                 Label sNo = new()
                 {
-                    Content = i,
+                    Content = i+1,
                     HorizontalContentAlignment = HorizontalAlignment.Center,
                     VerticalContentAlignment = VerticalAlignment.Center,
                     BorderBrush = new SolidColorBrush(Colors.White),
@@ -132,7 +135,7 @@ namespace PlexShareApp
 
                 Label submissionTime = new()
                 {
-                    Content = submissions[i].Timestamp,
+                    Content = submissions[i].Timestamp.Value.ToLocalTime(),
                     HorizontalContentAlignment = HorizontalAlignment.Center,
                     VerticalContentAlignment = VerticalAlignment.Center,
                     BorderBrush = new SolidColorBrush(Colors.White),

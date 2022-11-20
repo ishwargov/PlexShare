@@ -89,7 +89,7 @@ namespace PlexShareCloud
         public async Task<IReadOnlyList<SessionEntity>> GetSessionsByUserAsync(string hostUsername)
         {
             var response = await _entityClient.GetAsync(_sessionUrl + $"/{hostUsername}");
-            //response.EnsureSuccessStatusCode();
+            response.EnsureSuccessStatusCode();
             var result = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions
             {
@@ -98,7 +98,6 @@ namespace PlexShareCloud
             };
 
             IReadOnlyList<SessionEntity> entities = JsonSerializer.Deserialize<IReadOnlyList<SessionEntity>>(result, options);
-            //Trace to be added. 
             return entities;
         }
 
@@ -109,7 +108,7 @@ namespace PlexShareCloud
         public async Task DeleteAllFilesAsync()
         {
             using HttpResponseMessage response = await _entityClient.DeleteAsync(_submissionUrl);
-            //response.EnsureSuccessStatusCode();
+            response.EnsureSuccessStatusCode();
         }
 
         /// <summary>
@@ -119,7 +118,7 @@ namespace PlexShareCloud
         public async Task DeleteAllSessionsAsync()
         {
             using HttpResponseMessage response = await _entityClient.DeleteAsync(_sessionUrl);
-            //response.EnsureSuccessStatusCode();
+            response.EnsureSuccessStatusCode();
         }
 
         /* 

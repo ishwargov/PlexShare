@@ -72,9 +72,6 @@ namespace PlexShareCloudUX
         public void DownloadPdf(int num) //function for converting into pdf and write file at given download path. 
         {
             byte[] pdf = SubmissionsList[num].Pdf;
-
-            //var path = Process.Start("shell:Downloads");
-
             string path = GetDownloadFolderPath() + "\\" + SubmissionsList[num].UserName + "_" + SubmissionsList[num].SessionId + ".pdf";
             File.WriteAllBytes(path, pdf);
         }

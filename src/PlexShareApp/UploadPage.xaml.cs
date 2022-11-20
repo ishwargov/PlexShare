@@ -41,16 +41,15 @@ namespace PlexShareApp
         {
             InitializeComponent();
 
-            PdfName = "-";
             UploadViewModel viewModel = new UploadViewModel(sessionId,userName,isServer);
             viewModel.PropertyChanged += UploadInfoUpdate;
             this.DataContext = viewModel;
         }
 
         /// <summary>
-        /// Name of th epdf submistted
+        /// Path to the submitted file
         /// </summary>
-        public string PdfName;
+        public string FilePath;
 
         /// <summary>
         /// OnPropertyChange handler to trigger when the pdf is uploaded.
@@ -59,13 +58,17 @@ namespace PlexShareApp
         {
             Status.Content = "File Submitted";
             LastModified.Content = DateTime.Now;
-            PDFName.Content = PdfName;
+            string[] array = FilePath.Split('\\');
+            PDFName.Content = array[array.Length - 1];
+            Submit.Visibility = Visibility.Hidden;
+            Upload.Visibility = Visibility.Visible;
+            Loading.Visibility = Visibility.Hidden;
         }
 
         /// <summary>
-        /// Handler to submit button press
+        /// Handler to upload button press
         /// </summary>
-        private void SubmitButtonClick(object sender, RoutedEventArgs e)
+        private void UploadButtonClick(object sender, RoutedEventArgs e)
         {
             OpenFileDialog fileDialog = new OpenFileDialog();
             fileDialog.DefaultExt = ".pdf"; // Required file extension 
@@ -76,19 +79,22 @@ namespace PlexShareApp
 
             if (result == true)
             {
-                UploadViewModel viewModel = this.DataContext as UploadViewModel;
-                viewModel.UploadFilePath = fileDialog.FileName;
-                PdfName = fileDialog.FileName;
+                Submit.Visibility = Visibility.Visible;
+                Upload.Visibility = Visibility.Hidden;
+                FilePath = fileDialog.FileName;
+                string[] array = fileDialog.FileName.Split('\\');
+                PDFName.Content = array[array.Length - 1];
             }
         }
 
         /// <summary>
-        /// Handler to back button press
+        /// Handler to submit button press
         /// </summary>
-        private void BackButtonClick(object sender, RoutedEventArgs e)
+        private void SubmitButtonClick(object sender, RoutedEventArgs e)
         {
-            ////Remove the current page
+            Loading.Visibility = Visibility.Visible;
+            UploadViewModel viewModel = this.DataContext as UploadViewModel;
+            viewModel.UploadFilePath = FilePath;
         }
-
     }
 }

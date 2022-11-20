@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace PlexShareCloudUX
 {
-    internal class SessionsModel
+    public class SessionsModel
     {
         private const string SubmissionUrl = @"https://plexsharecloud20221118104530.azurewebsites.net/api/submission";
         private const string SessionUrl = @"https://plexsharecloud20221118104530.azurewebsites.net/api/session";

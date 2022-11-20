@@ -28,11 +28,13 @@ namespace PlexShareCloudUX
         private const string SubmissionUrl = @"https://plexsharecloud20221118104530.azurewebsites.net/api/submission";
         private const string SessionUrl = @"https://plexsharecloud20221118104530.azurewebsites.net/api/session";
         private FileUploadApi _uploadClient;
+        private bool isUploaded;
         public UploadModel(string sessionId, string userName, bool isServer)
         {
             SessionId = sessionId;
             UserName = userName;
             _uploadClient = new(SessionUrl, SubmissionUrl);
+            isUploaded = false;
             if(isServer)
             {
                 _uploadClient.PostSessionAsync(sessionId, userName);
@@ -50,7 +52,15 @@ namespace PlexShareCloudUX
             //Upload File
             try
             {
-                UploadDocumentAsync(fileName);
+                if(!isUploaded)
+                {
+                    UploadDocumentAsync(fileName);
+                    isUploaded = true;
+                }
+                else
+                {
+                    ReUploadDocumentAsync(fileName);
+                }
                 return true;
             }
             catch 
@@ -63,25 +73,6 @@ namespace PlexShareCloudUX
         {
             byte[] fileContent = File.ReadAllBytes(fileName);
             SubmissionEntity? postEntity = await _uploadClient.PostSubmissionAsync(SessionId, UserName, fileContent);
-        }
-
-        /// <summary>
-        /// Takes the file path that is to be Resubmitted. Makes a call to the PutSubmission API to resubmit the file.
-        /// </summary>
-        /// <param name="fileName"></param>
-        /// <returns> Returns true upon successful resubmission. If it fails, it returns false.</returns>
-        public bool ReUploadDocument(string fileName)
-        {
-            try
-            {
-                ReUploadDocumentAsync(fileName);
-                return true;
-            }
-
-            catch
-            {
-                return false;
-            }
         }
 
         public async void ReUploadDocumentAsync(string fileName)

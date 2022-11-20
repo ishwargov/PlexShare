@@ -18,10 +18,10 @@
                         <ColumnDefinition Width = "3*"/>
                         <ColumnDefinition Width = "1.5*"/>
                     </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderBrush="Black" BorderThickness="1" FontSize="16" FontWeight="Bold" Background="WhiteSmoke">SNo.</Label>
-                    <Label Name="Id" Content="Student ID" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderBrush="Black" BorderThickness="1" FontSize="16" FontWeight="Bold" Background="WhiteSmoke"></Label>
-                    <Label Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderBrush="Black" BorderThickness="1" FontSize="16" FontWeight="Bold" Background="WhiteSmoke">Submission Time</Label>
-                    <Label Grid.Column="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderBrush="Black" BorderThickness="1" FontSize="16" FontWeight="Bold" Background="WhiteSmoke">Download</Label>
+                    <Label Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderBrush="Black" BorderThickness="1" FontSize="16" FontWeight="Bold" Background="{DynamicResource Color6Bg}" Foreground="{DynamicResource Color5Bg}">SNo.</Label>
+                    <Label Name="Id" Content="Student ID" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderBrush="Black" BorderThickness="1" FontSize="16" FontWeight="Bold" Background="{DynamicResource Color6Bg}" Foreground="{DynamicResource Color5Bg}"></Label>
+                    <Label Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderBrush="Black" BorderThickness="1" FontSize="16" FontWeight="Bold" Background="{DynamicResource Color6Bg}" Foreground="{DynamicResource Color5Bg}">Submission Time</Label>
+                    <Label Grid.Column="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderBrush="Black" BorderThickness="1" FontSize="16" FontWeight="Bold" Background="{DynamicResource Color6Bg}" Foreground="{DynamicResource Color5Bg}">Download</Label>
                 </Grid>
             </StackPanel>
         </ScrollViewer>
