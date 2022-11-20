@@ -47,10 +47,10 @@
         <!-- Create a stack panel which will contain the controls shown when the screen is not being shared -->
         <StackPanel Name="NotSharedScreen" Orientation="Vertical" Grid.Row="0">
 
-            <!-- An image when the screen is being shared -->
+            <!-- An image when the screen is not being shared -->
             <Image gif:AnimationBehavior.SourceUri="ScreenshareIcons/NotSharedScreenBackground.webp" Name="Main" Height="400" Margin="0,100,0,20"/>
 
-            <!-- Text shown when the image is being shared -->
+            <!-- Text shown when the image is not being shared -->
             <TextBlock Name="MainText" Text="You are not sharing your screen" Foreground="IndianRed" 
                    FontSize="60" FontFamily="Comic Sans MS" TextWrapping="WrapWithOverflow" HorizontalAlignment="Center"/>
 
@@ -100,7 +100,7 @@
             <!-- Give space between the 2 buttons using a separator -->
             <Separator Width="100" Background="Transparent"/>
 
-            <!-- Create the StartScreenShare Button -->
+            <!-- Create the StopScreenShare Button -->
             <Button x:Name = "StopScreenShare" Click = "OnStopButtonClicked" ToolTip = "Stop Screen Share" Grid.Row="1"
                     Height="60" Width="60" VerticalAlignment="Top" Cursor="Hand">
 
