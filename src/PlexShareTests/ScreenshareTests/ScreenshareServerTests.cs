@@ -87,6 +87,9 @@ namespace PlexShareTests.ScreenshareTests
             // Check view model was notified at least once regarding new registration of clients.
             viewmodelMock.Verify(vm => vm.OnSubscribersChanged(It.IsAny<List<SharedClientScreen>>()),
                 Times.AtLeastOnce(), $"Expected view model to be notified at least once");
+            // Check view model was notified at least once regarding new registration of clients.
+            viewmodelMock.Verify(vm => vm.OnScreenshareStart(It.IsAny<string>(), It.IsAny<string>()),
+                Times.AtLeastOnce(), $"Expected view model to be notified for popup at least once");
 
             // Cleanup.
             foreach (SharedClientScreen client in clients)
@@ -143,6 +146,8 @@ namespace PlexShareTests.ScreenshareTests
             // Check view model was notified at least once regarding de-registration of clients.
             viewmodelMock.Verify(vm => vm.OnSubscribersChanged(It.IsAny<List<SharedClientScreen>>()),
                 Times.AtLeastOnce(), $"Expected view model to be notified at least once");
+            viewmodelMock.Verify(vm => vm.OnScreenshareStop(It.IsAny<string>(), It.IsAny<string>()),
+                Times.AtLeastOnce(), $"Expected view model to be notified for popup at least once");
 
             // Cleanup.
             foreach (SharedClientScreen client in clients)
@@ -362,6 +367,8 @@ namespace PlexShareTests.ScreenshareTests
             // Check view model was notified at least once regarding de-registration of clients.
             viewmodelMock.Verify(vm => vm.OnSubscribersChanged(It.IsAny<List<SharedClientScreen>>()),
                 Times.AtLeastOnce(), $"Expected view model to be notified at least once");
+            viewmodelMock.Verify(vm => vm.OnScreenshareStop(It.IsAny<string>(), It.IsAny<string>()),
+                Times.AtLeastOnce(), $"Expected view model to be notified for popup at least once");
 
             // Cleanup.
             foreach (SharedClientScreen client in clients)
