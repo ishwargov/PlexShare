@@ -40,7 +40,6 @@ namespace PlexShareApp
         private static UploadPage uploadPage;
 
         public event PropertyChangingEventHandler? PropertyChanged;
-
         private bool isClient;
 
         public MainScreenView(string name, string email, string picPath, string url, string ip, string port, bool isServer)
@@ -49,6 +48,7 @@ namespace PlexShareApp
             isClient = !isServer;
             cloudOn = false;
             submissionsOn = false;
+
             // The client/server was verified to be correct.
             // We can add the client to meeting, and instantiate all modules.
             InitializeComponent();
@@ -76,8 +76,6 @@ namespace PlexShareApp
                 
                 // Clients should now be able to see the submissions Page
                 Submissions.Visibility = Visibility.Hidden;
-
-
             }
 
             Main.Content = dashboardPage;
@@ -92,28 +90,15 @@ namespace PlexShareApp
             clientSessionManager = SessionManagerFactory.GetClientSessionManager();
             SessionData sessionData = clientSessionManager._clientSessionData;
             UserData user = clientSessionManager.GetUser();
+
+            Trace.WriteLine("[UX] Instantiating Cloud Pages");
             uploadPage = new UploadPage(sessionData.sessionId.ToString(), user.userEmail, isServer);
-
-            //this is to disable backspace to avoid switch tabs
-            NavigationCommands.BrowseBack.InputGestures.Clear();
-
             submissionsPage = new SubmissionsPage(sessionData.sessionId.ToString(), user.userEmail);
 
-            // this is to disable backspace so backspace does not switch tabs
+            // This is to disable backspace to avoid switch tabs
+            // Whiteboard team was not able to use backspace since
+            // the backspace used it has navigation
             NavigationCommands.BrowseBack.InputGestures.Clear();
-
-        }
-
-        /// <summary>
-        /// Disable the space key for whiteboard
-        /// </summary>
-        /// <param name="e"></param>
-        protected override void OnPreviewKeyDown(KeyEventArgs e)
-        {
-            if (e.Key == Key.Space)
-            {
-                e.Handled = true;
-            }
         }
 
         /// <summary>
@@ -132,8 +117,6 @@ namespace PlexShareApp
         /// <summary>
         /// Transfer control to whiteboard on click
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void ScreenShareClick(object sender, RoutedEventArgs e)
         {
             Dashboard.Background = Brushes.DarkSlateGray;
@@ -186,8 +169,13 @@ namespace PlexShareApp
             }
         }
 
+        /// <summary>
+        /// To open the upload page
+        /// If the submissions page is open, close that page and open this page
+        /// </summary>
         private void UploadClick(object sender, RoutedEventArgs e)
         {
+            Trace.WriteLine("[UX] Upload button was clicked");
             if (cloudOn)
             {
                 Cloud.Background = Brushes.Transparent;
@@ -204,8 +192,15 @@ namespace PlexShareApp
             }
         }
 
+        /// <summary>
+        /// To open the upload page
+        /// If the submissions page is open, close that page and open this page
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void SubmissionsClick(object sender, RoutedEventArgs e)
         {
+            Trace.WriteLine("[UX] Submissions button was clicked");
             if (submissionsOn)
             {
                 Submissions.Background = Brushes.Transparent;
@@ -222,12 +217,22 @@ namespace PlexShareApp
             }
         }
 
+        /// <summary>
+        /// Show the IP and PORT if the mouse is hovered over
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ShowIpandPort(object sender, RoutedEventArgs e)
         {
-            Trace.WriteLine("[UX] Clicked the Info Button");
+            Trace.WriteLine("[UX] Hovered over the Info Button");
             ServerIPandPort.Visibility = Visibility.Visible;
         }
 
+        /// <summary>
+        /// To change the visibility of the serverIP and Port box back
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void HideIpandPort(object sender, RoutedEventArgs e)
         {
             ServerIPandPort.Visibility = Visibility.Hidden;
