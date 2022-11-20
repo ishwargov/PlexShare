@@ -12,10 +12,12 @@
  *****************************************************************************/
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using PlexShareContent.Enums;
 
 namespace PlexShareContent.DataModels
 {
+    [ExcludeFromCodeCoverage]
     public class ReceiveContentData
     {
         /// <summary>

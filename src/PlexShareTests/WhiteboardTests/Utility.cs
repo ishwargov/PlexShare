@@ -19,7 +19,7 @@ namespace PlexShareTests.WhiteboardTests
     [Collection("Sequential")]
     public class Utility
     {
-        public static bool CompareShapeItems(ShapeItem shape1, ShapeItem shape2)
+        public bool CompareShapeItems(ShapeItem shape1, ShapeItem shape2)
         {
             if (shape1 == null && shape2 == null)
                 return true;
@@ -30,7 +30,6 @@ namespace PlexShareTests.WhiteboardTests
                 && shape1.TextString == shape2.TextString
                 && shape1.Start == shape2.Start
                 && shape1.End == shape2.End
-                && shape1.ZIndex == shape2.ZIndex
                 && shape1.FontSize == shape2.FontSize
                 && shape1.StrokeThickness == shape2.StrokeThickness
                 && shape1.Id == shape2.Id
@@ -40,7 +39,7 @@ namespace PlexShareTests.WhiteboardTests
                 && shape1.PointList == shape2.PointList;
         }
 
-        public static bool CompareShapeItems(
+        public bool CompareShapeItems(
             List<ShapeItem> shapeItems1,
             List<ShapeItem> shapeItems2
         )
@@ -57,7 +56,7 @@ namespace PlexShareTests.WhiteboardTests
             return true;
         }
 
-        public static bool CompareBoardServerShapes(WBServerShape shape1, WBServerShape shape2)
+        public bool CompareBoardServerShapes(WBServerShape shape1, WBServerShape shape2)
         {
             Serializer serializer = new Serializer();
             if (shape1 == null && shape2 == null)
@@ -71,7 +70,8 @@ namespace PlexShareTests.WhiteboardTests
             return CompareShapeItems(shapeItems1, shapeItems2);
         }
 
-        public static ShapeItem CreateShape(Point start, Point end, string name, String id, string textDataOpt = "")
+        
+        public ShapeItem CreateShape(Point start, Point end, string name, string id, string textDataOpt = "")
         {
             Rect boundingBox = new(start, end);
             Geometry geometry;
@@ -118,10 +118,8 @@ namespace PlexShareTests.WhiteboardTests
 
             return newShape;
         }
-
-        public static List<ShapeItem> GenerateRandomBoardShapes(int n)
+        public ShapeItem CreateRandomShape()
         {
-            List<ShapeItem> boardShapes = new();
             Random random = new();
             Dictionary<int, string> shapeTypes = new Dictionary<int, string>()
             {
@@ -130,15 +128,22 @@ namespace PlexShareTests.WhiteboardTests
                 {2,"LineGeometry" },
                 {3, "GeometryGroup"}
             };
+            Point start = new Point(random.Next(0, 100), random.Next(0, 100));
+            Point end = new Point(random.Next(0, 100), random.Next(0, 100));
+            return CreateShape(start, end, shapeTypes[random.Next(0, 4)], RandomString(5));
+        }
+        public List<ShapeItem> GenerateRandomBoardShapes(int n)
+        {
+            List<ShapeItem> boardShapes = new();
+            Random random = new();
+            
             for (var i = 0; i < n; i++)
             {
-                Point start = new Point(random.Next(), random.Next());
-                Point end = new Point(random.Next(), random.Next());
-                boardShapes.Add(CreateShape(start, end, shapeTypes[random.Next(0,4)], RandomString(5)));
+                boardShapes.Add(CreateRandomShape());
             }
             return boardShapes;
         }
-        public static string RandomString(int length)
+        public string RandomString(int length)
         {
             Random random = new();
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -146,5 +151,12 @@ namespace PlexShareTests.WhiteboardTests
                 .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
+        public string SendThroughServer(List<ShapeItem> newShapes, Operation op)
+        {
+            Serializer _serializer = new();
+            var newSerializedShapes = _serializer.ConvertToSerializableShapeItem(newShapes);
+            WBServerShape wbShape = new WBServerShape(newSerializedShapes, op);
+            return _serializer.SerializeWBServerShape(wbShape);
+        }
     }
 }

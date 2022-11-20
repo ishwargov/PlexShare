@@ -8,6 +8,11 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
+using System.Linq;
+using System.Windows.Media.Imaging;
 
 namespace PlexShareScreenshare
 {
@@ -18,6 +23,10 @@ namespace PlexShareScreenshare
     {
         public int X { get; set; }
         public int Y { get; set; }
+
+        public bool Equals(Coordinates p) => X == p.X && Y == p.Y;
+        public static bool operator ==(Coordinates lhs, Coordinates rhs) => lhs.Equals(rhs);
+        public static bool operator !=(Coordinates lhs, Coordinates rhs) => !(lhs == rhs);
     }
 
     /// <summary>
@@ -28,6 +37,10 @@ namespace PlexShareScreenshare
         public int R { get; set; }
         public int G { get; set; }
         public int B { get; set; }
+
+        public bool Equals(RGB p) => R == p.R && G == p.G && B == p.B;
+        public static bool operator ==(RGB lhs, RGB rhs) => lhs.Equals(rhs);
+        public static bool operator !=(RGB lhs, RGB rhs) => !(lhs == rhs);
     }
 
     /// <summary>
@@ -37,6 +50,10 @@ namespace PlexShareScreenshare
     {
         public Coordinates Coordinates { get; set; }
         public RGB RGB { get; set; }
+
+        public bool Equals(Pixel p) => Coordinates == p.Coordinates && RGB == p.RGB;
+        public static bool operator ==(Pixel lhs, Pixel rhs) => lhs.Equals(rhs);
+        public static bool operator !=(Pixel lhs, Pixel rhs) => !(lhs == rhs);
     }
 
     /// <summary>
@@ -60,6 +77,10 @@ namespace PlexShareScreenshare
     {
         public Resolution Resolution { get; set; }
         public List<Pixel> Pixels { get; set; }
+
+        public bool Equals(Frame p) => Resolution == p.Resolution && Pixels.SequenceEqual(p.Pixels);
+        public static bool operator ==(Frame lhs, Frame rhs) => lhs.Equals(rhs);
+        public static bool operator !=(Frame lhs, Frame rhs) => !(lhs == rhs);
     }
 
     /// <summary>
@@ -94,6 +115,85 @@ namespace PlexShareScreenshare
             string prefix = withTimeStamp ? $"{DateTimeOffset.Now:F} | " : "";
 
             return $"{prefix}[{className}::{methodName}] : {message}";
+        }
+
+        /// <summary>
+        /// Convert an object of "Bitmap" to an object of type "BitmapSource"
+        /// </summary>
+        /// <param name="bitmap">
+        /// The object to convert to "BitmapSource"
+        /// </param>
+        /// <returns>
+        /// The converted "BitmapSource" object
+        /// </returns>
+        public static BitmapSource BitmapToBitmapSource(this Bitmap bitmap)
+        {
+            // Create new memory stream to temporarily save the bitmap there
+            using MemoryStream stream = new();
+            bitmap.Save(stream, ImageFormat.Bmp);
+
+            // Create a new BitmapSource and populate it with Bitmap
+            stream.Position = 0;
+            BitmapImage result = new();
+            result.BeginInit();
+
+            // According to MSDN, "The default OnDemand cache option retains access to the stream until the image is needed."
+            // Force the bitmap to load right now so we can dispose the stream.
+            result.CacheOption = BitmapCacheOption.OnLoad;
+
+            result.StreamSource = stream;
+            result.EndInit();
+            result.Freeze();
+            return result;
+        }
+
+        /// <summary>
+        /// Convert an object to type "BitmapSource" to an object of type "BitmapImage"
+        /// </summary>
+        /// <param name="bitmapSource">
+        /// The object to convert to "BitmapImage"
+        /// </param>
+        /// <returns>
+        /// The converted "BitmapImage" object
+        /// </returns>
+        public static BitmapImage BitmapSourceToBitmapImage(BitmapSource bitmapSource)
+        {
+            // Check if BitmapSource is already a BitmapImage
+            if (bitmapSource is not BitmapImage bitmapImage)
+            {
+                // If not, then create a new BitmapImage
+                bitmapImage = new BitmapImage();
+
+                // Create an encoder and add BitmapSource to it
+                BmpBitmapEncoder encoder = new();
+                encoder.Frames.Add(BitmapFrame.Create(bitmapSource));
+
+                // Save the encoder temporarily to a memory stream
+                using MemoryStream memoryStream = new();
+                encoder.Save(memoryStream);
+                memoryStream.Position = 0;
+
+                // Populate the BitmapImage
+                bitmapImage.BeginInit();
+                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapImage.StreamSource = memoryStream;
+                bitmapImage.EndInit();
+            }
+            return bitmapImage;
+        }
+
+        /// <summary>
+        /// Convert an object of "Bitmap" to an object of "BitmapImage"
+        /// </summary>
+        /// <param name="bitmap">
+        /// The object to convert to "BitmapImage"
+        /// </param>
+        /// <returns>
+        /// The converted "BitmapImage" object
+        /// </returns>
+        public static BitmapImage BitmapToBitmapImage(Bitmap bitmap)
+        {
+            return BitmapSourceToBitmapImage(BitmapToBitmapSource(bitmap));
         }
     }
 }

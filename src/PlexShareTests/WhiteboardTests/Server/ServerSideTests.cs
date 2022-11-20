@@ -14,10 +14,12 @@ namespace PlexShareTests.WhiteboardTests.Server
     public class ServerSideTests
     {
         private ServerSide server;
+        Utility utility;
         public ServerSideTests()
         {
             server = ServerSide.Instance;
             server.ClearServerList();
+            utility = new Utility();
         }
         [Fact]
         public void Clear_ServerListSizeZero()
@@ -46,8 +48,8 @@ namespace PlexShareTests.WhiteboardTests.Server
 
             //server.OnShapeReceived(Utility.CreateShape(start, end, "EllipseGeometry", "u0_f0"), Operation.Creation);
             //server.OnShapeReceived(Utility.CreateShape(start, end, "RectangleGeometry", "u0_f1"), Operation.Creation);
-            server.OnShapeReceived(Utility.CreateShape(start, end, "RectangleGeometry", "u0_f1"), Operation.Creation);
-            server.OnShapeReceived(Utility.CreateShape(start1, end1, "RectangleGeometry", "u0_f2"), Operation.Creation);
+            server.OnShapeReceived(utility.CreateShape(start, end, "RectangleGeometry", "u0_f1"), Operation.Creation);
+            server.OnShapeReceived(utility.CreateShape(start1, end1, "RectangleGeometry", "u0_f2"), Operation.Creation);
             Assert.Equal(server.GetServerListSize(), 2);
         }
 

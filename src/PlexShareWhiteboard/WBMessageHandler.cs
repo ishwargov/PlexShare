@@ -40,129 +40,121 @@ namespace PlexShareWhiteboard
                      {
                          lock (this)
                          {
-
-                             Serializer serializer = new Serializer();
-                             ServerSide serverSide = ServerSide.Instance;
-                             ServerCommunicator serverCommunicator = ServerCommunicator.Instance;
-                             if (isServer)
-                             {
-                                 try
-                                 {
-                                     Trace.WriteLine("[WhiteBoard] WBMessageHandler check0");
-                                     WBServerShape deserializedObject = serializer.DeserializeWBServerShape(serializedData);
-                                     Trace.WriteLine("[WhiteBoard] WBMessageHandler check1");
-                                     List<ShapeItem> shapeItems = serializer.ConvertToShapeItem(deserializedObject.ShapeItems);
-                                     Trace.WriteLine("[Whiteboard] WBMessageHandler.onDataReceived(Server): Receiving the json string " + deserializedObject.Op);
-                                     
-                                     //if(shapeItems.Count > 0)
-                                     //    Trace.WriteLine("[Whiteboard] Abhm :" + shapeItems[0].TextString + shapeItems[0].Id);
-                                     var userId = deserializedObject.UserID;
-                                     switch (deserializedObject.Op)
-                                     {
-                                         case Operation.RestoreSnapshot:
-                                             List<ShapeItem> loadedBoard = serverSide.OnLoadMessage(deserializedObject.SnapshotNumber, deserializedObject.UserID);
-                                             LoadBoard(loadedBoard);
-                                             break;
-                                         case Operation.CreateSnapshot:
-                                             serverSide.CreateSnapshotHandler(deserializedObject);
-                                             //DisplayMessage(deserializedObject.UserID, deserializedObject.SnapshotNumber); 
-                                             UpdateCheckList(deserializedObject.SnapshotNumber);
-                                             break;
-                                         case Operation.Creation:
-                                             CreateIncomingShape(shapeItems[0]);
-                                             Trace.WriteLine("[Whiteboard] Abhm :" + shapeItems[0].TextString + shapeItems[0].Id);
-                                             serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
-                                             break;
-                                         case Operation.Deletion:
-                                             DeleteIncomingShape(shapeItems[0]);
-                                             serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
-                                             break;
-                                         case Operation.ModifyShape:
-                                             ModifyIncomingShape(shapeItems[0]);
-                                             serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
-                                             break;
-                                         case Operation.Clear:
-                                             ShapeItems.Clear();
-                                             undoStack.Clear();
-                                             redoStack.Clear();
-                                             serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
-                                             break;
-                                         case Operation.NewUser:
-                                             LoadBoard(shapeItems,true);
-                                             serverSide.NewUserHandler(deserializedObject);
-                                             break;
-                                         default:
-                                             Console.WriteLine("[Whiteboard] WBMessageHandler.onDataReceived(Server): Unidentified Operation at ServerBoardCommunicator");
-                                             break;
-                                     }
-
-
-                                     Trace.WriteLine(
-                                         "[Whiteboard] WBMessageHandler.onDataReceived(Server): Took necessary actions on received object"
-                                     );
-                                 }
-                                 catch (Exception e)
-                                 {
-                                     Trace.WriteLine("[Whiteboard] WBMessageHandler.onDataReceived(Server): Exception Occured");
-                                     Trace.WriteLine(e.Message);
-                                 }
-                             }
-                             else
-                             {
-                                 try
-                                 {
-                                     Trace.WriteLine("[Whiteboard]  " + " Client msg received");
-                                     var deserializedShape = serializer.DeserializeWBServerShape(serializedData);
-                                     List<ShapeItem> shapeItems = serializer.ConvertToShapeItem(deserializedShape.ShapeItems);
-                                     Trace.WriteLine("[Whiteboard] WBMessageHandler.onDataReceived(Client): Receiving the json string " + deserializedShape.Op);
-
-                                     switch (deserializedShape.Op)
-                                     {
-                                         case Operation.RestoreSnapshot:
-                                             LoadBoard(shapeItems);
-                                             break;
-                                         case Operation.CreateSnapshot:
-                                             UpdateCheckList(deserializedShape.SnapshotNumber);
-                                             DisplayMessage(deserializedShape.UserID, deserializedShape.SnapshotNumber); 
-                                             break;
-                                         case Operation.Creation:
-                                             CreateIncomingShape(shapeItems[0]);
-                                             break;
-                                         case Operation.Deletion:
-                                             DeleteIncomingShape(shapeItems[0]);
-                                             break;
-                                         case Operation.ModifyShape:
-                                             ModifyIncomingShape(shapeItems[0]);
-                                             break;
-                                         case Operation.Clear:
-                                             ShapeItems.Clear();
-                                             undoStack.Clear();
-                                             redoStack.Clear();
-                                             break;
-                                         case Operation.NewUser:
-                                             LoadBoard(shapeItems,true);
-                                             break;
-                                     }
-                                 }
-                                 catch (Exception e)
-                                 {
-                                     Trace.WriteLine("[Whiteboard] WBMessageHandler.onDataReceived(Client): Exception Occured");
-                                     Trace.WriteLine(e.Message);
-                                 }
-                             }
+                             DataHandler(serializedData);
                          }
                      })
                      ,
                      serializedData);
         }
         
+        public void DataHandler(string serializedData)
+        {
 
-        private void DisplayMessage(string userID, int snapshotNumber)
+            Serializer serializer = new Serializer();
+            ServerSide serverSide = ServerSide.Instance;
+            if (isServer)
+            {
+                try
+                {
+                    WBServerShape deserializedObject = serializer.DeserializeWBServerShape(serializedData);
+                    List<ShapeItem> shapeItems = serializer.ConvertToShapeItem(deserializedObject.ShapeItems);
+                    Trace.WriteLine("[Whiteboard] WBMessageHandler.onDataReceived(Server): Receiving the json string " + deserializedObject.Op);
+                    switch (deserializedObject.Op)
+                    {
+                        case Operation.RestoreSnapshot:
+                            List<ShapeItem> loadedBoard = serverSide.OnLoadMessage(deserializedObject.SnapshotNumber, deserializedObject.UserID);
+                            LoadBoard(loadedBoard);
+                            break;
+                        case Operation.CreateSnapshot:
+                            serverSide.CreateSnapshotHandler(deserializedObject);
+                            UpdateCheckList(deserializedObject.SnapshotNumber);
+                            break;
+                        case Operation.Creation:
+                            CreateIncomingShape(shapeItems[0]);
+                            serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
+                            break;
+                        case Operation.Deletion:
+                            DeleteIncomingShape(shapeItems[0]);
+                            serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
+                            break;
+                        case Operation.ModifyShape:
+                            ModifyIncomingShape(shapeItems[0]);
+                            serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
+                            break;
+                        case Operation.Clear:
+                            ShapeItems.Clear();
+                            undoStack.Clear();
+                            redoStack.Clear();
+                            serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
+                            break;
+                        case Operation.NewUser:
+                            LoadBoard(shapeItems, true);
+                            serverSide.NewUserHandler(deserializedObject);
+                            break;
+                    }
+
+
+                    Trace.WriteLine(
+                        "[Whiteboard] WBMessageHandler.onDataReceived(Server): Took necessary actions on received object"
+                    );
+                }
+                catch (Exception e)
+                {
+                    Trace.WriteLine("[Whiteboard] WBMessageHandler.onDataReceived(Server): Exception Occured");
+                    Trace.WriteLine(e.Message);
+                }
+            }
+            else
+            {
+                try
+                {
+                    Trace.WriteLine("[Whiteboard]  " + " Client msg received");
+                    var deserializedShape = serializer.DeserializeWBServerShape(serializedData);
+                    List<ShapeItem> shapeItems = serializer.ConvertToShapeItem(deserializedShape.ShapeItems);
+                    Trace.WriteLine("[Whiteboard] WBMessageHandler.onDataReceived(Client): Receiving the json string " + deserializedShape.Op);
+
+                    switch (deserializedShape.Op)
+                    {
+                        case Operation.RestoreSnapshot:
+                            LoadBoard(shapeItems);
+                            break;
+                        case Operation.CreateSnapshot:
+                            UpdateCheckList(deserializedShape.SnapshotNumber);
+                            DisplayMessage(deserializedShape.UserID, deserializedShape.SnapshotNumber);
+                            break;
+                        case Operation.Creation:
+                            CreateIncomingShape(shapeItems[0]);
+                            break;
+                        case Operation.Deletion:
+                            DeleteIncomingShape(shapeItems[0]);
+                            break;
+                        case Operation.ModifyShape:
+                            ModifyIncomingShape(shapeItems[0]);
+                            break;
+                        case Operation.Clear:
+                            ShapeItems.Clear();
+                            undoStack.Clear();
+                            redoStack.Clear();
+                            break;
+                        case Operation.NewUser:
+                            LoadBoard(shapeItems, true);
+                            break;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Trace.WriteLine("[Whiteboard] WBMessageHandler.onDataReceived(Client): Exception Occured");
+                    Trace.WriteLine(e.Message);
+                }
+            }
+        }
+
+        public void DisplayMessage(string userID, int snapshotNumber)
         {
             throw new NotImplementedException();
         }
 
-        private void LoadBoard(List<ShapeItem> shapeItems, bool isNewUser = false)
+        public void LoadBoard(List<ShapeItem> shapeItems, bool isNewUser = false)
         {
             if (!isNewUser)
             {

@@ -14,16 +14,120 @@ using PlexShareWhiteboard.BoardComponents;
 using System.Windows.Shapes;
 using Moq;
 using System.Windows.Input;
+using PlexShareWhiteboard.Server;
 
 namespace PlexShareTests.WhiteboardTests
 {
+
+    [Collection("Sequential")]
+
     public class TextBoxOperationsTests
     {
         Point start = new(1, 1);
-        Point end = new(5, 5);
+        private ServerSide server;
+        public TextBoxOperationsTests()
+        {
+            server = ServerSide.Instance;
+            server.ClearServerList();
+        }
+        [Fact]
+        public void Test10()
+        {
+            WhiteBoardViewModel viewModel = WhiteBoardViewModel.Instance;
+            viewModel.SetUserId(20);
 
-        //[Fact]
-        /*public void Test10()
+            viewModel.ChangeMode("create_textbox");
+            start = new(15, 15);
+            viewModel.ShapeStart(start);
+            viewModel.ShapeFinished(new Point());
+            viewModel.TextBoxStartChar('(');
+            viewModel.TextBoxStartChar('H');
+            viewModel.TextBoxStartChar('e');
+            viewModel.TextBoxStartChar('l');
+            viewModel.TextBoxStartChar('l');
+            viewModel.TextBoxStartChar('o');
+            viewModel.TextBoxStartChar('!');
+            viewModel.TextBoxStartChar('!');
+            viewModel.TextBoxStartChar(' ');
+            viewModel.TextBoxStartChar('1');
+            viewModel.TextBoxStartChar('2');
+            viewModel.TextBoxStartChar('3');
+            viewModel.TextBoxStartChar('*');
+            viewModel.TextBoxStartChar('@');
+            viewModel.TextBoxStartChar('#');
+            viewModel.TextBoxStartChar(')');
+
+            Assert.Equal("(Hello!! 123*@#)", viewModel.textBoxLastShape.TextString);
+            viewModel.ShapeStart(new Point(60, 60));
+            viewModel.ShapeFinished(new Point());
+            viewModel.ShapeItems.Clear();
+            viewModel.undoStack.Clear();
+            viewModel.redoStack.Clear();
+            server.ClearServerList();
+
+        }
+
+        [Fact]
+        public void Test11()
+        {
+            WhiteBoardViewModel viewModel = WhiteBoardViewModel.Instance;
+            viewModel.SetUserId(50);
+
+            viewModel.ChangeMode("create_textbox");
+            start = new(45, 45);
+            viewModel.ShapeStart(start);
+            viewModel.ShapeFinished(new Point());
+            viewModel.TextBoxStartChar('T');
+            viewModel.TextBoxStartChar('E');
+            viewModel.TextBoxStartChar('X');
+            viewModel.TextBoxStartChar('T');
+            viewModel.TextBoxStartChar('+');
+            viewModel.TextBoxStartChar(']');
+
+            Assert.Equal("TEXT+]", viewModel.textBoxLastShape.TextString);
+            viewModel.TextBoxStartChar('\b');
+            Assert.Equal("TEXT+", viewModel.textBoxLastShape.TextString);
+            viewModel.TextBoxStartChar('\b');
+            Assert.Equal("TEXT", viewModel.textBoxLastShape.TextString);
+            viewModel.TextBoxStartChar(':');
+            Assert.Equal("TEXT:", viewModel.textBoxLastShape.TextString);
+            viewModel.ShapeStart(new Point(10, 10));
+            viewModel.ShapeFinished(new Point());
+            viewModel.ShapeItems.Clear();
+            viewModel.undoStack.Clear();
+            viewModel.redoStack.Clear();
+            server.ClearServerList();
+
+        }
+
+        [Fact]
+        public void Test12()
+        {
+            WhiteBoardViewModel viewModel = WhiteBoardViewModel.Instance;
+            viewModel.SetUserId(50);
+
+            viewModel.ChangeMode("create_textbox");
+            start = new(70, 70);
+            viewModel.ShapeStart(start);
+            viewModel.ShapeFinished(new Point());
+            viewModel.TextBoxStartChar('a');
+            viewModel.TextBoxStartChar('b');
+            viewModel.TextBoxStartChar('c');
+            viewModel.ChangeMode("create_rectangle");
+            Assert.Equal("abc", viewModel.undoStack.Peek().NewShape.TextString);
+            viewModel.ChangeMode("select_mode");
+
+            viewModel.ShapeStart(new Point(70, 10));
+            viewModel.ShapeFinished(new Point());
+            viewModel.ShapeItems.Clear();
+            viewModel.undoStack.Clear();
+            viewModel.redoStack.Clear();
+            server.ClearServerList();
+
+        }
+
+        [Fact]
+        public void Test13()
         {
             WhiteBoardViewModel viewModel = WhiteBoardViewModel.Instance;
             viewModel.SetUserId(2);
@@ -32,26 +136,59 @@ namespace PlexShareTests.WhiteboardTests
             start = new(15, 15);
             viewModel.ShapeStart(start);
             viewModel.ShapeFinished(new Point());
-
-
-
-            KeyConverter k = new KeyConverter();
-            Key mykey = (Key)k.ConvertFromString("H");
-            viewModel.TextBoxStart(mykey);
-            mykey = (Key)k.ConvertFromString("e");
-            viewModel.TextBoxStart(mykey);
-            mykey = (Key)k.ConvertFromString("l");
-            viewModel.TextBoxStart(mykey);
-            mykey = (Key)k.ConvertFromString("l");
-            viewModel.TextBoxStart(mykey);
-            mykey = (Key)k.ConvertFromString("o");
-            viewModel.TextBoxStart(mykey);
-
-
+            viewModel.TextBoxStartChar('a');
+            viewModel.TextBoxStartChar('b');
+            viewModel.TextBoxStartChar('c');
             viewModel.ShapeStart(new Point(30, 30));
-            Assert.Equal("Hello", viewModel.textBoxLastShape.TextString);
-        }*/
+            viewModel.ShapeFinished(new Point());
 
+            viewModel.ChangeMode("create_rectangle");
+            Assert.Equal("abc", viewModel.undoStack.Peek().NewShape.TextString);
+
+            viewModel.ChangeMode("create_textbox");
+            start = new(45, 45);
+            viewModel.ShapeStart(start);
+            viewModel.ShapeFinished(new Point());
+            viewModel.TextBoxStartChar('U');
+            viewModel.TextBoxStartChar('V');
+            viewModel.TextBoxStartChar('W');
+            viewModel.TextBoxStartChar('X');
+            viewModel.TextBoxStartChar('Y');
+            viewModel.TextBoxStartChar('Z');
+
+            viewModel.ChangeMode("select_mode");
+            viewModel.ShapeStart(new Point(48, 48));
+            Assert.Equal(viewModel.select.selectedObject.Geometry.GetType().Name, "GeometryGroup");
+            viewModel.ShapeBuilding(new Point(60, 60));
+            viewModel.ShapeFinished(new Point());
+            viewModel.ShapeStart(new Point(48, 48));
+            viewModel.ShapeFinished(new Point());
+
+            Assert.Equal(viewModel.textBoxLastShape.Start, new Point(57, 57));
+            UndoStackElement popFromUndo = viewModel.Undo();
+            //Assert.Equal(popFromUndo.PrvShape.Start, new Point(45, 45));
+            viewModel.ChangeMode("select_mode");
+            viewModel.ShapeStart(new Point(48, 48));
+            Assert.Equal(viewModel.select.selectedObject.Start, new Point(45, 45));
+            viewModel.ShapeItems.Clear();
+            viewModel.undoStack.Clear();
+            viewModel.redoStack.Clear();
+            server.ClearServerList();
+
+
+        }
 
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+

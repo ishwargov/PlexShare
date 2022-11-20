@@ -117,13 +117,10 @@ namespace PlexShareContent.Server
                         Trace.WriteLine("[ContentServer] MessageType is File, Calling FileServer.Receive()");
                         receiveMessageData = _fileServer.Receive(messageData);
                         break;
-
                     case MessageType.HistoryRequest:
-                        Trace.WriteLine(
-                            "[ContentServer] MessageType is HistoryRequest, Calling ContentServer.SSendAllMessagesToClient");
+                        Trace.WriteLine("[ContentServer] MessageType is HistoryRequest, Calling ContentServer.SSendAllMessagesToClient");
                         SSendAllMessagesToClient(messageData.SenderID);
                         return;
-
                     default:
                         Trace.WriteLine("[ContentServer] Unknown Message Type");
                         return;

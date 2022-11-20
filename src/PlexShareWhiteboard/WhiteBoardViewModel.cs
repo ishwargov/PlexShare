@@ -44,7 +44,7 @@ namespace PlexShareWhiteboard
         public ShapeItem textBoxLastShape = null;
 
         int blobSize = 12;
-        IShapeListener machine;
+        public IShapeListener machine;
         UndoStackElement stackElement;
         public Boolean isServer=true;
 

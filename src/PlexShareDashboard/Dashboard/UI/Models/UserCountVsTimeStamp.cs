@@ -1,4 +1,9 @@
-﻿using System;
+﻿/// <author>Rupesh Kumar</author>
+/// <summary>
+///     Class model to store the usercount and timestamp values 
+/// </summary>
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
