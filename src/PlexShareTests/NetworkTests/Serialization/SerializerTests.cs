@@ -4,11 +4,12 @@
 /// </summary>
 
 using PlexShareNetwork.Queues;
+using PlexShareNetwork.Serialization;
 using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace PlexShareNetwork.Serialization.Tests
+namespace PlexShareTests.NetworkTests.Serialization
 {
     public class SerializerTests
     {

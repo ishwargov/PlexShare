@@ -6,10 +6,11 @@
 
 using PlexShareNetwork.Communication;
 using PlexShareNetwork.Queues;
+using PlexShareNetwork.Sockets;
 using System.Net;
 using System.Net.Sockets;
 
-namespace PlexShareNetwork.Sockets.Tests
+namespace PlexShareTests.NetworkTests.Sockets
 {
 	public class SendQueueListenerClientTests
 	{
@@ -74,6 +75,7 @@ namespace PlexShareNetwork.Sockets.Tests
                 sendPackets, sendingQueue);
             NetworkTestGlobals.PacketsReceiveAssert(
                 sendPackets, receivingQueue, count);
+            sendQueueListenerClient.Stop();
         }
 
         /// <summary>
@@ -127,6 +129,30 @@ namespace PlexShareNetwork.Sockets.Tests
         public void MultipleLargePacketsSendTest()
         {
             PacketsSendTest(_largePacketSize, _multiplePacketsCount);
+        }
+
+        /// <summary>
+        /// Tests error catch in SendQueueListenerClient
+        /// </summary>
+        /// <returns> void </returns>
+        [Fact]
+        public void SendQueueListenerClientErrorCatchTest()
+        {
+            // start SendQueueListenerClient with null
+            // socket so error must be thrown and catch
+            TcpClient clientSocket = null;
+            SendingQueue sendingQueue = new();
+            sendingQueue.RegisterModule(_module, true);
+            SendQueueListenerClient sendQueueListenerClient =
+                new(sendingQueue, clientSocket);
+            sendQueueListenerClient.Start();
+            Packet packet = new("Data", _destination, _module);
+            sendingQueue.Enqueue(packet);
+            while (sendingQueue.Size() != 0)
+            {
+                Thread.Sleep(100);
+            }
+            sendQueueListenerClient.Stop();
         }
     }
 }

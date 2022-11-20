@@ -3,12 +3,13 @@
 /// This file contains all the tests written for the sending queues
 /// </summary>
 
+using PlexShareNetwork.Queues;
 using System.Collections;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PlexShareNetwork.Queues.Tests
+namespace PlexShareTests.NetworkTests.Queues
 {
     public class ReceivingQueueTests
     {
