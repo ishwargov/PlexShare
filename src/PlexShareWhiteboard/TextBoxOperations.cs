@@ -181,5 +181,27 @@ namespace PlexShareWhiteboard
 
             //Trace.WriteLine("[Whiteboard]  " + "text is currently : " + text+ " over");
         }
+        public void TextBoxAddding(string modeVal)
+        {
+            if (modeVal == "create_textbox")
+            {
+                if (textBoxLastShape != null && textBoxLastShape.TextString != null &&
+                    textBoxLastShape.TextString.Length != 0)
+                {
+                    TextFinishPush();
+                }
+                else if (textBoxLastShape != null)
+                {
+                    for (int i = 0; i < ShapeItems.Count; ++i)
+                    {
+                        if (textBoxLastShape.Id == ShapeItems[i].Id)
+                        {
+                            ShapeItems.RemoveAt(i);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     }
 }

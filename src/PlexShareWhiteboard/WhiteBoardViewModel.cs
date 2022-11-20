@@ -21,36 +21,37 @@ namespace PlexShareWhiteboard
 {
     public partial class WhiteBoardViewModel : INotifyPropertyChanged
     {
-        //public AsyncObservableCollection<ShapeItem> ShapeItems { get; set; }
-        public ObservableCollection<ShapeItem> ShapeItems { get; set; }
+        public ObservableCollection<ShapeItem> ShapeItems { get; set; }    // this contains all the shape items in the canvas
         public SelectObject select = new();
-        List<ShapeItem> highlightShapes;
+        List<ShapeItem> highlightShapes;                                   // for select
 
-
-        public bool canDraw = false;
+        public bool canDraw = false;                                       // a user can draw only if it is set to true
         String currentId = "u0_f0";
         int currentIdVal = 0;
         public string userId = "init";
-        int currentZIndex = 0;
+        int currentZIndex = 0;                                             // z index indicates which object is in front
         Point textBoxPoint = new (100, 100);
 
-        Brush fillBrush = Brushes.Azure;
-        Brush strokeBrush = Brushes.Black;
-        int strokeThickness = 1;
-        string mode = "select_object";
-        public string modeForUndo = "select_object";
+        Brush fillBrush = null;                                            // stores color of the object (fill colour)
+        Brush strokeBrush = Brushes.Black;                                 // stores color of the border
+        int strokeThickness = 1;                                           // thickness of the stroke
+        string mode = "select_object";                                     // declared for identifying which operation
+        public string modeForUndo = "select_object";                       // declared for pushing to undo stack element         
         ShapeItem currentShape = null;
         public ShapeItem lastShape = null;
         public ShapeItem textBoxLastShape = null;
 
-        int blobSize = 12;
-        public IShapeListener machine;
+        int blobSize = 12;                                                 // size of the highlighting rectangle box
+        public IShapeListener machine;                                     // can be client or server
         UndoStackElement stackElement;
-        public Boolean isServer=true;
+        public Boolean isServer=true;                                      // indicates whether a machine is server or client
 
-        public ObservableCollection<int> CheckList { get; set; }
-        List<int> snapshotNumbers = new() { 1, 2, 3, 4, 5 };
+        public ObservableCollection<int> CheckList { get; set; }           //
+        List<int> snapshotNumbers = new() { 1, 2, 3, 4, 5 };               //
 
+        /// <summary>
+        /// constructor
+        /// </summary>
         private WhiteBoardViewModel()
         {
             // this will become client and server 
@@ -66,6 +67,7 @@ namespace PlexShareWhiteboard
             CheckList.Add(3);*/
 
         }
+
         private static WhiteBoardViewModel instance;
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -75,6 +77,9 @@ namespace PlexShareWhiteboard
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
 
+        /// <summary>
+        /// singleton pattern
+        /// </summary>
         public static WhiteBoardViewModel Instance
         {
             get
@@ -88,7 +93,6 @@ namespace PlexShareWhiteboard
             }
         }
 
-        //public void SetUserId(string _userId)
         public void SetUserId(int _userId)
         {
             userId = _userId.ToString();
@@ -109,16 +113,25 @@ namespace PlexShareWhiteboard
                 machine = ClientSide.Instance;
                 machine.SetUserId(userId);
             }
-            //machine.SetVMRef(this);
             canDraw = true;
             Trace.WriteLine("[whiteboard] setuserid over candraw" + canDraw);
 
         }
+
+        /// <summary>
+        /// increments the currentIdVal and updates the current id
+        /// the current id is set as the userid while creation of a shape
+        /// </summary>
         public void IncrementId()
         {
             currentIdVal++;
             currentId = "u" + userId + "_f" + currentIdVal;
         }
+
+        /// <summary>
+        /// This function is used to push a text box shape to undo stack as well as send it to server.
+        /// This is called by TextBoxAdding function.
+        /// </summary>
         public void TextFinishPush()
         {
             stackElement = new UndoStackElement(textBoxLastShape, textBoxLastShape, Operation.Creation);
@@ -130,40 +143,26 @@ namespace PlexShareWhiteboard
                 machine.OnShapeReceived(textBoxLastShape, Operation.Creation);
             }
         }
+
+        /// <summary>
+        /// sets the current mode as the given mode
+        /// </summary>
+        /// <param name="new_mode"></param>
         public void ChangeMode(string new_mode)
         {
-            if (mode == "create_textbox")
-            {
-                if (textBoxLastShape != null && textBoxLastShape.TextString != null &&
-                         textBoxLastShape.TextString.Length != 0)
-                {
-
-                    TextFinishPush();
-                    Debug.WriteLine("entering undo modeeeee");
-
-                }
-                else if (textBoxLastShape != null)
-                {
-                    for (int i = 0; i < ShapeItems.Count; ++i)
-                    {
-                        if (textBoxLastShape.Id == ShapeItems[i].Id)
-                        {
-                            ShapeItems.RemoveAt(i);
-                            break;
-                        }
-                    }
-                }
-                textBoxLastShape = null;
-            }
+            TextBoxAddding(mode);
             mode = new_mode;
         }
 
+        /// <summary>
+        /// Used to update the fill color of a particular shape with a given color
+        /// </summary>
+        /// <param name="shape"></param>
+        /// <param name="fillBrush"></param>
+        /// <returns name="newShape"></returns>
         public ShapeItem UpdateFillColor(ShapeItem shape, Brush fillBrush)
         {
-            Debug.WriteLine(" Updaing color in select with old color " + shape.Fill + " and new color " + fillBrush);
             shape.Fill = fillBrush;
-
-
             ShapeItem newShape = shape.DeepClone();
             newShape.Fill = fillBrush;
 
@@ -177,19 +176,19 @@ namespace PlexShareWhiteboard
             return newShape;
         }
 
-
+        /// <summary>
+        /// changes the global fill color of the brush with a given color
+        /// if an object is selected, it is passed to UpdateFillColor
+        /// </summary>
+        /// <param name="br"></param>
         public void ChangeFillBrush(SolidColorBrush br)
         {
-            Debug.WriteLine("ChangeFillBrush called");
             fillBrush = br;
 
             if (select.ifSelected == true)
             {
-
-                Debug.WriteLine("ChangeFillBrush select color changed to " + br.ToString());
-
-                //select.initialSelectionObject = select.selectedObject;
                 ShapeItem updateSelectShape = null;
+
                 foreach(ShapeItem s in ShapeItems)
                     if (s.Id == select.selectedObject.Id)
                         updateSelectShape = s;
@@ -197,7 +196,7 @@ namespace PlexShareWhiteboard
                 select.initialSelectionObject = updateSelectShape.DeepClone();
                 lastShape = UpdateFillColor(updateSelectShape, br);
                 modeForUndo = "modify";
-                ShapeFinished(new Point());
+                ShapeFinished(new Point());                                     // called so that it is passed to undo stack
             }
         }
         public ShapeItem UpdateStrokeColor(ShapeItem shape, Brush strokeBrush)
@@ -217,10 +216,12 @@ namespace PlexShareWhiteboard
             return newShape;
         }
 
-
+        /// <summary>
+        /// changes the global border color of the brush with a given color
+        /// </summary>
+        /// <param name="br"></param>
         public void ChangeStrokeBrush(SolidColorBrush br)
         {
-            Debug.WriteLine("ChangeStrokeBrush called");
             strokeBrush = br;
 
             if (select.ifSelected == true)
@@ -238,21 +239,22 @@ namespace PlexShareWhiteboard
             }
         }
 
-        //public void fillColour(SolidColorBrush br)
-
+        /// <summary>
+        /// changes the stroke thickness of the brush as a whole 
+        /// </summary>
+        /// <param name="thickness"></param>
         public void ChangeStrokeThickness(int thickness)
         {
             strokeThickness = thickness;
         }
+
+        /// <summary>
+        /// function to increment the current zindex
+        /// after every new shape is created and added to shape item list, this function is called
+        /// </summary>
         public void IncreaseZIndex()
         {
             currentZIndex++;
         }
-
-        public void DecreaseZIndex()
-        {
-            currentZIndex--;
-        }
-        
     }
 }

@@ -41,16 +41,7 @@ namespace PlexShareWhiteboard
         public ShapeItem UpdateCurve(Point a, Point _anchorPoint)
         {
             PathGeometry g1 = (PathGeometry)lastShape.Geometry;
-
-            //var line = new LineGeometry(a, _anchorPoint);
-            //Geometry geometry = new EllipseGeometry(a, 0.1, 0.1);
-
-            //g1.AddGeometry(geometry);
-            //g1.AddGeometry(line);
-
             AddToPathGeometry(g1, a, _anchorPoint);
-
-
 
             ShapeItem newShape = new()
             {
@@ -76,9 +67,9 @@ namespace PlexShareWhiteboard
             }
             return newShape;
         }
+
         public void TransformCurve(Point a, ShapeItem shape)
         {
-
             ShapeItem x = shape;
             PathGeometry g1 = new();
 
@@ -150,26 +141,8 @@ namespace PlexShareWhiteboard
             {
                 Point curPoint = select.finalPointList[i];
                 Point prevPoint = select.finalPointList[i - 1];
-                //var line = new LineGeometry(curPoint, prevPoint);
-                //g1.AddGeometry(line);
-
                 AddToPathGeometry(g1, curPoint, prevPoint);
-
             }
-
-
-            //ShapeItem newShape = new()
-            //{
-            //    Geometry = g1,
-            //    Fill = fillBrush,
-            //    Stroke = strokeBrush,
-            //    ZIndex = currentZIndex,
-            //    StrokeThickness = strokeThickness,
-            //    AnchorPoint = a,
-            //    Id = shape.Id,
-            //    PointList = x.PointList
-            //};
-
 
             ShapeItem newShape = shape.DeepClone();
             newShape.Geometry = g1;
@@ -195,15 +168,16 @@ namespace PlexShareWhiteboard
                 // horitzontal
                 ShapeItem x = shape;
                 PathGeometry g1 = new();
-
                 select.finalPointList.Clear();
 
                 // X fixing
                 double extraX = a.X - select.initialSelectionPoint.X;
                 double width = select.selectedObject.Geometry.Bounds.Width;
                 double newWidth = width + extraX;
+
                 if (select.selectBox == 6)
                     newWidth = width - extraX;
+
                 double scaleX = newWidth / width;
                 double rectTopX = select.selectedObject.Geometry.Bounds.X;
                 double rectBottomX = select.selectedObject.Geometry.Bounds.X + select.selectedObject.Geometry.Bounds.Width;
@@ -216,7 +190,6 @@ namespace PlexShareWhiteboard
                         curPoint.X = rectTopX + (curPoint.X - rectTopX) * scaleX;
                         select.finalPointList.Add(curPoint);
                     }
-
                 }
                 else
                 {
@@ -234,23 +207,13 @@ namespace PlexShareWhiteboard
                 {
                     Point curPoint = select.finalPointList[i];
                     Point prevPoint = select.finalPointList[i - 1];
-                    //var line = new LineGeometry(curPoint, prevPoint);
-                    //g1.AddGeometry(line);
                     AddToPathGeometry(g1, curPoint, prevPoint);
-
                 }
 
-                ShapeItem newShape = new()
-                {
-                    Geometry = g1,
-                    Fill = fillBrush,
-                    Stroke = strokeBrush,
-                    ZIndex = currentZIndex,
-                    StrokeThickness = strokeThickness,
-                    AnchorPoint = a,
-                    Id = shape.Id,
-                    PointList = x.PointList
-                };
+                ShapeItem newShape = shape.DeepClone();
+                newShape.Geometry = g1;
+                newShape.AnchorPoint = a;
+                newShape.PointList = x.PointList;
 
                 for (int i = 0; i < ShapeItems.Count; i++)
                 {
@@ -259,22 +222,21 @@ namespace PlexShareWhiteboard
                         ShapeItems[i] = newShape;
                     }
                 }
-
             }
             else if (select.selectBox == 5 || select.selectBox == 8)
             {
-
                 ShapeItem x = shape;
                 PathGeometry g1 = new PathGeometry();
-
                 select.finalPointList.Clear();
 
                 // Y fixing
                 double extraY = a.Y - select.initialSelectionPoint.Y;
                 double height = select.selectedObject.Geometry.Bounds.Height;
                 double newHeight = height - extraY;
+
                 if (select.selectBox == 8)
                     newHeight = height + extraY;
+
                 double scaleY = newHeight / height;
                 double rectTopY = select.selectedObject.Geometry.Bounds.Y;
                 double rectBottomY = select.selectedObject.Geometry.Bounds.Y + select.selectedObject.Geometry.Bounds.Height;
@@ -299,31 +261,13 @@ namespace PlexShareWhiteboard
                     }
                 }
 
-
                 // adding to geometry
                 for (int i = 1; i < select.finalPointList.Count; i++)
                 {
                     Point curPoint = select.finalPointList[i];
                     Point prevPoint = select.finalPointList[i - 1];
-                    //var line = new LineGeometry(curPoint, prevPoint);
-                    //g1.AddGeometry(line);
-
                     AddToPathGeometry(g1, curPoint, prevPoint);
-
                 }
-
-                //ShapeItem newShape = new()
-                //{
-                //    Geometry = g1,
-                //    Fill = fillBrush,
-                //    Stroke = strokeBrush,
-                //    ZIndex = currentZIndex,
-                //    StrokeThickness = strokeThickness,
-                //    AnchorPoint = a,
-                //    Id = shape.Id,
-                //    PointList = x.PointList
-                //};
-
 
                 ShapeItem newShape = shape.DeepClone();
                 newShape.Geometry = g1;
@@ -340,7 +284,6 @@ namespace PlexShareWhiteboard
                 lastShape = newShape;
                 //HighLightIt(shape.Geometry.Bounds);
 
-
             }
         }
 
@@ -349,36 +292,22 @@ namespace PlexShareWhiteboard
             Point prevPoint = shape.PointList[0];
             var g1 = new PathGeometry();
             List<Point> lis = new();
+
             for (int i = 0; i < shape.PointList.Count; ++i)
             {
                 Point p = shape.PointList[i];
-               
                 double newx = bx - shape.AnchorPoint.X + p.X;
                 double newy = by - shape.AnchorPoint.Y + p.Y;
                 Point newPoint = new (newx, newy);
-
                 lis.Add(newPoint);
+
                 if (i != 0)
                 {
-                    //var line = new LineGeometry(newPoint, prevPoint);
-                    //g1.AddGeometry(line);
-
                     AddToPathGeometry(g1, newPoint, prevPoint);
                 }
+
                 prevPoint = newPoint;
             }
-
-            //ShapeItem newShape = new()
-            //{
-            //    Geometry = g1,
-            //    Fill = fillBrush,
-            //    Stroke = strokeBrush,
-            //    ZIndex = currentZIndex,
-            //    StrokeThickness = strokeThickness,
-            //    AnchorPoint = p1,
-            //    Id = shape.Id,
-            //    PointList = lis
-            //};
 
             ShapeItem newShape = shape.DeepClone();
             newShape.Geometry = g1;
@@ -392,6 +321,7 @@ namespace PlexShareWhiteboard
                     ShapeItems[i] = newShape;
                 }
             }
+
             lastShape = newShape;
             HighLightIt(newShape.Geometry.Bounds);
         }
@@ -403,13 +333,6 @@ namespace PlexShareWhiteboard
             {
                 Point curPoint = select.finalPointList[i];
                 Point prevPoint = select.finalPointList[i - 1];
-                //var line = new LineGeometry(curPoint, prevPoint);
-                //g1.AddGeometry(line);
-
-                //Geometry geometry = new EllipseGeometry(curPoint, 0.1, 0.1);
-
-                //g1.AddGeometry(geometry);
-
                 AddToPathGeometry(g1, curPoint, prevPoint);
             }
 
@@ -417,18 +340,6 @@ namespace PlexShareWhiteboard
 
             foreach (Point p in select.finalPointList)
                 newPointList.Add(p);
-
-
-            //ShapeItem updatingShape = new()
-            //{
-            //    Geometry = g1,
-            //    Fill = fillBrush,
-            //    Stroke = strokeBrush,
-            //    ZIndex = currentZIndex,
-            //    StrokeThickness = strokeThickness,
-            //    Id = select.selectedObject.Id,
-            //    PointList = newPointList
-            //};
 
             ShapeItem updatingShape = select.selectedObject.DeepClone();
             updatingShape.Geometry = g1;
@@ -441,7 +352,7 @@ namespace PlexShareWhiteboard
                     ShapeItems[i] = updatingShape;
                 }
             }
-
+            lastShape = updatingShape;
         }
     }
 }
