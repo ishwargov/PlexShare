@@ -11,29 +11,29 @@ namespace PlexShareTests.UX.HomePageTests
             public bool AddClient(string ipAddress, int ports, string username)
             {
                 if (string.IsNullOrWhiteSpace(ipAddress) || string.IsNullOrWhiteSpace(username) ||
-                    ipAddress.Contains(" "))
+                ipAddress.Contains(" "))
                     return false;
                 return true;
             }
 
             /// <summary>
-            ///     Removes the user from the meeting by deleting their
-            ///     data from the session.
+            /// Removes the user from the meeting by deleting their
+            /// data from the session.
             /// </summary>
             public void RemoveClient()
             {
             }
 
             /// <summary>
-            ///     End the meeting for all, creating and storing the summary and analytics.
+            /// End the meeting for all, creating and storing the summary and analytics.
             /// </summary>
             public void EndMeet()
             {
             }
 
             /// <summary>
-            ///     Get the summary of the chats that were sent from the start of the
-            ///     meet till the function was called.
+            /// Get the summary of the chats that were sent from the start of the
+            /// meet till the function was called.
             /// </summary>
             /// <returns> Summary of the chats as a string. </returns>
             public void GetSummary()
@@ -42,7 +42,7 @@ namespace PlexShareTests.UX.HomePageTests
 
 
             /// <summary>
-            ///     Gather analytics of the users and messages.
+            /// Gather analytics of the users and messages.
             /// </summary>
             public void GetAnalytics()
             {
