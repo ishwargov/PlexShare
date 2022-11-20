@@ -1,7 +1,9 @@
-﻿<!-- Author      = Neel Kabra->
-<!-- Product     = PlexShare-->
-<!-- Project     = PlexShareApp-->
-<!-- Description = View for the MainScreen Window-->
+﻿<!--    
+        Author      = Neel Kabra
+        Product     = PlexShare 
+        Project     = PlexShareApp
+        Description = View for the MainScreen Window
+-->
 <Window x:Class="PlexShareApp.MainScreenView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
