@@ -7,10 +7,11 @@
 using PlexShareNetwork.Communication;
 using PlexShareNetwork.Queues;
 using PlexShareNetwork.Sockets;
+using PlexShareNetwork;
 using System.Net.Sockets;
 using System.Text;
 
-namespace PlexShareNetwork
+namespace PlexShareTests.NetworkTests
 {
     public static class NetworkTestGlobals
     {
@@ -285,34 +286,22 @@ namespace PlexShareNetwork
         private readonly List<TcpClient> sockets = new();
         private readonly List<string> clientIds = new();
 
-        // to remember the count of the last even, so that we can
+        // to remember the count of the last event, so that we can
         // know when a new even occurs
         public int lastEventCount = 0;
 
-        /// <summary>
-        /// Called by the Communicator to notify subscribed module
-        /// when data is received
-        /// </summary>
         public void OnDataReceived(string data)
 		{
             events.Add("OnDataReceived");
             datas.Add(data);
         }
 
-        /// <summary>
-        /// Called by the Communicator to notify subscribed module
-        /// when a new client joins
-        /// </summary>
         public void OnClientJoined(TcpClient socket)
         {
             events.Add("OnClientJoined");
             sockets.Add(socket);
         }
 
-        /// <summary>
-        /// Called by the Communicator to notify subscribed module
-        /// a client leaves
-        /// </summary>
         public void OnClientLeft(string clientId)
 		{
             events.Add("OnClientLeft");
