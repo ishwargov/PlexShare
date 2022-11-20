@@ -4,7 +4,10 @@
 /// This file contains tests for the server and client Communicator
 /// </summary>
 
-namespace PlexShareNetwork.Communication.Test
+using PlexShareNetwork.Communication;
+using Xunit;
+
+namespace PlexShareTests.NetworkTests.Communication
 {
     public class CommunicatorTests
     {
@@ -21,17 +24,24 @@ namespace PlexShareNetwork.Communication.Test
         /// <param name="numClients"> Number of clients to test.
         /// </param>
         /// <returns> void </returns>
-        private static void ServerAndClientsStartAndStopTest(
+        private void ServerAndClientsStartAndStopTest(
             int numClients)
         {
             // create server and clients and then staart and stop them
             CommunicatorServer communicatorServer = new();
-            CommunicatorClient[] communicatorsClient = 
+            CommunicatorClient[] communicatorsClient =
                 NetworkTestGlobals.GetCommunicatorsClient(numClients);
             NetworkTestGlobals.StartServerAndClients(
                 communicatorServer, communicatorsClient, _clientId);
             NetworkTestGlobals.StopServerAndClients(
                 communicatorServer, communicatorsClient);
+
+            // now test error catch on start client and server
+            CommunicatorClient communicatorClient = new();
+            communicatorClient.Stop();
+            communicatorServer.Stop();
+            communicatorClient.Start("abc", "0");
+            communicatorServer.Start();
         }
 
         /// <summary>
@@ -80,10 +90,28 @@ namespace PlexShareNetwork.Communication.Test
                 communicatorServer, communicatorsClient,
                 notificationHandlerServer, notificationHandlersClient,
                 _module, _modulePriority);
-            
+
+            // subscribe error catch test
+            NetworkTestGlobals.SubscribeOnServerAndClient(
+                communicatorServer, communicatorsClient,
+                notificationHandlerServer, notificationHandlersClient,
+                _module, _modulePriority);
+
             // stop client and server
             NetworkTestGlobals.StopServerAndClients(
                 communicatorServer, communicatorsClient);
+        }
+
+        [Fact]
+        public void AddAndRemoveClientOnServerTest()
+        {
+            // start server and clients
+            CommunicatorServer communicatorServer = new();
+            CommunicatorClient[] communicatorsClient =
+                NetworkTestGlobals.GetCommunicatorsClient(1);
+            NetworkTestGlobals.StartServerAndClients(
+                communicatorServer, communicatorsClient, _clientId);
+            communicatorServer.RemoveClient(_clientId + 0);
         }
 
         /// <summary>
@@ -93,7 +121,7 @@ namespace PlexShareNetwork.Communication.Test
         /// <param name="numClients"> Number of clients to test.
         /// </param>
         /// <returns> void </returns>
-        private static void ClientsSendDataToServerTest(int numClients)
+        private void ClientsSendDataToServerTest(int numClients)
         {
             // start server and clients
             CommunicatorServer communicatorServer = new();
@@ -164,7 +192,7 @@ namespace PlexShareNetwork.Communication.Test
         /// Boolean to tell whether to do broadcast or unicast.
         /// </param>
         /// <returns> void </returns>
-        private static void ServerSendDataToClientsTest(int numClients,
+        private void ServerSendDataToClientsTest(int numClients,
             bool doBroadcast)
         {
             // start server and clients
@@ -311,6 +339,20 @@ namespace PlexShareNetwork.Communication.Test
             // stop server and client
             NetworkTestGlobals.StopServerAndClients(
                 communicatorServer, communicatorsClient);
+        }
+
+        /// <summary>
+        /// Tests all error catch cases in communicator
+        /// </summary>
+        /// <returns> void </returns>
+        [Fact]
+        public void CommunicatorErrorCatchTest()
+        {
+            CommunicatorServer communicatorServer = new();
+            communicatorServer.Start();
+            communicatorServer.AddClient(null, null);
+            communicatorServer.RemoveClient(null);
+            communicatorServer.Send("Data", "Module", "Client Id1");
         }
     }
 }

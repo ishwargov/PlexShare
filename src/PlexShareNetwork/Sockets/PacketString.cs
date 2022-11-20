@@ -67,10 +67,12 @@ namespace PlexShareNetwork.Sockets
             try
             {
                 // remove the "BEGIN" and "END" frame from the string
-                packetString = packetString[5..(packetString.Length - 3)];
+                packetString = 
+                    packetString[5..(packetString.Length - 3)];
 
-                // replace "NOTEND" by "END" because we had replaced "END"
-                // by "NOTEND" when converting the packet to packet string
+                // replace "NOTEND" by "END" because we had replaced
+                // "END" by "NOTEND" when converting the packet to
+                // packet string
                 packetString = packetString.Replace("NOTEND", "END");
 
                 // deserialize the packet string to get back the packet
