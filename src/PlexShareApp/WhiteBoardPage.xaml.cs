@@ -552,7 +552,7 @@ namespace PlexShareApp
 
         private int SuccessSaveMessage()
         { 
-            MessageBox.Show("The current screenshot is successfully saved","Confirmation",MessageBoxButton.OK,MessageBoxImage.Information);
+            MessageBox.Show("The current snapshot is successfully saved","Confirmation",MessageBoxButton.OK,MessageBoxImage.Information);
             return 0;
 
         }

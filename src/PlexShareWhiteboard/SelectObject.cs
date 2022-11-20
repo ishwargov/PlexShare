@@ -7,6 +7,7 @@ using PlexShareWhiteboard.BoardComponents;
 
 namespace PlexShareWhiteboard
 {
+ 
     public class SelectObject
     {
         public bool ifSelected;
@@ -16,6 +17,9 @@ namespace PlexShareWhiteboard
         public int selectBox;
         public List<Point> finalPointList;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public SelectObject()
         {
             ifSelected = false;
@@ -27,6 +31,12 @@ namespace PlexShareWhiteboard
 
     public partial class WhiteBoardViewModel
     {
+        /// <summary>
+        /// Function to check if a point lies inside a rectangle
+        /// </summary>
+        /// <param name="shape"></param>
+        /// <param name="click"></param>
+        /// <returns></returns>
         public static bool PointInsideRect(Rect shape, Point click)
         {
             if (click.X > shape.X && click.X < shape.X + shape.Width &&
@@ -36,6 +46,13 @@ namespace PlexShareWhiteboard
             return false;
         }
 
+        /// <summary>
+        /// Function to return which out of the 8 bounding boxes of a rectangle does the point lie
+        /// </summary>
+        /// <param name="shape"></param>
+        /// <param name="click"></param>
+        /// <param name="halfSize"></param>
+        /// <returns>The bounding box in which the point lie</returns>
         public static int PointInsideHighlightBox(Rect shape, Point click, double halfSize)
         {
             double left = shape.X;
@@ -74,6 +91,13 @@ namespace PlexShareWhiteboard
         }
         //deon
 
+        /// <summary>
+        /// Function to return which out of the 2 bounding boxes of a line does a point lie and return the particular bounding box
+        /// </summary>
+        /// <param name="shape"></param>
+        /// <param name="click"></param>
+        /// <param name="halfsize"></param>
+        /// <returns>The bounding box of a line in which the point lies</returns>
         public int PointInsideHighlightBox(LineGeometry shape, Point click, double halfsize)
         {
             Rect top = new(shape.StartPoint.X - halfsize, shape.StartPoint.Y - halfsize, 2 * halfsize, 2 * halfsize);
@@ -89,6 +113,14 @@ namespace PlexShareWhiteboard
             return -1;
         }
         //deon
+
+        /// <summary>
+        /// Function to check wheether the clicked point is  inside the highlighted box
+        /// </summary>
+        /// <param name="point"></param>
+        /// <param name="click"></param>
+        /// <param name="halfsize"></param>
+        /// <returns></returns>
         public static int ClickInsideHighlightBox(Point point, Point click, double halfsize)
         {
 
@@ -98,6 +130,14 @@ namespace PlexShareWhiteboard
 
             return 0;
         }
+
+        /// <summary>
+        /// Function to check if the clicked point is inside the hughlighted region or inside the shape
+        /// </summary>
+        /// <param name="boundingBox"></param>
+        /// <param name="click"></param>
+        /// <param name="halfSize"></param>
+        /// <returns>Returns true if inside the region or shape, false otherwise</returns>
         public static bool HelperSelect(Rect boundingBox, Point click, double halfSize)
         {
             if (PointInsideRect(boundingBox, click) || PointInsideHighlightBox(boundingBox, click, halfSize) > 0)
@@ -106,6 +146,10 @@ namespace PlexShareWhiteboard
             return false;
         }
 
+        /// <summary>
+        /// Function to select an object. It is used in ShapeStart.cs
+        /// </summary>
+        /// <param name="a"></param>
         public void ObjectSelection(Point a)
         {
             int tempZIndex = -10000;
