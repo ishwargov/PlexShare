@@ -25,8 +25,8 @@ namespace PlexShareCloudUX
     {
         //getting path from the files
         string[] paths;
-        private string SubmissionUrl;//@"http://localhost:7213/api/submission";
-        private string SessionUrl ;//@"http://localhost:7213/api/session";
+        private string SubmissionUrl; //@"http://localhost:7213/api/submission";
+        private string SessionUrl; //@"http://localhost:7213/api/session";
         private FileDownloadApi fileDownloadApi; //creating an instance of the FiledowloadApi.
 
         public SubmissionsModel() //constructor for the submissionmodel class. 
