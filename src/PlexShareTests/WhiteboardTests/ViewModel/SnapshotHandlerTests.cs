@@ -46,6 +46,10 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.SaveSnapshot();
             ObservableCollection<int> expectedCheckList = new ObservableCollection<int>() { 1 };
             Assert.Equal(expectedCheckList, viewModel.CheckList);
+
+            viewModel.ShapeItems.Clear();
+            viewModel.undoStack.Clear();
+            viewModel.redoStack.Clear();
         }
 
         /// <summary>
@@ -59,6 +63,10 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             _mockMachine.Setup(m => m.OnLoadMessage(1, It.IsAny<string>())).Returns(shapeItems);
             viewModel.LoadSnapshot(1);
             Assert.True(utility.CompareShapeItems(shapeItems, viewModel.ShapeItems.ToList()));
+
+            viewModel.ShapeItems.Clear();
+            viewModel.undoStack.Clear();
+            viewModel.redoStack.Clear();
         }
     }
 }

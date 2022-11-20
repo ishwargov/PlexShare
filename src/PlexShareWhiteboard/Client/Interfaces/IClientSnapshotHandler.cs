@@ -12,7 +12,7 @@
 
 namespace PlexShareWhiteboard.Client.Interfaces
 {
-    internal interface IClientSnapshotHandler
+    public interface IClientSnapshotHandler
     {
         /// <summary>
         ///     Gets and sets snapshot number.

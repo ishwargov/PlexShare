@@ -51,6 +51,8 @@ namespace PlexShareTests.WhiteboardTests
         [Fact]
         public void  InsertUndo_Undo_RedoPop_Same()
         {
+
+            whiteBoardViewModel.ClearAllShapes();
             //Act
             Point start = new Point(1, 1);
             Point end = new Point(2, 2);
@@ -64,12 +66,15 @@ namespace PlexShareTests.WhiteboardTests
 
             UndoStackElement popFromRedo = whiteBoardViewModel.Redo();
             Assert.Equal(lastShape, popFromRedo.NewShape);
-            whiteBoardViewModel.ClearAllShapes();
+            
         }
+
 
         [Fact]
         public void UndoReversesOperation()
         {
+
+            whiteBoardViewModel.ClearAllShapes();
             Point start = new Point(1, 1);
             Point end = new Point(2, 2);
             ShapeItem lastShape = utility.CreateShape(start, end, "EllipseGeometry", "randomID");
@@ -82,12 +87,14 @@ namespace PlexShareTests.WhiteboardTests
             // Creation was pushed, so checking if the element returned by Undo (which is sent to 
             // server has operation as deletion
             Assert.Equal(Operation.Creation, ShapeSentToServer.Op);
-            whiteBoardViewModel.ClearAllShapes();
+           
         }
 
         [Fact]
         public void CallUndoCallRedo_Working()
         {
+
+            whiteBoardViewModel.ClearAllShapes();
             Point start = new Point(1, 1);
             Point end = new Point(2, 2);
             ShapeItem lastShape = utility.CreateShape(start, end, "EllipseGeometry", "randomID");
@@ -98,10 +105,10 @@ namespace PlexShareTests.WhiteboardTests
             whiteBoardViewModel.CallUndo();
             Assert.Equal(undoStack.Count(),0);
 
-            //whiteBoardViewModel.CallRedo();
-            //Assert.Equal(redoStack.Count(), 0);
+            whiteBoardViewModel.CallRedo();
+            Assert.Equal(redoStack.Count(), 0);
 
-            whiteBoardViewModel.ClearAllShapes();
+            
         }
 
         [Fact]
@@ -123,6 +130,8 @@ namespace PlexShareTests.WhiteboardTests
         [Fact]
         public void ModifyShapeUndo()
         {
+
+            whiteBoardViewModel.ClearAllShapes();
             Point start = new Point(1, 1);
             Point end = new Point(2, 2);
             Rect boundingBox = new(start, end);
@@ -154,10 +163,44 @@ namespace PlexShareTests.WhiteboardTests
             UndoStackElement undoStackElement = new UndoStackElement(prvShape, newShape, Operation.ModifyShape);
             whiteBoardViewModel.InsertIntoStack(undoStackElement);
 
-            UndoStackElement ShapeSentToServer = whiteBoardViewModel.Undo();
-            Assert.True(utility.CompareShapeItems(ShapeSentToServer.PrvShape, prvShape));
+            UndoStackElement ShapeSentToServer1 = whiteBoardViewModel.Undo();
+            Assert.True(utility.CompareShapeItems(ShapeSentToServer1.PrvShape, prvShape));
+
+            UndoStackElement ShapeSentToServer2 = whiteBoardViewModel.Redo();
+            Assert.True(utility.CompareShapeItems(ShapeSentToServer2.NewShape, newShape));
+
+        }
+
+        [Fact]
+        public void ShapeDelete_UndoRedo()
+        {
+            whiteBoardViewModel.ClearAllShapes();
+
+            // Emulate a deletion operation on an object and push it into undo stack
+            Point start = new Point(1, 1);
+            Point end = new Point(2, 2);
+            ShapeItem lastShape = utility.CreateShape(start, end, "EllipseGeometry", "randomID");
+            UndoStackElement undoStackElement = new UndoStackElement(lastShape, lastShape, Operation.Deletion);
+            whiteBoardViewModel.InsertIntoStack(undoStackElement);
+
+            // Perform an Undo and see if it gets created i.e. ShapeItems size increase
+            UndoStackElement ShapeFromUndo = whiteBoardViewModel.Undo();
+            Assert.Equal(1, whiteBoardViewModel.ShapeItems.Count());
 
 
+            // Perform a Redo and see if it gets deleted i.e. ShapeItems size decrease
+            UndoStackElement ShapeFromRedo = whiteBoardViewModel.Redo();
+            Assert.Equal(0, whiteBoardViewModel.ShapeItems.Count());
+
+        }
+
+        public void StackTopNullCase()
+        {
+            whiteBoardViewModel.ClearAllShapes();
+            UndoStackElement undoStackElement = new UndoStackElement(null, null, Operation.Deletion);
+            whiteBoardViewModel.InsertIntoStack(undoStackElement);
+
+            Assert.Equal(null,whiteBoardViewModel.Undo());
         }
     }
 }

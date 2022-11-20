@@ -32,6 +32,7 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
         {
             viewModel = WhiteBoardViewModel.Instance;
             utility = new Utility();
+
         }
         
         /// <summary>
@@ -48,6 +49,10 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             string jsonString = utility.SendThroughServer(newShapes, Operation.Creation);
             viewModel.DataHandler(jsonString);
             Assert.True(utility.CompareShapeItems(viewModel.ShapeItems[0], sh));
+
+            viewModel.ShapeItems.Clear();
+            viewModel.undoStack.Clear();
+            viewModel.redoStack.Clear();
         }
 
         /// <summary>
@@ -65,6 +70,10 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.DataHandler(jsonString);
 
             Assert.Equal(viewModel.ShapeItems.Count, 0);
+
+            viewModel.ShapeItems.Clear();
+            viewModel.undoStack.Clear();
+            viewModel.redoStack.Clear();
         }
 
         /// <summary>
@@ -83,6 +92,10 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.DataHandler(jsonString);
 
             Assert.True(utility.CompareShapeItems(viewModel.ShapeItems[0], sh));
+
+            viewModel.ShapeItems.Clear();
+            viewModel.undoStack.Clear();
+            viewModel.redoStack.Clear();
         }
 
         /// <summary>
@@ -101,6 +114,10 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.DataHandler(jsonString);
 
             Assert.Equal(viewModel.ShapeItems.Count, 0);
+
+            viewModel.ShapeItems.Clear();
+            viewModel.undoStack.Clear();
+            viewModel.redoStack.Clear();
         }
 
         /// <summary>
@@ -116,6 +133,10 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.DataHandler(jsonString);
 
             Assert.True(utility.CompareShapeItems(newShapes, viewModel.ShapeItems.ToList()));
+
+            viewModel.ShapeItems.Clear();
+            viewModel.undoStack.Clear();
+            viewModel.redoStack.Clear();
         }
 
         /// <summary>
@@ -132,6 +153,10 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             string jsonString = utility.SendThroughServer(newShapes, Operation.Creation);
             viewModel.DataHandler(jsonString);
             Assert.True(utility.CompareShapeItems(viewModel.ShapeItems[0], sh));
+
+            viewModel.ShapeItems.Clear();
+            viewModel.undoStack.Clear();
+            viewModel.redoStack.Clear();
         }
 
         /// <summary>
@@ -149,6 +174,10 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.DataHandler(jsonString);
 
             Assert.Equal(viewModel.ShapeItems.Count, 0);
+
+            viewModel.ShapeItems.Clear();
+            viewModel.undoStack.Clear();
+            viewModel.redoStack.Clear();
         }
 
         /// <summary>
@@ -167,6 +196,10 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.DataHandler(jsonString);
 
             Assert.True(utility.CompareShapeItems(viewModel.ShapeItems[0], sh));
+
+            viewModel.ShapeItems.Clear();
+            viewModel.undoStack.Clear();
+            viewModel.redoStack.Clear();
         }
 
         /// <summary>
@@ -185,6 +218,10 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.DataHandler(jsonString);
 
             Assert.Equal(viewModel.ShapeItems.Count, 0);
+
+            viewModel.ShapeItems.Clear();
+            viewModel.undoStack.Clear();
+            viewModel.redoStack.Clear();
         }
 
         /// <summary>
@@ -200,6 +237,10 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.DataHandler(jsonString);
 
             Assert.True(utility.CompareShapeItems(newShapes, viewModel.ShapeItems.ToList()));
+
+            viewModel.ShapeItems.Clear();
+            viewModel.undoStack.Clear();
+            viewModel.redoStack.Clear();
         }
     }
 }

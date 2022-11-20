@@ -21,6 +21,7 @@ using System.Text;
 using System.Threading.Tasks;
 using PlexShareWhiteboard.Client.Interfaces;
 using PlexShareWhiteboard.Server;
+using PlexShareWhiteboard.Server.Interfaces;
 
 
 namespace PlexShareWhiteboard.Client
@@ -114,6 +115,11 @@ namespace PlexShareWhiteboard.Client
         public void SetCommunicator(IClientCommunicator communicator)
         {
             _communicator = communicator;
+        }
+
+        public ClientSnapshotHandler GetSnapshotHandler()
+        {
+            return _snapshotHandler;
         }
     }
 }
