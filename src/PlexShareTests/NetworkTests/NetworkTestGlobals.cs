@@ -74,7 +74,7 @@ namespace PlexShareTests.NetworkTests
             {
                 string packetString = 
                     PacketString.PacketToPacketString(packets[i]);
-                byte[] bytes = Encoding.ASCII.GetBytes(packetString);
+                byte[] bytes = Encoding.UTF32.GetBytes(packetString);
                 socket.Client.Send(bytes);
             }
         }

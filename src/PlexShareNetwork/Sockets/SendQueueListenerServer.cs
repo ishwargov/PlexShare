@@ -119,7 +119,7 @@ namespace PlexShareNetwork.Sockets
                     PacketString.PacketToPacketString(packet);
 
                 // convert the string to bytes and send the bytes
-                byte[] bytes = Encoding.ASCII.GetBytes(packetString);
+                byte[] bytes = Encoding.UTF32.GetBytes(packetString);
 
                 // if destination is not null then destination contains
                 // a client Id so send data to that particular client

@@ -112,7 +112,7 @@ namespace PlexShareNetwork.Sockets
                 {
                     // covert the received bytes to string and
                     // append that string to _receivedString
-                    _receivedString.Append(Encoding.ASCII.GetString(
+                    _receivedString.Append(Encoding.UTF32.GetString(
                         buffer, 0, bytesCount));
 
                     // call ProcessReceivedString() to process the
