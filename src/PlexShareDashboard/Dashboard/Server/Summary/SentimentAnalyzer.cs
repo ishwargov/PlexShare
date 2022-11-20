@@ -74,11 +74,7 @@ namespace PlexShareDashboard.Dashboard.Server.Summary
     }
     public static class ModelBuilder
     {
-        // SMALL DATASET in GitHub repo: 
         private static string TRAIN_DATA_FILEPATH = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Environment.CurrentDirectory).ToString()).ToString()).ToString()) + "/PlexShareDashboard/Dashboard/Server/Summary/Resources/yelp_labelled.tsv";
-
-        // SMALL DATASET in AZURE FILES: private static string TRAIN_DATA_FILEPATH = @"X:\\yelp\\yelp_labelled.tsv";      
-        // LARGE DATASET in AZURE FILES: private static string TRAIN_DATA_FILEPATH = @"X:\\twitter\\Twittersentiment-1Million.tsv";
 
         private static string MODEL_FILEPATH = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Environment.CurrentDirectory).ToString()).ToString()).ToString()) + "/PlexShareDashboard/Dashboard/Server/Summary/Resources/MLModel.zip";
 
