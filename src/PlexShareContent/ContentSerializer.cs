@@ -37,7 +37,7 @@ namespace PlexShareContent
     }
     public class ContentSerializer : IContentSerializer
     {
-        private readonly JsonSerializerSettings _jsonSerializerSettings;
+        private JsonSerializerSettings _jsonSerializerSettings;
 
         public ContentSerializer()
         {
@@ -45,11 +45,11 @@ namespace PlexShareContent
         }
 
         /// <inheritdoc />
-        string IContentSerializer.Serialize<T>(T objectToSerialize)
+        string IContentSerializer.Serialize<T>(T objToSerialize)
         {
             try
             {
-                var json = SerializeJson(objectToSerialize);
+                var json = SerializeJson(objToSerialize);
                 var obj = new MetaObject(typeof(T).ToString(), json);
                 return SerializeJson(obj);
             }
@@ -61,7 +61,7 @@ namespace PlexShareContent
         }
 
         /// <inheritdoc />
-        public string GetObjectType(string serializedString, string nameSpace)
+        public string GetObjType(string serializedString, string nameSpace)
         {
             // json string
             var obj = DeserializeJson<MetaObject>(serializedString);

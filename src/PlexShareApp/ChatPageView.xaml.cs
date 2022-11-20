@@ -245,7 +245,14 @@ namespace PlexShareApp
                     Message msg = (Message)senderButton.DataContext;
                     if(msg.IncomingMessage!= "Message deleted.")
                     {
-                        ReplyTextBox.Text = msg.IncomingMessage;
+                        string message = msg.IncomingMessage;
+                        if(message.Length > 10)
+                        {
+                            message = message.Substring(0, 10);
+                            message += "...";
+                        }
+                        string senderBox = msg.Sender + ": " + message;
+                        ReplyTextBox.Text = senderBox;
                         ReplyMsgId = msg.MessageID;
                         Trace.WriteLine("[ChatPageView] Reply button clicked.");
                     }
