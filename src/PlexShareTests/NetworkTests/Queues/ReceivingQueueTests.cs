@@ -58,7 +58,7 @@ namespace PlexShareTests.NetworkTests.Queues
         /// </summary>
         /// <returns> void </returns>
         [Fact]
-        public void EnqueueOrderMultiplePacketsOrderTest()
+        public void EnqueueMultiplePacketsOrderTest()
         {
             string moduleName = NetworkTestGlobals.dashboardName;
             string destinationModule = NetworkTestGlobals.RandomString(5);
