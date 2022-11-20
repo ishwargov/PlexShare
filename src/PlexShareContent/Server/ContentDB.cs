@@ -22,9 +22,9 @@ namespace PlexShareContent.Server
 {
     public class ContentDB
     {
-        private readonly List<ChatThread> _chatThread;
-        private readonly Dictionary<int, int> _chatIdToDataMap;
-        private readonly Dictionary<int, ContentData> _filesMap;
+        private List<ChatThread> _chatThread;
+        private Dictionary<int, int> _chatIdToDataMap;
+        private Dictionary<int, ContentData> _filesMap;
 
         /// <summary>
         ///     Database Constructor to initilize member variales.
@@ -56,22 +56,22 @@ namespace PlexShareContent.Server
             if (_chatIdToDataMap.ContainsKey(msg.ReplyThreadID))
             {
                 var threadIndex = _chatIdToDataMap[msg.ReplyThreadID];
-                var chatContext = _chatThread[threadIndex];
+                var chatThread = _chatThread[threadIndex];
                 ReceiveContentData message = msg.Copy();
-                chatContext.AddMessage(message);
+                chatThread.AddMessage(message);
             }
             // else create a new chatContext and add the message to it
             else
             {
-                var chatContext = new ChatThread();
+                var chatThread = new ChatThread();
                 var newThreadId = IdGenerator.GetChatId();
                 msg.ReplyThreadID = newThreadId;
                 ReceiveContentData message = msg.Copy();
-                chatContext.AddMessage(message);
+                chatThread.AddMessage(message);
 
-                _chatThread.Add(chatContext);
+                _chatThread.Add(chatThread);
                 //Decrease the count by 1, becuase we had already incremented count.
-                _chatIdToDataMap[chatContext.ThreadID] = _chatThread.Count - 1;
+                _chatIdToDataMap[chatThread.ThreadID] = _chatThread.Count - 1;
             }
 
             return msg;
@@ -121,6 +121,5 @@ namespace PlexShareContent.Server
                 return null;
             return _filesMap[_msgId];
         }
-        
     }
 }
