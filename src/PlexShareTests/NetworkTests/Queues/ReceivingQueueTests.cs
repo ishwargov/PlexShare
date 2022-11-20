@@ -3,17 +3,22 @@
 /// This file contains all the tests written for the sending queues
 /// </summary>
 
+using PlexShareNetwork.Queues;
 using System.Collections;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PlexShareNetwork.Queues.Tests
+namespace PlexShareTests.NetworkTests.Queues
 {
     public class ReceivingQueueTests
     {
         ReceivingQueue _receivingQueue = new ReceivingQueue();
 
+        /// <summary>
+        /// Testing whether a packet is getting inserted into the receiving queue when enqueued
+        /// </summary>
+        /// <returns> void </returns>
         [Fact]
         public void EnqueueOnePacketTest()
         {
@@ -29,6 +34,10 @@ namespace PlexShareNetwork.Queues.Tests
             Assert.Equal(_receivingQueue.Size(), 1);
         }
 
+        /// <summary>
+        /// Testing whether multiple packets are getting inserted into the receiving queue when enqueued
+        /// </summary>
+        /// <returns> void </returns>
         [Fact]
         public void EnqueueMultiplePacketsTest()
         {
@@ -44,8 +53,12 @@ namespace PlexShareNetwork.Queues.Tests
             Assert.Equal(_receivingQueue.Size(), number_of_packets);
         }
 
+        /// <summary>
+        /// Testing whether packets are getting inserted into the receiving queue in the order in which they are enqueued
+        /// </summary>
+        /// <returns> void </returns>
         [Fact]
-        public void EnqueueOrderMultiplePacketsOrderTest()
+        public void EnqueueMultiplePacketsOrderTest()
         {
             string moduleName = NetworkTestGlobals.dashboardName;
             string destinationModule = NetworkTestGlobals.RandomString(5);
@@ -78,6 +91,10 @@ namespace PlexShareNetwork.Queues.Tests
             Assert.Equal(_receivingQueue.Size(), reverseStack.Count);
         }
 
+        /// <summary>
+        /// Testing whether concurrent insertion of packets into the receiving queue works fine
+        /// </summary>
+        /// <returns> void </returns>
         [Fact]
         public void ConcurrentEnqueuesTest()
         {
@@ -119,6 +136,10 @@ namespace PlexShareNetwork.Queues.Tests
             Assert.Equal(_receivingQueue.Size(), 2 * number_of_packets);
         }
 
+        /// <summary>
+        /// Testing whether Clear() method of the receiving queue removes all entries in the queue
+        /// </summary>
+        /// <returns> void </returns>
         [Fact]
         public void ClearReceivingQueueTest()
         {
@@ -144,8 +165,12 @@ namespace PlexShareNetwork.Queues.Tests
             Assert.Equal(_receivingQueue.Size(), 0);
         }
 
+        /// <summary>
+        /// Testing whether concurrent dequeue of a packet in the receiving queue works fine
+        /// </summary>
+        /// <returns> void </returns>
         [Fact]
-        public void concurrentDequeueTest()
+        public void ConcurrentDequeueTest()
         {
             string serializedData = NetworkTestGlobals.RandomString(10);
             string destinationModule = NetworkTestGlobals.RandomString(5);
@@ -175,8 +200,12 @@ namespace PlexShareNetwork.Queues.Tests
                 Assert.Equal(packet, dequeueTwo);
         }
 
+        /// <summary>
+        /// Testing whether concurrent peek of a packet in the receiving queue works fine
+        /// </summary>
+        /// <returns> void </returns>
         [Fact]
-        public void concurrentPeekTest()
+        public void ConcurrentPeekTest()
         {
             string serializedData = NetworkTestGlobals.RandomString(10);
             string destinationModule = NetworkTestGlobals.RandomString(5);
@@ -203,6 +232,21 @@ namespace PlexShareNetwork.Queues.Tests
             Assert.Equal(packet, peekOne);
         }
 
+        /// <summary>
+        /// Testing whether peek on an empty receiving queue works fine
+        /// </summary>
+        /// <returns> void </returns>
+        [Fact]
+        public void PeekOnEmptyQueueTest()
+        {
+            Packet packet = _receivingQueue.Peek();
+            Assert.Equal(packet, null);
+        }
+
+        /// <summary>
+        /// Testing whether WaitForPacket() method detects a packet in the receiving queue and returns 'bool : true'
+        /// </summary>
+        /// <returns> void </returns>
         [Fact]
         public void WaitForPacketTest()
         {
@@ -247,6 +291,10 @@ namespace PlexShareNetwork.Queues.Tests
             Assert.False(isEmpty);
         }
 
+        /// <summary>
+        /// Testing whether WaitForPacket() method keeps waiting forever when no packet arrives at the receiving queue
+        /// </summary>
+        /// <returns> void </returns>
         [Fact]
         public void WaitForeverForPacketTest()
         {
