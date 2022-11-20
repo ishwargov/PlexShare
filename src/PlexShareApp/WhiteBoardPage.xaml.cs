@@ -160,6 +160,7 @@ namespace PlexShareApp
                     break;
                 case "text":
                     Cursor = Cursors.Arrow;
+                    viewModel.ChangeMode("create_textbox");
                     break;
                 case "Line":
                     Cursor = Cursors.Cross;
@@ -276,6 +277,11 @@ namespace PlexShareApp
         {
             Debug.WriteLine("Enter text mode");
             Debug.WriteLine(e.Key);
+            if (this.ShapeToolBar.Visibility == Visibility.Collapsed)
+                this.ShapeToolBar.Visibility = Visibility.Visible;
+            this.ShapeThicknessSlider.Visibility = Visibility.Collapsed;
+            if (this.StrokeToolBar.Visibility == Visibility.Visible)
+                this.StrokeToolBar.Visibility = Visibility.Collapsed;
             int thickness = (int)ThicknessSlider.Value;
             viewModel.ChangeStrokeThickness(1);
             viewModel.TextBoxStart(e.Key);
@@ -287,6 +293,11 @@ namespace PlexShareApp
             if (e.Key == Key.Space)
             {
                 Debug.WriteLine("Space inserted");
+                if (this.ShapeToolBar.Visibility == Visibility.Collapsed)
+                    this.ShapeToolBar.Visibility = Visibility.Visible;
+                this.ShapeThicknessSlider.Visibility = Visibility.Collapsed;
+                if (this.StrokeToolBar.Visibility == Visibility.Visible)
+                    this.StrokeToolBar.Visibility = Visibility.Collapsed;
                 int thickness = (int)ThicknessSlider.Value;
                 viewModel.ChangeStrokeThickness(1);
                 viewModel.TextBoxStart(e.Key);
@@ -310,8 +321,9 @@ namespace PlexShareApp
             viewModel.UnHighLightIt();
             viewModel.select.ifSelected = false;
             Cursor = Cursors.Pen;
-            if (this.ShapeToolBar.Visibility == Visibility.Visible)
-                this.ShapeToolBar.Visibility = Visibility.Collapsed;
+            if (this.ShapeToolBar.Visibility == Visibility.Collapsed)
+                this.ShapeToolBar.Visibility = Visibility.Visible;
+            this.ShapeThicknessSlider.Visibility = Visibility.Collapsed;
             if (this.StrokeToolBar.Visibility == Visibility.Visible)
                 this.StrokeToolBar.Visibility = Visibility.Collapsed;
             Trace.WriteLine("[WhiteBoard] White Board Page entered the Text Mode");
