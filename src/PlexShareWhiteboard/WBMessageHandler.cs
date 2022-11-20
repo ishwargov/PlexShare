@@ -52,6 +52,7 @@ namespace PlexShareWhiteboard
 
             Serializer serializer = new Serializer();
             ServerSide serverSide = ServerSide.Instance;
+            
             if (isServer)
             {
                 try
@@ -70,6 +71,7 @@ namespace PlexShareWhiteboard
                             UpdateCheckList(deserializedObject.SnapshotNumber);
                             break;
                         case Operation.Creation:
+                            shapeItems[0].ZIndex = Math.Max(shapeItems[0].ZIndex, machine.GetMaxZindex(shapeItems[0]));
                             CreateIncomingShape(shapeItems[0]);
                             serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
                             break;

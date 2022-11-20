@@ -121,5 +121,10 @@ namespace PlexShareWhiteboard.Client
         {
             return _snapshotHandler;
         }
+
+        public int GetMaxZindex(ShapeItem lastShape)
+        {
+            return lastShape.ZIndex;
+        }
     }
 }
