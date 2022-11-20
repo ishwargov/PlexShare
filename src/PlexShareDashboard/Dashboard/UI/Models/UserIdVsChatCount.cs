@@ -3,11 +3,6 @@
 /// class model to store the userid and chat count values 
 /// </summary>
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PlexShareDashboard.Dashboard.UI.Models
 {
@@ -20,9 +15,9 @@ namespace PlexShareDashboard.Dashboard.UI.Models
 
         //constructor this 
         public UserIdVsChatCount(int currUserId, int currChatCount)
-        { 
+        {
             UserId = currUserId;
-            ChatCount = currChatCount;  
+            ChatCount = currChatCount;
         }
     }
 }
