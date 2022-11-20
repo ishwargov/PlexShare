@@ -84,7 +84,12 @@ namespace PlexShareWhiteboard.Server
         // To keep track of the ZIndex of the objects
         private static int _maxZIndex = 0;
 
-
+        public int GetMaxZindex(ShapeItem lastShape)
+        {
+            _maxZIndex++;
+            return _maxZIndex - 1;
+        }
+        
 
         /// <summary>
         ///         When a ShapeItem is received from the Client/ViewModel, it updates the server side 
@@ -179,36 +184,31 @@ namespace PlexShareWhiteboard.Server
             }
         }
 
-        // To clear (empty) the Server Object List
-        // Save the current list in a copy (oldObjectMapCopy)
+        /// <summary>
+        ///         Clear all objects in the server list. 
+        ///         This will be performed when a user clicks Clear.
+        /// </summary>
+        /// <param name="newShape">ShapeItem (which will bw null)</param>
+        /// <param name="op">Operation - Clear</param>
         private void ClearObjectsInServerList(ShapeItem newShape, Operation op)
         {
             objIdToObjectMap = new Dictionary<string, ShapeItem>();
             BroadcastToClients(newShape, op);
         }
 
-
-
-        public void RestoreSnapshotHandler(WBServerShape deserializedObject)
-        {
-            Trace.WriteLine("[Whiteboard] ServerSide.RestoreSnapshotHandler: Restoring Snapshot " + deserializedObject.SnapshotNumber);
-            Trace.WriteLine("[Whiteboard] " + GetServerListSize());
-            List<ShapeItem> loadedShapes = _serverSnapshotHandler.LoadBoard(deserializedObject.SnapshotNumber);
-            List<SerializableShapeItem> serializableShapeItems = _serializer.ConvertToSerializableShapeItem(loadedShapes);
-            WBServerShape wBServerShape = new WBServerShape(
-                serializableShapeItems,
-                Operation.RestoreSnapshot,
-                deserializedObject.UserID
-            );
-            BroadcastToClients(loadedShapes, Operation.RestoreSnapshot);
-        }
-
+        /// <summary>
+        ///         To clear the server list. This will be used by some utility functions.
+        /// </summary>
         public void ClearServerList()
         {
             objIdToObjectMap.Clear();
         }
 
-
+        /// <summary>
+        ///         To handle creation of snapshot. It calls the 
+        /// </summary>
+        /// <param name="deserializedObject"></param>
+        /// <returns></returns>
         public int CreateSnapshotHandler(WBServerShape deserializedObject)
         {
             int n =_serverSnapshotHandler.SaveBoard(objIdToObjectMap.Values.ToList(), deserializedObject.UserID);
@@ -255,9 +255,10 @@ namespace PlexShareWhiteboard.Server
         {
             _serverSnapshotHandler.SnapshotNumber = snapshotNumber;
         }
-        public void SetCommunicator(IServerCommunicator communicator)
+        
+        public ServerSnapshotHandler GetSnapshotHandler()
         {
-            _communicator = communicator;
+            return _serverSnapshotHandler;
         }
     }
 }

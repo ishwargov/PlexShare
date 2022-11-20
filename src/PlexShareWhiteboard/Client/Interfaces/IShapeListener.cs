@@ -30,5 +30,6 @@ namespace PlexShareWhiteboard.Client.Interfaces
         public int OnSaveMessage(string userId);
         public List<ShapeItem> OnLoadMessage(int snapshotNumber, string userId);
         public void SetSnapshotNumber(int snapshotNumber);
+        public int GetMaxZindex(ShapeItem lastShape);
     }
 }

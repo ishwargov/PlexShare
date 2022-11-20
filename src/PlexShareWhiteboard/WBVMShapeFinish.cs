@@ -27,6 +27,11 @@ namespace PlexShareWhiteboard
 
             if (modeForUndo == "create" )
             {
+                if(isServer)
+                {
+                    lastShape.ZIndex = Math.Max(lastShape.ZIndex, machine.GetMaxZindex(lastShape));
+                    ModifyIncomingShape(lastShape);
+                }
                 Trace.WriteLine("[Whiteboard]  " + "passing into undo stack " + lastShape.Geometry.GetType().Name);
                 stackElement = new UndoStackElement(lastShape, lastShape, Operation.Creation);
                 InsertIntoStack(stackElement);
