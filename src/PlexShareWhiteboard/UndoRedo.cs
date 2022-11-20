@@ -32,6 +32,29 @@ namespace PlexShareWhiteboard
         /// </summary>
         public void CallUndo()
         {
+            if (modeForUndo == "create_textbox")
+            {
+                if (textBoxLastShape != null && textBoxLastShape.TextString != null &&
+                         textBoxLastShape.TextString.Length != 0)
+                {
+
+                    TextFinishPush();
+                    Debug.WriteLine("entering undo modeeeee");
+
+                }
+                else if (textBoxLastShape != null)
+                {
+                    for (int i = 0; i < ShapeItems.Count; ++i)
+                    {
+                        if (textBoxLastShape.Id == ShapeItems[i].Id)
+                        {
+                            ShapeItems.RemoveAt(i);
+                            break;
+                        }
+                    }
+                }
+            }
+
             UndoStackElement shapeToSend = Undo();
             if (shapeToSend != null)
                 machine.OnShapeReceived(shapeToSend.PrvShape, shapeToSend.Op);
@@ -45,9 +68,16 @@ namespace PlexShareWhiteboard
         /// </summary>
         public void CallRedo()
         {
+            /*if (mode == "create_textbox")
+            {
+                if (lastShape.TextString.Length != 0)
+                {
+                    TextFinishPush();
+                }
+            }*/
             UndoStackElement shapeToSend = Redo();
             if (shapeToSend != null)
-                machine.OnShapeReceived(shapeToSend.PrvShape, shapeToSend.Op);
+                machine.OnShapeReceived(shapeToSend.NewShape, shapeToSend.Op);
         }
 
 
@@ -80,7 +110,7 @@ namespace PlexShareWhiteboard
             UndoStackElement modifiedObject = new UndoStackElement(topOfStack.PrvShape, topOfStack.NewShape, topOfStack.Op);
 
 
-            Debug.WriteLine("\n" + topOfStack.Op + "\n");
+            Trace.WriteLine("[Whiteboard]  " + "\n" + topOfStack.Op + "\n");
 
             /* Depending on the operation, perform the inverse opreation 
             by calling appropriate functions to modify ShapeList */
@@ -101,7 +131,7 @@ namespace PlexShareWhiteboard
                     break;
             }
             redoStack.Push(topOfStack);
-            Debug.WriteLine("\n" + redoStack.Peek().Op + " is pushed to Redo Stack \n");
+            Trace.WriteLine("[Whiteboard]  " + "\n" + redoStack.Peek().Op + " is pushed to Redo Stack \n");
             return modifiedObject;
         }
 
@@ -125,20 +155,20 @@ namespace PlexShareWhiteboard
             switch (topOfStack.Op)
             {
                 case Operation.Creation:
-                    Debug.WriteLine("\n Redo Creation " + topOfStack.NewShape.Id + "\n");
+                    Trace.WriteLine("[Whiteboard]  " + "\n Redo Creation " + topOfStack.NewShape.Id + "\n");
                     CreateIncomingShape(topOfStack.NewShape);
                     break;
                 case Operation.Deletion:
-                    Debug.WriteLine("\n Redo Deletion " + topOfStack.NewShape.Id + "\n");
+                    Trace.WriteLine("[Whiteboard]  " + "\n Redo Deletion " + topOfStack.NewShape.Id + "\n");
                     DeleteIncomingShape(topOfStack.NewShape);
                     break;
                 case Operation.ModifyShape:
-                    Debug.WriteLine("\n Redo ModifyShape " + topOfStack.NewShape.Id + "\n");
+                    Trace.WriteLine("[Whiteboard]  " + "\n Redo ModifyShape " + topOfStack.NewShape.Id + "\n");
                     ModifyIncomingShape(topOfStack.NewShape);
                     break;
             }
             undoStack.Push(topOfStack);
-            Debug.WriteLine("\n " + undoStack.Peek().NewShape.Id + " is pushed to UndoStack \n");
+            Trace.WriteLine("[Whiteboard]  " + "\n " + undoStack.Peek().NewShape.Id + " is pushed to UndoStack \n");
             return topOfStack;
         }
 

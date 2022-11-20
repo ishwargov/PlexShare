@@ -46,7 +46,7 @@ namespace PlexShareCloudUX
         /// <returns>Returns the submission entity for given session id</returns>
         public async Task<IReadOnlyList<SubmissionEntity>> GetSubmissions(string sessionId)
         {
-            IReadOnlyList<SubmissionEntity>? getEntity = await fileDownloadApi.GetFilesBySessionIdAsync("sessionId");
+            IReadOnlyList<SubmissionEntity>? getEntity = await fileDownloadApi.GetFilesBySessionIdAsync(sessionId);
             SubmissionsList = getEntity;
             return getEntity;
         }

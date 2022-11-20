@@ -7,7 +7,7 @@ using PlexShareWhiteboard.Client;
 
 namespace PlexShareTests.WhiteboardTests.Client
 {
-    
+    [Collection("Sequential")]
     public class ClientCommunicatorTests
     {
         [Fact]

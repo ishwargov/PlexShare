@@ -10,6 +10,7 @@
  * Description = Consists of Rest API functions for the Submission and Session. 
  *****************************************************************************/
 
+using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -46,7 +47,7 @@ namespace PlexShareCloud
         public async Task<SubmissionEntity> PutSubmissionAsync(string sessionId, string userName, byte[] newPdf)
         {
             using HttpResponseMessage response = await _entityClient.PutAsJsonAsync<byte[]>(_submissionUrl + $"/{sessionId}/{userName}", newPdf);
-            response.EnsureSuccessStatusCode();
+            //response.EnsureSuccessStatusCode();
             var result = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions
             {
@@ -66,7 +67,7 @@ namespace PlexShareCloud
         public async Task<SubmissionEntity> PostSubmissionAsync(string sessionId, string userName, byte[] pdf)
         {
             using HttpResponseMessage response = await _entityClient.PostAsJsonAsync<byte[]>(_submissionUrl + $"/{sessionId}/{userName}", pdf);
-            response.EnsureSuccessStatusCode();
+            //response.EnsureSuccessStatusCode();
             var result = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions
             {
@@ -75,6 +76,7 @@ namespace PlexShareCloud
             };
 
             SubmissionEntity entity = JsonSerializer.Deserialize<SubmissionEntity>(result, options);
+            Trace.WriteLine("[Cloud] PDF Posted Successfully");
             return entity;
         }
 
@@ -87,7 +89,7 @@ namespace PlexShareCloud
         public async Task<SessionEntity> PostSessionAsync(string sessionId, string userName)
         {
             using HttpResponseMessage response = await _entityClient.PostAsJsonAsync<string>(_sessionUrl + $"/{userName}", sessionId);
-            response.EnsureSuccessStatusCode();
+            //response.EnsureSuccessStatusCode();
             var result = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions
             {
@@ -96,6 +98,7 @@ namespace PlexShareCloud
             };
 
             SessionEntity entity = JsonSerializer.Deserialize<SessionEntity>(result, options);
+            Trace.WriteLine("[Cloud] Session Details Posted Successfully");
             return entity;
         }
     }

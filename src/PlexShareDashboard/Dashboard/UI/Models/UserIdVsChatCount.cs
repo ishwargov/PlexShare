@@ -1,4 +1,9 @@
-﻿using System;
+﻿/// <author>Rupesh Kumar</author>
+/// <summary>
+/// class model to store the userid and chat count values 
+/// </summary>
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

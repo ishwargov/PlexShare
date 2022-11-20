@@ -17,6 +17,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using PlexShareCloud;
+using System.Diagnostics;
 
 namespace PlexShareCloudUX
 {
@@ -28,7 +29,7 @@ namespace PlexShareCloudUX
         private string SubmissionUrl;//@"http://localhost:7213/api/submission";
         private string SessionUrl;//@"http://localhost:7213/api/session";
         private FileUploadApi _uploadClient;
-        public UploadModel(string sessionId, string userName)
+        public UploadModel(string sessionId, string userName, bool isServer)
         {
             SessionId = sessionId;
             UserName = userName;
@@ -36,6 +37,11 @@ namespace PlexShareCloudUX
             SubmissionUrl = @paths[0];
             SessionUrl = @paths[1];
             _uploadClient = new(SessionUrl, SubmissionUrl);
+            if(isServer)
+            {
+                _uploadClient.PostSessionAsync(sessionId, userName);
+            }
+            Trace.WriteLine("[Cloud] Uplod View object created");
         }
         
         /// <summary>

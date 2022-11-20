@@ -11,8 +11,11 @@
  *               internal communication between client and server components. 
  *****************************************************************************/
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace PlexShareContent.DataModels
 {
+    [ExcludeFromCodeCoverage]
     public class ContentData : ReceiveContentData
     {
         /// <summary>

@@ -23,6 +23,8 @@ namespace PlexShareWhiteboard.BoardComponents
     {
         public List<ShapeItem> ConvertToShapeItem(List<SerializableShapeItem> serializableShapeItems)
         {
+            if (serializableShapeItems == null)
+                return null;
             List<ShapeItem> shapeItems = new List<ShapeItem>(); 
             foreach (SerializableShapeItem serializableShapeItem in serializableShapeItems)
             {
@@ -33,6 +35,8 @@ namespace PlexShareWhiteboard.BoardComponents
 
         public List<SerializableShapeItem> ConvertToSerializableShapeItem(List<ShapeItem> shapeItems)
         {
+            if (shapeItems == null)
+                return null;
             List<SerializableShapeItem> serializableShapeItems = new List<SerializableShapeItem>();
             foreach (ShapeItem shapeItem in shapeItems)
             {
@@ -42,7 +46,14 @@ namespace PlexShareWhiteboard.BoardComponents
         }
         public ShapeItem ConvertToShapeItem(SerializableShapeItem x)
         {
+            if (x == null)
+                return null;
+            Trace.WriteLine("[WhiteBoard] converting to shape item " + x.GeometryString);
+            Trace.WriteLine("[WhiteBoard] converting to shape item chk -1" + x.GeometryString);
+
             Geometry g = null;
+            Trace.WriteLine("[WhiteBoard] converting to shape item chk -2" + x.GeometryString + " x.FontSize : "+ x.FontSize + "x.Stroke:"+ x.Stroke + "x.TextString"+ x.TextString);
+
             if (x.GeometryString == "EllipseGeometry")
             {
                 Rect boundingBox = new Rect(x.Start, x.End);
@@ -56,13 +67,17 @@ namespace PlexShareWhiteboard.BoardComponents
             else if (x.GeometryString == "PathGeometry")
             {
                 PathGeometry g1 = new PathGeometry();
-
-                for (int i = 1; i < x.PointList.Count; i++)
+                if(x.PointList != null)
                 {
-                    Point curPoint = x.PointList[i];
-                    Point prevPoint = x.PointList[i - 1];
-                    var line = new LineGeometry(curPoint, prevPoint);
-                    g1.AddGeometry(line);
+                    for (int i = 1; i < x.PointList.Count; i++)
+                    {
+                        Point curPoint = x.PointList[i];
+                        Point prevPoint = x.PointList[i - 1];
+                        var line = new LineGeometry(curPoint, prevPoint);
+                        var circle = new EllipseGeometry(curPoint, 0.1, 0.1);
+                        g1.AddGeometry(circle);
+                        g1.AddGeometry(line);
+                    }
                 }
                 g = g1;
             }
@@ -71,20 +86,26 @@ namespace PlexShareWhiteboard.BoardComponents
                 g = new LineGeometry(x.Start, x.End);
 
             }
-            else if (x.GeometryString == "TextGeometry")
+            else if (x.GeometryString == "GeometryGroup")
             {
                 // this geometry string does not have a corresponding 
+                Trace.WriteLine("geometry groupil inside start");
                 FormattedText formattedText = new FormattedText(
                     x.TextString,
                     CultureInfo.GetCultureInfo("en-us"),
                     FlowDirection.LeftToRight,
                     new Typeface("Verdana"),
-                    x.FontSize,
+                    32,
                     x.Stroke,
                     3);
+                Trace.WriteLine("geometry groupil inside middle");
+                g=formattedText.BuildGeometry(x.Start);
+                Trace.WriteLine("geometry groupil inside end");
 
             }
             Trace.WriteLine(g);
+            Trace.WriteLine("[WhiteBoard] converting to shape item chk -3" + x.GeometryString);
+
             ShapeItem y = new ShapeItem
             {
                 Geometry = g,
@@ -114,7 +135,8 @@ namespace PlexShareWhiteboard.BoardComponents
             SerializableShapeItem y = new SerializableShapeItem
             {
                 FontSize = x.FontSize,
-                GeometryString = x.GeometryString,
+                GeometryString = x.Geometry.GetType().Name,
+                //GeometryString = x.GeometryString,
                 TextString = x.TextString,
                 PointList = x.PointList,
                 Start = x.Start,

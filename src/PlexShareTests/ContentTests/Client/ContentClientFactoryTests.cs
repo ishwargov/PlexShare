@@ -19,37 +19,45 @@ namespace PlexShareTests.ContentTests.Client
         [Fact]
         public void GetInstance_SingleThread_ReturnsSingleInstance()
         {
-            var ref1 = ContentClientFactory.GetInstance();
-            var ref2 = ContentClientFactory.GetInstance();
+            var instance1 = ContentClientFactory.GetInstance();
+            var instance2 = ContentClientFactory.GetInstance();
 
-            Assert.Same(ref1, ref2);
+            Assert.Same(instance1, instance2);
         }
 
         [Fact]
         public void GetInstance_MultiThread_ReturnsSingleInstance()
         {
-            IContentClient? ref1 = null;
-            IContentClient? ref2 = null;
-            var t1 = Task.Run(() => { ref1 = ContentClientFactory.GetInstance(); });
-            var t2 = Task.Run(() => { ref2 = ContentClientFactory.GetInstance(); });
+            IContentClient? instance1 = null;
+            IContentClient? instance2 = null;
+            var t1 = Task.Run(() => { instance1 = ContentClientFactory.GetInstance(); });
+            var t2 = Task.Run(() => { instance2 = ContentClientFactory.GetInstance(); });
 
             Task.WaitAll(t1, t2);
 
-            Assert.Same(ref1, ref2);
+            Assert.Same(instance1, instance2);
         }
 
         [Fact]
         public void SetUser_MultipleInstances_ReturnsSingleUserID()
         {
-            var ref1 = ContentClientFactory.GetInstance();
-            var ref2 = ContentClientFactory.GetInstance();
+            var instance1 = ContentClientFactory.GetInstance();
+            var instance2 = ContentClientFactory.GetInstance();
 
-            Assert.Same(ref1, ref2);
+            Assert.Same(instance1, instance2);
 
-            var userID1 = ref1.GetUserID();
-            var userID2 = ref2.GetUserID();
+            var userID1 = instance1.GetUserID();
+            var userID2 = instance2.GetUserID();
 
             Assert.Equal(userID1, userID2);
+        }
+
+        [Fact]
+        public void SetUser_ValidInput_SetsValidUserID()
+        {
+            var instance = ContentClientFactory.GetInstance();
+            ContentClientFactory.SetUser(1);
+            Assert.Equal(1, instance.GetUserID());
         }
     }
 }

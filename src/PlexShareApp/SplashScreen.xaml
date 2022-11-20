@@ -5,8 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PlexShareApp"
         mc:Ignorable="d"
-        Title="SplashScreen" Height="450" Width="800">
-    <Grid>
-        
+        WindowStartupLocation="CenterScreen"
+        AllowsTransparency="True"
+        WindowStyle="None"
+        Title="SplashScreen" Height="225" Width="400"
+        >
+    <Grid Background="DarkSlateGray">
+        <Grid>
+            <TextBlock x:Name="MainBox" Foreground="Wheat" FontSize="50"
+                       VerticalAlignment="Center" FontFamily="Cascadia Mono" HorizontalAlignment="Center">
+
+            </TextBlock>
+        </Grid>
     </Grid>
 </Window>

@@ -6,11 +6,11 @@
 
 using PlexShareNetwork;
 using PlexShareNetwork.Communication;
-using PlexShareNetwork.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.Json;
 using System.Timers;
 
 namespace PlexShareScreenshare.Server
@@ -20,7 +20,8 @@ namespace PlexShareScreenshare.Server
     /// </summary>
     public class ScreenshareServer :
         INotificationHandler, // To receive packets from the networking
-        ITimerManager         // Handles the timeout for screen sharing of clients
+        ITimerManager,        // Handles the timeout for screen sharing of clients
+        IDisposable           // Handle cleanup work for the allocated resources
     {
         /// <summary>
         /// The only singleton instance for this class.
@@ -31,18 +32,13 @@ namespace PlexShareScreenshare.Server
         /// The networking object used to subscribe to the networking module
         /// and to send the packets to the clients.
         /// </summary>
-        private readonly ICommunicator _communicator;
-
-        /// <summary>
-        /// The serializer object used to serialize and deserialize data.
-        /// </summary>
-        private readonly ISerializer _serializer;
+        private readonly ICommunicator? _communicator;
 
         /// <summary>
         /// The subscriber which should be notified when subscribers list change.
         /// Here it will be the view model.
         /// </summary>
-        private readonly IMessageListener listener;
+        private readonly IMessageListener _listener;
 
         /// <summary>
         /// The map between each client ID and their corresponding "SharedScreenObject"
@@ -51,26 +47,50 @@ namespace PlexShareScreenshare.Server
         private readonly Dictionary<string, SharedClientScreen> _subscribers;
 
         /// <summary>
+        /// Track whether Dispose has been called.
+        /// </summary>
+        private bool _disposed;
+
+        /// <summary>
         /// Creates an instance of "ScreenshareServer" which represents the
         /// data model for screen sharing on the server side machine.
         /// </summary>
         /// <param name="listener">
         /// The subscriber which should be notified when subscribers list change
         /// </param>
-        protected ScreenshareServer(IMessageListener listener)
+        /// <param name="isDebugging">
+        /// If we are in debugging mode
+        /// </param>
+        protected ScreenshareServer(IMessageListener listener, bool isDebugging)
         {
-            // Get an instance of a communicator object
-            _communicator = CommunicationFactory.GetCommunicator(isClientSide: false);
+            if (!isDebugging)
+            {
+                // Get an instance of a communicator object
+                _communicator = CommunicationFactory.GetCommunicator(isClientSide: false);
 
-            // Subscribe to the networking module for packets
-            _communicator.Subscribe(Utils.ModuleIdentifier, this);
+                // Subscribe to the networking module for packets
+                _communicator.Subscribe(Utils.ModuleIdentifier, this, isHighPriority: true);
+            }
 
             // Initialize the rest of the fields
-            _subscribers = new Dictionary<string, SharedClientScreen>();
-            this.listener = listener;
-            _serializer = new Serializer();
+            _subscribers = new();
+            _listener = listener;
+            _disposed = false;
 
             Trace.WriteLine(Utils.GetDebugMessage("Successfully created an instance of ScreenshareServer", withTimeStamp: true));
+        }
+
+        /// <summary>
+        /// Destructor for the class that will perform some cleanup tasks.
+        /// This destructor will run only if the Dispose method does not get called.
+        /// It gives the class the opportunity to finalize.
+        /// </summary>
+        ~ScreenshareServer()
+        {
+            // Do not re-create Dispose clean-up code here.
+            // Calling Dispose(disposing: false) is optimal in terms of
+            // readability and maintainability.
+            Dispose(disposing: false);
         }
 
         /// <summary>
@@ -83,12 +103,15 @@ namespace PlexShareScreenshare.Server
         /// </param>
         public void OnDataReceived(string serializedData)
         {
-            Debug.Assert(_serializer != null, Utils.GetDebugMessage("_serializer is found null"));
-
             try
             {
-                // Deserialize the data to get the "DataPacket" object back
-                DataPacket packet = _serializer.Deserialize<DataPacket>(serializedData);
+                DataPacket? packet = JsonSerializer.Deserialize<DataPacket>(serializedData);
+
+                if (packet == null)
+                {
+                    Trace.WriteLine(Utils.GetDebugMessage($"Not able to deserialize data packet: {serializedData}", withTimeStamp: true));
+                    return;
+                }
 
                 // Extract different fields from the object of the "DataPacket"
                 string clientId = packet.Id;
@@ -162,23 +185,42 @@ namespace PlexShareScreenshare.Server
         public void OnTimeOut(object? source, ElapsedEventArgs e, string clientId)
         {
             DeregisterClient(clientId);
+            Trace.WriteLine(Utils.GetDebugMessage($"Timeout occurred for the client with id: {clientId}", withTimeStamp: true));
         }
 
         /// <summary>
+        /// Implement "IDisposable". Disposes the managed and unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+
+            // This object will be cleaned up by the Dispose method.
+            // Therefore, we should call GC.SuppressFinalize to
+            // take this object off the finalization queue
+            // and prevent finalization code for this object
+            // from executing a second time
+            GC.SuppressFinalize(this);
+        }
+
+        /// /// <summary>
         /// Gets a singleton instance of "ScreenshareServer" class.
         /// </summary>
         /// <param name="listener">
         /// The subscriber which should be notified when subscribers list change
         /// </param>
+        /// <param name="isDebugging">
+        /// If we are in debugging mode or not
+        /// </param>
         /// <returns>
         /// A singleton instance of "ScreenshareServer"
         /// </returns>
-        public static ScreenshareServer GetInstance(IMessageListener listener)
+        public static ScreenshareServer GetInstance(IMessageListener listener, bool isDebugging = false)
         {
             Debug.Assert(listener != null, Utils.GetDebugMessage("listener is found null"));
 
             // Create a new instance if it was null before
-            _instance ??= new(listener);
+            _instance ??= new(listener, isDebugging);
             return _instance;
         }
 
@@ -194,13 +236,17 @@ namespace PlexShareScreenshare.Server
         /// Corresponding header to send with the data packet.
         /// Should be a string value of the enum "ServerDataHeader"
         /// </param>
-        /// <param name="resolution">
-        /// Resolution of the image to send if asking the clients to send image packet
+        /// <param name="numRowsColumns">
+        /// Resolution of the image based on the number of rows and columns
+        /// to send if asking the clients to send image packet
         /// </param>
-        public void BroadcastClients(List<string> clientIds, string headerVal, (int, int) resolution)
+        public void BroadcastClients(List<string> clientIds, string headerVal, (int Rows, int Cols) numRowsColumns)
         {
-            Debug.Assert(_serializer != null, Utils.GetDebugMessage("_serializer is found null"));
             Debug.Assert(_communicator != null, Utils.GetDebugMessage("_communicator is found null"));
+            Debug.Assert(clientIds != null, Utils.GetDebugMessage("list of client Ids is found null"));
+
+            // If there are no clients to broadcast to
+            if (clientIds.Count == 0) return;
 
             // Validate header value
             try
@@ -214,19 +260,62 @@ namespace PlexShareScreenshare.Server
             }
 
             // Serialize the data to send
-            string serializedData = _serializer.Serialize(resolution);
-
-            // Create the data packet to send
-            DataPacket packet = new("1", "Server", headerVal, serializedData);
-
-            // Serialize the data packet to send to clients
-            string serializedPacket = _serializer.Serialize(packet);
-
-            // Send data packet to all the clients mentioned
-            foreach (string clientId in clientIds)
+            try
             {
-                _communicator.Send(serializedPacket, Utils.ModuleIdentifier, clientId);
+                int product = numRowsColumns.Rows * numRowsColumns.Cols;
+                string serializedData = JsonSerializer.Serialize(product);
+
+                // Create the data packet to send
+                DataPacket packet = new("1", "Server", headerVal, serializedData);
+
+                // Serialize the data packet to send to clients
+                string serializedPacket = JsonSerializer.Serialize(packet);
+
+                // Send data packet to all the clients mentioned
+                foreach (string clientId in clientIds)
+                {
+                    _communicator.Send(serializedPacket, Utils.ModuleIdentifier, clientId);
+                }
             }
+            catch (Exception e)
+            {
+                Trace.WriteLine(Utils.GetDebugMessage($"Exception while sending the packet to the client: {e.Message}", withTimeStamp: true));
+            }
+        }
+
+        /// <summary>
+        /// It executes in two distinct scenarios.
+        /// If disposing equals true, the method has been called directly
+        /// or indirectly by a user's code. Managed and unmanaged resources
+        /// can be disposed.
+        /// If disposing equals false, the method has been called by the
+        /// runtime from inside the destructor and we should not reference
+        /// other objects. Only unmanaged resources can be disposed.
+        /// </summary>
+        /// <param name="disposing">
+        /// Indicates if we are disposing this object
+        /// </param>
+        protected virtual void Dispose(bool disposing)
+        {
+            // Check to see if Dispose has already been called.
+            if (_disposed) return;
+
+            // If disposing equals true, dispose all managed
+            // and unmanaged resources
+            if (disposing)
+            {
+                foreach (SharedClientScreen client in _subscribers.Values.ToList())
+                {
+                    DeregisterClient(client.Id);
+                }
+                _subscribers.Clear();
+                _instance = null;
+            }
+
+            // Call the appropriate methods to clean up unmanaged resources here
+
+            // Now disposing has been done
+            _disposed = true;
         }
 
         /// <summary>
@@ -243,18 +332,30 @@ namespace PlexShareScreenshare.Server
         {
             Debug.Assert(_subscribers != null, Utils.GetDebugMessage("_subscribers is found null"));
 
-            try
+            // Acquire lock because timer threads could also execute simultaneously
+            lock (_subscribers)
             {
-                // Add this client to the list of screen sharers
-                _subscribers.Add(clientId, new SharedClientScreen(clientId, clientName, this));
-            }
-            catch (Exception e)
-            {
-                Trace.WriteLine(Utils.GetDebugMessage($"Error adding client to the list of screen sharers: {e.Message}", withTimeStamp: true));
-                return;
+                // Check if the clientId is present in the screen sharers list
+                if (_subscribers.ContainsKey(clientId))
+                {
+                    Trace.WriteLine(Utils.GetDebugMessage($"Trying to register an already registered client with id {clientId}", withTimeStamp: true));
+                    return;
+                }
+
+                try
+                {
+                    // Add this client to the list of screen sharers
+                    _subscribers.Add(clientId, new(clientId, clientName, this));
+                }
+                catch (Exception e)
+                {
+                    Trace.WriteLine(Utils.GetDebugMessage($"Error adding client to the list of screen sharers: {e.Message}", withTimeStamp: true));
+                    return;
+                }
+
+                NotifyUX();
             }
 
-            NotifyUX();
             Trace.WriteLine(Utils.GetDebugMessage($"Successfully registered the client- Id: {clientId}, Name: {clientName}", withTimeStamp: true));
         }
 
@@ -270,23 +371,33 @@ namespace PlexShareScreenshare.Server
         {
             Debug.Assert(_subscribers != null, Utils.GetDebugMessage("_subscribers is found null"));
 
-            // Check if the clientId is present in the screen sharers list
-            if (!_subscribers.ContainsKey(clientId))
+            SharedClientScreen client;
+
+            // Acquire lock because timer threads could also execute simultaneously
+            lock (_subscribers)
             {
-                Trace.WriteLine(Utils.GetDebugMessage($"Trying to deregister a client with id {clientId} which is not present in subscribers list", withTimeStamp: true));
-                return;
+                // Check if the clientId is present in the screen sharers list
+                if (!_subscribers.ContainsKey(clientId))
+                {
+                    Trace.WriteLine(Utils.GetDebugMessage($"Trying to deregister a client with id {clientId} which is not present in subscribers list", withTimeStamp: true));
+                    return;
+                }
+
+                // Remove the client from the list of screen sharers
+                client = _subscribers[clientId];
+                _ = _subscribers.Remove(clientId);
+
+                NotifyUX();
             }
-
-            // Remove the client from the list of screen sharers
-            SharedClientScreen client = _subscribers[clientId];
-            _ = _subscribers.Remove(clientId);
-
-            NotifyUX();
 
             // Stop all processing for this client
             try
             {
-                client.StopProcessing();
+                client.StopProcessing().Wait();
+            }
+            catch (OperationCanceledException e)
+            {
+                Trace.WriteLine(Utils.GetDebugMessage($"Task canceled for the client with id {clientId}: {e.Message}", withTimeStamp: true));
             }
             catch (Exception e)
             {
@@ -310,7 +421,6 @@ namespace PlexShareScreenshare.Server
         private void PutImage(string clientId, string data)
         {
             Debug.Assert(_subscribers != null, Utils.GetDebugMessage("_subscribers is found null"));
-            Debug.Assert(_serializer != null, Utils.GetDebugMessage("_serializer is found null"));
 
             // Check if the clientId is present in the screen sharers list
             if (!_subscribers.ContainsKey(clientId))
@@ -320,9 +430,16 @@ namespace PlexShareScreenshare.Server
             }
 
             // Put the image to the client's image queue
-            Frame frame = _serializer.Deserialize<Frame>(data);
-            SharedClientScreen client = _subscribers[clientId];
-            client.PutImage(frame);
+            try
+            {
+                //Frame frame = JsonSerializer.Deserialize<Frame>(data);
+                SharedClientScreen client = _subscribers[clientId];
+                client.PutImage(data);
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine(Utils.GetDebugMessage($"Exception while processing the received frame: {e.Message}", withTimeStamp: true));
+            }
         }
 
         /// <summary>
@@ -347,6 +464,13 @@ namespace PlexShareScreenshare.Server
             {
                 SharedClientScreen client = _subscribers[clientId];
                 client.UpdateTimer();
+
+                // Send Confirmation packet back to the client
+                List<string> clientIds = new()
+                {
+                    clientId
+                };
+                //BroadcastClients(clientIds, nameof(ServerDataHeader.Confirmation), (0, 0));
             }
             catch (Exception e)
             {
@@ -360,8 +484,9 @@ namespace PlexShareScreenshare.Server
         private void NotifyUX()
         {
             Debug.Assert(_subscribers != null, Utils.GetDebugMessage("_subscribers is found null"));
+            Debug.Assert(_listener != null, Utils.GetDebugMessage("_listener is found null"));
 
-            listener.OnSubscribersChanged(_subscribers.Values.ToList());
+            _listener.OnSubscribersChanged(_subscribers.Values.ToList());
         }
     }
 }

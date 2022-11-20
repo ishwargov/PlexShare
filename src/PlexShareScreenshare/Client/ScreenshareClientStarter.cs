@@ -7,8 +7,8 @@
 
 using PlexShareNetwork;
 using PlexShareNetwork.Communication;
-using PlexShareNetwork.Serialization;
-using System;
+using System.Diagnostics;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -35,16 +35,13 @@ namespace PlexShareScreenshare.Client
         private readonly ScreenCapturer _capturer;
         private readonly ScreenProcessor _processor;
 
-        // Serializer object from networking module
-        private readonly Serializer _serializer;
-
         // Name and Id of the current client user
         private string? _name;
         private string? _id;
 
         // Tokens added to be able to stop the thread execution
-        private bool _confirmationCancellationToken;
-        private bool _imageCancellationToken;
+        private CancellationTokenSource? _confirmationCancellationTokenSource;
+        private CancellationTokenSource? _imageCancellationTokenSource;
 
         // Varible to store if screen share is active
         private bool _isScreenSharing = false;
@@ -59,8 +56,8 @@ namespace PlexShareScreenshare.Client
             _capturer = new ScreenCapturer();
             _processor = new ScreenProcessor(_capturer);
             _communicator = CommunicationFactory.GetCommunicator();
-            _communicator.Subscribe("ScreenShare", this, true);
-            _serializer = new();
+            _communicator.Subscribe(Utils.ModuleIdentifier, this, true);
+            Trace.WriteLine(Utils.GetDebugMessage("Successfully stopped image processing", withTimeStamp: true));
         }
 
         /// <summary>
@@ -73,51 +70,66 @@ namespace PlexShareScreenshare.Client
             {
                 _screenShareClient = new ScreenshareClient();
             }
+            Trace.WriteLine(Utils.GetDebugMessage("Successfully created an instance of ScreenshareClient", withTimeStamp: true));
             return _screenShareClient;
         }
 
         /// <summary>
-        /// Firstly it will send a REGISTER packet to the server then 
-        /// start capturer, processor, image sending function and 
-        /// the confirmation sending function.
+        /// When client clicks the screensharing button, this function gets executed
+        /// It will send a register packet to the server and it will even start sending the
+        /// confirmation packets to the sever
         /// </summary>
         public void StartScreensharing()
         {
             _isScreenSharing = true;
+            Debug.Assert(_id != null, Utils.GetDebugMessage("_id property found null"));
+            Debug.Assert(_name != null, Utils.GetDebugMessage("_name property found null"));
+
             // sending register packet
             DataPacket dataPacket = new(_id, _name, ClientDataHeader.Register.ToString(), "");
-            string serializedData = _serializer.Serialize(dataPacket);
-            _communicator.Send(serializedData, "ScreenShare", null);
+            string serializedData = JsonSerializer.Serialize(dataPacket);
+            _communicator.Send(serializedData, Utils.ModuleIdentifier, null);
+            Trace.WriteLine(Utils.GetDebugMessage("Successfully sent REGISTER packet to server"));
 
-            StartImageSending();
             SendConfirmationPacket();
+            Trace.WriteLine(Utils.GetDebugMessage("Started sending confirmation packet"));
 
-            _capturer.StartCapture();
-            _processor.StartProcessing();
         }
 
         /// <summary>
         /// This function will be invoked on message from server
-        /// If the message is SEND then start screen sharing and set the 
-        /// appropriate resolution.
-        /// Otherwise the message was STOP then stop the screen sharing.
+        /// If the message is SEND then start capturing, processing and sending functions
+        /// Otherwise, if the message was STOP then just stop the image sending part
         /// </summary>
         /// <param name="serializedData"> Serialized data from the network module </param>
         void INotificationHandler.OnDataReceived(string serializedData)
         {
-            DataPacket dataPacket = _serializer.Deserialize<DataPacket>(serializedData);
-            if (dataPacket.Header == ServerDataHeader.Send.ToString())
+            // Deserializing data packet received from server
+            Debug.Assert(serializedData != "", Utils.GetDebugMessage("Message from serve found null", withTimeStamp: true));
+            DataPacket? dataPacket = JsonSerializer.Deserialize<DataPacket>(serializedData);
+            Debug.Assert(dataPacket != null, Utils.GetDebugMessage("Unable to deserialize datapacket from server", withTimeStamp: true));
+            Trace.WriteLine(Utils.GetDebugMessage("Successfully received packet from server", withTimeStamp: true));
+
+            if (dataPacket?.Header == ServerDataHeader.Send.ToString())
             {
-                if (!_isScreenSharing)
-                {
-                    StartScreensharing();
-                }
-                Resolution res = _serializer.Deserialize<Resolution>(dataPacket.Data);
-                _processor.SetNewResolution(res);
+                // if it is SEND packet then start image sending (if not already started) and 
+                // set the resolution as in the packet
+                Trace.WriteLine(Utils.GetDebugMessage("Got SEND packet from server", withTimeStamp: true));
+
+                // starting capturer, processor and Image Sending
+                StartImageSending();
+
+                int windowCount = int.Parse(dataPacket.Data);
+                _processor.SetNewResolution(windowCount);
+                Trace.WriteLine(Utils.GetDebugMessage("Successfully set the new resolution", withTimeStamp: true));
             }
             else
             {
-                StopScreensharing();
+                Debug.Assert(dataPacket?.Header == ServerDataHeader.Stop.ToString(),
+                    Utils.GetDebugMessage("Header from server is neither SEND nor STOP"));
+                // else if it was a STOP packet then stop image sending
+                Trace.WriteLine(Utils.GetDebugMessage("Got STOP packet from server", withTimeStamp: true));
+                StopImageSending();
             }
         }
 
@@ -128,14 +140,21 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         private void ImageSending()
         {
-            while (!_imageCancellationToken)
+            Debug.Assert(_imageCancellationTokenSource != null,
+                Utils.GetDebugMessage("_imageCancellationTokenSource is not null, cannot start ImageSending"));
+            _imageCancellationTokenSource.Token.ThrowIfCancellationRequested();
+
+            while (!_imageCancellationTokenSource.Token.IsCancellationRequested)
             {
-                Frame img = _processor.GetImage();
-                if (img.Pixels.Count == 0) continue;
-                string serializedImg = _serializer.Serialize(img);
+                _imageCancellationTokenSource.Token.ThrowIfCancellationRequested();
+
+                string serializedImg = _processor.GetFrame(_imageCancellationTokenSource.Token);
+
                 DataPacket dataPacket = new(_id, _name, ClientDataHeader.Image.ToString(), serializedImg);
-                string serializedData = _serializer.Serialize(dataPacket);
-                _communicator.Send(serializedData, "ScreenShare", null);
+                string serializedData = JsonSerializer.Serialize(dataPacket);
+
+                _communicator.Send(serializedData, Utils.ModuleIdentifier, null);
+                Trace.WriteLine(Utils.GetDebugMessage($"Sent frame of size {serializedData.Length}", withTimeStamp: true));
             }
         }
 
@@ -144,9 +163,14 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         private void StartImageSending()
         {
-            _imageCancellationToken = false;
-            _sendImageTask = new Task(ImageSending);
+            _capturer.StartCapture();
+            _processor.StartProcessing();
+            Trace.WriteLine(Utils.GetDebugMessage("Successfully started capturer and processor"));
+
+            _imageCancellationTokenSource = new();
+            _sendImageTask = new Task(ImageSending, _imageCancellationTokenSource.Token);
             _sendImageTask.Start();
+            Trace.WriteLine(Utils.GetDebugMessage("Successfully started image sending"));
         }
 
     }

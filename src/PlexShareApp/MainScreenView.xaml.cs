@@ -11,29 +11,15 @@
  *               The view instantiates a server or a client using the IP given by the HomeScreenView.
  * 
  *****************************************************************************/
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Diagnostics;
-using PlexShareDashboard.Dashboard.Server.SessionManagement;
+using Dashboard;
 using PlexShare.Dashboard;
 using PlexShareDashboard.Dashboard.Client.SessionManagement;
-using Dashboard;
-using PlexShareApp;
-using ScottPlot.Drawing.Colormaps;
+using System;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
+using System.Diagnostics;
+using System.Windows;
+using System.Windows.Input;
+using System.Windows.Media;
 
 namespace PlexShareApp
 {
@@ -44,6 +30,8 @@ namespace PlexShareApp
     {
         private bool chatOn;
         private bool cloudOn;
+        private bool submissionsOn;
+        private static SubmissionsPage submissionsPage;
         private static DashboardPage dashboardPage;
         private static WhiteBoardPage whiteBoardPage;
         private static ChatPageView chatPage;
@@ -54,14 +42,14 @@ namespace PlexShareApp
         public event PropertyChangingEventHandler? PropertyChanged;
 
         private bool isClient;
-        
+
         public MainScreenView(string name, string email, string picPath, string url, string ip, string port, bool isServer)
         {
 
-
             isClient = !isServer;
             cloudOn = false;
-                // The client/server was verified to be correct.
+            submissionsOn = false;
+            // The client/server was verified to be correct.
             // We can add the client to meeting, and instantiate all modules.
             InitializeComponent();
 
@@ -70,7 +58,7 @@ namespace PlexShareApp
             chatPage = new ChatPageView();
 
             Trace.WriteLine("[UX] The ChatPage has started");
-          //  uploadPage = new UploadPage();
+            //  uploadPage = new UploadPage();
 
             if (isServer)
             {
@@ -85,6 +73,11 @@ namespace PlexShareApp
                 Trace.WriteLine("[UX] The Whiteboard Client has started");
                 screenshareClientView = new ScreenshareClientView();
                 Trace.WriteLine("[UX] The Screenshare Client has started");
+                
+                // Clients should now be able to see the submissions Page
+                Submissions.Visibility = Visibility.Hidden;
+
+
             }
 
             Main.Content = dashboardPage;
@@ -93,12 +86,34 @@ namespace PlexShareApp
             Trace.WriteLine("[UX] Setting the IP:Port");
             ServerIPandPort.Text = "Server IP : " + ip + "    Port : " + port;
 
+            // This is to get the sessionID and userEmail from the dashBoard 
+            // Because the cloud team needs it in their constructor
             ClientSessionManager clientSessionManager;
             clientSessionManager = SessionManagerFactory.GetClientSessionManager();
-            SessionData sessionData= clientSessionManager._clientSessionData;
+            SessionData sessionData = clientSessionManager._clientSessionData;
             UserData user = clientSessionManager.GetUser();
-            uploadPage = new UploadPage(sessionData.sessionId.ToString(), user.userEmail);
+            uploadPage = new UploadPage(sessionData.sessionId.ToString(), user.userEmail, isServer);
 
+            //this is to disable backspace to avoid switch tabs
+            NavigationCommands.BrowseBack.InputGestures.Clear();
+
+            submissionsPage = new SubmissionsPage(sessionData.sessionId.ToString(), user.userEmail);
+
+            // this is to disable backspace so backspace does not switch tabs
+            NavigationCommands.BrowseBack.InputGestures.Clear();
+
+        }
+
+        /// <summary>
+        /// Disable the space key for whiteboard
+        /// </summary>
+        /// <param name="e"></param>
+        protected override void OnPreviewKeyDown(KeyEventArgs e)
+        {
+            if (e.Key == Key.Space)
+            {
+                e.Handled = true;
+            }
         }
 
         /// <summary>
@@ -125,7 +140,7 @@ namespace PlexShareApp
             Whiteboard.Background = Brushes.DarkSlateGray;
             Screenshare.Background = Brushes.DarkCyan;
 
-            if(!isClient)
+            if (isClient)
             {
                 Trace.WriteLine("[UX] Rendering Client Screenshare");
                 Main.Content = screenshareClientView;
@@ -165,7 +180,7 @@ namespace PlexShareApp
             else
             {
                 Trace.WriteLine("[UX] Removing Chat");
-                chatOn=false;
+                chatOn = false;
                 ScreenWithChat.Content = null;
                 Chat.Background = Brushes.Transparent;
             }
@@ -182,8 +197,28 @@ namespace PlexShareApp
             else
             {
                 Cloud.Background = Brushes.DarkCyan;
+                submissionsOn = false;
+                Submissions.Background = Brushes.Transparent;
                 cloudOn = true;
                 CloudPage.Content = uploadPage;
+            }
+        }
+
+        private void SubmissionsClick(object sender, RoutedEventArgs e)
+        {
+            if (submissionsOn)
+            {
+                Submissions.Background = Brushes.Transparent;
+                submissionsOn = false;
+                CloudPage.Content = null;
+            }
+            else
+            {
+                Submissions.Background = Brushes.DarkCyan; 
+                Cloud.Background = Brushes.Transparent;
+                cloudOn = false;
+                submissionsOn = true; 
+                CloudPage.Content = submissionsPage;
             }
         }
 
@@ -239,7 +274,7 @@ namespace PlexShareApp
         ///</summary>
         private void MaximizeApp(object sender, RoutedEventArgs e)
         {
-            if(WindowState == WindowState.Maximized)
+            if (WindowState == WindowState.Maximized)
             {
                 WindowState = WindowState.Normal;
             }
