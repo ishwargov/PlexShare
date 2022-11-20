@@ -40,7 +40,7 @@ namespace PlexShareScreenshare.Client
         /// Returns the bitmap image at the front of _capturedFrame queue. 
         /// </summary>
         /// <returns>Bitmap image of 720p dimension</returns>
-        public Bitmap GetImage(ref bool cancellationToken)
+        public Bitmap? GetImage(ref bool cancellationToken)
         {
 
             Trace.WriteLine(Utils.GetDebugMessage($"Queue size - {_capturedFrame.Count}", withTimeStamp: true));
@@ -89,7 +89,7 @@ namespace PlexShareScreenshare.Client
                                 Bitmap img = _screenshot.MakeScreenshot();
                                 if (img != null)
                                 {
-                                    Thread.Sleep(100);
+                                    Thread.Sleep(150);
                                     _capturedFrame.Enqueue(img);
                                 }
                             }
