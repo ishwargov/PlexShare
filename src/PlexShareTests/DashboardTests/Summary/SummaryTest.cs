@@ -9,8 +9,6 @@ using PlexShareContent.DataModels;
 using Xunit;
 using PlexShareDashboard.Dashboard.Server.Summary;
 
-
-
 using PlexShareTests.DashboardTests.Summary ;
 
 namespace PlexShareTests.DashboardTests.Summary
@@ -71,8 +69,11 @@ namespace PlexShareTests.DashboardTests.Summary
         {
             var chats = Utils.GetChatThread("Fixed chat");
             var output = "CONST. \n\n";
-            Debug.WriteLine(_summarizer.GetSummary(chats));
-            Assert.Equal(_summarizer.GetSummary(chats), output);
+            // removing the sentiment score from the summary
+            var summary = _summarizer.GetSummary(chats);
+            summary = summary.Split("The Sentiment Score for the current Chat").First();
+            Debug.WriteLine(output);
+            Assert.Equal(summary, output);
         }
 
         /// <summary>
@@ -82,7 +83,8 @@ namespace PlexShareTests.DashboardTests.Summary
         public void GetSummary_ValidChatsSmall_NonEmptyString()
         {
             var chats = Utils.GetChatThread("Variable chat");
-            Assert.True(_summarizer.GetSummary(chats).Length > 0);
+            var summary = _summarizer.GetSummary(chats);
+            Assert.True(summary.Length > 0);
         }
 
         /// <summary>
@@ -111,9 +113,9 @@ namespace PlexShareTests.DashboardTests.Summary
         [InlineData("Test", "test")]
         public void CleanText_TextWithUpperCase_ReturnsLowerCaseText(string input, string expectedResult)
         {
-            var result = ChatProcessor.CleanChat(new List<(string, bool)>{(input,true)});
+            var result = ChatProcessor.CleanChat(new List<string>{input});
 
-            Assert.Equal(result.First().Item1,expectedResult);
+            Assert.Equal(result.First(),expectedResult);
         }
 
         [Theory]
@@ -126,9 +128,9 @@ namespace PlexShareTests.DashboardTests.Summary
         [InlineData("\"test\"", "test")]
         public void CleanText_TextWithPuncuation_ReturnsTextWithoutPunctuation(string input, string expectedResult)
         {
-            var result = ChatProcessor.CleanChat(new List<(string, bool)> { (input, true) });
+            var result = ChatProcessor.CleanChat(new List<string>{input});
 
-            Assert.Equal(result.First().Item1,expectedResult);
+            Assert.Equal(result.First(),expectedResult);
         }
 
 
@@ -137,7 +139,7 @@ namespace PlexShareTests.DashboardTests.Summary
         {
             ChatProcessor.LoadStopWords();
 
-            var words = new List<(string, bool)> { ("test", true), ("test", true), ("trial", true) };
+            var words = new List<string> {"test","test","trial"};
             var expectedWordCounts = new Dictionary<string, int>
             {
                 { "test", 2 },
@@ -155,7 +157,7 @@ namespace PlexShareTests.DashboardTests.Summary
         {
             ChatProcessor.LoadStopWords();
 
-            var words = new List<(string, bool)> { ("test", true), ("test", true), ("trial", true), ("a", true), ("an", true), ("the", true) };
+            var words = new List<string>{"test","test","trial","a","an","the"};
             var expectedWordCounts = new Dictionary<string, int>
             {
                 { "test", 2 },
@@ -219,7 +221,7 @@ namespace PlexShareTests.DashboardTests.Summary
         [InlineData("Is a this that the.", 0)]
         public void ScoreSentences_WordScores_SentenceScoreMatchesSumOfWordScores(string input, int expectedResult)
         {
-            var sentences = new List<(string, bool)> { ("This is a test.", true), ("The scores must match.", true), ("Is a this that the.", true)};
+            var sentences = new List<string> {"This is a test.","The scores must match.","Is a this that the."};
 
             var wordScores = new Dictionary<string, int>
             {
@@ -256,15 +258,12 @@ namespace PlexShareTests.DashboardTests.Summary
         [Fact]
         public void BuildSummary_SentenceList_SummaryContainsOnlyFinalSentences()
         {
-            var rawSentences = new List<(string, bool)> {("test", true), ("trial", true)};
+            var rawSentences = new List<string> {"test","trial"};
             string[] finalSentences = { "test" };
 
             var result = ChatProcessor.BuildSummary(rawSentences, finalSentences, rawSentences);
 
             Assert.Equal(result, finalSentences[0] + ". \n\n");
         }
-
-
     }
-
 }
