@@ -290,6 +290,7 @@
             </Popup>
 
 
+            <!--Tool Bar for shapes-->
             <DockPanel  Name="ShapeToolBar" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility ="Collapsed">
                 <Border Background="WhiteSmoke" CornerRadius="15">
                     <StackPanel>
@@ -477,6 +478,7 @@
             </Popup>
 
 
+            <!--ShapeSelection Tool Bar-->
             <DockPanel  Name="ShapeSelectionToolBar" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility ="Collapsed">
                 <Border Background="WhiteSmoke" CornerRadius="15">
                     <StackPanel>
@@ -726,7 +728,7 @@
 																FontWeight="light"
 																VerticalAlignment="Center"
 																Margin="10 0 0 0"
-                            ></TextBlock>
+                                                    ></TextBlock>
                                                     <Slider x:Name="ThicknessSlider" Foreground="Black" Minimum="1" Maximum="21" TickPlacement="BottomRight" TickFrequency="5" Margin="5 5 5 5" ValueChanged="ChangeThickness"></Slider>
                                                 </StackPanel>
                                             </Grid>
@@ -738,6 +740,7 @@
                                 </Grid>
 
                                 <Grid Grid.Row="2">
+                                    <!--Line Poput-->
                                     <Popup Name="StrokelinePopUp"
 										IsOpen="{Binding ElementName=line, Path=IsChecked}"
 										PlacementTarget="{Binding ElementName=line}"
@@ -748,7 +751,7 @@
 										Height="140"
 										Width="110">
 
-                                        <!--Stroke Pop up for the bush w-->
+                                        <!--Stroke Pop up for the Line-->
                                         <Grid Name="StrokeLineDropdown" Background="WhiteSmoke">
                                             <Grid>
                                                 <Grid.RowDefinitions>
@@ -821,47 +824,59 @@
 																FontWeight="light"
 																VerticalAlignment="Center"
 																Margin="10 0 0 0">
-                                `</TextBlock>
+                                                    </TextBlock>
                                                     <Slider x:Name="LineThicknessSlider" Foreground="Black" Minimum="1"  Maximum="21" TickPlacement="BottomRight" TickFrequency="5" Margin="5 5 5 5" ValueChanged="LineThicknessChange" ></Slider>
                                                 </StackPanel>
                                             </Grid>
                                         </Grid>
                                     </Popup>
+                                    
+                                    <!--Line Button-->
                                     <ToggleButton Name="line" ToolTip="Line" HorizontalAlignment="Center" VerticalAlignment="Center" Click="LineMode" Cursor="Hand" Style="{StaticResource ToolBarToggleStyle}" >
                                         <Image Source="Assets/LineTool.png" ></Image>
                                     </ToggleButton>
                                 </Grid>
+                                
+                                <!--TextBox Button-->
                                 <Grid Grid.Row="3">
                                     <Button Name="TextBox" ToolTip="Add Text" HorizontalAlignment="Center" VerticalAlignment="Center" KeyDown="TextboxKeyDown" PreviewKeyDown="TextboxPreviewKeyDown" Click="TextboxCreateMode"  Cursor="Hand" Style="{StaticResource ToolBarStyle}">
                                         <Image Source="Assets/Text.png"></Image>
                                     </Button>
 
                                 </Grid>
+                                
+                                <!--Rectangle Button-->
                                 <Grid Grid.Row="4">
                                     <Button Name="Rectangle" ToolTip="Rectangle" HorizontalAlignment="Center" VerticalAlignment="Center" Click="RectangleCreateMode" Cursor="Hand" Style="{StaticResource ToolBarStyle}">
                                         <Image Source="Assets/RectangleTool.png"></Image>
                                     </Button>
 
                                 </Grid>
+                                
+                                <!--Ellipse Button-->
                                 <Grid Grid.Row="5">
                                     <Button x:Name="Ellipse" ToolTip="Ellipse" HorizontalAlignment="Center" VerticalAlignment="Center" Click="EllipseCreateMode" Cursor="Hand" Style="{StaticResource ToolBarStyle}">
                                         <Image Source="Assets/EllipseTool.png" ></Image>
                                     </Button>
                                 </Grid>
 
+                                <!--Eraser Button-->
                                 <Grid Grid.Row="6">
-                                    <Button HorizontalAlignment="Center" ToolTip="Delete" VerticalAlignment="Center" Click="DeleteMode" Cursor="Hand" Style="{StaticResource ToolBarStyle}">
+                                    <Button x:Name="Delete" HorizontalAlignment="Center" ToolTip="Delete" VerticalAlignment="Center" Click="DeleteMode" Cursor="Hand" Style="{StaticResource ToolBarStyle}">
                                         <Image Source="Assets/EraserTool.png" ></Image>
                                     </Button>
                                 </Grid>
 
                                 <Separator Grid.Row="7"  />
 
+                                <!--Undo Button-->
                                 <Grid Grid.Row="8">
                                     <Button Name="Undo" HorizontalAlignment="Center" ToolTip="Undo" VerticalAlignment="Center" Click="UndoMode" Cursor="Hand" Style="{StaticResource ToolBarStyle}">
                                         <Image Source="Assets/UndoTool.png" ></Image>
                                     </Button>
                                 </Grid>
+                                
+                                <!--Redo Button-->
                                 <Grid Grid.Row="9">
                                     <Button Name="Redo" HorizontalAlignment="Center" ToolTip="Redo" VerticalAlignment="Center" Click="RedoMode" Cursor="Hand" Style="{StaticResource ToolBarStyle}">
                                         <Image Source="Assets/RedoTool.png" ></Image>
@@ -870,6 +885,7 @@
 
                                 <Separator Grid.Row="10"  />
 
+                                <!--Save Button-->
                                 <Grid Grid.Row="11">
                                     <Button Name="Save" HorizontalAlignment="Center" ToolTip="Save Snapshot" VerticalAlignment="Center" Click="SaveMode" Cursor="Hand" Style="{StaticResource ToolBarStyle}">
                                         <Image Source="Assets/SaveTool.png" ></Image>
@@ -877,6 +893,7 @@
                                 </Grid>
 
                                 <Grid Grid.Row="12">
+                                    <!--Restore Popout-->
                                     <Popup Name="RestoreFramePopUp"
                                     IsOpen="{Binding ElementName=Restore, Path=IsChecked}"
                                     PlacementTarget="{Binding ElementName=Restore}"
@@ -896,7 +913,7 @@
 
 
                                             <StackPanel Grid.Row="0" Orientation ="Horizontal" HorizontalAlignment="Center">
-                                                <TextBlock Text="Checkpoints"
+                                                <TextBlock Text="Snapshots"
                                                    Foreground="Black"
                                                    FontSize="14"
                                                    FontWeight="light"
@@ -909,6 +926,8 @@
                                             </ListBox>
                                         </Grid>
                                     </Popup>
+                                    
+                                    <!--Restore Button-->
                                     <ToggleButton Name="Restore" HorizontalAlignment="Center" ToolTip="Restore" VerticalAlignment="Center" Cursor="Hand" Style="{StaticResource ToolBarToggleStyle}">
                                         <Image Source="Assets/RestoreTool.png" ></Image>
                                     </ToggleButton>
@@ -916,6 +935,7 @@
 
                                 <Separator Grid.Row="13" />
 
+                                <!--Clear Button-->
                                 <Grid Grid.Row="14">
                                     <Button Name="Clear" HorizontalAlignment="Center" ToolTip="Clear the Canvas" VerticalAlignment="Center" Click="ClearMode" Cursor="Hand">
                                         <Image Source="Assets/ClearTool.png" ></Image>
@@ -950,6 +970,7 @@
             </Grid>
         </DockPanel>
 
+        <!--The binding of canvas with shapeItems-->
         <DockPanel Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <ItemsControl x:Name="ItemsControl" ItemsSource="{Binding ShapeItems, Mode=TwoWay}">
                 <ItemsControl.ItemsPanel>
