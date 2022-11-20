@@ -13,7 +13,7 @@ namespace PlexShareTests.DashboardTests.UI
 {
     public class DashboardViewModelsUnitTests
     {
-        private DashboardViewModel DashboardViewModelForTest = new();
+        private DashboardViewModel DashboardViewModelForTest = new(1);
 
 
         /// <summary>
