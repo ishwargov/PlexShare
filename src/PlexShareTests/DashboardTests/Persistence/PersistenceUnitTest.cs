@@ -1,9 +1,7 @@
 //<author>Hrishi Raaj Singh Chauhan</author>
-using System;
-using Xunit;
-using System.Diagnostics;
 using Dashboard.Server.Persistence;
 using PlexShareDashboard.Dashboard.Server.Telemetry;
+using System.Diagnostics;
 namespace PlexShareTests.DashboardTests.Persistence
 {
     public class PersistenceUnitTest
@@ -33,10 +31,10 @@ namespace PlexShareTests.DashboardTests.Persistence
             var summary = "Unit Testing";
             var textToBeSaved = "Summary : --------- " + Environment.NewLine + summary + Environment.NewLine;
             var response = PersistenceFactory.GetSummaryPersistenceInstance().SaveSummary(summary);
-            path = path + "Summary_" +DateTime.Now.ToString("MM/dd/yyyy");
+            path = path + "Summary_" + DateTime.Now.ToString("MM/dd/yyyy");
             var p1 = "Summary_of_the_session.txt";
             var textActuallySaved = File.ReadAllText(Path.Combine(path, p1));
-            File.Delete(Path.Combine(path,p1));
+            File.Delete(Path.Combine(path, p1));
 
             if (textToBeSaved == textActuallySaved)
             {
@@ -44,7 +42,8 @@ namespace PlexShareTests.DashboardTests.Persistence
                 Trace.WriteLine(textActuallySaved);
                 Assert.True(response);
             }
-            else{
+            else
+            {
                 Trace.WriteLine("text not saved");
             }
         }
@@ -74,7 +73,7 @@ namespace PlexShareTests.DashboardTests.Persistence
             var Path1 = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             var folderPath = Path.Combine(Path1, "plexshare");
             string ServerDataPath = folderPath + "/Server/Persistence/PersistenceDownloads/TelemetryDownloads/ServerData/";
-           string TelemetryAnalyticsPath = folderPath + "/Server/Persistence/PersistenceDownloads/TelemetryDownloads/TelemetryAnalytics/";
+            string TelemetryAnalyticsPath = folderPath + "/Server/Persistence/PersistenceDownloads/TelemetryDownloads/TelemetryAnalytics/";
             TelemetryAnalyticsPath = TelemetryAnalyticsPath + "_" + DateTime.Now.ToString("MM/dd/yyyy") + "_Analytics";
             var response = telemetryPersist.Save(sessionAnalytics);
 
@@ -85,6 +84,6 @@ namespace PlexShareTests.DashboardTests.Persistence
             File.Delete(Path.Combine(TelemetryAnalyticsPath, "serverData.xml"));
             File.Delete(Path.Combine(TelemetryAnalyticsPath, "UserCountVsTimeStamp.png"));
             Assert.True(IsChatCountForUserSaved && IsInsincereMembersSaved && IsUserCountAtAnyTimeSaved);
-                }
+        }
     }
 }
