@@ -8,7 +8,7 @@ using Moq;
 using PlexShareNetwork.Communication;
 using PlexShareScreenshare;
 using PlexShareScreenshare.Server;
-
+using System.Text.Json;
 using SSUtils = PlexShareScreenshare.Utils;
 
 namespace PlexShareTests.ScreenshareTests
@@ -417,6 +417,52 @@ namespace PlexShareTests.ScreenshareTests
                 client.Dispose();
             }
             server.Dispose();
+        }
+
+        /// <summary>
+        /// Tests sending an ill created packet to the server.
+        /// </summary>
+        [Fact]
+        public void TestIllPacket()
+        {
+            // Arrange.
+            // Create mock server and mock clients.
+            var viewmodelMock = new Mock<IMessageListener>();
+            ScreenshareServer server = ScreenshareServer.GetInstance(viewmodelMock.Object, isDebugging: true);
+            int numClients = 5;
+            List<SharedClientScreen> clients = Utils.GetMockClients(server, numClients, isDebugging: true);
+
+            // Act.
+            // Register the clients by sending mock ill packets for them to the server.
+            foreach (SharedClientScreen client in clients)
+            {
+                string illPacket = JsonSerializer.Serialize<DataPacket>(new());
+                server.OnDataReceived(illPacket);
+                server.OnDataReceived(Utils.RandomString(100));
+            }
+
+            // Assert.
+            // Get the private list of subscribers stored in the server.
+            List<SharedClientScreen> subscribers =
+                server.GetPrivate<Dictionary<string, SharedClientScreen>>("_subscribers").Values.ToList();
+
+            // Check that no client is registered.
+            Assert.True(subscribers.Count == 0);
+
+            // Check view model was notified never regarding new registration of clients.
+            viewmodelMock.Verify(vm => vm.OnSubscribersChanged(It.IsAny<List<SharedClientScreen>>()),
+                Times.Never(), $"Expected view model to be notified never");
+            // Check view model was notified never regarding new registration of clients.
+            viewmodelMock.Verify(vm => vm.OnScreenshareStart(It.IsAny<string>(), It.IsAny<string>()),
+                Times.Never(), $"Expected view model to be notified for popup never");
+
+            // Cleanup.
+            foreach (SharedClientScreen client in clients)
+            {
+                client.Dispose();
+            }
+            server.Dispose();
+            subscribers.Clear();
         }
 
         /// <summary>
