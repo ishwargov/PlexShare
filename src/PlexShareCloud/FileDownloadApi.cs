@@ -34,6 +34,7 @@ namespace PlexShareCloud
         /// <param name="submissionUrl">Head Url for the submission request</param>
         public FileDownloadApi(string sessionUrl, string submissionUrl)
         {
+            Trace.WriteLine("New entity client created");
             _entityClient = new();
             _sessionUrl = sessionUrl;
             _submissionUrl = submissionUrl;
@@ -47,7 +48,7 @@ namespace PlexShareCloud
         public async Task<IReadOnlyList<SubmissionEntity>> GetFilesByUserAsync(string username)
         {
             var response = await _entityClient.GetAsync(_submissionUrl + $"/users/{username}");
-            //response.EnsureSuccessStatusCode();
+            response.EnsureSuccessStatusCode();
             var result = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions
             {
@@ -56,6 +57,7 @@ namespace PlexShareCloud
             };
 
             IReadOnlyList<SubmissionEntity> entities = JsonSerializer.Deserialize<IReadOnlyList<SubmissionEntity>>(result, options);
+            Trace.WriteLine("Retreived all submissions for " + username);
             //Trace need to be added. 
             return entities;
         }
@@ -77,7 +79,7 @@ namespace PlexShareCloud
             };
 
             IReadOnlyList<SubmissionEntity> entities = JsonSerializer.Deserialize<IReadOnlyList<SubmissionEntity>>(result, options);
-            Trace.WriteLine("[Cloud] Session Details Get Successfully");
+            Trace.WriteLine("Retreived all files for " + sessionId);
             return entities;
         }
 
@@ -99,6 +101,7 @@ namespace PlexShareCloud
 
             IReadOnlyList<SessionEntity> entities = JsonSerializer.Deserialize<IReadOnlyList<SessionEntity>>(result, options);
             //Trace to be added. 
+            Trace.WriteLine("Retreived all sessions for " + hostUsername);
             return entities;
         }
 
@@ -109,6 +112,7 @@ namespace PlexShareCloud
         public async Task DeleteAllFilesAsync()
         {
             using HttpResponseMessage response = await _entityClient.DeleteAsync(_submissionUrl);
+            Trace.WriteLine("Deleted all rows in submissions table");
             //response.EnsureSuccessStatusCode();
         }
 
@@ -119,6 +123,7 @@ namespace PlexShareCloud
         public async Task DeleteAllSessionsAsync()
         {
             using HttpResponseMessage response = await _entityClient.DeleteAsync(_sessionUrl);
+            Trace.WriteLine("Deleted all rows in session table");
             //response.EnsureSuccessStatusCode();
         }
 

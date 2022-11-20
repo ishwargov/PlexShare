@@ -15,8 +15,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace PlexShareCloudUX
@@ -38,7 +36,7 @@ namespace PlexShareCloudUX
         }
 
         public IReadOnlyList<SubmissionEntity>? SubmissionsList; //creating the submission list to store the details of type submission model. 
-        
+
         /// <summary>
         /// uses the async function to reterieve the file from the cloud. 
         /// </summary>
@@ -57,12 +55,6 @@ namespace PlexShareCloudUX
         /// <returns>Return a path to download folder</returns>
         public static string GetDownloadFolderPath() //Getting the path to folder where the downloads folder contains. 
         {
-            /*if (System.Environment.OSVersion.Platform == System.PlatformID.Unix)
-            {
-                string pathDownload = System.IO.Path.Combine(GetHomePath(), "Downloads");
-                return pathDownload;
-            }*/
-
             return System.Convert.ToString(
                 Microsoft.Win32.Registry.GetValue(
                      @"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders"
@@ -94,6 +86,7 @@ namespace PlexShareCloudUX
         public static string[] GetOfflinePaths(string filename)
         {
             string[] lines = FileRead.GetPaths(filename);
+            Trace.WriteLine("Read the urls from file for submission models");
             return lines;
         }
     }

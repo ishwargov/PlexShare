@@ -11,10 +11,8 @@
  *****************************************************************************/
 
 using PlexShareCloud;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace PlexShareCloudUX
@@ -30,6 +28,7 @@ namespace PlexShareCloudUX
             paths = GetOfflinePaths("Urls.txt");
             SubmissionUrl = @paths[0];
             SessionUrl = @paths[1];
+            Trace.WriteLine("New FileDownloadApi instance created");
             fileDownloadApi = new FileDownloadApi(SessionUrl, SubmissionUrl);
         }
         /// <summary>
@@ -40,6 +39,7 @@ namespace PlexShareCloudUX
         public async Task<IReadOnlyList<SessionEntity>> GetSessionsDetails(string userName)
         {
             IReadOnlyList<SessionEntity>? getEntity = await fileDownloadApi.GetSessionsByUserAsync(userName);
+            Trace.WriteLine("Retrieved all session details for " + userName);
             return getEntity;
         }
 
@@ -51,6 +51,7 @@ namespace PlexShareCloudUX
         public static string[] GetOfflinePaths(string filename)
         {
             string[] lines = FileRead.GetPaths(filename);
+            Trace.WriteLine("Read the paths from the " + filename);
             return lines;
         }
     }
