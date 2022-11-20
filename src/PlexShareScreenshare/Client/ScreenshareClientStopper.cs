@@ -37,7 +37,7 @@ namespace PlexShareScreenshare.Client
             Trace.WriteLine(Utils.GetDebugMessage("Successfully sent DEREGISTER packet to server", withTimeStamp: true));
         }
 
-        private async void StopConfirmationSending()
+        private void StopConfirmationSending()
         {
             Debug.Assert(_sendConfirmationTask != null,
                 Utils.GetDebugMessage("_sendConfirmationTask is not null, cannot stop confirmation sending"));
@@ -59,10 +59,10 @@ namespace PlexShareScreenshare.Client
         /// Method to stop image sending. Implemented separately
         /// in case this is needed to be used somewhere else.
         /// </summary>
-        private async void StopImageSending()
+        private void StopImageSending()
         {
-            _capturer.StopCapture().Wait();
-            _processor.StopProcessing().Wait();
+            _capturer.StopCapture();
+            _processor.StopProcessing();
             Trace.WriteLine(Utils.GetDebugMessage("Successfully stopped capturer and processor"));
 
             Debug.Assert(_sendImageTask != null,
@@ -87,7 +87,7 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         private void SendConfirmationPacket()
         {
-            _confirmationCancellationToken = true;
+            _confirmationCancellationToken = false;
             Debug.Assert(_id != null, Utils.GetDebugMessage("_id property found null"));
             Debug.Assert(_name != null, Utils.GetDebugMessage("_name property found null"));
             DataPacket confirmationPacket = new(_id, _name, ClientDataHeader.Confirmation.ToString(), "");
@@ -98,7 +98,7 @@ namespace PlexShareScreenshare.Client
                 while (!_confirmationCancellationToken)
                 {
                     _communicator.Send(serializedConfirmationPacket, Utils.ModuleIdentifier, null);
-                    Thread.Sleep(1000);
+                    Thread.Sleep(5000);
                 }
             });
 

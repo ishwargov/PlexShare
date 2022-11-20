@@ -5,17 +5,15 @@
 /// the image bits that are different from the previous image
 ///</summary>
 
-using K4os.Compression.LZ4;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Text.Json;
+using System.IO.Compression;
 using System.Threading;
 using System.Threading.Tasks;
-
 
 namespace PlexShareScreenshare.Client
 {
@@ -49,9 +47,6 @@ namespace PlexShareScreenshare.Client
         // Storing the previous frame
         Bitmap? prevImage;
 
-        private byte[] _compressionBuffer;
-        private byte[] _compressedBuffer;
-
         /// <summary>
         /// Called by ScreenshareClient.
         /// Initializes queue, oldRes, newRes, cancellation token and the previous image.
@@ -61,9 +56,6 @@ namespace PlexShareScreenshare.Client
             _capturer = Capturer;
             _processedFrame = new Queue<string>();
             ResolutionLock = new();
-
-            _compressionBuffer = new byte[1280 * 720 * 4];
-            _compressedBuffer = new byte[LZ4Codec.MaximumOutputSize(this._compressionBuffer.Length) + 4];
 
             Trace.WriteLine(Utils.GetDebugMessage("Successfully created an instance of ScreenProcessor", withTimeStamp: true));
         }
@@ -99,7 +91,7 @@ namespace PlexShareScreenshare.Client
         /// In this function we go through every pixel of both the images and
         /// returns list of those pixels which are different in both the images
         /// </summary>
-        private unsafe Bitmap Process(Bitmap curr, Bitmap prev)
+        private unsafe Bitmap? Process(Bitmap curr, Bitmap prev)
         {
             BitmapData currData = curr.LockBits(new Rectangle(0, 0, curr.Width, curr.Height), ImageLockMode.ReadWrite, curr.PixelFormat);
             BitmapData prevData = prev.LockBits(new Rectangle(0, 0, prev.Width, prev.Height), ImageLockMode.ReadWrite, prev.PixelFormat);
@@ -139,7 +131,16 @@ namespace PlexShareScreenshare.Client
                     ptr[currentLine + x + 3] = (byte)(oldAlpha ^ newAlpha);
 
                     if ((oldBlue != newBlue) || (oldGreen != newGreen) || (oldRed != newRed) || (oldAlpha != newAlpha))
+                    {
                         diff++;
+                        if (diff > 5000)
+                        {
+                            curr.UnlockBits(currData);
+                            prev.UnlockBits(prevData);
+                            newb.UnlockBits(bmd);
+                            return null;
+                        }
+                    }
                 }
             }
 
@@ -147,7 +148,6 @@ namespace PlexShareScreenshare.Client
             prev.UnlockBits(prevData);
             newb.UnlockBits(bmd);
 
-            if (diff >= 500) return null;
             return newb;
         }
 
@@ -180,6 +180,7 @@ namespace PlexShareScreenshare.Client
         public void StartProcessing()
         {
             // dropping one frame to set the previous image value
+            _cancellationToken = false;
             Bitmap? img = null;
             try
             {
@@ -222,7 +223,7 @@ namespace PlexShareScreenshare.Client
         /// kill the processor task and make the processor task variable null
         /// Empty the Queue.
         /// </summary>
-        public async Task StopProcessing()
+        public void StopProcessing()
         {
             Debug.Assert(_processorTask != null, Utils.GetDebugMessage("_processorTask was null, cannot call cancel."));
 
@@ -264,6 +265,27 @@ namespace PlexShareScreenshare.Client
                 " variable", withTimeStamp: true));
         }
 
+        public static byte[] CompressByteArray(byte[] data)
+        {
+            MemoryStream output = new MemoryStream();
+            using (DeflateStream dstream = new DeflateStream(output, CompressionLevel.Optimal))
+            {
+                dstream.Write(data, 0, data.Length);
+            }
+            return output.ToArray();
+        }
+
+        public static byte[] DecompressByteArray(byte[] data)
+        {
+            MemoryStream input = new MemoryStream(data);
+            MemoryStream output = new MemoryStream();
+            using (DeflateStream dstream = new DeflateStream(input, CompressionMode.Decompress))
+            {
+                dstream.CopyTo(output);
+            }
+            return output.ToArray();
+        }
+
         /// <summary>
         /// Called by StartProcessing if the image resolution has changed then set
         /// the new image resolution and inititalise prevImage variable.
@@ -274,34 +296,30 @@ namespace PlexShareScreenshare.Client
 
             lock (ResolutionLock)
             {
-                // TODO: change this later
-                //if (prevImage != null && NewRes == CurrentRes)
-                //{
-                //new_img = Process(img, prevImage);
-                //}
-                new_img = null;
+                if (prevImage != null && NewRes == CurrentRes)
+                {
+                    new_img = Process(img, prevImage);
+                }
+                else if (NewRes != CurrentRes)
+                {
+                    img = new Bitmap(img, NewRes.Width, NewRes.Height);
+                    CurrentRes = NewRes;
+                }
             }
 
             if (new_img == null)
             {
                 MemoryStream ms = new();
-                img.Save(ms, ImageFormat.Jpeg);
-                return Convert.ToBase64String(ms.ToArray()) + "1";
+                img.Save(ms, ImageFormat.Bmp);
+                var data = CompressByteArray(ms.ToArray());
+                return Convert.ToBase64String(data) + "1";
             }
             else
             {
                 MemoryStream ms = new();
                 new_img.Save(ms, ImageFormat.Bmp);
-                _compressionBuffer = ms.ToArray();
-
-                int new_sz = LZ4Codec.Encode(
-                this._compressionBuffer, 0, this._compressionBuffer.Length,
-                _compressedBuffer, 4, _compressedBuffer.Length - 4);
-
-                Buffer.BlockCopy(BitConverter.GetBytes(new_sz), 0, _compressedBuffer, 0, 4);
-                byte[] data = new byte[new_sz + 4];
-                Array.Copy(_compressedBuffer, 0, data, 0, new_sz + 4);
-                return JsonSerializer.Serialize(data) + "0";
+                var data = CompressByteArray(ms.ToArray());
+                return Convert.ToBase64String(data) + "0";
             }
         }
     }
