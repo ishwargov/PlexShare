@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace PlexShareWhiteboard.Server.Interfaces
 {
-    internal interface IServerSnapshotHandler
+    public interface IServerSnapshotHandler
     {
         public List<ShapeItem> LoadBoard(int snapshotNumber);
         public int SaveBoard(List<ShapeItem> boardShapes, string userID);

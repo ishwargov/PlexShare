@@ -139,10 +139,6 @@ namespace PlexShareWhiteboard
                 }
 
             }
-            else
-            {
-                //Trace.WriteLine("[Whiteboard]  " + "In unknown mode\n");
-            }
 
             //Trace.WriteLine("[Whiteboard]  " + "Exiting Shape Building......\n");
         }

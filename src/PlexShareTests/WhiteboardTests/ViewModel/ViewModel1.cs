@@ -86,23 +86,23 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
 
         }
 
-        [Fact]
-        public void Test2()
-        {
-            Point start = new(40, 40);
-            Point end = new(50, 50);
-            viewModel.ChangeMode("create_freehand");
-            viewModel.lastShape = viewModel.CreateCurve(start);
-            viewModel.ShapeItems.Add(viewModel.lastShape);
-            viewModel.UpdateCurve(end, start);
+        //[Fact]
+        //public void Test2()
+        //{
+        //    Point start = new(40, 40);
+        //    Point end = new(50, 50);
+        //    viewModel.ChangeMode("create_freehand");
+        //    viewModel.lastShape = viewModel.CreateCurve(start);
+        //    viewModel.ShapeItems.Add(viewModel.lastShape);
+        //    viewModel.UpdateCurve(end, start);
 
-            viewModel.ObjectSelection(new Point(45, 45));
+        //    viewModel.ObjectSelection(new Point(45, 45));
 
-            Assert.True(viewModel.select.ifSelected);
-            viewModel.ShapeItems.Clear();
-            viewModel.undoStack.Clear();
-            viewModel.redoStack.Clear();
-        }
+        //    Assert.True(viewModel.select.ifSelected);
+        //    viewModel.ShapeItems.Clear();
+        //    viewModel.undoStack.Clear();
+        //    viewModel.redoStack.Clear();
+        //}
 
 
 
@@ -223,32 +223,32 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.redoStack.Clear();
         }
 
-        [Fact]
-        public void Test9()
-        {
+        //[Fact]
+        //public void Test9()
+        //{
 
-            viewModel.ChangeMode("create_freehand");
-            Point start = new(0, 0);
-            Point end = new(15, 20);
-            viewModel.ShapeStart(start);
-            viewModel.ShapeBuilding(end);
-            viewModel.ShapeFinished(new Point());
+        //    viewModel.ChangeMode("create_freehand");
+        //    Point start = new(0, 0);
+        //    Point end = new(15, 20);
+        //    viewModel.ShapeStart(start);
+        //    viewModel.ShapeBuilding(end);
+        //    viewModel.ShapeFinished(new Point());
 
-            viewModel.select.ifSelected = true;
-            viewModel.select.selectedObject = viewModel.ShapeItems[0];
-            Rect boundingBox = viewModel.ShapeItems[0].Geometry.Bounds;
-            double ratio = boundingBox.Width / boundingBox.Height;
-            viewModel.TransformCurve(new Point(90, 50), viewModel.ShapeItems[0]);
-            boundingBox = viewModel.ShapeItems[0].Geometry.Bounds;
-            double ratioFinal = boundingBox.Width / boundingBox.Height;
-            int ratioTemp = (int)(ratio * 100);
-            int ratioFinalTemp = (int)(ratioFinal * 100);
+        //    viewModel.select.ifSelected = true;
+        //    viewModel.select.selectedObject = viewModel.ShapeItems[0];
+        //    Rect boundingBox = viewModel.ShapeItems[0].Geometry.Bounds;
+        //    double ratio = boundingBox.Width / boundingBox.Height;
+        //    viewModel.TransformCurve(new Point(90, 50), viewModel.ShapeItems[0]);
+        //    boundingBox = viewModel.ShapeItems[0].Geometry.Bounds;
+        //    double ratioFinal = boundingBox.Width / boundingBox.Height;
+        //    int ratioTemp = (int)(ratio * 100);
+        //    int ratioFinalTemp = (int)(ratioFinal * 100);
 
-            Assert.Equal(ratioTemp, ratioFinalTemp);
-            viewModel.ShapeItems.Clear();
-            viewModel.undoStack.Clear();
-            viewModel.redoStack.Clear();
-        }
+        //    Assert.Equal(ratioTemp, ratioFinalTemp);
+        //    viewModel.ShapeItems.Clear();
+        //    viewModel.undoStack.Clear();
+        //    viewModel.redoStack.Clear();
+        //}
 
 
 
