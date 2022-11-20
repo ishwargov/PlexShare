@@ -1,8 +1,14 @@
-﻿/// <author>Sughandhan S</author>
-/// <created>11/11/2022</created>
-/// <summary>
-///     Unit Testing file for Utility Funtions
-/// </summary>
+﻿/******************************************************************************
+ * Filename    = ChatUtility.cs
+ *
+ * Author      = Sughandhan S
+ *
+ * Product     = PlexShare
+ * 
+ * Project     = PlexShareTests
+ *
+ * Description = Unit Testing file for Utility Funtions
+ *****************************************************************************/
 
 using System;
 using System.Collections.Generic;

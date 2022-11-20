@@ -1,8 +1,14 @@
-﻿/// <author> Sughandhan S </author>
-/// <created> 03/11/2022 </created>
-/// <summary>
-///     The following is the Message Datatype to store the message details.
-/// </summary>
+﻿/******************************************************************************
+ * Filename    = Message.cs
+ *
+ * Author      = Sughandhan S
+ *
+ * Product     = PlexShare
+ * 
+ * Project     = PlexShareApp
+ *
+ * Description = The following is the Message Datatype to store the message details.
+ *****************************************************************************/
 
 using System;
 using System.Text;
@@ -12,9 +18,9 @@ namespace PlexShareApp
     public class Message
     {
         /// <summary>
-        /// Message datatype will contain fields such as MessageId, SenderName
-        /// the type of message, time of sending, the reply message and to whom 
-        /// it is being sent
+        ///     Message datatype will contain fields such as MessageId, SenderName
+        ///     the type of message, time of sending, the reply message and to whom 
+        ///     it is being sent
         /// </summary>
         
         public Message()
@@ -29,7 +35,7 @@ namespace PlexShareApp
         }
 
         /// <summary>
-        /// Message ID of the message
+        ///     Message ID of the message
         /// </summary>
         public int MessageID
         {
@@ -37,7 +43,7 @@ namespace PlexShareApp
         }
 
         /// <summary>
-        /// Name of the message sender
+        ///     Name of the message sender
         /// </summary>
         public string? Sender
         {
@@ -45,7 +51,7 @@ namespace PlexShareApp
         }
 
         /// <summary>
-        /// Time of sending the message
+        ///     Time of sending the message
         /// </summary>
         public string Time
         {
@@ -53,8 +59,8 @@ namespace PlexShareApp
         }
 
         /// <summary>
-        /// Type True represents chat message
-        /// Type False represents file message
+        ///     Type True represents chat message
+        ///     Type False represents file message
         /// </summary>
         public bool Type
         {
@@ -62,8 +68,8 @@ namespace PlexShareApp
         }
 
         /// <summary>
-        /// Incoming message stores the chat message string
-        /// or the file name of the file message.
+        ///     Incoming message stores the chat message string
+        ///     or the file name of the file message.
         /// </summary>
         public string? IncomingMessage
         {
@@ -71,8 +77,8 @@ namespace PlexShareApp
         }
 
         /// <summary>
-        /// Message to which the current message is being replied to
-        /// NULL value suggests it isn't a reply message
+        ///     Message to which the current message is being replied to
+        ///     NULL value suggests it isn't a reply message
         /// </summary>
         public string? ReplyMessage
         {
@@ -80,7 +86,7 @@ namespace PlexShareApp
         }
 
         /// <summary>
-        /// set True if sent by current user or else set False
+        ///     set True if sent by current user or else set False
         /// </summary>
         public bool ToFrom
         {
