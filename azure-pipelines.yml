@@ -74,46 +74,46 @@ steps:
   inputs:
     command: 'test'
     projects: '**/PlexShareTests.csproj'
-    arguments: '--collect:"XPlat Code Coverage" --filter:"NetworkTests"'
+    arguments: '--filter:"NetworkTests"'
     
 - task: DotNetCoreCLI@2
   continueOnError: true 
   inputs:
     command: 'test'
     projects: '**/PlexShareTests.csproj'
-    arguments: '--collect:"XPlat Code Coverage" --filter:"WhiteboardTests"'
+    arguments: '--filter:"WhiteboardTests"'
 
 - task: DotNetCoreCLI@2
   continueOnError: true 
   inputs:
     command: 'test'
     projects: '**/PlexShareTests.csproj'
-    arguments: '--collect:"XPlat Code Coverage" --filter:"UXTests"'
+    arguments: '--filter:"UXTests"'
 
 - task: DotNetCoreCLI@2
   continueOnError: true 
   inputs:
     command: 'test'
     projects: '**/PlexShareTests.csproj'
-    arguments: '--collect:"XPlat Code Coverage" --filter:"ScreenShareTests"'
+    arguments: '--filter:"ScreenShareTests"'
 
 - task: DotNetCoreCLI@2
   continueOnError: true 
   inputs:
     command: 'test'
     projects: '**/PlexShareTests.csproj'
-    arguments: '--collect:"XPlat Code Coverage" --filter:"DashboardTests"'
+    arguments: '--filter:"DashboardTests"'
 
 - task: DotNetCoreCLI@2
   continueOnError: true 
   inputs:
     command: 'test'
     projects: '**/PlexShareTests.csproj'
-    arguments: '--collect:"XPlat Code Coverage" --filter:"ContentTests"'
+    arguments: '--filter:"ContentTests"'
 
 - task: DotNetCoreCLI@2
   continueOnError: true 
   inputs:
     command: 'test'
     projects: '**/PlexShareTests.csproj'
-    arguments: '--collect:"XPlat Code Coverage" --filter:"CloudTests"'
+    arguments: '--filter:"CloudTests"'
