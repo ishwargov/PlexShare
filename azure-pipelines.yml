@@ -72,3 +72,32 @@ steps:
   inputs:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'test'
+    workingDirectory: '**/CloudTests'
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'test'
+    workingDirectory: '**/ContentTests'
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'test'
+    workingDirectory: '**/WhiteboardTests'
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'test'
+    workingDirectory: '**/UXTests'
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'test'
+    workingDirectory: '**/DashboardTests'
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'test'
+    workingDirectory: '**/NetworkTests'
