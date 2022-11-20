@@ -67,7 +67,7 @@ namespace PlexShareApp
             this.DataContext = viewModel;
             this.currentTool = "Select";
             this.RestorFrameDropDown.SelectionChanged += RestorFrameDropDownSelectionChanged;
-            int deafult = 2;
+            
         }
 
         /// <summary>
@@ -91,8 +91,10 @@ namespace PlexShareApp
                     {
                         if (this.StrokeToolBar.Visibility == Visibility.Visible)
                             this.StrokeToolBar.Visibility = Visibility.Collapsed;
-                        if (this.ShapeToolBar.Visibility == Visibility.Collapsed)
-                            this.ShapeToolBar.Visibility = Visibility.Visible;
+                        if (this.ShapeToolBar.Visibility == Visibility.Visible)
+                            this.ShapeToolBar.Visibility = Visibility.Collapsed;
+                        if (this.ShapeSelectionToolBar.Visibility == Visibility.Collapsed)
+                            this.ShapeSelectionToolBar.Visibility = Visibility.Visible;
                     }
                     else if(shapeName == "PathGeometry" || shapeName == "LineGeometry")
                     {
@@ -100,6 +102,8 @@ namespace PlexShareApp
                             this.ShapeToolBar.Visibility = Visibility.Collapsed;
                         if (this.StrokeToolBar.Visibility == Visibility.Collapsed)
                             this.StrokeToolBar.Visibility = Visibility.Visible;
+                        if (this.ShapeSelectionToolBar.Visibility == Visibility.Visible)
+                            this.ShapeSelectionToolBar.Visibility = Visibility.Collapsed;
                     }
                     else
                     {
@@ -107,6 +111,8 @@ namespace PlexShareApp
                             this.ShapeToolBar.Visibility = Visibility.Collapsed;
                         if (this.StrokeToolBar.Visibility == Visibility.Visible)
                             this.StrokeToolBar.Visibility = Visibility.Collapsed;
+                        if (this.ShapeSelectionToolBar.Visibility == Visibility.Visible)
+                            this.ShapeSelectionToolBar.Visibility = Visibility.Collapsed;
                     }
                 }
                 else
@@ -115,6 +121,8 @@ namespace PlexShareApp
                         this.ShapeToolBar.Visibility = Visibility.Collapsed;
                     if (this.StrokeToolBar.Visibility == Visibility.Visible)
                         this.StrokeToolBar.Visibility = Visibility.Collapsed;
+                    if (this.ShapeSelectionToolBar.Visibility == Visibility.Visible)
+                        this.ShapeSelectionToolBar.Visibility = Visibility.Collapsed;
                 }
             }
         }
@@ -160,7 +168,6 @@ namespace PlexShareApp
                     break;
                 case "text":
                     Cursor = Cursors.Arrow;
-                    viewModel.ChangeMode("create_textbox");
                     break;
                 case "Line":
                     Cursor = Cursors.Cross;
@@ -185,7 +192,7 @@ namespace PlexShareApp
 
         }
 
-        /// <summary>
+        /// <summary>e.Handled = true; 
         /// Canvas Mouseup  or mouse release event
         /// </summary>
         /// <param name="sender"></param>
@@ -226,6 +233,8 @@ namespace PlexShareApp
             this.currentTool = "Rectangle";
             if (this.StrokeToolBar.Visibility == Visibility.Visible)
                 this.StrokeToolBar.Visibility = Visibility.Collapsed;
+            if (this.ShapeSelectionToolBar.Visibility == Visibility.Visible)
+                this.ShapeSelectionToolBar.Visibility = Visibility.Collapsed;
             if (this.ShapeToolBar.Visibility == Visibility.Collapsed)
                 this.ShapeToolBar.Visibility = Visibility.Visible;
             viewModel.ChangeMode("create_rectangle");
@@ -243,6 +252,8 @@ namespace PlexShareApp
             this.currentTool = "Ellipse";
             if (this.StrokeToolBar.Visibility == Visibility.Visible)
                 this.StrokeToolBar.Visibility = Visibility.Collapsed;
+            if (this.ShapeSelectionToolBar.Visibility == Visibility.Visible)
+                this.ShapeSelectionToolBar.Visibility = Visibility.Collapsed;
             if (this.ShapeToolBar.Visibility == Visibility.Collapsed)
                 this.ShapeToolBar.Visibility = Visibility.Visible;
             viewModel.ChangeMode("create_ellipse");
@@ -262,6 +273,8 @@ namespace PlexShareApp
                 this.ShapeToolBar.Visibility = Visibility.Collapsed;
             if (this.StrokeToolBar.Visibility == Visibility.Visible)
                 this.StrokeToolBar.Visibility = Visibility.Collapsed;
+            if (this.ShapeSelectionToolBar.Visibility == Visibility.Visible)
+                this.ShapeSelectionToolBar.Visibility = Visibility.Collapsed;
             this.currentTool = "Freehand";
 
             viewModel.ChangeMode("create_freehand");
@@ -279,13 +292,11 @@ namespace PlexShareApp
             Debug.WriteLine(e.Key);
             if (this.ShapeToolBar.Visibility == Visibility.Collapsed)
                 this.ShapeToolBar.Visibility = Visibility.Visible;
-            this.ShapeThicknessSlider.Visibility = Visibility.Collapsed;
+            if (this.ShapeSelectionToolBar.Visibility == Visibility.Collapsed)
+                this.ShapeSelectionToolBar.Visibility = Visibility.Visible;
             if (this.StrokeToolBar.Visibility == Visibility.Visible)
                 this.StrokeToolBar.Visibility = Visibility.Collapsed;
-            int thickness = (int)ThicknessSlider.Value;
-            viewModel.ChangeStrokeThickness(1);
             viewModel.TextBoxStart(e.Key);
-            viewModel.ChangeStrokeThickness(thickness);
         }
 
         private void TextboxPreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
@@ -293,15 +304,13 @@ namespace PlexShareApp
             if (e.Key == Key.Space)
             {
                 Debug.WriteLine("Space inserted");
-                if (this.ShapeToolBar.Visibility == Visibility.Collapsed)
-                    this.ShapeToolBar.Visibility = Visibility.Visible;
-                this.ShapeThicknessSlider.Visibility = Visibility.Collapsed;
+                if (this.ShapeToolBar.Visibility == Visibility.Visible)
+                    this.ShapeToolBar.Visibility = Visibility.Collapsed;
+                if (this.ShapeSelectionToolBar.Visibility == Visibility.Collapsed)
+                    this.ShapeSelectionToolBar.Visibility = Visibility.Visible;
                 if (this.StrokeToolBar.Visibility == Visibility.Visible)
                     this.StrokeToolBar.Visibility = Visibility.Collapsed;
-                int thickness = (int)ThicknessSlider.Value;
-                viewModel.ChangeStrokeThickness(1);
                 viewModel.TextBoxStart(e.Key);
-                viewModel.ChangeStrokeThickness(thickness);
             }
 
         }
@@ -321,9 +330,10 @@ namespace PlexShareApp
             viewModel.UnHighLightIt();
             viewModel.select.ifSelected = false;
             Cursor = Cursors.Pen;
-            if (this.ShapeToolBar.Visibility == Visibility.Collapsed)
-                this.ShapeToolBar.Visibility = Visibility.Visible;
-            this.ShapeThicknessSlider.Visibility = Visibility.Collapsed;
+            if (this.ShapeToolBar.Visibility == Visibility.Visible)
+                this.ShapeToolBar.Visibility = Visibility.Collapsed;
+            if (this.ShapeSelectionToolBar.Visibility == Visibility.Collapsed)
+                this.ShapeSelectionToolBar.Visibility = Visibility.Visible;
             if (this.StrokeToolBar.Visibility == Visibility.Visible)
                 this.StrokeToolBar.Visibility = Visibility.Collapsed;
             Trace.WriteLine("[WhiteBoard] White Board Page entered the Text Mode");
@@ -420,6 +430,8 @@ namespace PlexShareApp
                 this.ShapeToolBar.Visibility = Visibility.Collapsed;
             if (this.StrokeToolBar.Visibility == Visibility.Visible)
                 this.StrokeToolBar.Visibility = Visibility.Collapsed;
+            if (this.ShapeSelectionToolBar.Visibility == Visibility.Visible)
+                this.ShapeSelectionToolBar.Visibility = Visibility.Collapsed;
             viewModel.ChangeMode("delete_mode");
         }
 
@@ -449,6 +461,8 @@ namespace PlexShareApp
                 this.ShapeToolBar.Visibility = Visibility.Collapsed;
             if (this.StrokeToolBar.Visibility == Visibility.Visible)
                 this.StrokeToolBar.Visibility = Visibility.Collapsed;
+            if (this.ShapeSelectionToolBar.Visibility == Visibility.Visible)
+                this.ShapeSelectionToolBar.Visibility = Visibility.Collapsed;
             MessageBoxResult result = MessageBox.Show("Are you sure you want to clear the canvas ? Cick on Save to save your progress.",
                           "Confirmation", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
             if (result == MessageBoxResult.OK)
@@ -477,6 +491,8 @@ namespace PlexShareApp
                 this.ShapeToolBar.Visibility = Visibility.Collapsed;
             if (this.StrokeToolBar.Visibility == Visibility.Visible)
                 this.StrokeToolBar.Visibility = Visibility.Collapsed;
+            if (this.ShapeSelectionToolBar.Visibility == Visibility.Visible)
+                this.ShapeSelectionToolBar.Visibility = Visibility.Collapsed;
             viewModel.ChangeMode("create_line");
         }
 
@@ -493,6 +509,8 @@ namespace PlexShareApp
                 this.ShapeToolBar.Visibility = Visibility.Collapsed;
             if (this.StrokeToolBar.Visibility == Visibility.Visible)
                 this.StrokeToolBar.Visibility = Visibility.Collapsed;
+            if (this.ShapeSelectionToolBar.Visibility == Visibility.Visible)
+                this.ShapeSelectionToolBar.Visibility = Visibility.Collapsed;
             viewModel.CallUndo();
             Debug.WriteLine("Undo called xaml");
             viewModel.modeForUndo = "";
@@ -513,6 +531,8 @@ namespace PlexShareApp
                 this.ShapeToolBar.Visibility = Visibility.Collapsed;
             if (this.StrokeToolBar.Visibility == Visibility.Visible)
                 this.StrokeToolBar.Visibility = Visibility.Collapsed;
+            if (this.ShapeSelectionToolBar.Visibility == Visibility.Visible)
+                this.ShapeSelectionToolBar.Visibility = Visibility.Collapsed;
 
             viewModel.CallRedo();
         }
@@ -524,6 +544,8 @@ namespace PlexShareApp
                 this.ShapeToolBar.Visibility = Visibility.Collapsed;
             if (this.StrokeToolBar.Visibility == Visibility.Visible)
                 this.StrokeToolBar.Visibility = Visibility.Collapsed;
+            if (this.ShapeSelectionToolBar.Visibility == Visibility.Visible)
+                this.ShapeSelectionToolBar.Visibility = Visibility.Collapsed;
             viewModel.SaveSnapshot();
             SuccessSaveMessage();
         }
@@ -541,6 +563,8 @@ namespace PlexShareApp
                 this.ShapeToolBar.Visibility = Visibility.Collapsed;
             if (this.StrokeToolBar.Visibility == Visibility.Visible)
                 this.StrokeToolBar.Visibility = Visibility.Collapsed;
+            if (this.ShapeSelectionToolBar.Visibility == Visibility.Visible)
+                this.ShapeSelectionToolBar.Visibility = Visibility.Collapsed;
             ListBox listbox = (ListBox)sender;
 
             if (this.RestorFrameDropDown.SelectedItem != null)
@@ -550,7 +574,7 @@ namespace PlexShareApp
                 string numeric = new String(item.Where(Char.IsDigit).ToArray());
                 int cp = int.Parse(numeric);
 
-                MessageBoxResult result = MessageBox.Show("Are you sure you want to load checkpoint " + numeric + " ? All progress since the last checkpoint would be lost!",
+                MessageBoxResult result = MessageBox.Show("Are you sure you want to load snapshot " + numeric + " ? All progress since the snapshot would be lost!",
                               "Confirmation", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
                 if (result == MessageBoxResult.OK)
                 {
@@ -573,9 +597,13 @@ namespace PlexShareApp
         public void ChangeThickness(object sender, RoutedEventArgs e)
         {
             int thickness = (int)ThicknessSlider.Value;
-            viewModel.ChangeStrokeThickness(thickness);
-            ShapeThicknessSlider.Value = thickness;
-            LineThicknessSlider.Value = thickness;
+            if(thickness > 1)
+            {
+                viewModel.ChangeStrokeThickness(thickness);
+                ShapeThicknessSlider.Value = thickness;
+                LineThicknessSlider.Value = thickness;
+            }
+            
             
         }
 
@@ -588,18 +616,26 @@ namespace PlexShareApp
         public void ChangeShapeThickness(object sender, RoutedEventArgs e)
         {
             int thickness = (int)ShapeThicknessSlider.Value;
-            viewModel.ChangeStrokeThickness(thickness);
-            LineThicknessSlider.Value = thickness;
-            ThicknessSlider.Value = thickness;
+            if(thickness > 1)
+            {
+                viewModel.ChangeStrokeThickness(thickness);
+                LineThicknessSlider.Value = thickness;
+                ThicknessSlider.Value = thickness;
+            }
+            
         }
 
 
         public void LineThicknessChange(object sender, RoutedEventArgs e)
         {
             int thickness = (int)LineThicknessSlider.Value;
-            viewModel.ChangeStrokeThickness(thickness);
-            ShapeThicknessSlider.Value = thickness;
-            ThicknessSlider.Value = thickness;
+            if(thickness > 1)
+            {
+                viewModel.ChangeStrokeThickness(thickness);
+                ShapeThicknessSlider.Value = thickness;
+                ThicknessSlider.Value = thickness;
+            }
+            
         }
 
 

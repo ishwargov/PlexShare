@@ -36,7 +36,7 @@ namespace PlexShareWhiteboard
 
         Brush fillBrush = Brushes.Azure;
         Brush strokeBrush = Brushes.Black;
-        int strokeThickness = 1;
+        public int strokeThickness = 1;
         string mode = "select_object";
         public string modeForUndo = "select_object";
         ShapeItem currentShape = null;
@@ -186,7 +186,7 @@ namespace PlexShareWhiteboard
             if (select.ifSelected == true)
             {
 
-                Debug.WriteLine("ChangeFillBrush select color changed to " + br.ToString());
+                //Debug.WriteLine("ChangeFillBrush select color changed to " + br.ToString());
 
                 //select.initialSelectionObject = select.selectedObject;
                 ShapeItem updateSelectShape = null;
