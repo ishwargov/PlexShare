@@ -149,8 +149,6 @@ namespace PlexShareWhiteboard
                 return null;
             
             UndoStackElement topOfStack = redoStack.Pop();
-            if (topOfStack.NewShape == null)
-                return null;
 
             switch (topOfStack.Op)
             {
