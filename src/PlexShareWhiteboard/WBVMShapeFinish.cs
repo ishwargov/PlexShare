@@ -16,6 +16,15 @@ namespace PlexShareWhiteboard
         // this is mouse up -> typically mouse release
         public void ShapeFinished(Point _)
         {
+
+            if ((mode == "transform_mode" || mode == "dimensionChange_mode") &&
+                select.selectedObject != null && select.finalPointList.Count > 0 &&
+                select.selectedObject.Geometry.GetType().Name == "PathGeometry")
+            {
+                FinishingCurve();
+            }
+
+
             if (modeForUndo == "create" )
             {
                 Trace.WriteLine("[Whiteboard]  " + "passing into undo stack " + lastShape.Geometry.GetType().Name);
@@ -62,21 +71,10 @@ namespace PlexShareWhiteboard
                     machine.OnShapeReceived(lastShape, Operation.ModifyShape);
 
             }
-            else;
-
-
-            if ((mode == "transform_mode" || mode == "dimensionChange_mode") && 
-                select.selectedObject != null && select.finalPointList.Count > 0 && 
-                select.selectedObject.Geometry.GetType().Name == "PathGeometry")
-            {
-                FinishingCurve();
-            }
-            
 
             if (mode == "transform_mode" || mode == "dimensionChange_mode" || mode == "translate_mode")
                 mode = "select_mode";
 
-            
             lastShape = null;
 
             if (modeForUndo != "create_textbox")

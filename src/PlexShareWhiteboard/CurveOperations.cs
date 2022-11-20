@@ -352,6 +352,8 @@ namespace PlexShareWhiteboard
                     ShapeItems[i] = updatingShape;
                 }
             }
+
+            lastShape = updatingShape;
         }
     }
 }
