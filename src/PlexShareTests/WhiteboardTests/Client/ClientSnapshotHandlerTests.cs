@@ -1,8 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/***************************
+ * Filename    = ClientSnapshotHandlerTests.cs
+ *
+ * Author      = Joel Sam Mathew
+ *
+ * Product     = Plex Share
+ *
+ * Project     = White Board
+ *
+ * Description = Tests for ClientSnapshotHandler.cs.
+ ***************************/
+
 using Moq;
 using PlexShareWhiteboard.BoardComponents;
 using PlexShareWhiteboard.Client;
@@ -16,6 +23,9 @@ namespace PlexShareTests.WhiteboardTests.Client
         private ClientSnapshotHandler _clientSnapshotHandler;
         private Mock<IClientCommunicator> _mockCommunicator;
         Utility utility;
+        /// <summary>
+        ///     Setup of tests.
+        /// </summary>
         public ClientSnapshotHandlerTests()
         {
             _clientSnapshotHandler = new ClientSnapshotHandler();
@@ -24,6 +34,9 @@ namespace PlexShareTests.WhiteboardTests.Client
             utility = new Utility();
         }
 
+        /// <summary>
+        ///     Verifies save snapshot functionality.
+        /// </summary>
         [Fact]
         public void SaveSnapshot_RequestSentToCommunicator()
         {
@@ -35,6 +48,9 @@ namespace PlexShareTests.WhiteboardTests.Client
             ), Times.Once());
         }
 
+        /// <summary>
+        ///     Verifies restore snapshot functionality.
+        /// </summary>
         [Fact]
         public void RestoreSnapshot_RequestSentToCommunicator()
         {
@@ -47,6 +63,10 @@ namespace PlexShareTests.WhiteboardTests.Client
                 It.Is<WBServerShape>(obj => utility.CompareBoardServerShapes(obj, expected))
             ), Times.Once());
         }
+
+        /// <summary>
+        ///     Tests restore snapshot exception handling.
+        /// </summary>
         [Fact]
         public void RestoreSnapshot_GenerateException()
         { 

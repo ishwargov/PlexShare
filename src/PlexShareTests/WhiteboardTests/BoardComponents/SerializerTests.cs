@@ -1,10 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿/***************************
+ * Filename    = SerializerTests.cs
+ *
+ * Author      = Joel Sam Mathew
+ *
+ * Product     = Plex Share
+ *
+ * Project     = White Board
+ *
+ * Description = Tests for Serializer.cs.
+ ***************************/
+
 using System.Windows;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PlexShareWhiteboard;
 using PlexShareWhiteboard.BoardComponents;
 
 namespace PlexShareTests.WhiteboardTests.BoardComponents
@@ -14,12 +20,19 @@ namespace PlexShareTests.WhiteboardTests.BoardComponents
     {
         Serializer _serializer;
         Utility utility;
+
+        /// <summary>
+        ///     Setup for tests
+        /// </summary>
         public SerializerTests()
         {
             _serializer = new Serializer();
             utility = new Utility();
         }
 
+        /// <summary>
+        ///     Testing serialization and deserialization of ShapeItems.
+        /// </summary>
         [Fact]
         public void Serializer_ShapeItemSerialization()
         {
@@ -39,6 +52,9 @@ namespace PlexShareTests.WhiteboardTests.BoardComponents
 
         }
 
+        /// <summary>
+        ///     Testing serialization and deserialization of WBServerShape.
+        /// </summary>
         [Fact]
         public void Serializer_WBServerShapeItemSerialization()
         {
@@ -54,11 +70,19 @@ namespace PlexShareTests.WhiteboardTests.BoardComponents
             Assert.True(utility.CompareBoardServerShapes(wBServerShape1,deserializedObject1) 
                 && utility.CompareBoardServerShapes(wBServerShape2, deserializedObject2));
         }
+
+        /// <summary>
+        ///     Testing null of Shape Item serialization.
+        /// </summary>
         [Fact]
         public void ConvertToSerializableShapeItem_NullReturnsNull()
         {
             Assert.Null(_serializer.ConvertToSerializableShapeItem(null as List<ShapeItem>));
         }
+
+        /// <summary>
+        ///     Testing null of WBServerShape serialization.
+        /// </summary>
         [Fact]
         public void ConvertToShapeItem_NullReturnsNull()
         {

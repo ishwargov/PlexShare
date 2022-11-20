@@ -1,9 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿/***************************
+ * Filename    = ShapeItemTests.cs
+ *
+ * Author      = Joel Sam Mathew
+ *
+ * Product     = Plex Share
+ *
+ * Project     = White Board
+ *
+ * Description = Tests for ShapeItem.cs.
+ ***************************/
+
 using System.Windows;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using PlexShareWhiteboard.BoardComponents;
 
 namespace PlexShareTests.WhiteboardTests.BoardComponents
@@ -11,13 +18,14 @@ namespace PlexShareTests.WhiteboardTests.BoardComponents
     [Collection("Sequential")]
     public class ShapeItemTests
     {
+        /// <summary>
+        ///     Testing Deep Clone of ShapeItem.
+        /// </summary>
         [Fact]  
         public void ShapeItem_DeepCloneObject()
         {
             Utility utility = new();
-            Point start = new Point(1, 1);
-            Point end = new Point(2, 2);
-            ShapeItem shape1 = utility.CreateShape(start, end, "EllipseGeometry", "randomID");
+            ShapeItem shape1 = utility.CreateRandomShape();
             ShapeItem shape2 = shape1.DeepClone();
             Assert.True(utility.CompareShapeItems(shape1, shape2));
         }

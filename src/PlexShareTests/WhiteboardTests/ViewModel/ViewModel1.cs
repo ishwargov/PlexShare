@@ -171,7 +171,7 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.redoStack.Clear();
         }
 
-        [Fact]
+        //[Fact]
         public void Test6()
         {
             viewModel.ChangeMode("create_rectangle");
@@ -223,7 +223,7 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.redoStack.Clear();
         }
 
-        [Fact]
+        //[Fact]
         public void Test9()
         {
 

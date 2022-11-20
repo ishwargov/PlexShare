@@ -1,12 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+﻿/***************************
+ * Filename    = ServerSnapshotHandlerTests.cs
+ *
+ * Author      = Joel Sam Mathew
+ *
+ * Product     = Plex Share
+ *
+ * Project     = White Board
+ *
+ * Description = Tests for ServerSnapshotHandler.cs.
+ ***************************/
+
 using PlexShareWhiteboard.Server;
 using PlexShareWhiteboard.BoardComponents;
-using Microsoft.AspNetCore.Routing;
 
 namespace PlexShareTests.WhiteboardTests.Server
 {
@@ -16,6 +21,10 @@ namespace PlexShareTests.WhiteboardTests.Server
         private ServerSnapshotHandler _serverSnapshotHandler;
         private List<Tuple<int, string, List<ShapeItem>>> _snapshotSummary;
         Utility utility;
+
+        /// <summary>
+        ///     Setup for tests.
+        /// </summary>
         public ServerSnapshotHandlerTests()
         {
             _serverSnapshotHandler = new ServerSnapshotHandler();
@@ -31,6 +40,9 @@ namespace PlexShareTests.WhiteboardTests.Server
                 _serverSnapshotHandler.SaveBoard(shapeItems, userID);
             }
         }
+        /// <summary>
+        ///     Test for snapshot saving. Checks if file gets saved locally.
+        /// </summary>
         [Fact]
         public void SaveSnapshotTest()
         {
@@ -46,6 +58,10 @@ namespace PlexShareTests.WhiteboardTests.Server
             }
             Assert.True(flag);
         }
+
+        /// <summary>
+        ///     Checks for correct snapshot number.
+        /// </summary>
         [Fact]
         public void GetSnapshotNumberTest()
         {
@@ -53,6 +69,9 @@ namespace PlexShareTests.WhiteboardTests.Server
             Assert.Equal(4, checkpointNumbers);
         }
 
+        /// <summary>
+        ///     Verifies functionality of LoadBoard.
+        /// </summary>
         [Fact]
         public void LoadBoardTest()
         {
@@ -69,6 +88,9 @@ namespace PlexShareTests.WhiteboardTests.Server
             Assert.True(flag);
         }
 
+        /// <summary>
+        ///     Verifies null handling of LoadBoard.
+        /// </summary>
         [Fact]
         public void LoadBoard_FailTest()
         {
