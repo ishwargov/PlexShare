@@ -88,7 +88,7 @@ namespace PlexShareScreenshare.Client
             OutputDuplication.ReleaseFrame();
             screenTexture2D.Dispose();
             screenResource.Dispose();
-            Bitmap SmallBitmap = new Bitmap(Bitmap, 2 * Bitmap.Width / 3, 2 * Bitmap.Height / 3);
+            Bitmap SmallBitmap = new Bitmap(Bitmap, Bitmap.Width * 2 / 3, Bitmap.Height * 2 / 3);
             return SmallBitmap;
         }
 

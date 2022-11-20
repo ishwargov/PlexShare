@@ -358,6 +358,7 @@ namespace PlexShareApp.ViewModel
                                   ReceivedMsg.Sender = Users.ContainsKey(contentData.SenderID) ? Users[contentData.SenderID] : "Anonymous";
                                   ReceivedMsg.ToFrom = UserId == contentData.SenderID;
                                   ReceivedMsg.ReplyMessage = contentData.ReplyMessageID == -1 ? "" : Messages[contentData.ReplyMessageID];
+                                  Messages[contentData.MessageID] = ReceivedMsg.IncomingMessage;
 
                                   OnPropertyChanged("EditOrDelete");
                               }

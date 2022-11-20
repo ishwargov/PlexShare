@@ -12,16 +12,16 @@
  *****************************************************************************/
 
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
-using System.Threading;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
-using System.Text;
 using System.Security.Cryptography;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
-using System.Diagnostics;
 
 namespace AuthViewModel;
 
@@ -48,7 +48,7 @@ public class AuthenticationViewModel
     /// <returns>User Name</returns>
     /// <returns>Smail ID</returns>
     /// <returns>Profile Picture URL</returns>
-    public async Task<List<string>> AuthenticateUser()
+    public async Task<List<string>> AuthenticateUser(int timeOut = 180000)
     {
         Trace.WriteLine("[UX] Creating State and Redirect URI on port 8080");
         // Creating state and redirect URI using port 8080 on Loopback address
@@ -79,8 +79,8 @@ public class AuthenticationViewModel
         // Trying to open the request in a browser  
         try
         {
-            Process.Start(new ProcessStartInfo(authorizationRequest) { UseShellExecute = true});
-        } 
+            Process.Start(new ProcessStartInfo(authorizationRequest) { UseShellExecute = true });
+        }
         catch (System.ComponentModel.Win32Exception noBrowser)
         {
             if (noBrowser.ErrorCode == -2147467259)
@@ -98,7 +98,7 @@ public class AuthenticationViewModel
 
         // If no response is recorded, then we do a timeout after 3 minutes.
         // This may happen because of closing the browser
-        if (await Task.WhenAny(taskData, Task.Delay(180000)) != taskData)
+        if (await Task.WhenAny(taskData, Task.Delay(timeOut)) != taskData)
         {
             Trace.WriteLine("[UX] Timeout occurred before getting response");
             http.Stop();
@@ -152,7 +152,7 @@ public class AuthenticationViewModel
         Task.WaitAll(task);
 
         result.Add("true");
-        while(userName == "" || userEmail == "" || imageName == "" )
+        while (userName == "" || userEmail == "" || imageName == "")
         {
             // Thread sleeps until information is received
             Thread.Sleep(100);

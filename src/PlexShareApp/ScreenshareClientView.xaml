@@ -1,15 +1,132 @@
-﻿<Page x:Class="PlexShareApp.ScreenshareClientView"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:PlexShareApp"
-      mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
-      Title="ScreenshareClientView"
-      Background="Gray">
+﻿<!-- Author : Harsh Dubey -->
 
-    <Grid>
-        
+<Page x:Class="PlexShareApp.ScreenshareClientView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:local="clr-namespace:PlexShareApp"
+    xmlns:gif="https://github.com/XamlAnimatedGif/XamlAnimatedGif"
+    mc:Ignorable="d" 
+    d:DesignHeight="450" d:DesignWidth="800"
+    Title="ScreenShareClient">
+
+    <!-- Create a grid to show our content -->
+    <Grid Background="Black">
+
+        <!-- Divide the screen into 2 rows in the ratio 10:1 -->
+        <Grid.RowDefinitions >
+            <RowDefinition Height = "10*" />
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <!-- Create a stack panel which will contain the controls shown when the screen is being shared -->
+        <StackPanel Name ="SharedScreen" Orientation="Vertical" Grid.Row="0">
+
+            <!-- An image when the screen is being shared -->
+            <Image Source="ScreenshareIcons/SharedScreenBackground.jpeg" Height="300" Margin="0,100,0,20"/>
+
+            <!-- Text shown when the image is being shared -->
+            <TextBlock Text="You are being watched!" Foreground="IndianRed" 
+                   FontSize="60" FontFamily="Comic Sans MS" TextWrapping="WrapWithOverflow" HorizontalAlignment="Center"/>
+
+            <!-- Make this panel visible only when the screen is being shared -->
+            <StackPanel.Resources>
+                <Style TargetType="StackPanel">
+                    <Setter Property="Visibility" Value="Hidden"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding SharingScreen, Mode=OneWay}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Resources>
+
+        </StackPanel>
+
+        <!-- Create a stack panel which will contain the controls shown when the screen is not being shared -->
+        <StackPanel Name="NotSharedScreen" Orientation="Vertical" Grid.Row="0">
+
+            <!-- An image when the screen is being shared -->
+            <Image gif:AnimationBehavior.SourceUri="ScreenshareIcons/NotSharedScreenBackground.webp" Name="Main" Height="400" Margin="0,100,0,20"/>
+
+            <!-- Text shown when the image is being shared -->
+            <TextBlock Name="MainText" Text="You are not sharing your screen" Foreground="IndianRed" 
+                   FontSize="60" FontFamily="Comic Sans MS" TextWrapping="WrapWithOverflow" HorizontalAlignment="Center"/>
+
+            <!-- Make this panel visible only when the screen is not being shared -->
+            <StackPanel.Resources>
+                <Style TargetType="StackPanel">
+                    <Setter Property="Visibility" Value="Visible"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding SharingScreen, Mode=OneWay}" Value="True">
+                            <Setter Property="Visibility" Value="Hidden"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Resources>
+
+        </StackPanel>
+
+        <!-- Create a dock panel which will contain the 2 buttons stop and start screen share -->
+        <DockPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Stretch">
+
+            <!-- Create the StartScreenShare Button -->
+            <Button x:Name = "StartScreenShare" Click = "OnStartButtonClicked" ToolTip = "Start Screen Share" Height="60" Width="60"
+                    Grid.Row="1" BorderThickness="0" VerticalAlignment="Top" Cursor="Hand">
+
+                <!-- Assign an icon to it -->
+                <Image Source = "ScreenshareIcons/StartShare.png" Width="63"/>
+                <!-- Style the button -->
+                <Button.Resources>
+                    <!-- When the button is active, it will have certain colour -->
+                    <!-- Depending on the boolean, the button will get deactivated and its colour will change -->
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="ForestGreen"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SharingScreen, Mode=OneWay}" Value="True">
+                                <Setter Property="IsHitTestVisible" Value="False" />
+                                <Setter Property="Background" Value="LightSlateGray"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                    <!-- Make the button rounded -->
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="50"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
+
+            <!-- Give space between the 2 buttons using a separator -->
+            <Separator Width="100" Background="Transparent"/>
+
+            <!-- Create the StartScreenShare Button -->
+            <Button x:Name = "StopScreenShare" Click = "OnStopButtonClicked" ToolTip = "Stop Screen Share" Grid.Row="1"
+                    Height="60" Width="60" VerticalAlignment="Top" Cursor="Hand">
+
+                <!-- Assign an icon to it -->
+                <Image Source = "ScreenshareIcons/StopShare.png" Height="27"/>
+                <!-- Style the button -->
+                <Button.Resources>
+                    <!-- Make the button rounded -->
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="50"/>
+                    </Style>
+                    <!-- When the button is active, it will have certain colour -->
+                    <!-- Depending on the boolean, the button will get deactivated and its colour will change -->
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="Red"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SharingScreen, Mode=OneWay}" Value="False">
+                                <Setter Property="IsHitTestVisible" Value="False" />
+                                <Setter Property="Background" Value="LightSlateGray"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Resources>
+            </Button >
+
+        <!-- Close all the open components -->
+        </DockPanel>
     </Grid>
 </Page>

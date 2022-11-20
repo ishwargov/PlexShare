@@ -246,6 +246,8 @@ namespace PlexShareApp
 
         private void TextboxCreateMode(object sender, RoutedEventArgs e)
         {
+            if (InputManager.Current.MostRecentInputDevice is KeyboardDevice)
+                return;
 
             this.currentTool = "text";
 

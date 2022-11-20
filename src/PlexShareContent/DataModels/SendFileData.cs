@@ -10,10 +10,12 @@
  * Description = Class containing metadata related to a file message.
  *****************************************************************************/
 
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
 namespace PlexShareContent.DataModels
 {
+    [ExcludeFromCodeCoverage]
     public class SendFileData
     {
         /// <summary>

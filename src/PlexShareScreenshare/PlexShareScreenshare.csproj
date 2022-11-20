@@ -13,9 +13,11 @@
     
     <PropertyGroup>
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
     
     <ItemGroup>
+      <PackageReference Include="K4os.Compression.LZ4.Streams" Version="1.2.16" />
       <PackageReference Include="SharpDX" Version="4.2.0" />
       <PackageReference Include="SharpDX.Direct3D11" Version="4.2.0" />
       <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
