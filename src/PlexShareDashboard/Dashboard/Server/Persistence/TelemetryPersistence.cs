@@ -2,18 +2,16 @@
 ///<summary>
 ///     It contains the TelemetryPersistence class which implements the ITelemetryPersistence
 ///</summary>
+using PlexShareDashboard.Dashboard.Server.Telemetry;
+using ScottPlot;
+using SharpDX.Text;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using OxyPlot.Wpf;
-using PlexShareDashboard.Dashboard.Server.Telemetry;
-using ScottPlot;
-using SharpDX.Text;
 using System.Xml;
-using System.Xml.Linq;
 
 namespace Dashboard.Server.Persistence
 {
@@ -48,7 +46,7 @@ namespace Dashboard.Server.Persistence
             // To plot the UserNameVSChatCount
             bool t2 = ChatCountVsUserName(sessionAnalyticsData.userNameVsChatCount, sessionId);
             // TO save the xml file containing information of the session
-            bool t3 = XML_save(sessionAnalyticsData,sessionId);
+            bool t3 = XML_save(sessionAnalyticsData, sessionId);
             bool isSaved = t1 & t2 & t3;
             return isSaved;
         }
@@ -57,10 +55,10 @@ namespace Dashboard.Server.Persistence
         /// </summary>
         /// <param name="sessionanalytics">Takes session data to be saved in the file</param>
         /// <returns>returns true if saved successfully</returns>
-        private bool XML_save(SessionAnalytics sessionanalytics,string sessionId)
+        private bool XML_save(SessionAnalytics sessionanalytics, string sessionId)
         {
             var score = "0";
-            if ( sessionanalytics.sessionSummary != null && sessionanalytics.sessionSummary.score != null) 
+            if (sessionanalytics.sessionSummary != null && sessionanalytics.sessionSummary.score != null)
                 score = sessionanalytics.sessionSummary.score.ToString();
             var path = TelemetryAnalyticsPath + sessionId;
             var mostengaged = "None";
@@ -94,27 +92,28 @@ namespace Dashboard.Server.Persistence
                 // if directory does not exist create the directory
                 if (!Directory.Exists(path)) Directory.CreateDirectory(path);
                 // Writing the XML file
-                    XmlTextWriter xwwrite = new XmlTextWriter(Path.Combine(path,"serverData.xml"), Encoding.UTF8);
-                    xwwrite.Formatting = Formatting.Indented;
-                    xwwrite.WriteStartElement("SessionTime");
-                    xwwrite.WriteString(DateTime.Now.ToString());
-                    xwwrite.WriteStartElement("SessionScore");
-                    xwwrite.WriteString(score);
-                    xwwrite.WriteEndElement();
-                    xwwrite.WriteStartElement("MaximumUserCount");
-                    xwwrite.WriteString(maxcount.ToString());
-                    xwwrite.WriteEndElement();
-                    xwwrite.WriteStartElement("MostEngagedUser");
-                    xwwrite.WriteString(mostengaged);
-                    xwwrite.WriteEndElement();
-                    xwwrite.WriteEndElement();
-                    xwwrite.Close();
+                XmlTextWriter xwwrite = new XmlTextWriter(Path.Combine(path, "serverData.xml"), Encoding.UTF8);
+                xwwrite.Formatting = Formatting.Indented;
+                xwwrite.WriteStartElement("SessionTime");
+                xwwrite.WriteString(DateTime.Now.ToString());
+                xwwrite.WriteStartElement("SessionScore");
+                xwwrite.WriteString(score);
+                xwwrite.WriteEndElement();
+                xwwrite.WriteStartElement("MaximumUserCount");
+                xwwrite.WriteString(maxcount.ToString());
+                xwwrite.WriteEndElement();
+                xwwrite.WriteStartElement("MostEngagedUser");
+                xwwrite.WriteString(mostengaged);
+                xwwrite.WriteEndElement();
+                xwwrite.WriteEndElement();
+                xwwrite.Close();
 
-                    return true;
-                
+                return true;
+
 
             }
-            catch(Exception except) {
+            catch (Exception except)
+            {
                 Trace.WriteLine(except.Message);
                 return false;
             }
@@ -129,7 +128,7 @@ namespace Dashboard.Server.Persistence
         private bool ChatCountVsUserName(Dictionary<string, int> ChatCountForEachUser, string sessionId)
         {
             var p1 = TelemetryAnalyticsPath + sessionId;
-            if(ChatCountForEachUser == null)
+            if (ChatCountForEachUser == null)
             {
                 Trace.WriteLine("null exception at chat count");
                 return false;
@@ -138,7 +137,8 @@ namespace Dashboard.Server.Persistence
             var val1 = ChatCountForEachUser.Values.ToArray();
             var values1 = new double[val1.Length];
             int ik = 0;
-            foreach (var i in ChatCountForEachUser) {
+            foreach (var i in ChatCountForEachUser)
+            {
                 values1[ik] = i.Value;
                 ik++;
             }

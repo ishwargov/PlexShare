@@ -1,6 +1,5 @@
 ///<author>Hrishi Raaj Singh Chauhan</author>
 /// Here we are having a static persistence factory, It will create the instance of SummaryPersistence and TelemetryPersistence to access their functionalities
-using PlexShareDashboard.Dashboard.Server.Telemetry;
 namespace Dashboard.Server.Persistence
 {
     //Persistence Factory
