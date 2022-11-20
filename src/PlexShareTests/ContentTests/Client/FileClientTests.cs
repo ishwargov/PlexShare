@@ -22,6 +22,7 @@ namespace PlexShareTests.ContentTests.Client
         [Fact]
         public void SendFile_ValidInput_ReturnsValidContentData()
         {
+            // send valid file message and deserialize it from fake communicator
             var utility = new Utility();
             var currentDirectory = Directory.GetCurrentDirectory();
             var pathArray = currentDirectory.Split(new[] { "\\PlexShareTests" }, StringSplitOptions.None);
