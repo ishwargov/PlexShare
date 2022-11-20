@@ -112,16 +112,6 @@ namespace PlexShareScreenshare.Client
             _captureTask.Start();
         }
 
-        public void ResumeCapture()
-        {
-            StartCapture();
-        }
-
-        public void SuspendCapture()
-        {
-            StopCapture();
-        }
-
         /// <summary>
         /// Stops the capturing by Cancelling the task and clears the _capturedFrame queue.
         /// </summary>

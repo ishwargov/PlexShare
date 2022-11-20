@@ -7,7 +7,7 @@ namespace PlexShareTests.ScreenshareTests
     public class ScreenCapturerTests
     {
         /// <summary>
-        /// Capture for some time and see if the elements of queues are not null
+        /// Capture for some time and see if the captured images inside the queue are not null
         /// </summary>
         [Fact]
         public void Test1()
@@ -26,7 +26,7 @@ namespace PlexShareTests.ScreenshareTests
                     count++;
             }
 
-            screenCapturer.StopCapture().Wait();
+            screenCapturer.StopCapture();
             Assert.Equal(50, count);
         }
 
@@ -40,11 +40,10 @@ namespace PlexShareTests.ScreenshareTests
             task.Wait();
             var screenCapturer = task.Result;
             screenCapturer.StartCapture();
-            Console.WriteLine("Hello");
             Thread.Sleep(1000);
             int framesCaptured = screenCapturer.GetCapturedFrameLength();
 
-            screenCapturer.StopCapture().Wait();
+            screenCapturer.StopCapture();
             Thread.Sleep(1);
             Assert.True(framesCaptured is > 0 and <= ScreenCapturer.MaxQueueLength);
         }
