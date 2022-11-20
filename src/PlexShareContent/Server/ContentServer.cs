@@ -27,7 +27,7 @@ namespace PlexShareContent.Server
     {
         private static readonly object _lock = new();
         private readonly INotificationHandler _notificationHandler;
-        private ChatServer _chatContextServer;
+        private ChatServer _chatServer;
         private ICommunicator _communicator;
         private ContentDB _contentDatabase;
         private FileServer _fileServer;
@@ -41,7 +41,7 @@ namespace PlexShareContent.Server
             _contentDatabase = new ContentDB();
             _notificationHandler = new ContentServerNotificationHandler(this);
             _fileServer = new FileServer(_contentDatabase);
-            _chatContextServer = new ChatServer(_contentDatabase);
+            _chatServer = new ChatServer(_contentDatabase);
             _serializer = new ContentSerializer();
             _communicator.Subscribe("Content", _notificationHandler);
         }
@@ -70,7 +70,7 @@ namespace PlexShareContent.Server
         {
             lock (_lock)
             {
-                return _chatContextServer.GetMessages();
+                return _chatServer.GetMessages();
             }
         }
 
@@ -99,8 +99,7 @@ namespace PlexShareContent.Server
                 return;
             }
 
-            ContentData receiveMessageData;
-
+            ContentData receivedMessageData;
             Trace.WriteLine("[ContentServer] Received messageData from ContentServerNotificationHandler");
 
             // lock to prevent multiple threads from modifying the messages at once.
@@ -110,17 +109,19 @@ namespace PlexShareContent.Server
                 {
                     case MessageType.Chat:
                         Trace.WriteLine("[ContentServer] MessageType is Chat, Calling ChatServer.Receive()");
-                        receiveMessageData = _chatContextServer.Receive(messageData);
+                        receivedMessageData = _chatServer.Receive(messageData);
                         break;
 
                     case MessageType.File:
                         Trace.WriteLine("[ContentServer] MessageType is File, Calling FileServer.Receive()");
-                        receiveMessageData = _fileServer.Receive(messageData);
+                        receivedMessageData = _fileServer.Receive(messageData);
                         break;
+
                     case MessageType.HistoryRequest:
                         Trace.WriteLine("[ContentServer] MessageType is HistoryRequest, Calling ContentServer.SSendAllMessagesToClient");
                         SSendAllMessagesToClient(messageData.SenderID);
                         return;
+
                     default:
                         Trace.WriteLine("[ContentServer] Unknown Message Type");
                         return;
@@ -128,7 +129,7 @@ namespace PlexShareContent.Server
             }
 
             // If this is null then something went wrong, probably message was not found.
-            if (receiveMessageData == null)
+            if (receivedMessageData == null)
             {
                 Trace.WriteLine("[ContentServer] Something went wrong while handling the message.");
                 return;
@@ -140,15 +141,15 @@ namespace PlexShareContent.Server
                 if (messageData.Event == MessageEvent.Download)
                 {
                     Trace.WriteLine("[ContentServer] Sending File to client");
-                    SendFile(receiveMessageData);
+                    SendFile(receivedMessageData);
                 }
                 // Else send the message to all the receivers and notify the subscribers
                 else
                 {
                     Trace.WriteLine("[ContentServer] Notifying subscribers");
-                    Notify(receiveMessageData);
+                    Notify(receivedMessageData);
                     Trace.WriteLine("[ContentServer] Sending message to clients");
-                    Send(receiveMessageData);
+                    Send(receivedMessageData);
                 }
             }
             catch (Exception e)
@@ -156,7 +157,6 @@ namespace PlexShareContent.Server
                 Trace.WriteLine($"[ContentServer] Something went wrong while sending message. Exception {e}");
                 return;
             }
-
             Trace.WriteLine("[ContentServer] Message sent");
         }
 
@@ -210,7 +210,7 @@ namespace PlexShareContent.Server
             _subscribers = new List<IContentListener>();
             _contentDatabase = new ContentDB();
             _fileServer = new FileServer(_contentDatabase);
-            _chatContextServer = new ChatServer(_contentDatabase);
+            _chatServer = new ChatServer(_contentDatabase);
             _serializer = new ContentSerializer();
         }
     }

@@ -45,7 +45,7 @@ namespace PlexShareContent.Client
             try
             {
                 // get type of serialized data
-                var deserializedType = _serialzer.GetObjectType(data, "Content");
+                var deserializedType = _serialzer.GetObjType(data, "Content");
                 // if data is of ContentData type
                 if(string.Equals(deserializedType, typeof(ContentData).ToString()))
                 {
