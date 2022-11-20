@@ -8,13 +8,16 @@
  * Project     = White Board
  *
  * Description = This defines all the operations that can be performed 
-                 on the WhiteBoard.
+                 on the WhiteBoard. It also includes some messages 
+                 that have to be communicated. 
  ***************************/
 
 namespace PlexShareWhiteboard.BoardComponents
 {
     /// <summary>
-    ///         Various operations that can be performed on the ShapeItems.
+    ///         Type of operations that can be performed on the ShapeItems
+    ///         and various kinds of messages that can be sent
+    ///         (NewUser, RestoreSnapshot,CreateSnapshot, Clear)
     /// </summary>
     public enum Operation
     {
@@ -22,7 +25,6 @@ namespace PlexShareWhiteboard.BoardComponents
         Deletion,
         ModifyShape,
         Clear,
-        UndoClear,
         RestoreSnapshot,
         CreateSnapshot,
         NewUser
