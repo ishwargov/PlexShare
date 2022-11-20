@@ -187,22 +187,6 @@ namespace PlexShareWhiteboard.Server
             BroadcastToClients(newShape, op);
         }
 
-
-
-        public void RestoreSnapshotHandler(WBServerShape deserializedObject)
-        {
-            Trace.WriteLine("[Whiteboard] ServerSide.RestoreSnapshotHandler: Restoring Snapshot " + deserializedObject.SnapshotNumber);
-            Trace.WriteLine("[Whiteboard] " + GetServerListSize());
-            List<ShapeItem> loadedShapes = _serverSnapshotHandler.LoadBoard(deserializedObject.SnapshotNumber);
-            List<SerializableShapeItem> serializableShapeItems = _serializer.ConvertToSerializableShapeItem(loadedShapes);
-            WBServerShape wBServerShape = new WBServerShape(
-                serializableShapeItems,
-                Operation.RestoreSnapshot,
-                deserializedObject.UserID
-            );
-            BroadcastToClients(loadedShapes, Operation.RestoreSnapshot);
-        }
-
         public void ClearServerList()
         {
             objIdToObjectMap.Clear();
@@ -255,9 +239,10 @@ namespace PlexShareWhiteboard.Server
         {
             _serverSnapshotHandler.SnapshotNumber = snapshotNumber;
         }
-        public void SetCommunicator(IServerCommunicator communicator)
+        
+        public ServerSnapshotHandler GetSnapshotHandler()
         {
-            _communicator = communicator;
+            return _serverSnapshotHandler;
         }
     }
 }

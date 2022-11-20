@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace PlexShareWhiteboard.Client.Interfaces
 {
-    internal interface IClientSnapshotHandler
+    public interface IClientSnapshotHandler
     {
         int SnapshotNumber { get; set; }
         int SaveSnapshot(string UserId);
