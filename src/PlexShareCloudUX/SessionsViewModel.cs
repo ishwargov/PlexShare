@@ -19,6 +19,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 using System.Windows;
+using System.Diagnostics;
 
 namespace PlexShareCloudUX
 {
@@ -39,20 +40,28 @@ namespace PlexShareCloudUX
 
         public async void GetSessions(string userName)
         {
-            IReadOnlyList<SessionEntity> sessionsList = await _model.GetSessionsDetails(userName);
+            try
+            {
 
-            _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
-                        DispatcherPriority.Normal,
-                        new Action<IReadOnlyList<SessionEntity>>((sessionsList) =>
-                        {
-                            lock (this)
+                IReadOnlyList<SessionEntity> sessionsList = await _model.GetSessionsDetails(userName);
+
+                _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
+                            DispatcherPriority.Normal,
+                            new Action<IReadOnlyList<SessionEntity>>((sessionsList) =>
                             {
-                                this.ReceivedSessions = sessionsList;
+                                lock (this)
+                                {
+                                    this.ReceivedSessions = sessionsList;
 
-                                this.OnPropertyChanged("ReceivedSessions");
-                            }
-                        }),
-                        sessionsList);
+                                    this.OnPropertyChanged("ReceivedSessions");
+                                }
+                            }),
+                            sessionsList);
+            }
+            catch
+            {
+                Trace.WriteLine("[Cloud] Connection with cloud error");
+            }
         }
 
         /// <summary>

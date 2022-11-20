@@ -1,4 +1,16 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<!--/************************************************************
+ * Filename    = Theme1.xaml
+ *
+ * Author      = Jasir
+ *
+ * Product     = PlexShare
+ * 
+ * Project     = UX Team
+ *
+ * Description = To dynamically switch between themes
+ * 
+ ************************************************************/-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Color x:Key="Color1">Black</Color>
     <Color x:Key="Color2">White</Color>
@@ -16,4 +28,5 @@
     <SolidColorBrush x:Key="Color6Bg" Color="White" />
     <SolidColorBrush x:Key="Color7Bg" Color="#ffe2dcc8" />
     <SolidColorBrush x:Key="Color8Bg" Color="#FF6B6767" />
+    <SolidColorBrush x:Key="Color9Bg" Color="DarkSlateGray"/>
 </ResourceDictionary>

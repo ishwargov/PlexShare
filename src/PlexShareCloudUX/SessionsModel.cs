@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace PlexShareCloudUX
 {
-    internal class SessionsModel
+    public class SessionsModel
     {
         string[] paths;
         private string SubmissionUrl;   //@"http://localhost:7213/api/submission";

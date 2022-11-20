@@ -1,7 +1,12 @@
-﻿
-using System;
-using System.Diagnostics;
+﻿/***********************************************
+ * Name : Saurabh Kumar
+ * Roll : 111901046
+ * Module : Dashboard
+ * File Name: DashboardSerializer.cs
+ * This file contains the implemetation of Json Serializer
+ **********************************************/
 using Newtonsoft.Json;
+using System;
 
 namespace PlexShareDashboard.Dashboard
 {
@@ -44,20 +49,11 @@ namespace PlexShareDashboard.Dashboard
             }
             catch (Exception ex)
             {
-                
+
                 throw;
             }
         }
 
-        /*
-        /// <inheritdoc />
-        string IDashboardSerializer.GetObjectType(string serializedString, string nameSpace)
-        {
-            // json string
-            var obj = DeserializeJson<MetaObject>(serializedString);
-            return obj.typ;
-        }
-        */
         /// <inheritdoc />
         T IDashboardSerializer.Deserialize<T>(string serializedString)
         {

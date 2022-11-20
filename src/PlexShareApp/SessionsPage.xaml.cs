@@ -78,7 +78,10 @@ namespace PlexShareApp
             {
                 Label label = new Label()
                 {
-                    Content = "No Sessions Conducted"
+                    Content = "No Sessions Conducted",
+                    Foreground = new SolidColorBrush(Colors.White),
+                    HorizontalContentAlignment = HorizontalAlignment.Center,
+                    FontSize = 16
                 };
                 Stack.Children.Add(label);
 
@@ -94,7 +97,7 @@ namespace PlexShareApp
                 newButton.Height = 30;
                 newButton.Margin = new Thickness(0, 5, 0, 5);
                 newButton.Name = "Button" + i.ToString();
-                newButton.Content = $"Session on - {sessions[i].Timestamp}";
+                newButton.Content = $"Session on - {sessions[i].Timestamp.Value.ToLocalTime()}";
                 newButton.Click += OnButtonClick;
                 
                 Stack.Children.Add(newButton);
@@ -114,5 +117,9 @@ namespace PlexShareApp
             SubmissionsPage.Content = submissionsPage;
         }
 
+        private void RefreshButtonClick(object sender, RoutedEventArgs e)
+        {
+            viewModel.GetSessions(UserName);
+        }
     }
 }
