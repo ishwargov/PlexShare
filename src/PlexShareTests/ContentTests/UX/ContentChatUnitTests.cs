@@ -28,7 +28,6 @@ namespace PlexShareTests.ContentTests.UX
     {
         private ChatPageViewModel? _viewModel;
 
-
         [Fact]
         public void OnClientSessionChanged_ShouldAddUsers()
         {
@@ -41,7 +40,7 @@ namespace PlexShareTests.ContentTests.UX
             testingSession.AddUser(testingUser2);
             var testingUser3 = new UserData("Jha", 111901010);
             testingSession.AddUser(testingUser3);
-            
+            DispatcherUtil.DoEvents();
 
             // Act
             _viewModel.OnClientSessionChanged(testingSession);
