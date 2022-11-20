@@ -6,15 +6,6 @@
 using Dashboard;
 using Dashboard.Server.Persistence;
 using PlexShareDashboard.Dashboard.Server.Telemetry;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Numerics;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
 
 
 namespace PlexShareTests.DashboardTests.Telemetry
@@ -28,7 +19,7 @@ namespace PlexShareTests.DashboardTests.Telemetry
         /// <summary>
         ///     checking the test case for singleton design pattern 
         /// </summary>
-        
+
         [Fact]
         public void SingletonFactory_Test_Check()
         {
@@ -549,7 +540,7 @@ namespace PlexShareTests.DashboardTests.Telemetry
         /// </summary>
         [Fact]
 
-        public void  GetUserIdVsChatCount_Test()
+        public void GetUserIdVsChatCount_Test()
         {
 
             PlexShareContent.DataModels.ReceiveContentData message1 = new PlexShareContent.DataModels.ReceiveContentData();
@@ -576,7 +567,7 @@ namespace PlexShareTests.DashboardTests.Telemetry
             var msgList2 = new List<PlexShareContent.DataModels.ReceiveContentData>();
             msgList2.Add(message3);
 
-            var allMessages = new  PlexShareContent.DataModels.ChatThread[2];
+            var allMessages = new PlexShareContent.DataModels.ChatThread[2];
             var chat1 = new PlexShareContent.DataModels.ChatThread();
             chat1.MessageList = msgList1;
 
@@ -600,7 +591,7 @@ namespace PlexShareTests.DashboardTests.Telemetry
 
             //say everything went fine 
             return;
-       
+
         }
 
         /// <summary>
@@ -728,8 +719,8 @@ namespace PlexShareTests.DashboardTests.Telemetry
 
 
 
-            
-            
+
+
             //say everything went fine 
             return;
         }

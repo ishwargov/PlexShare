@@ -1,4 +1,9 @@
-﻿using System;
+﻿/// <author>Morem Jayanth Kumar</author>
+/// <created>3/11/2022</created>
+/// <summary>
+///		This file contains all the code related to building the sentiment analyzer ML Model
+/// </summary>
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -33,7 +38,7 @@ namespace PlexShareDashboard.Dashboard.Server.Summary
         }
 
         // Here I create your my sample hard-coded data (Could be coming from an end-user app)
-        private static ModelInput CreateSingleDataSample(string inputTextStatement)
+        public static ModelInput CreateSingleDataSample(string inputTextStatement)
         {
             // Here (ModelInput object) you could provide new test data, hardcoded or from the end-user application, instead of the row from the file.
             ModelInput sampleForPrediction = new ModelInput { Text = inputTextStatement };

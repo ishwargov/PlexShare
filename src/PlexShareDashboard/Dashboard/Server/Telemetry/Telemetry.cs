@@ -4,19 +4,13 @@
 /// </summary>
 
 
-using Client.Models;
-using PlexShareDashboard.Dashboard.Server.SessionManagement;
+using Dashboard;
+using Dashboard.Server.Persistence;
 using PlexShare.Dashboard;
+using PlexShareDashboard.Dashboard.Server.SessionManagement;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PlexShareDashboard;
-using PlexShareContent.DataModels;
-using Dashboard.Server.Persistence;
-using Dashboard;
-using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace PlexShareDashboard.Dashboard.Server.Telemetry
 {
@@ -34,7 +28,7 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
         public Dictionary<DateTime, int> userCountVsEachTimeStamp = new Dictionary<DateTime, int>();
 
         //stores the each user entry time in the meeting 
-        public Dictionary<UserData,DateTime> eachUserEnterTimeInMeeting  = new Dictionary<UserData,DateTime>();
+        public Dictionary<UserData, DateTime> eachUserEnterTimeInMeeting = new Dictionary<UserData, DateTime>();
 
         //stores each users exit time from the meeting 
         public Dictionary<UserData, DateTime> eachUserExitTime = new Dictionary<UserData, DateTime>();
@@ -60,7 +54,7 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
         Dictionary<string, int> userNameVsChatCount = new Dictionary<string, int>();
 
 
-       
+
 
 
         //constructor for telemetry module 
@@ -70,7 +64,7 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
 
             //we have to subscribe to the ITelemetryNotifications 
             serverSessionManager.Subscribe(this);
-            
+
         }
 
 
@@ -92,11 +86,11 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
 
                 }
                 else
-                { 
+                {
                     userNameVsChatCount[currUserName] = userNameVsChatCount[currUserName] + currUserChatCount.Value;
-                
+
                 }
-            
+
             }
 
             //say everything went fine 
@@ -107,7 +101,7 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
         /// <summary>
         ///     function to fetch the telemetry analytics and then give it back to the session manager.This function will be called whenever the user refreshes the dashboard. This function will calculate the telemetry based on the current data.
         /// </summary>
-         /// <params name="allMessages"> Array of ChatThread objects which contains information about messages of each thread </params>
+        /// <params name="allMessages"> Array of ChatThread objects which contains information about messages of each thread </params>
 
         public SessionAnalytics GetTelemetryAnalytics(PlexShareContent.DataModels.ChatThread[] allChatMessages)
         {
@@ -142,16 +136,16 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             currSessionAnalytics.listOfInSincereMembers = listOfInSincereMembers;
             currSessionAnalytics.userCountVsTimeStamp = userCountVsEachTimeStamp;
             currSessionAnalytics.userNameVsChatCount = userNameVsChatCount;
-            
+
             //calculating the session summary 
             SessionSummary sessionSummary = new SessionSummary();
             sessionSummary.userCount = currTotalUser;
             sessionSummary.chatCount = currTotalChatCount;
             sessionSummary.score = currTotalChatCount * currTotalUser;
-            
+
             currSessionAnalytics.sessionSummary = sessionSummary;
 
-
+            Trace.WriteLine("[Telemetry Submodule] Get Telemetry Analytics function called. Successfully send the updated the telemetric data to session Manager");
             //say everything went fine 
             return currSessionAnalytics;
         }
@@ -177,7 +171,7 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             var currTotalChatCount = 0;
 
             //using the for loop to find these values 
-            foreach(var eachUser in userIdVsChatCount)
+            foreach (var eachUser in userIdVsChatCount)
             {
                 currTotalChatCount = currTotalChatCount + eachUser.Value;
                 currTotalUser = currTotalUser + 1;
@@ -198,7 +192,7 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
 
             //calling the persistent module to save these analytics 
             persistence.Save(finalSessionAnalyticsToSave);
-
+            Trace.WriteLine("[Telemetry Submodule] SaveAnalytics function called to save the telemetric data by the persistence submodule.");
 
             //say everything went fine 
             return;
@@ -286,7 +280,7 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
 
             //say everything went fine 
             return;
-        
+
         }
 
 
@@ -308,7 +302,7 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
 
             //say everything went fine 
             return;
-        
+
         }
 
 
@@ -328,7 +322,7 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
             CalculateArrivalExitTimeOfUser(newSession, currTime);
             GetListOfInsincereMembers(currTime);
 
-
+            Trace.WriteLine("[Telemetry Submodule] OnAnalytics function get called, successfully updated the telemetric data on the server.");
             //say everything went fine 
             return;
 
@@ -363,7 +357,7 @@ namespace PlexShareDashboard.Dashboard.Server.Telemetry
 
             //say everything went fine 
             return;
-        
+
         }
 
 

@@ -5,6 +5,7 @@
 ///     is a chat or file
 /// </summary>
 
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -16,7 +17,7 @@ namespace PlexShareApp
         public override DataTemplate? SelectTemplate(object item, DependencyObject container)
         {
             var message = item as Message;
-
+            Trace.WriteLine("[ChatBubbleConstructor] Chat bubble created.");
             if (message.ToFrom)
             {
                 return message.Type ? SentMsgBubble : SentFileBubble;

@@ -7,25 +7,19 @@
 using Dashboard;
 using PlexShareDashboard.Dashboard.Server.Telemetry;
 using PlexShareDashboard.Dashboard.UI.ViewModel;
-using Syncfusion.UI.Xaml.Charts;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace PlexShareTests.DashboardTests.UI
 {
     public class DashboardViewModelsUnitTests
     {
-        //here we will write the unit testing for the dashboard view model 
-        //first doing the set up for testing purpose 
-        private DashboardViewModel DashboardViewModelForTest = new();
+        private DashboardViewModel DashboardViewModelForTest = new(1);
 
 
-        //test for doing the setup 
+        /// <summary>
+        ///first doing the set up for testing purpose
+        /// </summary>
+        
         [Fact]
         public void SetUpTest()
         {
@@ -33,7 +27,9 @@ namespace PlexShareTests.DashboardTests.UI
             {
                 new System.Windows.Application();
             }
-            //new System.Windows.Application();
+            
+        
+            
             Assert.NotNull(DashboardViewModelForTest);
             Assert.IsType<DashboardViewModel>(DashboardViewModelForTest);
             Assert.NotNull(DashboardViewModelForTest.GetClientSessionManager());
@@ -51,7 +47,9 @@ namespace PlexShareTests.DashboardTests.UI
 
 
         [Fact]
-        //writing the testing for checking the initialization process 
+        /// <summary>
+        ///writing the testing for checking the initialization process 
+        /// </summary>
         public void Initialization_Test_Of_Lists()
         {
             //we have to test the initialisation of the list  
@@ -67,8 +65,9 @@ namespace PlexShareTests.DashboardTests.UI
         }
 
 
-
-        //testing function for testing the initialization of the variables 
+        /// <summary>
+        ///testing function for testing the initialization of the variables 
+        /// </summary>
         [Fact]
         public void Initialization_Test_Of_Variables()
         {
@@ -89,7 +88,9 @@ namespace PlexShareTests.DashboardTests.UI
 
 
         [Fact]
-        //function to test the on property change event whether it is triggering or not 
+        /// <summary>
+        ///function to test the on property change event whether it is triggering or not 
+        /// </summary>
         public void OnPropertyChange_Event_Test()
         {
             string CheckCurrentProperty = DashboardViewModelForTest.EngagementRateSetter;
@@ -111,8 +112,10 @@ namespace PlexShareTests.DashboardTests.UI
 
 
 
-        //function to check the updatebutton setter 
         [Fact]
+        /// <summary>
+        ///function to check the updatebutton setter 
+        /// </summary>
         public void UpdateButtonContent_Test_To_Update_According_To_Current_Mode()
         {
             //DashboardViewModelForTest.ButtonContentSetter = "LabMode";
@@ -132,7 +135,9 @@ namespace PlexShareTests.DashboardTests.UI
 
 
         [Fact]
-        //writing the function to test the update participant list 
+        /// <summary>
+        ///writing the function to test the update participant list 
+       /// </summary>
         public void UpdateParticipantsList_Test()
         {
             //new System.Windows.Application();
@@ -165,7 +170,9 @@ namespace PlexShareTests.DashboardTests.UI
 
 
         [Fact]
-        //function to test the GetHourAndMinute
+        /// <summary>
+        ///function to test the GetHourAndMinute
+        /// </summary>
         public void GetHourAndMinute_Test()
         {
 
@@ -183,6 +190,9 @@ namespace PlexShareTests.DashboardTests.UI
 
 
         [Fact]
+        /// <summary>
+        /// testing function to test the updateUserCountVsTimeStamp Calculations 
+        /// </summary>
         public void UpdateUserCountVsTimeStamp_Test()
         {
             //new System.Windows.Application();
@@ -227,6 +237,9 @@ namespace PlexShareTests.DashboardTests.UI
 
 
         [Fact]
+        /// <summary>
+        ///testing the function of calculating the updateuseridvschatcount 
+        /// </summary>
         public void UpdateUserIdVsChatCount_Test()
         {
             //new System.Windows.Application();
@@ -262,15 +275,17 @@ namespace PlexShareTests.DashboardTests.UI
 
 
         [Fact]
-
+        /// <summary>
+        /// testing function to test the calculation of the attentive and non attentive users  
+        /// </summary>
         public void CalculatePercentageOfAttentiveAndNonAttentiveUsers_Test()
         {
             int currNonAttentiveUsers = 50;
             int currAttentiveUsers = 50;
             DashboardViewModelForTest.TotalParticipantsCountSetter = 100;
 
-            //calling the function 
-            DashboardViewModelForTest.CalculatePercentageOfAttentiveAndNonAttentiveUsers(currAttentiveUsers, currNonAttentiveUsers);
+            //calling the function
+           DashboardViewModelForTest.CalculatePercentageOfAttentiveAndNonAttentiveUsers(currAttentiveUsers, currNonAttentiveUsers);
 
             //asserting the values 
             Assert.Equal(50, DashboardViewModelForTest.NonAttentiveUsersSetter);
@@ -282,6 +297,9 @@ namespace PlexShareTests.DashboardTests.UI
 
 
         [Fact]
+        /// <summary>
+        /// testing function to test the onclientsessioncganed function  
+        /// </summary>
         public void OnClientSessionChanged_Test()
         {
             //new System.Windows.Application();
@@ -318,6 +336,9 @@ namespace PlexShareTests.DashboardTests.UI
 
 
         [Fact]
+        /// <summary>
+        /// testing for function onanalytics changed  
+        /// </summary>
         public void OnAnalyticsChanged_Test()
         {
             //new System.Windows.Application();
@@ -390,6 +411,9 @@ namespace PlexShareTests.DashboardTests.UI
 
 
         [Fact]
+        /// <summary>
+        /// function to test the calculation of engagement rate  
+        /// </summary>
         public void CalculateEngagementRate_Test()
         {
             Dictionary<string, int> userNameVsChatCount = new Dictionary<string, int>();

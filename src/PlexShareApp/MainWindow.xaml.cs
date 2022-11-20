@@ -7,7 +7,7 @@
  * 
  * Project     = PlexShareApp
  *
- * Description = This is start view of the application. It is responsible for starting the authenticationView.
+ * Description = This is start view of the application. It is responsible for starting the SplashScreen and the AuthenticationView.
  * 
  *****************************************************************************/
 using System.Threading;
@@ -32,7 +32,6 @@ namespace PlexShareApp
             
             // Instantiate the authentication view in background
             AuthenticationView authenticationView = new AuthenticationView();
-            //authenticationView.Hide();
 
             // Close the splash screen, and open the Authentication Page
             splashScreen.Close();
