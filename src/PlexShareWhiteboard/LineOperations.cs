@@ -27,7 +27,15 @@ namespace PlexShareWhiteboard
             };
             return s;
         }
-
+        public Geometry GenerateBoundingLine(ShapeItem shape)
+        {
+            LineGeometry boundingLine = new();
+            //bound-ingLine.X1 = select.selectedObject.anchorPoint.X;
+            //boundingLine.Y1 = select.selectedObject.anchorPoint.Y;
+            boundingLine.StartPoint = new Point(shape.Start.X, shape.Start.Y);
+            boundingLine.EndPoint = new Point(shape.End.X, shape.End.Y);
+            return boundingLine;
+        }
         public void HelperSelectLine(Rect boundingBox, int tempZIndex, int i, Point a)
         {
             if ((boundingBox.Width == 0 || boundingBox.Height == 0))
@@ -57,6 +65,9 @@ namespace PlexShareWhiteboard
                 //lastShape=CreateShape(shape.Start, a, "LineGeometry", shape.Id);
                 lastShape= UpdateShape(shape.Start, a, "LineGeometry", shape);
             }
+            LineGeometry boundingLine = (LineGeometry)GenerateBoundingLine(lastShape);
+            Debug.WriteLine("selected boundingline " + boundingLine.StartPoint + " " + boundingLine.EndPoint);
+            HighLightIt(boundingLine);
         }
 
         public void TranslatingLine(Rect boundingBox, ShapeItem shape, Point p1, Point p2, double width, double height)
@@ -93,7 +104,9 @@ namespace PlexShareWhiteboard
             }
 
             lastShape=UpdateShape(p1, p2, shape.Geometry.GetType().Name, shape, shape.TextString);
-            HighLightIt(p1, p2);
+            LineGeometry boundingLine = (LineGeometry)GenerateBoundingLine(lastShape);
+            Debug.WriteLine("selected boundingline " + boundingLine.StartPoint + " " + boundingLine.EndPoint);
+            HighLightIt(boundingLine);
         }
     }
 }

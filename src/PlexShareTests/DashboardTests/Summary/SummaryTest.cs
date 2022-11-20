@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
-using PlexShareContent;
+using PlexShareContent.DataModels;
 
 using Xunit;
 using PlexShareDashboard.Dashboard.Server.Summary;
+
 
 
 using PlexShareTests.DashboardTests.Summary ;

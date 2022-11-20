@@ -117,7 +117,7 @@ namespace PlexShareWhiteboard
             //Trace.WriteLine("[Whiteboard]  " + "Inside TextBoxStart function");
             if (c == Key.Space)
             {
-                //Trace.WriteLine("[Whiteboard]  " + "space");
+                Trace.WriteLine("[Whiteboard]  " + "space");
                 text = text + ' ';
             }
             else if (c == Key.Back)
@@ -158,10 +158,16 @@ namespace PlexShareWhiteboard
                 double y = curShape.Geometry.Bounds.Y;
                 double height = curShape.Geometry.Bounds.Height;
                 double width = curShape.Geometry.Bounds.Width;
-                ShapeItem hsBody = GenerateRectangleXYWidthHeight(x, y, width, height, null, Brushes.DodgerBlue, "hsBody", 100000);
-                highlightShapes.Add(hsBody);
-                foreach (ShapeItem si in highlightShapes)
-                    ShapeItems.Add(si);
+                if(height >=0 &&  width >= 0)
+                {
+                    ShapeItem hsBody = GenerateRectangleXYWidthHeight(x, y, width, height, null, Brushes.DodgerBlue, "hsBody", 100000);
+                    highlightShapes.Add(hsBody);
+                    foreach (ShapeItem si in highlightShapes)
+                        ShapeItems.Add(si);
+                }
+
+                
+
             }
             //Trace.WriteLine("[Whiteboard]  " + "post create shape" + lastShape.TextString);
 

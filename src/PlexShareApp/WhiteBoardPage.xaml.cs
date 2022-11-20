@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Serialization.Formatters;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -25,6 +26,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Client.Models;
 using PlexShareWhiteboard;
 using PlexShareWhiteboard.BoardComponents;
 
@@ -38,16 +40,34 @@ namespace PlexShareApp
         WhiteBoardViewModel viewModel;
         string currentTool;
         bool singleTrigger = true;
-        int val;
 
         public WhiteBoardPage(int serverID)
         {
             InitializeComponent();
             //viewModel = new WhiteBoardViewModel();
             viewModel = WhiteBoardViewModel.Instance;
+            Trace.WriteLine("[WhiteBoard] White Board Page is initialised serverId: " + serverID + "viewModel.userId : " + viewModel.userId);
+             
+            if (serverID == 0)
+                viewModel.isServer = true;
+            else
+                viewModel.isServer = false;
+
+            //if (viewModel.canDraw == true && serverID == 0)
+            // init means noone called, ! means someone called (server) and we found out that it is not server
+            if (!viewModel.userId.Equals("init") && serverID != 0)
+            {
+                Trace.WriteLine("[WhiteBoard] recalling setuserid");
+                // this might be that the dashboard had called this before
+                // default it is not a server so we need to reiniiliase only if this is server
+                int passId = Int32.Parse(viewModel.userId);
+                viewModel.SetUserId(passId);
+            }
             viewModel.ShapeItems = new ObservableCollection<ShapeItem>();
             this.DataContext = viewModel;
             this.currentTool = "Select";
+            this.RestorFrameDropDown.SelectionChanged += RestorFrameDropDownSelectionChanged;
+            int deafult = 2;
         }
 
         /// <summary>
@@ -57,7 +77,8 @@ namespace PlexShareApp
         /// <param name="e"></param>
         private void CanvasMouseDown(object sender, MouseButtonEventArgs e)
         {
-            if(viewModel.canDraw)
+            Trace.WriteLine("[WhiteBoard Xaml] candraw "+ viewModel.canDraw);
+            if (viewModel.canDraw)
             {
                 var a = e.GetPosition(sender as Canvas);
                 viewModel.ShapeStart(a);
@@ -110,11 +131,11 @@ namespace PlexShareApp
 
         }
 
-        //private void CanvasMouseUp(object sender, MouseEventArgs e)
-        //{
-        //    var a = e.GetPosition(sender as Canvas);
-        //    viewModel.ShapeFinished(a);
-        //}
+        /// <summary>
+        /// Function corresponding to the event where the mouse enters the canvas
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CanvasMouseEnter(object sender, MouseEventArgs e)
         {
             //Debug.WriteLine(this.currentTool + " Got it \n");
@@ -149,6 +170,11 @@ namespace PlexShareApp
             }
         }
 
+        /// <summary>
+        /// Functoin to invoke when the mouse leaves the canvas
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CanvasMouseLeave(object sender, MouseEventArgs e)
         {
             //Debug.WriteLine(this.currentTool + " Leave Got it \n");
@@ -158,6 +184,11 @@ namespace PlexShareApp
 
         }
 
+        /// <summary>
+        /// Canvas Mouseup  or mouse release event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CanvasMouseUp(object sender, MouseEventArgs e)
         {
             if (singleTrigger == true)
@@ -181,6 +212,12 @@ namespace PlexShareApp
             }
             singleTrigger = false;
         }
+
+        /// <summary>
+        /// Function corresponding to the rectangle icon in the toolbar
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void RectangleCreateMode(object sender, RoutedEventArgs e)
         {
             viewModel.UnHighLightIt();
@@ -193,6 +230,11 @@ namespace PlexShareApp
             viewModel.ChangeMode("create_rectangle");
         }
 
+        /// <summary>
+        /// Ellipse icon function in the toolbar
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void EllipseCreateMode(object sender, RoutedEventArgs e)
         {
             viewModel.UnHighLightIt();
@@ -205,7 +247,11 @@ namespace PlexShareApp
             viewModel.ChangeMode("create_ellipse");
         }
 
-        //Freehand_create_mode
+        /// <summary>
+        /// FUnction corresponding to the brush iconin the toolbar
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void FreehandCreateMode(object sender, RoutedEventArgs e)
         {
             viewModel.UnHighLightIt();
@@ -221,13 +267,39 @@ namespace PlexShareApp
 
         }
 
+        /// <summary>
+        /// Text box Key Down functions
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void TextboxKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
             Debug.WriteLine("Enter text mode");
             Debug.WriteLine(e.Key);
+            int thickness = (int)ThicknessSlider.Value;
+            viewModel.ChangeStrokeThickness(1);
             viewModel.TextBoxStart(e.Key);
+            viewModel.ChangeStrokeThickness(thickness);
         }
 
+        private void TextboxPreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == Key.Space)
+            {
+                Debug.WriteLine("Space inserted");
+                int thickness = (int)ThicknessSlider.Value;
+                viewModel.ChangeStrokeThickness(1);
+                viewModel.TextBoxStart(e.Key);
+                viewModel.ChangeStrokeThickness(thickness);
+            }
+
+        }
+
+        /// <summary>
+        /// Function for invoking the text mode
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void TextboxCreateMode(object sender, RoutedEventArgs e)
         {
 
@@ -240,8 +312,9 @@ namespace PlexShareApp
                 this.ShapeToolBar.Visibility = Visibility.Collapsed;
             if (this.StrokeToolBar.Visibility == Visibility.Visible)
                 this.StrokeToolBar.Visibility = Visibility.Collapsed;
+            Trace.WriteLine("[WhiteBoard] White Board Page entered the Text Mode");
             this.currentTool = "Textbox";
-
+            viewModel.ChangeStrokeThickness(1);
             viewModel.ChangeMode("create_textbox");
 
         }
@@ -408,6 +481,7 @@ namespace PlexShareApp
                 this.StrokeToolBar.Visibility = Visibility.Collapsed;
             viewModel.CallUndo();
             Debug.WriteLine("Undo called xaml");
+            viewModel.modeForUndo = "";
         }
 
 
@@ -429,43 +503,59 @@ namespace PlexShareApp
             viewModel.CallRedo();
         }
 
-        //    private void RestorFrameDropDownSelectionChanged(object sender, SelectionChangedEventArgs e)
-        //    {
-        //        ListBox listbox = (ListBox)sender;
+        private void SaveMode(object sender, RoutedEventArgs e)
+        {
+            viewModel.UnHighLightIt();
+            if (this.ShapeToolBar.Visibility == Visibility.Visible)
+                this.ShapeToolBar.Visibility = Visibility.Collapsed;
+            if (this.StrokeToolBar.Visibility == Visibility.Visible)
+                this.StrokeToolBar.Visibility = Visibility.Collapsed;
+            viewModel.SaveSnapshot();
+            SuccessSaveMessage();
+        }
 
-        //        if (this.RestorFrameDropDown.SelectedItem != null)
-        //        {
+        private int SuccessSaveMessage()
+        { 
+            MessageBox.Show("The current screenshot is successfully saved","Confirmation",MessageBoxButton.OK,MessageBoxImage.Information);
+            return 0;
 
-        //            string item = listbox.SelectedItem.ToString();
-        //            string numeric = new String(item.Where(Char.IsDigit).ToArray());
-        //            int cp = int.Parse(numeric);
+        }
 
-        //            MessageBoxResult result = MessageBox.Show("Are you sure you want to load checkpoint " + numeric + " ? All progress since the last checkpoint would be lost!",
-        //                          "Confirmation", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
-        //            if (result == MessageBoxResult.OK)
-        //            {
-        //               // viewModel.RestoreFrame(cp, GlobCanvas);
-        //                this.RestorFrameDropDown.SelectedItem = null;
-        //                return;
-        //            }
-        //            else
-        //            {
-        //                this.RestorFrameDropDown.SelectedItem = null;
-        //                return;
-        //            }
-        //        }
-        //        else
-        //        {
-        //            return;
-        //        }
+        private void RestorFrameDropDownSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (this.ShapeToolBar.Visibility == Visibility.Visible)
+                this.ShapeToolBar.Visibility = Visibility.Collapsed;
+            if (this.StrokeToolBar.Visibility == Visibility.Visible)
+                this.StrokeToolBar.Visibility = Visibility.Collapsed;
+            ListBox listbox = (ListBox)sender;
 
-        //    }
+            if (this.RestorFrameDropDown.SelectedItem != null)
+            {
 
-        /// <summary>
-        /// Function to control the thickness of stroke (associated with the Brush)
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+                string item = listbox.SelectedItem.ToString();
+                string numeric = new String(item.Where(Char.IsDigit).ToArray());
+                int cp = int.Parse(numeric);
+
+                MessageBoxResult result = MessageBox.Show("Are you sure you want to load checkpoint " + numeric + " ? All progress since the last checkpoint would be lost!",
+                              "Confirmation", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.OK)
+                {
+                    viewModel.LoadSnapshot(cp);
+                    this.RestorFrameDropDown.SelectedItem = null;
+                    return;
+                }
+                else
+                {
+                    this.RestorFrameDropDown.SelectedItem = null;
+                    return;
+                }
+            }
+            else
+            {
+                return;
+            }
+        }
+
         public void ChangeThickness(object sender, RoutedEventArgs e)
         {
             int thickness = (int)ThicknessSlider.Value;
@@ -490,11 +580,6 @@ namespace PlexShareApp
         }
 
 
-        /// <summary>
-        /// Function to control the thickness of stroke (associated with line)
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         public void LineThicknessChange(object sender, RoutedEventArgs e)
         {
             int thickness = (int)LineThicknessSlider.Value;

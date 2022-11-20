@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace PlexShareTests.WhiteboardTests.Server
 {
+    [Collection("Sequential")]
     public class ServerCommunicatorTests
     {
         [Fact]

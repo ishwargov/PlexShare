@@ -8,6 +8,7 @@ using PlexShareWhiteboard.BoardComponents;
 
 namespace PlexShareTests.WhiteboardTests.BoardComponents
 {
+    [Collection("Sequential")]
     public class ShapeItemTests
     {
         [Fact]  

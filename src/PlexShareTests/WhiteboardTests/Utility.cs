@@ -16,6 +16,7 @@ using System.Windows.Media.Media3D;
 
 namespace PlexShareTests.WhiteboardTests
 {
+    [Collection("Sequential")]
     public class Utility
     {
         public static bool CompareShapeItems(ShapeItem shape1, ShapeItem shape2)
@@ -111,7 +112,8 @@ namespace PlexShareTests.WhiteboardTests
                         ? new Point(geometry.Bounds.X, geometry.Bounds.Y)
                         : start,
                 Id = id,
-                TextString = textDataOpt
+                TextString = textDataOpt,
+                FontSize =32
             };
 
             return newShape;

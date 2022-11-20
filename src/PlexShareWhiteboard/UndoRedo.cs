@@ -32,13 +32,29 @@ namespace PlexShareWhiteboard
         /// </summary>
         public void CallUndo()
         {
-           /* if (mode == "create_textbox")
+            if (modeForUndo == "create_textbox")
             {
-                if (lastShape.TextString.Length != 0)
+                if (textBoxLastShape != null && textBoxLastShape.TextString != null &&
+                         textBoxLastShape.TextString.Length != 0)
                 {
+
                     TextFinishPush();
+                    Debug.WriteLine("entering undo modeeeee");
+
                 }
-            }*/
+                else if (textBoxLastShape != null)
+                {
+                    for (int i = 0; i < ShapeItems.Count; ++i)
+                    {
+                        if (textBoxLastShape.Id == ShapeItems[i].Id)
+                        {
+                            ShapeItems.RemoveAt(i);
+                            break;
+                        }
+                    }
+                }
+            }
+
             UndoStackElement shapeToSend = Undo();
             if (shapeToSend != null)
                 machine.OnShapeReceived(shapeToSend.PrvShape, shapeToSend.Op);

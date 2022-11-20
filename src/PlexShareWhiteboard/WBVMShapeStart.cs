@@ -71,12 +71,37 @@ namespace PlexShareWhiteboard
             }
             else if (mode == "create_textbox")
             {
+                
+                if (modeForUndo == "create_textbox")
+                {
+                    if (textBoxLastShape != null && textBoxLastShape.TextString != null &&
+                        textBoxLastShape.TextString.Length != 0)
+                    {
+                        
+                        TextFinishPush();
+                        Debug.WriteLine("entering undo modeeeee");
 
+                    }
+                    else if (textBoxLastShape != null)
+                    {
+                        for (int i = 0; i < ShapeItems.Count; ++i)
+                        {
+                            if (textBoxLastShape.Id == ShapeItems[i].Id)
+                            {
+                                ShapeItems.RemoveAt(i);
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                modeForUndo = "create_textbox";
                 Trace.WriteLine("[Whiteboard] : In create text box mode");
                 textBoxPoint = a;
                 ShapeItem curShape = CreateShape(textBoxPoint, textBoxPoint, "GeometryGroup", currentId, "");
+                Debug.WriteLine("initial text box ", curShape.Id);
                 IncrementId();
-                textBoxLastShape = curShape;
+                textBoxLastShape = curShape.DeepClone();
                 Trace.WriteLine("[Whiteboard]  " + "inside create text box " + textBoxLastShape);
                 ShapeItems.Add(curShape);
                 currentZIndex++;

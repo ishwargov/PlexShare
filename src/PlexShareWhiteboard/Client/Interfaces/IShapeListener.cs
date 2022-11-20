@@ -26,10 +26,9 @@ namespace PlexShareWhiteboard.Client.Interfaces
     internal interface IShapeListener
     {
         void OnShapeReceived(ShapeItem newShape, Operation op);
-
         void SetUserId(string userId);
-
-        //public void SetVMRef(WhiteBoardViewModel vm);
-
+        public int OnSaveMessage(string userId);
+        public List<ShapeItem> OnLoadMessage(int snapshotNumber, string userId);
+        public void SetSnapshotNumber(int snapshotNumber);
     }
 }

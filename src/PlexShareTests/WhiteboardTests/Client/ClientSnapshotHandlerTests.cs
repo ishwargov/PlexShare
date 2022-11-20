@@ -10,6 +10,7 @@ using PlexShareWhiteboard.Client.Interfaces;
 
 namespace PlexShareTests.WhiteboardTests.Client
 {
+    [Collection("Sequential")]
     public class ClientSnapshotHandlerTests
     {
         private ClientSnapshotHandler _clientSnapshotHandler;

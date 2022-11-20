@@ -74,10 +74,10 @@ namespace PlexShareWhiteboard
         }
         //deon
 
-        public int PointInsideHighlightBox(Line shape, Point click, double halfsize)
+        public int PointInsideHighlightBox(LineGeometry shape, Point click, double halfsize)
         {
-            Rect top = new(shape.X1 - halfsize, shape.Y1 - halfsize, 2 * halfsize, 2 * halfsize);
-            Rect bottom = new(shape.X2 - halfsize, shape.Y2 - halfsize, 2 * halfsize, 2 * halfsize);
+            Rect top = new(shape.StartPoint.X - halfsize, shape.StartPoint.Y - halfsize, 2 * halfsize, 2 * halfsize);
+            Rect bottom = new(shape.EndPoint.X - halfsize, shape.EndPoint.Y - halfsize, 2 * halfsize, 2 * halfsize);
 
             if (click.X > top.X && click.X < top.X + top.Width &&
                 click.Y > top.Y && click.Y < top.Y + top.Height)
@@ -121,11 +121,13 @@ namespace PlexShareWhiteboard
 
                 if (HelperSelect(boundingBox, a, blobSize / 2))
                 {
+                   
                     select.ifSelected = true;
                     select.selectedObject = ShapeItems[i];
                     select.initialSelectionPoint = a;
                     tempZIndex = ShapeItems[i].ZIndex;
                     select.selectBox = 0;
+                    Debug.WriteLine("entering select ", select.selectedObject.Id);
                 }
                 else if (Child.FillContains(a) && Child.GetType().Name == "LineGeometry")
                 {
@@ -140,14 +142,8 @@ namespace PlexShareWhiteboard
                 {
                     //Trace.WriteLine("[Whiteboard]  " + "line selected\n");
 
-                    Line boundingLine = new ();
-                    //boundingLine.X1 = select.selectedObject.anchorPoint.X;
-                    //boundingLine.Y1 = select.selectedObject.anchorPoint.Y;
-                    boundingLine.X1 = select.selectedObject.Start.X;
-                    boundingLine.Y1 = select.selectedObject.Start.Y;
-                    boundingLine.X2 = select.selectedObject.End.X;
-                    boundingLine.Y2 = select.selectedObject.End.Y;
-                    Trace.WriteLine("[Whiteboard]  " + "selected boundingline x1 y1 x2 y2"+boundingLine.X1 + " " + boundingLine.Y1 + " " + boundingLine.X2 + " " + boundingLine.Y2);
+                    LineGeometry boundingLine = (LineGeometry)GenerateBoundingLine(select.selectedObject);
+                    Debug.WriteLine("selected boundingline " + boundingLine.StartPoint + " " + boundingLine.EndPoint);
                     HighLightIt(boundingLine);
                     int boxNumber = PointInsideHighlightBox(boundingLine, a, blobSize / 2);
                     if (boxNumber >= 0)
@@ -168,19 +164,8 @@ namespace PlexShareWhiteboard
                     Trace.WriteLine("[Whiteboard]  " + "object selected\n");
                     HighLightIt(select.selectedObject.Geometry.Bounds);
                     int boxNumber = PointInsideHighlightBox(boundingBox, a, blobSize / 2);
-                    ShapeItem newShape = new()
-                    {
-                        Geometry = select.selectedObject.Geometry.Clone(),
-                        GeometryString = select.selectedObject.GeometryString,
-                        Start = select.selectedObject.Start,
-                        End = select.selectedObject.End,
-                        Fill = select.selectedObject.Fill,
-                        Stroke = select.selectedObject.Stroke,
-                        ZIndex = select.selectedObject.ZIndex,
-                        AnchorPoint = select.selectedObject.AnchorPoint,
-                        Id = select.selectedObject.Id,
-                        StrokeThickness = select.selectedObject.StrokeThickness,
-                    };
+
+                    ShapeItem newShape = select.selectedObject.DeepClone();
                     select.initialSelectionObject = newShape;
 
                     if (select.selectedObject.Geometry.GetType().Name != "GeometryGroup")

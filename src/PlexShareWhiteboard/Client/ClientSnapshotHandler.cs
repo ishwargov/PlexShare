@@ -46,7 +46,7 @@ namespace PlexShareWhiteboard.Client
             }
         }
 
-        public void SaveSnapshot(string UserId)
+        public int SaveSnapshot(string UserId)
         {
             try
             {
@@ -66,11 +66,20 @@ namespace PlexShareWhiteboard.Client
                 Trace.WriteLine("[Whiteboard] ClientSnapshotHandler.SaveSnapshot: An exception occured.");
                 Trace.WriteLine(e.Message);
             }
+            return SnapshotNumber;
         }
 
         public void SetCommunicator(IClientCommunicator communicator)
         {
             _clientCommunicator = communicator;
         }
+        //public int GetSnapshotNumber()
+        //{
+        //    return SnapshotNumber;
+        //}
+        //public void SetSnapshotNumber()
+        //{
+        //    return _snapshotNumber;
+        //}
     }
 }
