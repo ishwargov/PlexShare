@@ -85,6 +85,16 @@ namespace PlexShareScreenshare.Server
         private int _currentPageColumns;
 
         /// <summary>
+        /// Whether the popup is open or not.
+        /// </summary>
+        private bool _isPopupOpen;
+
+        /// <summary>
+        /// The text to be displayed on the popup.
+        /// </summary>
+        private string _popupText;
+
+        /// <summary>
         /// Creates an instance of the "ScreenshareServerViewModel" which represents the
         /// view model for screen sharing on the server side. It also instantiates the instance
         /// of the underlying data model.
@@ -105,6 +115,8 @@ namespace PlexShareScreenshare.Server
             _isLastPage = InitialIsLastPage;
             _currentPageRows = InitialNumberOfRows;
             _currentPageColumns = InitialNumberOfCols;
+            _isPopupOpen = false;
+            _popupText = "";
 
             Trace.WriteLine(Utils.GetDebugMessage("Successfully created an instance for the view model", withTimeStamp: true));
         }
@@ -150,6 +162,40 @@ namespace PlexShareScreenshare.Server
             RecomputeCurrentWindowClients(this.CurrentPage);
 
             Trace.WriteLine(Utils.GetDebugMessage($"Successfully updated the subscribers list", withTimeStamp: true));
+        }
+
+        /// <summary>
+        /// Notifies that a client has started screen sharing.
+        /// </summary>
+        /// <param name="clientId">
+        /// Id of the client who started screen sharing.
+        /// </param>
+        /// <param name="clientName">
+        /// Name of the client who started screen sharing.
+        /// </param>
+        public void OnScreenshareStart(string clientId, string clientName)
+        {
+            if (clientName == "") return;
+
+            Trace.WriteLine(Utils.GetDebugMessage($"{clientName} with Id {clientId} has started screen sharing", withTimeStamp: true));
+            DisplayPopup($"{clientName} has started screen sharing");
+        }
+
+        /// <summary>
+        /// Notifies that a client has stopped screen sharing.
+        /// </summary>
+        /// <param name="clientId">
+        /// Id of the client who stopped screen sharing.
+        /// </param>
+        /// <param name="clientName">
+        /// Name of the client who stopped screen sharing.
+        /// </param>
+        public void OnScreenshareStop(string clientId, string clientName)
+        {
+            if (clientName == "") return;
+
+            Trace.WriteLine(Utils.GetDebugMessage($"{clientName} with Id {clientId} has stopped screen sharing", withTimeStamp: true));
+            DisplayPopup($"{clientName} has stopped screen sharing");
         }
 
         /// <summary>
@@ -298,6 +344,41 @@ namespace PlexShareScreenshare.Server
         }
 
         /// <summary>
+        /// Gets whether the popup is open or not.
+        /// </summary>
+        public bool IsPopupOpen
+        {
+            get => _isPopupOpen;
+
+            // Don't keep the setter private, as it is bind using two-way binding.
+            set
+            {
+                if (_isPopupOpen != value)
+                {
+                    _isPopupOpen = value;
+                    this.OnPropertyChanged(nameof(this.IsPopupOpen));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the text to be displayed on the popup.
+        /// </summary>
+        public string PopupText
+        {
+            get => _popupText;
+
+            private set
+            {
+                if (_popupText != value)
+                {
+                    _popupText = value;
+                    this.OnPropertyChanged(nameof(this.PopupText));
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets the dispatcher to the main thread. In case it is not available
         /// (such as during unit testing) the dispatcher associated with the
         /// current thread is returned.
@@ -318,6 +399,31 @@ namespace PlexShareScreenshare.Server
             // Create a new instance if it was null before.
             _instance ??= new();
             return _instance;
+        }
+
+        /// <summary>
+        /// Used to display the popup on the UI with the given message.
+        /// </summary>
+        /// <param name="message">
+        /// Message to be displayed on the popup.
+        /// </param>
+        public void DisplayPopup(string message)
+        {
+            _ = ApplicationMainThreadDispatcher.BeginInvoke(
+                        DispatcherPriority.Normal,
+                        new Action<string>((text) =>
+                        {
+                            lock (this)
+                            {
+                                // Close the popup if it was already opened before.
+                                if (this.IsPopupOpen) this.IsPopupOpen = false;
+
+                                this.PopupText = text;
+                                this.IsPopupOpen = true;
+                            }
+                        }),
+                        message
+                );
         }
 
         /// <summary>

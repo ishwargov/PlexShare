@@ -365,6 +365,7 @@ namespace PlexShareScreenshare.Server
             }
 
             NotifyUX();
+            NotifyUX(clientId, clientName, hasStarted: true);
 
             Trace.WriteLine(Utils.GetDebugMessage($"Successfully registered the client- Id: {clientId}, Name: {clientName}", withTimeStamp: true));
         }
@@ -399,6 +400,7 @@ namespace PlexShareScreenshare.Server
             }
 
             NotifyUX();
+            NotifyUX(clientId, client.Name, hasStarted: false);
 
             // Stop all processing for this client.
             try
@@ -511,6 +513,30 @@ namespace PlexShareScreenshare.Server
             }
 
             _listener.OnSubscribersChanged(sharedClientScreens);
+        }
+
+        /// <summary>
+        /// Notifies the view model about a client has either started or stopped screen sharing.
+        /// </summary>
+        /// <param name="clientId">
+        /// Id of the client who started or stopped screen sharing.
+        /// </param>
+        /// <param name="clientName">
+        /// Name of the client who started or stopped screen sharing.
+        /// </param>
+        /// <param name="hasStarted">
+        /// Whether the client has started or stopped screen sharing.
+        /// </param>
+        private void NotifyUX(string clientId, string clientName, bool hasStarted)
+        {
+            if (hasStarted)
+            {
+                _listener.OnScreenshareStart(clientId, clientName);
+            }
+            else
+            {
+                _listener.OnScreenshareStop(clientId, clientName);
+            }
         }
     }
 }
