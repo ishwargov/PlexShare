@@ -31,9 +31,9 @@ namespace PlexShareCloudUX
 
         public SubmissionsModel() //constructor for the submissionmodel class. 
         {
-            paths = GetOfflinePaths();
-            SubmissionUrl = paths[0];
-            SessionUrl = paths[1];
+            paths = GetOfflinePaths("OfflineSetup_Path.txt");
+            SubmissionUrl = @paths[0];
+            SessionUrl = @paths[1];
             fileDownloadApi = new FileDownloadApi(SessionUrl, SubmissionUrl);
         }
 
@@ -50,6 +50,7 @@ namespace PlexShareCloudUX
             SubmissionsList = getEntity;
             return getEntity;
         }
+
         /// <summary>
         /// For getting the path of user with respect to their local system.. 
         /// </summary>
@@ -70,6 +71,7 @@ namespace PlexShareCloudUX
                 )
             );
         }
+
         /// <summary>
         /// Writes the file to the download folder. 
         /// </summary>
@@ -83,9 +85,15 @@ namespace PlexShareCloudUX
             string path = GetDownloadFolderPath() + "\\" + SubmissionsList[num].UserName + "_" + SubmissionsList[num].SessionId + ".pdf";
             File.WriteAllBytes(path, pdf);
         }
-        public static string[] GetOfflinePaths()
+
+        /// <summary>
+        /// this function will take the filename of file containing the urls of sumbision and session. 
+        /// </summary>
+        /// <param name="filename">Filename of the file we need to read.</param>
+        /// <returns>Array of the urls</returns>
+        public static string[] GetOfflinePaths(string filename)
         {
-            string[] lines = FileRead.GetPaths();
+            string[] lines = FileRead.GetPaths(filename);
             return lines;
         }
     }

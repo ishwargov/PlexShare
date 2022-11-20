@@ -27,7 +27,7 @@ namespace PlexShareCloudUX
         private FileDownloadApi fileDownloadApi;
         public SessionsModel()
         {
-            paths = GetOfflinePaths();
+            paths = GetOfflinePaths("OfflineSetup_Path.txt");
             SubmissionUrl = @paths[0];
             SessionUrl = @paths[1];
             fileDownloadApi = new FileDownloadApi(SessionUrl, SubmissionUrl);
@@ -42,9 +42,15 @@ namespace PlexShareCloudUX
             IReadOnlyList<SessionEntity>? getEntity = await fileDownloadApi.GetSessionsByUserAsync(userName);
             return getEntity;
         }
-        public static string[] GetOfflinePaths()
+
+        /// <summary>
+        /// this function will take the filename of file containing the urls of sumbision and session. 
+        /// </summary>
+        /// <param name="filename">Filename of the file we need to read.</param>
+        /// <returns>Array of the urls</returns>
+        public static string[] GetOfflinePaths(string filename)
         {
-            string[] lines = FileRead.GetPaths();
+            string[] lines = FileRead.GetPaths(filename);
             return lines;
         }
     }

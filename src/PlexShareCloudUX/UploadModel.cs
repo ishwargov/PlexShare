@@ -32,9 +32,9 @@ namespace PlexShareCloudUX
         {
             SessionId = sessionId;
             UserName = userName;
-            paths = GetOfflinePaths();
-            SubmissionUrl = paths[0];
-            SessionUrl = paths[1];
+            paths = GetOfflinePaths("OfflineSetup_Path.txt");
+            SubmissionUrl = @paths[0];
+            SessionUrl = @paths[1];
             _uploadClient = new(SessionUrl, SubmissionUrl);
         }
         
@@ -87,9 +87,15 @@ namespace PlexShareCloudUX
             byte[] fileContent = File.ReadAllBytes(fileName);
             SubmissionEntity? putEntity = await _uploadClient.PutSubmissionAsync(SessionId, UserName, fileContent);
         }
-        public static string[] GetOfflinePaths()
+
+        /// <summary>
+        /// this function will take the filename of file containing the urls of sumbision and session. 
+        /// </summary>
+        /// <param name="filename">Filename of the file we need to read.</param>
+        /// <returns>Array of the urls</returns>
+        public static string[] GetOfflinePaths(string filename)
         {
-            string[] lines = FileRead.GetPaths();
+            string[] lines = FileRead.GetPaths(filename);
             return lines;
         }
     }
