@@ -7,6 +7,7 @@ using SharpDX;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using Device = SharpDX.Direct3D11.Device;
@@ -53,6 +54,7 @@ namespace PlexShareScreenshare.Client
                 if (instance == null)
                 {
                     instance = new Screenshot();
+                    Trace.WriteLine(Utils.GetDebugMessage("[Screenshare] Successfully created an instance of Screenshot.", withTimeStamp: true));
                 }
                 return instance;
             }
