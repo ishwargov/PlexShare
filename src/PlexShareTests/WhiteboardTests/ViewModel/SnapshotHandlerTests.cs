@@ -24,6 +24,10 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             utility = new Utility();
             _mockMachine = new Mock<IShapeListener>();
             viewModel.SetMachine(_mockMachine.Object);
+
+            viewModel.ShapeItems.Clear();
+            viewModel.undoStack.Clear();
+            viewModel.redoStack.Clear();
         }
 
         [Fact]
@@ -33,6 +37,10 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.SaveSnapshot();
             ObservableCollection<int> expectedCheckList = new ObservableCollection<int>() { 1 };
             Assert.Equal(expectedCheckList, viewModel.CheckList);
+
+            viewModel.ShapeItems.Clear();
+            viewModel.undoStack.Clear();
+            viewModel.redoStack.Clear();
         }
         [Fact]
         public void LoadSnapshot_Test()
@@ -42,6 +50,10 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             _mockMachine.Setup(m => m.OnLoadMessage(1, It.IsAny<string>())).Returns(shapeItems);
             viewModel.LoadSnapshot(1);
             Assert.True(utility.CompareShapeItems(shapeItems, viewModel.ShapeItems.ToList()));
+
+            viewModel.ShapeItems.Clear();
+            viewModel.undoStack.Clear();
+            viewModel.redoStack.Clear();
         }
     }
 }

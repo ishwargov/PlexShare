@@ -34,6 +34,9 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             _mockServerCommunicator.Setup(m => m.Broadcast(It.IsAny<WBServerShape>(), It.IsAny<string>()));
             _serializer = new Serializer();
             utility = new Utility();
+            viewModel.ShapeItems.Clear();
+            viewModel.undoStack.Clear();
+            viewModel.redoStack.Clear();
         }
         
         [Fact]
@@ -47,6 +50,9 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             string jsonString = utility.SendThroughServer(newShapes, Operation.Creation);
             viewModel.DataHandler(jsonString);
             Assert.True(utility.CompareShapeItems(viewModel.ShapeItems[0], sh));
+            viewModel.ShapeItems.Clear();
+            viewModel.undoStack.Clear();
+            viewModel.redoStack.Clear();
         }
         
         [Fact]
@@ -61,6 +67,9 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.DataHandler(jsonString);
 
             Assert.Equal(viewModel.ShapeItems.Count, 0);
+            viewModel.ShapeItems.Clear();
+            viewModel.undoStack.Clear();
+            viewModel.redoStack.Clear();
         }
         [Fact]
         public void OnDataReceived_ServerModifyTest()
@@ -75,6 +84,9 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.DataHandler(jsonString);
 
             Assert.True(utility.CompareShapeItems(viewModel.ShapeItems[0], sh));
+            viewModel.ShapeItems.Clear();
+            viewModel.undoStack.Clear();
+            viewModel.redoStack.Clear();
         }
         [Fact]
         public void OnDataReceived_ServerClearTest()
@@ -89,6 +101,9 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.DataHandler(jsonString);
 
             Assert.Equal(viewModel.ShapeItems.Count, 0);
+            viewModel.ShapeItems.Clear();
+            viewModel.undoStack.Clear();
+            viewModel.redoStack.Clear();
         }
         [Fact]
         public void OnDataReceived_ServerNewUserTest()
@@ -101,6 +116,9 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             //Assert.Equal(newShapes, viewModel.ShapeItems.ToList());
 
             Assert.True(utility.CompareShapeItems(newShapes, viewModel.ShapeItems.ToList()));
+            viewModel.ShapeItems.Clear();
+            viewModel.undoStack.Clear();
+            viewModel.redoStack.Clear();
         }
         [Fact]
         public void OnDataReceived_ClientCreationTest()
@@ -113,6 +131,9 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             string jsonString = utility.SendThroughServer(newShapes, Operation.Creation);
             viewModel.DataHandler(jsonString);
             Assert.True(utility.CompareShapeItems(viewModel.ShapeItems[0], sh));
+            viewModel.ShapeItems.Clear();
+            viewModel.undoStack.Clear();
+            viewModel.redoStack.Clear();
         }
 
         [Fact]
@@ -127,6 +148,9 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.DataHandler(jsonString);
 
             Assert.Equal(viewModel.ShapeItems.Count, 0);
+            viewModel.ShapeItems.Clear();
+            viewModel.undoStack.Clear();
+            viewModel.redoStack.Clear();
         }
         [Fact]
         public void OnDataReceived_ClientModifyTest()
@@ -141,6 +165,10 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.DataHandler(jsonString);
 
             Assert.True(utility.CompareShapeItems(viewModel.ShapeItems[0], sh));
+            viewModel.ShapeItems.Clear();
+            viewModel.undoStack.Clear();
+            viewModel.redoStack.Clear();
+
         }
         [Fact]
         public void OnDataReceived_ClientClearTest()
@@ -155,6 +183,9 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.DataHandler(jsonString);
 
             Assert.Equal(viewModel.ShapeItems.Count, 0);
+            viewModel.ShapeItems.Clear();
+            viewModel.undoStack.Clear();
+            viewModel.redoStack.Clear();
         }
         [Fact]
         public void OnDataReceived_ClientNewUserTest()
@@ -166,6 +197,9 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.DataHandler(jsonString);
 
             Assert.True(utility.CompareShapeItems(newShapes, viewModel.ShapeItems.ToList()));
+            viewModel.ShapeItems.Clear();
+            viewModel.undoStack.Clear();
+            viewModel.redoStack.Clear();
         }
     }
 }
