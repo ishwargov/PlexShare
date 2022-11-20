@@ -125,7 +125,7 @@ namespace PlexShareScreenshare.Client
         /// <summary>
         /// Stops the capturing by Cancelling the task and clears the _capturedFrame queue.
         /// </summary>
-        public async Task StopCapture()
+        public void StopCapture()
         {
             Debug.Assert(_captureTask != null,
                 Utils.GetDebugMessage("_cancellationTask is null, cannot stop image capture"));
