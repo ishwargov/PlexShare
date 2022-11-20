@@ -43,8 +43,8 @@ namespace PlexShareTests.ContentTests.Client
         public void SetUser_ValidInput_SetsValidUserID()
         {
             var instance = ContentClientFactory.GetInstance();
-            ContentClientFactory.SetUser(1);
-            Assert.Equal(1, instance.GetUserID());
+            ContentClientFactory.SetUser(42);
+            Assert.Equal(42, instance.GetUserID());
         }
 
         [Fact]
