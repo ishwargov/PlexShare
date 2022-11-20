@@ -803,7 +803,7 @@ namespace PlexShareScreenshare.Server
             {
                 try
                 {
-                    _ = client.StopProcessing();
+                    client.StopProcessing();
                 }
                 catch (Exception e)
                 {

@@ -430,7 +430,7 @@ namespace PlexShareScreenshare.Server
         /// containing images.
         /// </summary>
         /// <exception cref="Exception"></exception>
-        public async Task StopProcessing()
+        public void StopProcessing()
         {
             Debug.Assert(_stitcher != null, Utils.GetDebugMessage("_stitcher is found null"));
 
@@ -449,7 +449,7 @@ namespace PlexShareScreenshare.Server
                 // Stop the stitcher.
                 _stitcher.StopStitching();
 
-                await _imageSendTask;
+                _imageSendTask.Wait();
             }
             catch (OperationCanceledException e)
             {
@@ -524,7 +524,7 @@ namespace PlexShareScreenshare.Server
             // and unmanaged resources.
             if (disposing)
             {
-                StopProcessing().Wait();
+                StopProcessing();
 
                 if (_timer != null)
                 {

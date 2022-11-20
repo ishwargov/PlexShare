@@ -405,7 +405,7 @@ namespace PlexShareScreenshare.Server
             // Stop all processing for this client.
             try
             {
-                client.StopProcessing().Wait();
+                client.StopProcessing();
             }
             catch (OperationCanceledException e)
             {
@@ -457,6 +457,8 @@ namespace PlexShareScreenshare.Server
                     Trace.WriteLine(Utils.GetDebugMessage($"Exception while processing the received image: {e.Message}", withTimeStamp: true));
                 }
             }
+
+            Trace.WriteLine(Utils.GetDebugMessage($"Successfully received image of the client with Id: {clientId}", withTimeStamp: true));
         }
 
         /// <summary>
