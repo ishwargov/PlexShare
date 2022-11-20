@@ -31,7 +31,7 @@ namespace PlexShareCloudUX
 
         public SubmissionsModel() //constructor for the submissionmodel class. 
         {
-            paths = GetOfflinePaths("OfflineSetup_Path.txt");
+            paths = GetOfflinePaths("Urls.txt");
             SubmissionUrl = @paths[0];
             SessionUrl = @paths[1];
             fileDownloadApi = new FileDownloadApi(SessionUrl, SubmissionUrl);

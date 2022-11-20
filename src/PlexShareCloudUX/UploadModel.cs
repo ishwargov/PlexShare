@@ -33,7 +33,7 @@ namespace PlexShareCloudUX
         {
             SessionId = sessionId;
             UserName = userName;
-            paths = GetOfflinePaths("OfflineSetup_Path.txt");
+            paths = GetOfflinePaths("Urls.txt");
             SubmissionUrl = @paths[0];
             SessionUrl = @paths[1];
             _uploadClient = new(SessionUrl, SubmissionUrl);
