@@ -61,8 +61,8 @@ namespace PlexShareWhiteboard
             ShapeItem newShape = new ShapeItem
             {
                 Geometry = geometry,
-                Fill = oldShape.Fill,
-                Stroke = oldShape.Stroke,
+                Fill = name == "GeometryGroup" ? Brushes.Black : oldShape.Fill,
+                Stroke = name == "GeometryGroup" ? Brushes.Black : oldShape.Stroke,
                 ZIndex = oldShape.ZIndex,
                 AnchorPoint = name == "LineGeometry" ? new Point(geometry.Bounds.X, geometry.Bounds.Y) : start,
                 Id = oldShape.Id,
@@ -126,8 +126,8 @@ namespace PlexShareWhiteboard
                 GeometryString = name,
                 Start = start,
                 End = end,
-                Fill = fillBrush,
-                Stroke = strokeBrush,
+                Fill = name == "GeometryGroup" ? Brushes.Black : fillBrush,
+                Stroke = name == "GeometryGroup" ? Brushes.Black : strokeBrush,
                 ZIndex = currentZIndex,
                 StrokeThickness = name == "GeometryGroup" ? 1 : strokeThickness,
                 AnchorPoint = name == "LineGeometry" ? new Point(geometry.Bounds.X, geometry.Bounds.Y) : start,

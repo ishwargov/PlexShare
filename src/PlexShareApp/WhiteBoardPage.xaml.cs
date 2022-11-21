@@ -1,14 +1,14 @@
-﻿ /***********************************
- *Filename = WhiteBoardPage.xaml.cs
- *
- *Author = Parvathy S Kumar
- *
- * Product     = Plex Share
- * 
- * Project     = White Board
- *
- * Description = Whiteboard View
- *************************************/
+﻿/***********************************
+*Filename = WhiteBoardPage.xaml.cs
+*
+*Author = Parvathy S Kumar
+*
+* Product     = Plex Share
+* 
+* Project     = White Board
+*
+* Description = Whiteboard View
+*************************************/
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -47,12 +47,13 @@ namespace PlexShareApp
             //viewModel = new WhiteBoardViewModel();
             viewModel = WhiteBoardViewModel.Instance;
             Trace.WriteLine("[WhiteBoard] White Board Page is initialised serverId: " + serverID + "viewModel.userId : " + viewModel.userId);
-             
+
             if (serverID == 0)
                 viewModel.isServer = true;
             else
                 viewModel.isServer = false;
 
+            //if (viewModel.canDraw == true && serverID == 0)
             // init means noone called, ! means someone called (server) and we found out that it is not server
             if (!viewModel.userId.Equals("init") && serverID != 0)
             {
@@ -66,7 +67,7 @@ namespace PlexShareApp
             this.DataContext = viewModel;
             this.currentTool = "Select";
             this.RestorFrameDropDown.SelectionChanged += RestorFrameDropDownSelectionChanged;
-            
+
         }
 
         /// <summary>
@@ -76,7 +77,7 @@ namespace PlexShareApp
         /// <param name="e"></param>
         private void CanvasMouseDown(object sender, MouseButtonEventArgs e)
         {
-            Trace.WriteLine("[WhiteBoard Xaml] candraw "+ viewModel.canDraw);
+            Trace.WriteLine("[WhiteBoard Xaml] candraw " + viewModel.canDraw);
             if (viewModel.canDraw)
             {
                 var a = e.GetPosition(sender as Canvas);
@@ -86,7 +87,7 @@ namespace PlexShareApp
                 {
 
                     string shapeName = viewModel.select.selectedObject.Geometry.GetType().Name;
-                    if (shapeName == "EllipseGeometry" || shapeName == "RectangleGeometry" )
+                    if (shapeName == "EllipseGeometry" || shapeName == "RectangleGeometry")
                     {
                         if (this.StrokeToolBar.Visibility == Visibility.Visible)
                             this.StrokeToolBar.Visibility = Visibility.Collapsed;
@@ -95,7 +96,7 @@ namespace PlexShareApp
                         if (this.ShapeSelectionToolBar.Visibility == Visibility.Collapsed)
                             this.ShapeSelectionToolBar.Visibility = Visibility.Visible;
                     }
-                    else if(shapeName == "PathGeometry" || shapeName == "LineGeometry")
+                    else if (shapeName == "PathGeometry" || shapeName == "LineGeometry")
                     {
                         if (this.ShapeToolBar.Visibility == Visibility.Visible)
                             this.ShapeToolBar.Visibility = Visibility.Collapsed;
@@ -145,6 +146,7 @@ namespace PlexShareApp
         /// <param name="e"></param>
         private void CanvasMouseEnter(object sender, MouseEventArgs e)
         {
+            //Debug.WriteLine(this.currentTool + " Got it \n");
             if (this.currentTool != "Select")
                 viewModel.UnHighLightIt();
             switch (this.currentTool)
@@ -183,6 +185,7 @@ namespace PlexShareApp
         /// <param name="e"></param>
         private void CanvasMouseLeave(object sender, MouseEventArgs e)
         {
+            //Debug.WriteLine(this.currentTool + " Leave Got it \n");
             if (this.currentTool != "Select")
                 viewModel.UnHighLightIt();
             Cursor = Cursors.Arrow;
@@ -446,8 +449,8 @@ namespace PlexShareApp
             this.currentTool = "Select";
             viewModel.ChangeMode("select_mode");
         }
-    
-        
+
+
         /// <summary>
         /// Function corresponding to the clear button
         /// </summary>
@@ -537,11 +540,6 @@ namespace PlexShareApp
             viewModel.CallRedo();
         }
 
-        /// <summary>
-        /// save funciton for the tool bar
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void SaveMode(object sender, RoutedEventArgs e)
         {
             viewModel.UnHighLightIt();
