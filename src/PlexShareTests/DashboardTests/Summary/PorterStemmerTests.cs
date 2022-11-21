@@ -1,8 +1,12 @@
-﻿using PlexShareDashboard.Dashboard.Server.Summary;
-using System;
-using System.Globalization;
+﻿/// <author>Jayanth Kumar</author>
+/// <created>10/11/2021</created>
+/// <summary>
+///		This is the unit testing file
+///		for the porter stemmmer logic module and
+///		tests the stemming functions and steps.
+/// </summary>
+using PlexShareDashboard.Dashboard.Server.Summary;
 using System.Reflection;
-using System.Windows.Shapes;
 using System.Diagnostics;
 
 namespace PlexShareTests.DashboardTests.Summary

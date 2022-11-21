@@ -1,8 +1,7 @@
-﻿
-/// <author> Anish Bhagavatula </author>
+﻿/// <author> Anish Bhagavatula </author>
 /// <summary>
 /// This file contains the definition of the 'INotificationHandler' interface, which gives the blueprint of functions to be called when
-/// packets need to be transmitted from the receiving queue and when a specific module subscribes and unsubscribes
+/// some events take place
 /// </summary>
 
 using System.Net.Sockets;
@@ -19,11 +18,13 @@ namespace PlexShareNetwork
         /// <summary>
         /// Called on the server when a new client joins
         /// </summary>
-        public void OnClientJoined(TcpClient socket);
+        public void OnClientJoined(TcpClient socket)
+        { }
 
         /// <summary>
         /// Called on the server when a client leaves
         /// </summary>
-        public void OnClientLeft(string clientId);
+        public void OnClientLeft(string clientId)
+        { }
     }
 }
