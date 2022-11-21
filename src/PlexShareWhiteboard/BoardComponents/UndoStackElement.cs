@@ -1,5 +1,5 @@
 /***************************
- * Filename    = WhiteBoardViewModel.cs
+ * Filename    = UndoStackElement.cs
  *
  * Author      = Aiswarya H
  *
