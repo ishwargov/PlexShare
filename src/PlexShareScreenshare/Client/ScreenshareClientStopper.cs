@@ -18,9 +18,8 @@ namespace PlexShareScreenshare.Client
     {
 
         /// <summary>
-        /// Method to stop screensharing. Calling this will stop sending
-        /// both the image sending task and confirmation sending task.
-        /// It will also call stop on the processor and capturer.
+        /// Method to stop screensharing. Calling this will stop sending both the image sending
+        /// task and confirmation sending task. It will also call stop on the processor and capturer.
         /// </summary>
         public void StopScreensharing()
         {
@@ -37,21 +36,21 @@ namespace PlexShareScreenshare.Client
             Trace.WriteLine(Utils.GetDebugMessage("Successfully sent DEREGISTER packet to server", withTimeStamp: true));
         }
 
-        private async void StopConfirmationSending()
+        /// <summary>
+        /// Method to stop sending confirmation packets. Will be called only when the client
+        /// stops screensharing.
+        /// </summary>
+        private void StopConfirmationSending()
         {
-            Debug.Assert(_confirmationCancellationTokenSource != null,
-                Utils.GetDebugMessage("_confirmationCancellationTokenSource is not null, cannot stop image sending"));
-            Debug.Assert(_sendConfirmationTask != null,
-                Utils.GetDebugMessage("_sendConfirmationTask is not null, cannot stop confirmation sending"));
+            if (_sendConfirmationTask == null)
+            {
+                return;
+            }
 
             try
             {
-                _confirmationCancellationTokenSource.Cancel();
-                await _sendConfirmationTask;
-            }
-            catch (OperationCanceledException e)
-            {
-                Trace.WriteLine(Utils.GetDebugMessage($"Confirmation sending task cancelled: {e.Message}", withTimeStamp: true));
+                _confirmationCancellationToken = true;
+                _sendConfirmationTask.Wait();
             }
             catch (Exception e)
             {
@@ -62,28 +61,27 @@ namespace PlexShareScreenshare.Client
         }
 
         /// <summary>
-        /// Method to stop image sending. Implemented separately
-        /// in case this is needed to be used somewhere else.
+        /// Method to stop image sending. Will be called whenever the screenshare is stopped by
+        /// the client or the client is not on the displayed screen of the server.
         /// </summary>
-        private async void StopImageSending()
+        private void StopImageSending()
         {
-            _capturer.StopCapture().Wait();
-            _processor.StopProcessing().Wait();
+            if (_sendImageTask == null)
+            {
+                return;
+            }
+
+            _capturer.StopCapture();
+            _processor.StopProcessing();
             Trace.WriteLine(Utils.GetDebugMessage("Successfully stopped capturer and processor"));
 
-            Debug.Assert(_imageCancellationTokenSource != null,
-                Utils.GetDebugMessage("_imageCancellationTokenSource is not null, cannot stop image sending"));
             Debug.Assert(_sendImageTask != null,
                 Utils.GetDebugMessage("_sendImageTask is not null, cannot stop image sending"));
 
             try
             {
-                _imageCancellationTokenSource.Cancel();
-                await _sendImageTask;
-            }
-            catch (OperationCanceledException e)
-            {
-                Trace.WriteLine(Utils.GetDebugMessage($"Image sending task cancelled: {e.Message}", withTimeStamp: true));
+                _imageCancellationToken = true;
+                _sendImageTask.Wait();
             }
             catch (Exception e)
             {
@@ -94,12 +92,15 @@ namespace PlexShareScreenshare.Client
         }
 
         /// <summary>
-        /// Sends confirmation packet to server once every second. The confirmation packet
-        /// does not contain any data
+        /// Sends confirmation packet to server once every five seconds. The confirmation packet
+        /// does not contain any data. The confirmation packets are always sent once the client
+        /// has started screen share. In case the network gets disconnected, these packtes will
+        /// stop reaching the server, as a result of which the server will remove the client
+        /// as a 'screen sharer'.
         /// </summary>
         private void SendConfirmationPacket()
         {
-            _confirmationCancellationTokenSource = new();
+            _confirmationCancellationToken = false;
             Debug.Assert(_id != null, Utils.GetDebugMessage("_id property found null"));
             Debug.Assert(_name != null, Utils.GetDebugMessage("_name property found null"));
             DataPacket confirmationPacket = new(_id, _name, ClientDataHeader.Confirmation.ToString(), "");
@@ -107,14 +108,12 @@ namespace PlexShareScreenshare.Client
 
             _sendConfirmationTask = new Task(() =>
             {
-                _confirmationCancellationTokenSource.Token.ThrowIfCancellationRequested();
-                while (!_confirmationCancellationTokenSource.Token.IsCancellationRequested)
+                while (!_confirmationCancellationToken)
                 {
-                    _confirmationCancellationTokenSource.Token.ThrowIfCancellationRequested();
                     _communicator.Send(serializedConfirmationPacket, Utils.ModuleIdentifier, null);
-                    Thread.Sleep(1000);
+                    Thread.Sleep(5000);
                 }
-            }, _confirmationCancellationTokenSource.Token);
+            });
 
             Trace.WriteLine(Utils.GetDebugMessage("Starting Confirmation packet sending", withTimeStamp: true));
             _sendConfirmationTask.Start();
