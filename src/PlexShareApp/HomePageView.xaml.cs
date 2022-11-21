@@ -131,7 +131,7 @@ namespace PlexShareApp
                 return;
             }
             homePageAnimation = false;
-            MainScreenView mainScreenView = new MainScreenView(this.nameBox.Text, this.emailTextBox.Text, this.absolutePath, this.imageUrl, verified[0], verified[1], true, verified[2]);
+            MainScreenView mainScreenView = new MainScreenView(this.nameBox.Text, this.emailTextBox.Text, this.absolutePath, this.imageUrl, verified[0], verified[1], true, verified[7]);
             mainScreenView.Show();
             this.Close();
         }
@@ -172,7 +172,7 @@ namespace PlexShareApp
                 return;
             }
             homePageAnimation = false;
-            MainScreenView mainScreenView = new MainScreenView(this.nameBox.Text, this.emailTextBox.Text, this.absolutePath, this.imageUrl, verified[0], verified[1], false, verified[2]);
+            MainScreenView mainScreenView = new MainScreenView(this.nameBox.Text, this.emailTextBox.Text, this.absolutePath, this.imageUrl, verified[0], verified[1], false, verified[7]);
             mainScreenView.Show();
             this.Close();
         }
