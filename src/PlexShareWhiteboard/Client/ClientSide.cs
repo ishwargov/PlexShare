@@ -1,5 +1,5 @@
 /***************************
- * Filename    = WhiteBoardViewModel.cs
+ * Filename    = ClientSide.cs
  *
  * Author      = Aiswarya H
  *
