@@ -71,7 +71,7 @@ namespace PlexShareTests.ScreenshareTests
             List<SharedClientScreen> list = new();
             for (int i = 2; i < count + 2; ++i)
             {
-                list.Add(Utils.GetMockClient(server, isDebugging));
+                list.Add(Utils.GetMockClient(server, isDebugging, i));
             }
             return list;
         }
