@@ -1,5 +1,5 @@
 ﻿/********************************************************************************
- * Filename    = WhiteBoardViewModel.cs
+ * Filename    = ViewModel2.cs
  *
  * Author      = Asha Jose
  *
