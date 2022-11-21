@@ -31,6 +31,7 @@ namespace PlexShareWhiteboard
         public void ShapeFinished(Point _)
         {
             Trace.WriteLine("[Whiteboard] : entering shape finished");
+
             // for free hand curves, in translation, transformation and dimension change mode, the point list needs to be updated
             // this is not done in shape building since we need the original points for reference
             if ((mode == "transform_mode" || mode == "dimensionChange_mode") &&
@@ -40,7 +41,7 @@ namespace PlexShareWhiteboard
                 FinishingCurve();
             }
 
-            // mode for undo regulates pushing into undo redo stack and seding to server
+            // mode for undo regulates pushing into undo redo stack and sending to server
             if (modeForUndo == "create" )
             {
                 // this is done to update z index value of the shapes drawn by the server
@@ -59,6 +60,7 @@ namespace PlexShareWhiteboard
                     machine.OnShapeReceived(lastShape, Operation.Creation);
 
             }
+            // for delete, the previous object is passed into the stack
             else if (modeForUndo == "delete" && lastShape != null)
             {
                 Trace.WriteLine("[Whiteboard] : passing object that is deleted into undo stack and passing into server");
@@ -71,13 +73,14 @@ namespace PlexShareWhiteboard
             }
             else if (modeForUndo == "textbox_translate" && textBoxLastShape != null)
             {
-                
+                Trace.WriteLine("[Whiteboard] : passing object before and after modification to undo stack and passing into server");
                 stackElement = new UndoStackElement(select.initialSelectionObject, textBoxLastShape, Operation.ModifyShape);
                 InsertIntoStack(stackElement);
 
                 if (textBoxLastShape != null)
                     machine.OnShapeReceived(textBoxLastShape, Operation.ModifyShape);
             }
+            // for modify, the previous shape as well as new shape is passed into the stack
             else if (modeForUndo == "modify" && lastShape != null)
             {
                 Trace.WriteLine("[Whiteboard] : passing object before and after modification to undo stack and passing into server");

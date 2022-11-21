@@ -59,7 +59,7 @@ namespace PlexShareWhiteboard
                 AnchorPoint = name == "LineGeometry" ? new Point(geometry.Bounds.X, geometry.Bounds.Y) : start,
                 Id = oldShape.Id,
                 TextString = textDataOpt,
-                StrokeThickness = oldShape.StrokeThickness,
+                StrokeThickness = name == "GeometryGroup" ? 1 : oldShape.StrokeThickness,
                 Start = start,
                 End = end
             };
@@ -112,7 +112,7 @@ namespace PlexShareWhiteboard
                 Fill = fillBrush,
                 Stroke = strokeBrush,
                 ZIndex = currentZIndex,
-                StrokeThickness = strokeThickness,
+                StrokeThickness = name == "GeometryGroup" ? 1 : strokeThickness,
                 AnchorPoint = name == "LineGeometry" ? new Point(geometry.Bounds.X, geometry.Bounds.Y) : start,
                 Id = id,
                 TextString = textDataOpt

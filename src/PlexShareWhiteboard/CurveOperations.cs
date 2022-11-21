@@ -23,6 +23,11 @@ namespace PlexShareWhiteboard
 {
     partial class WhiteBoardViewModel
     {
+        /// <summary>
+        /// Function to create a curve
+        /// </summary>
+        /// <param name="a"></param>
+        /// <returns>The current shape after creation</returns>
         public ShapeItem CreateCurve(Point a)
         {
             var geometry1 = new PathGeometry();
@@ -42,6 +47,12 @@ namespace PlexShareWhiteboard
             return currentShape;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="g1"></param>
+        /// <param name="currentPoint"></param>
+        /// <param name="previousPoint"></param>
         public static void AddToPathGeometry(PathGeometry g1, Point currentPoint, Point previousPoint)
         {
             var line = new LineGeometry(currentPoint, previousPoint);
@@ -51,6 +62,12 @@ namespace PlexShareWhiteboard
 
         }
 
+        /// <summary>
+        /// Function to update the curve
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="_anchorPoint"></param>
+        /// <returns></returns>
         public ShapeItem UpdateCurve(Point a, Point _anchorPoint)
         {
             PathGeometry g1 = (PathGeometry)lastShape.Geometry;
@@ -81,6 +98,12 @@ namespace PlexShareWhiteboard
             return newShape;
         }
 
+        /// <summary>
+        /// The transfornm function is done using the four corner points.
+        /// The ratios are preserved here.
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="shape"></param>
         public void TransformCurve(Point a, ShapeItem shape)
         {
             ShapeItem x = shape;
@@ -173,6 +196,11 @@ namespace PlexShareWhiteboard
             //HighLightIt(shape.Geometry.Bounds);
         }
 
+        /// <summary>
+        /// To increase and decrease the si*e of the Bounding Box
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="shape"></param>
         public void DimensionChangeCurve(Point a, ShapeItem shape)
         {
             Debug.WriteLine(select.selectBox + " bounce bounce bounce yippe yipee ");
@@ -300,6 +328,13 @@ namespace PlexShareWhiteboard
             }
         }
 
+        /// <summary>
+        /// Function to translate the curve
+        /// </summary>
+        /// <param name="shape"></param>
+        /// <param name="bx"></param>
+        /// <param name="by"></param>
+        /// <param name="p1"></param>
         public void TranslatingCurve(ShapeItem shape, double bx, double by, Point p1)
         {
             Point prevPoint = shape.PointList[0];
@@ -339,6 +374,9 @@ namespace PlexShareWhiteboard
             HighLightIt(newShape.Geometry.Bounds);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public void FinishingCurve()
         {
             PathGeometry g1 = new();
@@ -365,7 +403,6 @@ namespace PlexShareWhiteboard
                     ShapeItems[i] = updatingShape;
                 }
             }
-
             lastShape = updatingShape;
         }
     }
