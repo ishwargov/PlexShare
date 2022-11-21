@@ -7,7 +7,7 @@
  * 
  * Project     = PlexShareContent
  *
- * Description = This file handles the chat messges and various functionlaities associted with chat.
+ * Description = This file handles the chat messges and various functionlaities associated with chat.
  *****************************************************************************/
 
 using PlexShareContent.DataModels;

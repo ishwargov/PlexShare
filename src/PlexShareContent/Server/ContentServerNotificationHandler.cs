@@ -22,7 +22,6 @@ namespace PlexShareContent.Server
         {
             ContentServer = contentServer;
         }
-
         /// <inheritdoc />
         public void OnDataReceived(string data)
         {
