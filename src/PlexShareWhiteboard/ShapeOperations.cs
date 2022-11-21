@@ -1,14 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/***************************
+ * Filename    = ShapeOperations.cs
+ *
+ * Author      = Asha Jose
+ *
+ * Product     = Plex Share
+ * 
+ * Project     = White Board
+ *
+ * Description = This is part of View Model.
+ *               This contains all the operations for shape objects ellipse and 
+ *               rectangle.
+ ***************************/
+
+using System;
 using System.Windows.Media;
 using System.Windows;
-using System.Windows.Shapes;
 using PlexShareWhiteboard.BoardComponents;
 using System.Globalization;
-using System.Diagnostics;
 
 namespace PlexShareWhiteboard
 {
@@ -51,7 +59,7 @@ namespace PlexShareWhiteboard
                 AnchorPoint = name == "LineGeometry" ? new Point(geometry.Bounds.X, geometry.Bounds.Y) : start,
                 Id = oldShape.Id,
                 TextString = textDataOpt,
-                StrokeThickness = oldShape.StrokeThickness,
+                StrokeThickness = name == "GeometryGroup" ? 1 : oldShape.StrokeThickness,
                 Start = start,
                 End = end
             };
@@ -104,7 +112,7 @@ namespace PlexShareWhiteboard
                 Fill = fillBrush,
                 Stroke = strokeBrush,
                 ZIndex = currentZIndex,
-                StrokeThickness = strokeThickness,
+                StrokeThickness = name == "GeometryGroup" ? 1 : strokeThickness,
                 AnchorPoint = name == "LineGeometry" ? new Point(geometry.Bounds.X, geometry.Bounds.Y) : start,
                 Id = id,
                 TextString = textDataOpt

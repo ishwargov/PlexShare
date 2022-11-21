@@ -1,22 +1,35 @@
-﻿/**
- * Owned By: Joel Sam Mathew
- * Created By: Joel Sam Mathew
- * Date Created: 22/10/2022
- * Date Modified: 08/11/2022
-**/
+﻿/***************************
+ * Filename    = IServerSnapshotHandler.cs
+ *
+ * Author      = Joel Sam Mathew
+ *
+ * Product     = Plex Share
+ *
+ * Project     = White Board
+ *
+ * Description = Interface to specify the functions handled by ServerSnapshotHandler.
+ ***************************/
 
 using PlexShareWhiteboard.BoardComponents;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PlexShareWhiteboard.Server.Interfaces
 {
-    internal interface IServerSnapshotHandler
+    public interface IServerSnapshotHandler
     {
+        /// <summary>
+        ///     Fetches and loades the snapshot corresponding to provided snapshotNumber.
+        /// </summary>
+        /// <param name="snapshotNumber">The number of the snapshots which needs to fetched.</param>
+        /// <returns></returns>
         public List<ShapeItem> LoadBoard(int snapshotNumber);
+
+        /// <summary>
+        ///     Saves the snapshot at the server.
+        /// </summary>
+        /// <param name="boardShapes">List containing all the shapes to save the snapshot.</param>
+        /// <param name="userID">User who requested the saving of snapshot.</param>
+        /// <returns></returns>
         public int SaveBoard(List<ShapeItem> boardShapes, string userID);
     }
 }

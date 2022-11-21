@@ -1,25 +1,32 @@
-﻿using PlexShareWhiteboard.BoardComponents;
-using System;
-using System.Collections.Generic;
+﻿/***************************
+ * Filename    = Utility.cs
+ *
+ * Author      = Joel Sam Mathew
+ *
+ * Product     = Plex Share Tests
+ *
+ * Project     = White Board Tests
+ *
+ * Description = Utility methods for Whiteboard Tests
+ ***************************/
+
+using PlexShareWhiteboard.BoardComponents;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows;
-using System.Windows.Shapes;
-using System.Diagnostics;
-using Client.Models;
-using System.Reflection;
-using System.Windows.Ink;
-using System.Windows.Media.Media3D;
 
 namespace PlexShareTests.WhiteboardTests
 {
     [Collection("Sequential")]
     public class Utility
     {
-        public static bool CompareShapeItems(ShapeItem shape1, ShapeItem shape2)
+        /// <summary>
+        ///     Compares two ShapeItems and return true if equal.
+        /// </summary>
+        /// <param name="shape1">ShapeItem 1</param>
+        /// <param name="shape2">ShapeItem 2</param>
+        /// <returns>True if objects are same, false otherwise</returns>
+        public bool CompareShapeItems(ShapeItem shape1, ShapeItem shape2)
         {
             if (shape1 == null && shape2 == null)
                 return true;
@@ -30,7 +37,6 @@ namespace PlexShareTests.WhiteboardTests
                 && shape1.TextString == shape2.TextString
                 && shape1.Start == shape2.Start
                 && shape1.End == shape2.End
-                && shape1.ZIndex == shape2.ZIndex
                 && shape1.FontSize == shape2.FontSize
                 && shape1.StrokeThickness == shape2.StrokeThickness
                 && shape1.Id == shape2.Id
@@ -40,7 +46,13 @@ namespace PlexShareTests.WhiteboardTests
                 && shape1.PointList == shape2.PointList;
         }
 
-        public static bool CompareShapeItems(
+        /// <summary>
+        ///     Compares two List of ShapeItems and return true if equal.
+        /// </summary>
+        /// <param name="shapeItems1">ShapeItem List 1</param>
+        /// <param name="shapeItems2">ShapeItem List 2</param>
+        /// <returns>True if objects are same, false otherwise</returns>
+        public bool CompareShapeItems(
             List<ShapeItem> shapeItems1,
             List<ShapeItem> shapeItems2
         )
@@ -57,7 +69,13 @@ namespace PlexShareTests.WhiteboardTests
             return true;
         }
 
-        public static bool CompareBoardServerShapes(WBServerShape shape1, WBServerShape shape2)
+        /// <summary>
+        ///     Compares two WBServerShapes and return true if equal.
+        /// </summary>
+        /// <param name="shape1">WBServerShapes 1</param>
+        /// <param name="shape2">WBServerShapes 2</param>
+        /// <returns>True if objects are same, false otherwise</returns>
+        public bool CompareBoardServerShapes(WBServerShape shape1, WBServerShape shape2)
         {
             Serializer serializer = new Serializer();
             if (shape1 == null && shape2 == null)
@@ -71,7 +89,16 @@ namespace PlexShareTests.WhiteboardTests
             return CompareShapeItems(shapeItems1, shapeItems2);
         }
 
-        public static ShapeItem CreateShape(Point start, Point end, string name, String id, string textDataOpt = "")
+        /// <summary>
+        ///     Creates a shape with the given parameters
+        /// </summary>
+        /// <param name="start">Start point</param>
+        /// <param name="end">End point</param>
+        /// <param name="name">String of geometry type</param>
+        /// <param name="id">UID of the ShapeItem</param>
+        /// <param name="textDataOpt">Text inside the textbox</param>
+        /// <returns></returns>
+        public ShapeItem CreateShape(Point start, Point end, string name, string id, string textDataOpt = "")
         {
             Rect boundingBox = new(start, end);
             Geometry geometry;
@@ -119,9 +146,12 @@ namespace PlexShareTests.WhiteboardTests
             return newShape;
         }
 
-        public static List<ShapeItem> GenerateRandomBoardShapes(int n)
+        /// <summary>
+        ///     Creates a random shape for test purposes.
+        /// </summary>
+        /// <returns>Random ShapeItem</returns>
+        public ShapeItem CreateRandomShape()
         {
-            List<ShapeItem> boardShapes = new();
             Random random = new();
             Dictionary<int, string> shapeTypes = new Dictionary<int, string>()
             {
@@ -130,15 +160,34 @@ namespace PlexShareTests.WhiteboardTests
                 {2,"LineGeometry" },
                 {3, "GeometryGroup"}
             };
+            Point start = new Point(random.Next(0, 100), random.Next(0, 100));
+            Point end = new Point(random.Next(0, 100), random.Next(0, 100));
+            return CreateShape(start, end, shapeTypes[random.Next(0, 4)], RandomString(5));
+        }
+
+        /// <summary>
+        ///     Generates a list of random ShapeItems representing a random WhiteBoard.
+        /// </summary>
+        /// <param name="n">Number of random shapeItems to generate</param>
+        /// <returns>List of ShapeItems</returns>
+        public List<ShapeItem> GenerateRandomBoardShapes(int n)
+        {
+            List<ShapeItem> boardShapes = new();
+            Random random = new();
+            
             for (var i = 0; i < n; i++)
             {
-                Point start = new Point(random.Next(), random.Next());
-                Point end = new Point(random.Next(), random.Next());
-                boardShapes.Add(CreateShape(start, end, shapeTypes[random.Next(0,4)], RandomString(5)));
+                boardShapes.Add(CreateRandomShape());
             }
             return boardShapes;
         }
-        public static string RandomString(int length)
+
+        /// <summary>
+        ///     Random string generator. Used for random IDs.
+        /// </summary>
+        /// <param name="length">Length of string</param>
+        /// <returns>Random string of length</returns>
+        public string RandomString(int length)
         {
             Random random = new();
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -146,5 +195,18 @@ namespace PlexShareTests.WhiteboardTests
                 .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
+        /// <summary>
+        ///     Simulates the serialzation of an object when sent through the server
+        /// </summary>
+        /// <param name="newShapes">Object to be sent across server</param>
+        /// <param name="op">Operation to be performed at other end of network</param>
+        /// <returns>Serialized string</returns>
+        public string SendThroughServer(List<ShapeItem> newShapes, Operation op)
+        {
+            Serializer _serializer = new();
+            var newSerializedShapes = _serializer.ConvertToSerializableShapeItem(newShapes);
+            WBServerShape wbShape = new WBServerShape(newSerializedShapes, op);
+            return _serializer.SerializeWBServerShape(wbShape);
+        }
     }
 }

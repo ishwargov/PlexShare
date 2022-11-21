@@ -1,9 +1,18 @@
-﻿using System;
+﻿/***************************
+ * Filename    = SerializableShapeItem.cs
+ *
+ * Author      = Joel Sam Mathew
+ *
+ * Product     = Plex Share
+ * 
+ * Project     = White Board
+ *
+ * Description = This declares an adapter class for adapting shape class to a
+ *               serialisable shape class inorder to facilitate serialising.
+ ***************************/
+
+using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows;
 
@@ -11,97 +20,74 @@ namespace PlexShareWhiteboard.BoardComponents
 {
     public class SerializableShapeItem
     {
+        /// <summary>
+        ///     String representing the type of Geometry of the ShapeItem.
+        /// </summary>
         public string GeometryString { get; set; }
+
+        /// <summary>
+        ///     String consisting of the message inside a text box ShapeItem.
+        /// </summary>
         public string TextString { get; set; }
+
+        /// <summary>
+        ///     Contains curves of Points
+        /// </summary>
         public List<Point> PointList { get; set; }
+
+        /// <summary>
+        ///     Start of the ShapeItem.
+        /// </summary>
         public Point Start { get; set; }
+
+        /// <summary>
+        ///     End of the ShapeItem.
+        /// </summary>
         public Point End { get; set; }
+
+        /// <summary>
+        ///     The fill brush of the ShapeItem.
+        /// </summary>
         public Brush Fill { get; set; }
+
+        /// <summary>
+        ///     The stroke brush of the ShapeItem.
+        /// </summary>
         public Brush Stroke { get; set; }
+
+        /// <summary>
+        ///     Specifies the stack order of an element.
+        /// </summary>
         public int ZIndex { get; set; }
+
+        /// <summary>
+        ///     Font Size of Text.
+        /// </summary>
         public int FontSize { get; set; }
+
+        /// <summary>
+        ///     Thickness of stroke
+        /// </summary>
         public int StrokeThickness { get; set; }
+
+        /// <summary>
+        ///     UID representing a unique ShapeItem
+        /// </summary>
         public string Id { get; set; }
+
+        /// <summary>
+        ///     User ID of creator of ShapeItem
+        /// </summary>
         public string User { get; set; }
+
+        /// <summary>
+        ///     Time at which ShapeItem was created or updated
+        /// </summary>
         public string TimeStamp { get; set; }
+
+        /// <summary>
+        ///     Point on an object that remains stationary while an object is resized.
+        /// </summary>
         public Point AnchorPoint { get; set; }
-
-        public SerializableShapeItem()
-        {
-            ;
-        }
-
-        public ShapeItem ConvertToShapeItem(SerializableShapeItem x)
-        {
-            if (x == null)
-                return null;
-            Geometry g = null;
-
-            if (x.GeometryString == "EllipseGeometry")
-            {
-                Rect boundingBox = new Rect(x.Start, x.End);
-                g = new EllipseGeometry(boundingBox);
-            }
-            else if (x.GeometryString == "RectangleGeometry")
-            {
-                Rect boundingBox = new Rect(Start, End);
-                g = new RectangleGeometry(boundingBox);
-            }
-            else if (x.GeometryString == "PathGeometry")
-            {
-                PathGeometry g1 = new PathGeometry();
-
-                for (int i = 1; i < x.PointList.Count; i++)
-                {
-                    Point curPoint = x.PointList[i];
-                    Point prevPoint = x.PointList[i - 1];
-                    var line = new LineGeometry(curPoint, prevPoint);
-                    var circle = new EllipseGeometry(curPoint, 0.1, 0.1);
-                    g1.AddGeometry(circle);
-                    g1.AddGeometry(line);
-                }
-                g = g1;
-            }
-            else if (x.GeometryString == "LineGeometry")
-            {
-                g = new LineGeometry(Start, End);
-
-            }
-            else if (x.GeometryString == "TextGeometry")
-            {
-                FormattedText formattedText = new FormattedText(
-                    x.TextString,
-                    CultureInfo.GetCultureInfo("en-us"),
-                    FlowDirection.LeftToRight,
-                    new Typeface("Verdana"),
-                    x.FontSize,
-                    x.Stroke,
-                    3);
-
-            }
-
-            ShapeItem y = new ShapeItem
-            {
-                Geometry = g,
-                FontSize = x.FontSize,
-                GeometryString = x.GeometryString,
-                TextString = x.TextString,
-                PointList = x.PointList,
-                Start = x.Start,
-                End = x.End,
-                Fill = x.Fill,
-                Stroke = x.Stroke,
-                ZIndex = x.ZIndex,
-                StrokeThickness = x.StrokeThickness,
-                Id = x.Id,
-                User = x.User,
-                TimeStamp = x.TimeStamp,
-                AnchorPoint = x.AnchorPoint,
-            };
-
-            return y;
-        }
-
-
     }
 }

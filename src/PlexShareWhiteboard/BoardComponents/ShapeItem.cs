@@ -10,11 +10,6 @@ namespace PlexShareWhiteboard.BoardComponents
 {
     public class ShapeItem
     {
-
-        public ShapeItem()
-        {
-            ;
-        }
         public Geometry Geometry { get; set; }
         public string GeometryString { get; set; }
         public string TextString { get; set; }
@@ -52,29 +47,6 @@ namespace PlexShareWhiteboard.BoardComponents
                 AnchorPoint = this.AnchorPoint,
             };
             return newShape;
-        }
-        public SerializableShapeItem ConvertToSerialisableShapeItem(ShapeItem x)
-        {
-            SerializableShapeItem y = new SerializableShapeItem
-            {
-                FontSize = x.FontSize,
-                //GeometryString = x.GeometryString,
-                GeometryString = x.Geometry.GetType().Name,
-                TextString = x.TextString,
-                PointList = x.PointList,
-                Start = x.Start,
-                End = x.End,
-                Fill = x.Fill,
-                Stroke = x.Stroke,
-                ZIndex = x.ZIndex,
-                StrokeThickness = x.StrokeThickness,
-                Id = x.Id,
-                User = x.User,
-                TimeStamp = x.TimeStamp,
-                AnchorPoint = x.AnchorPoint,
-            };
-
-            return y;
         }
     }
 }
