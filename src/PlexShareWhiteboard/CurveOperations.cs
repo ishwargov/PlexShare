@@ -1,4 +1,17 @@
-﻿using System.Collections.Generic;
+﻿/***************************
+ * Filename    = CurveOperations.cs
+ *
+ * Author      = Jerry John Thomas
+ *
+ * Product     = Plex Share
+ * 
+ * Project     = White Board
+ *
+ * Description = This is part of View Model.
+ *               This contains all the operations for curve objects.
+ ***************************/
+
+using System.Collections.Generic;
 using System.Windows.Media;
 using System.Windows;
 using System.Diagnostics;

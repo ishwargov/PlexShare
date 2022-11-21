@@ -1,14 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/***************************
+ * Filename    = ShapeOperations.cs
+ *
+ * Author      = Asha Jose
+ *
+ * Product     = Plex Share
+ * 
+ * Project     = White Board
+ *
+ * Description = This is part of View Model.
+ *               This contains all the operations for shape objects ellipse and 
+ *               rectangle.
+ ***************************/
+
+using System;
 using System.Windows.Media;
 using System.Windows;
-using System.Windows.Shapes;
 using PlexShareWhiteboard.BoardComponents;
 using System.Globalization;
-using System.Diagnostics;
 
 namespace PlexShareWhiteboard
 {
