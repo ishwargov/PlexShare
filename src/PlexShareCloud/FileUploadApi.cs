@@ -10,6 +10,9 @@
  * Description = Consists of Rest API functions for the Submission and Session. 
  *****************************************************************************/
 
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -22,8 +25,19 @@ namespace PlexShareCloud
     /// </summary>
     public class FileUploadApi
     {
+        /// <summary>
+        /// HttpClient to make Rest Api calls
+        /// </summary>
         private readonly HttpClient _entityClient;
+
+        /// <summary>
+        /// Url to sessions table
+        /// </summary>
         private readonly string _sessionUrl;
+
+        /// <summary>
+        /// Url to submissions table
+        /// </summary>
         private readonly string _submissionUrl;
 
         /// <summary>
@@ -35,6 +49,7 @@ namespace PlexShareCloud
             _entityClient = new();
             _sessionUrl = sessionUrl;
             _submissionUrl = submissionUrl;
+            Trace.WriteLine("[Cloud] New entity client created");
         }
 
         /// <summary>
@@ -55,6 +70,7 @@ namespace PlexShareCloud
             };
 
             SubmissionEntity entity = JsonSerializer.Deserialize<SubmissionEntity>(result, options);
+            Trace.WriteLine("[Cloud] Pdf Put successful");
             return entity;
         }
 
@@ -75,6 +91,7 @@ namespace PlexShareCloud
             };
 
             SubmissionEntity entity = JsonSerializer.Deserialize<SubmissionEntity>(result, options);
+            Trace.WriteLine("[Cloud] PDF Post Successful");
             return entity;
         }
 
@@ -86,17 +103,26 @@ namespace PlexShareCloud
         /// <returns></returns>
         public async Task<SessionEntity> PostSessionAsync(string sessionId, string userName)
         {
-            using HttpResponseMessage response = await _entityClient.PostAsJsonAsync<string>(_sessionUrl + $"/{userName}", sessionId);
-            response.EnsureSuccessStatusCode();
-            var result = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
+            try
             {
-                PropertyNameCaseInsensitive = true,
+                using HttpResponseMessage response = await _entityClient.PostAsJsonAsync<string>(_sessionUrl + $"/{userName}", sessionId);
+                response.EnsureSuccessStatusCode();
+                var result = await response.Content.ReadAsStringAsync();
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
 
-            };
+                };
 
-            SessionEntity entity = JsonSerializer.Deserialize<SessionEntity>(result, options);
-            return entity;
+                SessionEntity entity = JsonSerializer.Deserialize<SessionEntity>(result, options);
+                Trace.WriteLine("[Cloud] Session Details Post Successful");
+                return entity;
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine("[Cloud] Network Error Exception " + ex);
+                return new SessionEntity();
+            }
         }
     }
 }

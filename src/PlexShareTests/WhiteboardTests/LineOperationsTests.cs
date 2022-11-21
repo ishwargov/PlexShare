@@ -1,11 +1,22 @@
-﻿using System;
+﻿/***************************
+ * Filename    = LineOperationsTests.cs
+ *
+ * Author      = Deon Saji
+ *
+ * Product     = Plex Share
+ * 
+ * Project     = White Board
+ *
+ * Description = This implements line operations tests 
+ ***************************/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 using PlexShareWhiteboard;
-//using System.Drawing;
 using System.Windows;
 using PlexShareScreenshare.Client;
 using System.Xml.Linq;
@@ -27,6 +38,7 @@ namespace PlexShareTests.WhiteboardTests
             server = ServerSide.Instance;
             server.ClearServerList();
         }
+       
         [Fact]
         public void Test1()
         {
@@ -34,13 +46,15 @@ namespace PlexShareTests.WhiteboardTests
             WhiteBoardViewModel viewModel = WhiteBoardViewModel.Instance;
             viewModel.ShapeItems.Clear();
             viewModel.SetUserId(20);
-
+            //Create line
             viewModel.ChangeMode("create_line");
             start = new(15, 15);
-            end = new(15,45);
+            end = new(15, 45);
             viewModel.ShapeStart(start);
             viewModel.ShapeBuilding(end);
             viewModel.ShapeFinished(new Point());
+            
+            //Select line
             viewModel.ChangeMode("select_mode");
             viewModel.ShapeStart(new Point(15, 22));
             viewModel.ShapeFinished(new Point());
@@ -60,24 +74,27 @@ namespace PlexShareTests.WhiteboardTests
         {
             WhiteBoardViewModel viewModel = WhiteBoardViewModel.Instance;
             viewModel.SetUserId(2);
-
+            //Create line 
             viewModel.ChangeMode("create_line");
             start = new(15, 15);
             end = new(45, 45);
             viewModel.ShapeStart(start);
             viewModel.ShapeBuilding(end);
             viewModel.ShapeFinished(new Point());
-
+            
+            //Select the line
             viewModel.ChangeMode("select_mode");
             viewModel.ShapeStart(new Point(30, 30));
             viewModel.ShapeFinished(new Point());
+            //Transform the line keeping 
             viewModel.ShapeStart(new Point(45, 45));
             viewModel.ShapeBuilding(new Point(65, 65));
             viewModel.ShapeFinished(new Point());
 
             viewModel.ChangeMode("select_mode");
             viewModel.ShapeStart(new Point(45, 45));
-
+            
+            //Assert
             Assert.Equal(viewModel.select.selectedObject.End, new Point(65, 65));
             
                       
@@ -104,6 +121,7 @@ namespace PlexShareTests.WhiteboardTests
             viewModel.ChangeMode("select_mode");
             viewModel.ShapeStart(new Point(30, 30));
             viewModel.ShapeFinished(new Point());
+            //Translate 
             viewModel.ShapeStart(new Point(30, 30));
             viewModel.ShapeBuilding(new Point(50, 30));
 
@@ -153,7 +171,7 @@ namespace PlexShareTests.WhiteboardTests
         {
             WhiteBoardViewModel viewModel = WhiteBoardViewModel.Instance;
             viewModel.SetUserId(32);
-
+            //Checking translation of lines of the kind '/'
             viewModel.ChangeMode("create_line");
             start = new(15, 45);
             end = new(45, 15);

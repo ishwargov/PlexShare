@@ -7,7 +7,7 @@
  * 
  * Project     = PlexShareContent
  *
- * Description = This file handles the file messges and various functionlaities associted with file.
+ * Description = This file handles the file messages and various functionalities associated with the file.
  *****************************************************************************/
 
 using PlexShareContent.DataModels;
@@ -43,7 +43,7 @@ namespace PlexShareContent.Server
             Trace.WriteLine("[FileServer] Received message from ContentServer");
             if (msg.Event == MessageEvent.New)
             {
-                Trace.WriteLine("[FileServer] Event is NewMessage, Saving File");
+                Trace.WriteLine("[FileServer] Event is New, Saving File");
                 return StoreFile(msg);
             }
             else if (msg.Event == MessageEvent.Download)
@@ -59,7 +59,7 @@ namespace PlexShareContent.Server
         }
 
         /// <summary>
-        ///     This function is used to save file to send information to client.
+        ///     This function is used to save file on Database.
         /// </summary>
         public ContentData StoreFile(ContentData msg)
         {
@@ -77,22 +77,19 @@ namespace PlexShareContent.Server
         public ContentData FileDownload(ContentData msg)
         {
             var receivedMsg = _db.FilesFetch(msg.MessageID);
-
             // Doesn't exist on database, return null
             if (receivedMsg == null)
             {
                 Trace.WriteLine($"[FileServer] File not found messageId: {msg.MessageID}.");
                 return null;
             }
-
             // Clone the object and add the required fields
-            var downloadMsg = receivedMsg.Copy();
-
+            var downloadedFile = receivedMsg.Copy();
             // store file path on which the file will be downloaded on the client's system
-            downloadMsg.Data = msg.Data;
-            downloadMsg.Event = MessageEvent.Download;
-            downloadMsg.SenderID = msg.SenderID;
-            return downloadMsg;
+            downloadedFile.Data = msg.Data;
+            downloadedFile.Event = MessageEvent.Download;
+            downloadedFile.SenderID = msg.SenderID;
+            return downloadedFile;
         }
     }
 }

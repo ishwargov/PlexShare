@@ -26,6 +26,7 @@
     <ProjectReference Include="..\PlexShareApp\PlexShareApp.csproj">
       <ReferenceSourceTarget></ReferenceSourceTarget>
     </ProjectReference>
+    <ProjectReference Include="..\PlexShareCloudUX\PlexShareCloudUX.csproj" />
     <ProjectReference Include="..\PlexShareCloud\PlexShareCloud.csproj">
       <ReferenceSourceTarget></ReferenceSourceTarget>
     </ProjectReference>
@@ -49,14 +50,18 @@
   <ItemGroup>
     <None Remove="DashboardTests\" />
     <None Remove="DashboardTests\SessionManagement\" />
+    <None Remove="DashboardTests\Summary\Resources\data.csv" />
     <None Remove="DashboardTests\Telemetry\" />
     <None Remove="DashboardTests\Persistence\" />
     <None Remove="DashboardTests\Summary\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="DashboardTests\Summary\Resources\data.csv" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="DashboardTests\Telemetry\" />
     <Folder Include="DashboardTests\SessionManagement\" />
     <Folder Include="DashboardTests\Persistence\" />
-    <Folder Include="DashboardTests\Summary\" />
   </ItemGroup>
 </Project>

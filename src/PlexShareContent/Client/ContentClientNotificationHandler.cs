@@ -44,16 +44,21 @@ namespace PlexShareContent.Client
             Trace.WriteLine("[ContentClientNotificationHandler] Deserializing data received from network");
             try
             {
-                var deserializedType = _serialzer.GetObjectType(data, "Content");
+                // get type of serialized data
+                var deserializedType = _serialzer.GetObjType(data, "Content");
+                // if data is of ContentData type
                 if(string.Equals(deserializedType, typeof(ContentData).ToString()))
                 {
                     _receivedMessage = _serialzer.Deserialize<ContentData>(data);
                     _contentHandler.OnReceive(_receivedMessage);
+                    Trace.WriteLine($"[ContentClientNotificationHandler] Deserialized data and sending it to content client");
                 }
+                // if data is a List<ChatThread>
                 else if(string.Equals(deserializedType, typeof(List<ChatThread>).ToString()))
                 {
                     _allMessages = _serialzer.Deserialize<List<ChatThread>>(data);
                     _contentHandler.OnReceive(_allMessages);
+                    Trace.WriteLine($"[ContentClientNotificationHandler] Deserialized data and sending it to content client");
                 }
                 else
                 {

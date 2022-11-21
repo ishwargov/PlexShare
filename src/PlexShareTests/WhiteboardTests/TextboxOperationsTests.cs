@@ -1,3 +1,14 @@
+/***************************
+ * Filename    = TextboxOperationsTests.cs
+ *
+ * Author      = Deon Saji
+ *
+ * Product     = Plex Share
+ * 
+ * Project     = White Board
+ *
+ * Description = This implements textbox operations tests
+ ***************************/
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,7 +46,7 @@ namespace PlexShareTests.WhiteboardTests
         {
             WhiteBoardViewModel viewModel = WhiteBoardViewModel.Instance;
             viewModel.SetUserId(20);
-
+            //Start writing from (15,15) 
             viewModel.ChangeMode("create_textbox");
             start = new(15, 15);
             viewModel.ShapeStart(start);
@@ -83,7 +94,7 @@ namespace PlexShareTests.WhiteboardTests
             viewModel.TextBoxStartChar('T');
             viewModel.TextBoxStartChar('+');
             viewModel.TextBoxStartChar(']');
-
+            //Check backspace
             Assert.Equal("TEXT+]", viewModel.textBoxLastShape.TextString);
             viewModel.TextBoxStartChar('\b');
             Assert.Equal("TEXT+", viewModel.textBoxLastShape.TextString);
@@ -113,10 +124,10 @@ namespace PlexShareTests.WhiteboardTests
             viewModel.TextBoxStartChar('a');
             viewModel.TextBoxStartChar('b');
             viewModel.TextBoxStartChar('c');
+            //On changing mode from textbox to rectangle, the text pushed to the undo stack   
             viewModel.ChangeMode("create_rectangle");
             Assert.Equal("abc", viewModel.undoStack.Peek().NewShape.TextString);
             viewModel.ChangeMode("select_mode");
-
             viewModel.ShapeStart(new Point(70, 10));
             viewModel.ShapeFinished(new Point());
             viewModel.ShapeItems.Clear();
@@ -155,7 +166,7 @@ namespace PlexShareTests.WhiteboardTests
             viewModel.TextBoxStartChar('X');
             viewModel.TextBoxStartChar('Y');
             viewModel.TextBoxStartChar('Z');
-
+            //Translate textbox and select . 
             viewModel.ChangeMode("select_mode");
             viewModel.ShapeStart(new Point(48, 48));
             Assert.Equal(viewModel.select.selectedObject.Geometry.GetType().Name, "GeometryGroup");
@@ -166,7 +177,6 @@ namespace PlexShareTests.WhiteboardTests
 
             Assert.Equal(viewModel.textBoxLastShape.Start, new Point(57, 57));
             UndoStackElement popFromUndo = viewModel.Undo();
-            //Assert.Equal(popFromUndo.PrvShape.Start, new Point(45, 45));
             viewModel.ChangeMode("select_mode");
             viewModel.ShapeStart(new Point(48, 48));
             Assert.Equal(viewModel.select.selectedObject.Start, new Point(45, 45));

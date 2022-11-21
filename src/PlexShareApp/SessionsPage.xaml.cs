@@ -27,6 +27,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using PlexShareCloudUX;
 using PlexShareCloud;
+using System.Diagnostics;
 
 namespace PlexShareApp
 {
@@ -35,17 +36,21 @@ namespace PlexShareApp
     /// </summary>
     public partial class SessionsPage : Page
     {
-        private static SubmissionsPage? submissionsPage;
         public SessionsPage(string userName)
         {
             InitializeComponent();
 
             UserName = userName;
-            //viewModel = new SessionsViewModel(userName);
-            //this.DataContext = viewModel;
-            //viewModel.PropertyChanged += Listener;
-            //sessions = new List<SessionEntity> { };
+            viewModel = new SessionsViewModel(userName);
+            this.DataContext = viewModel;
+            viewModel.PropertyChanged += Listener;
+            sessions = new List<SessionEntity> { };
+            Trace.WriteLine("[Cloud] Session View created Successfully");
         }
+        /// <summary>
+        /// Variable to Store the SubmissionsPage of the Selected session.
+        /// </summary>
+        private static SubmissionsPage? submissionsPage;
 
         /// <summary>
         /// ViewModel to use.
@@ -76,59 +81,34 @@ namespace PlexShareApp
             {
                 Label label = new Label()
                 {
-                    Content = "No Sessions Conducted"
+                    Content = "No Sessions Conducted",
+                    Foreground = new SolidColorBrush(Colors.White),
+                    HorizontalContentAlignment = HorizontalAlignment.Center,
+                    FontSize = 16
                 };
                 Stack.Children.Add(label);
-
-                Button backButton1 = new Button()
-                {
-                    Width = 60,
-                    Height = 20,
-                    HorizontalAlignment = HorizontalAlignment.Center,
-                    Margin = new Thickness(10, 10, 10, 10),
-                    Content = "Back"
-                };
-                backButton1.Click += BackButtonClick;
-                Stack.Children.Add(backButton1);
+                Trace.WriteLine("[Cloud] No Sessions Conducted by " + UserName);
 
                 return;
             }
 
             /*
-             * Building the UI when there are list of sessions conducted.
+             * Building the UI when there are list of sessions conducted. 
+             * Adding Buttons for each session the host has conducted.
              */
-            for (int i = 0; i < sessions?.Count; i += 4)
+            Trace.WriteLine("[Cloud] Sessions data received to view");
+            for (int i = 0; i < sessions?.Count; i++)
             {
-                StackPanel newStackPanel = new StackPanel();
-                newStackPanel.Orientation = Orientation.Vertical;
-                newStackPanel.Margin = new Thickness(10, 10, 10, 10);
-
-                for (int j = 0; (j < 4 && (i + j) < sessions.Count); j++)
-                {
-                    Button newButton = new Button();
-                    newButton.Height = 100;
-                    newButton.Width = 100;
-                    newButton.Padding = new Thickness(10, 10, 10, 10);
-                    newButton.Margin = new Thickness(25, 0, 25, 0);
-                    newButton.Name = sessions[i + j].SessionId;
-                    newButton.Content = $"Session Conducted on - {sessions[i + j].Timestamp}";
-                    newButton.Click += OnButtonClick;
-                    newStackPanel.Children.Add(newButton);
-                }
-
-                Stack.Children.Add(newStackPanel);
+                Button newButton = new Button();
+                newButton.Height = 30;
+                newButton.Margin = new Thickness(0, 5, 0, 5);
+                newButton.Name = "Button" + i.ToString();
+                newButton.Content = $"Session on - {sessions[i].Timestamp.Value.ToLocalTime()}";
+                newButton.Click += OnButtonClick;
+                
+                Stack.Children.Add(newButton);
+                Trace.WriteLine("[Cloud] Adding Button for the " + (i + 1) + "th Session");
             }
-
-            Button backButton = new Button()
-            {
-                Width = 60,
-                Height = 20,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                Margin = new Thickness(10, 10, 10, 10),
-                Content = "Back"
-            };
-            backButton.Click += BackButtonClick;
-            Stack.Children.Add(backButton);
 
         }
 
@@ -137,18 +117,24 @@ namespace PlexShareApp
         /// </summary>
         private void OnButtonClick(object sender, RoutedEventArgs e)
         {
+            Trace.WriteLine("[Cloud] Session Button pressed");
             Button caller = (Button)sender;
-            submissionsPage = new SubmissionsPage(caller.Name, UserName);
-            //Shift to submissions view
+            int index = Convert.ToInt32(caller.Name.Split('n')[1]);
+
+            // Getting the Corresponding Submissions of the selected sessions and showing it in the place provided
+            submissionsPage = new SubmissionsPage( sessions[index].SessionId, UserName);
+            Trace.WriteLine("[Cloud] SubmissionsPage created");
+            SubmissionsPage.Content = submissionsPage;
         }
 
         /// <summary>
-        /// Handler to the back button press.
+        /// Handler to the Refresh button press
+        /// To refresh the session details that is retrieved.
         /// </summary>
-        private void BackButtonClick(object sender, RoutedEventArgs e)
+        private void RefreshButtonClick(object sender, RoutedEventArgs e)
         {
-            //Remove the current page
-        } 
-
+            Trace.WriteLine("[Cloud] Session Refresh Button pressed");
+            viewModel.GetSessions(UserName);
+        }
     }
 }

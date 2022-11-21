@@ -53,7 +53,6 @@ namespace PlexShareApp
             else
                 viewModel.isServer = false;
 
-            //if (viewModel.canDraw == true && serverID == 0)
             // init means noone called, ! means someone called (server) and we found out that it is not server
             if (!viewModel.userId.Equals("init") && serverID != 0)
             {
@@ -146,7 +145,6 @@ namespace PlexShareApp
         /// <param name="e"></param>
         private void CanvasMouseEnter(object sender, MouseEventArgs e)
         {
-            //Debug.WriteLine(this.currentTool + " Got it \n");
             if (this.currentTool != "Select")
                 viewModel.UnHighLightIt();
             switch (this.currentTool)
@@ -185,7 +183,6 @@ namespace PlexShareApp
         /// <param name="e"></param>
         private void CanvasMouseLeave(object sender, MouseEventArgs e)
         {
-            //Debug.WriteLine(this.currentTool + " Leave Got it \n");
             if (this.currentTool != "Select")
                 viewModel.UnHighLightIt();
             Cursor = Cursors.Arrow;
@@ -540,6 +537,11 @@ namespace PlexShareApp
             viewModel.CallRedo();
         }
 
+        /// <summary>
+        /// save funciton for the tool bar
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void SaveMode(object sender, RoutedEventArgs e)
         {
             viewModel.UnHighLightIt();
@@ -553,6 +555,10 @@ namespace PlexShareApp
             SuccessSaveMessage();
         }
 
+        /// <summary>
+        /// helper function for the save
+        /// </summary>
+        /// <returns></returns>
         private int SuccessSaveMessage()
         { 
             MessageBox.Show("The current snapshot is successfully saved","Confirmation",MessageBoxButton.OK,MessageBoxImage.Information);
@@ -560,6 +566,11 @@ namespace PlexShareApp
 
         }
 
+        /// <summary>
+        /// restore function for the tool bar
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void RestorFrameDropDownSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (this.ShapeToolBar.Visibility == Visibility.Visible)
@@ -570,6 +581,7 @@ namespace PlexShareApp
                 this.ShapeSelectionToolBar.Visibility = Visibility.Collapsed;
             ListBox listbox = (ListBox)sender;
 
+            // restore drop down
             if (this.RestorFrameDropDown.SelectedItem != null)
             {
 
@@ -597,6 +609,11 @@ namespace PlexShareApp
             }
         }
 
+        /// <summary>
+        /// for changing thickness of the brush
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void ChangeThickness(object sender, RoutedEventArgs e)
         {
             int thickness = (int)ThicknessSlider.Value;
@@ -628,7 +645,12 @@ namespace PlexShareApp
             
         }
 
-
+        /// <summary>
+        /// changing thicness of the line
+        /// thickness slider of shape, line, brush are changed differently
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void LineThicknessChange(object sender, RoutedEventArgs e)
         {
             int thickness = (int)LineThicknessSlider.Value;

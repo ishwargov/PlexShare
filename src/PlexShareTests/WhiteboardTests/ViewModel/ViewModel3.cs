@@ -7,9 +7,9 @@
  * 
  * Project     = White Board Tests
  *
- * Description = This is testing the curve operations in the white board tests
- *               This contains creation, selection, dimension change, deletion,
- *               transformation and translation of curves.
+ * Description = This is testing the view model in the white board tests.
+ *               This contains changing color and thicness and stroke color and 
+ *               ensuring it is reflected.
  ********************************************************************************/
 
 using PlexShareWhiteboard;
@@ -102,6 +102,7 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.redoStack.Clear();
         }
 
+        // for testing all the null cases
         [Fact]
         public void NullCases()
         {

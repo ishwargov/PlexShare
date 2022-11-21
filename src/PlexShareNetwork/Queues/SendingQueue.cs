@@ -34,8 +34,18 @@ namespace PlexShareNetwork.Queues
         /// <summary>
         /// Called by the Communicator submodule of each client in order to use queues
         /// </summary>
+        /// <param name="moduleName">
+        /// Name of the module to register
+        /// </param>
+        /// <param name="isHighPriority">
+        /// 'bool : true' if the packet is of high priority, and 'bool : false' if not
+        /// </param>
+        /// <returns>
+        /// 'bool : true' if the module is successfully registered, else 'bool : false'
+        /// </returns>
         public bool RegisterModule(string moduleName, bool isHighPriority)
         {
+            Trace.WriteLine("[Networking] SendingQueue.RegisterModule() function called.");
             bool isSuccessful = true;
 
             // Adding the priority of the module into the dictionary
@@ -48,14 +58,21 @@ namespace PlexShareNetwork.Queues
                     _modulesToPriorityMap.Add(moduleName, isHighPriority);
             }
 
+            Trace.WriteLine("[Networking] SendingQueue.RegisterModule() function returned.");
             return isSuccessful;
         }
 
         /// <summary>
         /// Inserts an element into the appropriate queue based on priority
         /// </summary>
+        /// <param name="packet">
+        /// The packet to be inserted into a queue
+        /// </param>
+        /// <returns> void </returns>
         public bool Enqueue(Packet packet)
         {
+            Trace.WriteLine("[Networking] SendingQueue.Enqueue() function called.");
+
             string moduleName = packet.moduleOfPacket;
             bool isHighPriority, containsKey;
 
@@ -68,7 +85,7 @@ namespace PlexShareNetwork.Queues
             // If the module is not registered at all
             if (!containsKey)
             {
-                Trace.WriteLine($"Module {moduleName} is not registered.\n");
+                Trace.WriteLine($"[Networking] Module {moduleName} is not registered.");
 
                 // Returning that the enqueueing failed
                 return false;
@@ -89,8 +106,13 @@ namespace PlexShareNetwork.Queues
         /// <summary>
         /// Removes and returns the front-most element in the appropriate queue based on priority
         /// </summary>
+        /// <returns>
+        /// The front-most element of the queue (based on priority)
+        /// </returns>
         public Packet Dequeue()
         {
+            Trace.WriteLine("[Networking] SendingQueue.Dequeue() function called.");
+
             Packet packet = null;
 
             // Dequeueing based on priority
@@ -125,8 +147,9 @@ namespace PlexShareNetwork.Queues
         }
 
         /// <summary>
-        /// Removes all elements in the queues
+        /// Removes all elements in the queue
         /// </summary>
+        /// <returns> void </returns>
         public void Clear()
         {
             // Clearing both queues
@@ -137,14 +160,20 @@ namespace PlexShareNetwork.Queues
         /// <summary>
         /// Returns the sum of sizes of both queues
         /// </summary>
+        /// <returns>
+        /// Sum of sizes of both queues
+        /// </returns>
         public int Size()
         {
             return _highPriorityQueue.Size() + _lowPriorityQueue.Size();
         }
 
         /// <summary>
-        /// Returns if both queues are empty
+        /// Informs if both queues are empty
         /// </summary>
+        /// <returns>
+        /// 'bool : true' if both queues are empty, else returns 'bool : false'
+        /// </returns>
         public bool IsEmpty()
         {
             return _highPriorityQueue.IsEmpty() && _lowPriorityQueue.IsEmpty();
@@ -153,6 +182,10 @@ namespace PlexShareNetwork.Queues
         /// <summary>
         /// Returns if at least one queue is non-empty
         /// </summary>
+        /// <returns>
+        /// 'bool : true' if the either queue is not empty, else the function keeps waiting for atleast one packet to appear in the
+        /// one of the queues and does not return until then
+        /// </returns>
         public bool WaitForPacket()
         {
             bool isEmpty = true;

@@ -1,4 +1,4 @@
-﻿/***************************
+﻿/*****************************
  * Filename    = IncomingOperations.cs
  *
  * Author      = Aiswarya H
@@ -12,12 +12,6 @@
  *               called by undo redo.
  ***************************/
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using PlexShareWhiteboard.BoardComponents;
 
 namespace PlexShareWhiteboard

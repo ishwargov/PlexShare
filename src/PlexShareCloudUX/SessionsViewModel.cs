@@ -19,6 +19,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 using System.Windows;
+using System.Diagnostics;
 
 namespace PlexShareCloudUX
 {
@@ -35,12 +36,18 @@ namespace PlexShareCloudUX
         {
             _model = new();
             GetSessions(userName);
+            Trace.WriteLine("[Cloud] Sessions View Model created");
         }
 
+        /// <summary>
+        /// Gets the details of the sessions conducted by the user.
+        /// Then dispatch the changes to the view.
+        /// <param name="userName">The username of the user.</param>
+        /// </summary>
         public async void GetSessions(string userName)
         {
             IReadOnlyList<SessionEntity> sessionsList = await _model.GetSessionsDetails(userName);
-
+            Trace.WriteLine("[Cloud] Session details received");
             _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
                         DispatcherPriority.Normal,
                         new Action<IReadOnlyList<SessionEntity>>((sessionsList) =>
@@ -69,7 +76,7 @@ namespace PlexShareCloudUX
         /// Handles the property changed event raised on a component.
         /// </summary>
         /// <param name="property">The name of the property.</param>
-        private void OnPropertyChanged(string property)
+        public void OnPropertyChanged(string property)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }

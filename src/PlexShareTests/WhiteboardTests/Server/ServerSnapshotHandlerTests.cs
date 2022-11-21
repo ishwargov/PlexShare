@@ -3,9 +3,9 @@
  *
  * Author      = Joel Sam Mathew
  *
- * Product     = Plex Share
+ * Product     = Plex Share Tests
  *
- * Project     = White Board
+ * Project     = White Board Tests
  *
  * Description = Tests for ServerSnapshotHandler.cs.
  ***************************/

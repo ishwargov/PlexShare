@@ -1,12 +1,12 @@
-﻿using Microsoft.ML;
+﻿/// <author>Jayanth Kumar</author>
+/// <created>10/11/2021</created>
+/// <summary>
+///		This is the unit testing file
+///		for the sentiment analyser logic module
+/// </summary>
+using Microsoft.ML;
 using PlexShareDashboard.Dashboard.Server.Summary;
-using System;
 using System.Diagnostics;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace PlexShareFacts.DashboardFacts.Summary
 {
@@ -62,7 +62,7 @@ namespace PlexShareFacts.DashboardFacts.Summary
 
 
         [Fact]
-        public void FactAccuracyHigherThan60()
+        public void FactAccuracyHigherThan70()
         {
             Debug.WriteLine("===== Evaluating Model's accuracy with Evaluation/Fact dataset =====");
 
@@ -107,19 +107,23 @@ namespace PlexShareFacts.DashboardFacts.Summary
                 IEnumerable<ModelOutput> predictions = mlContext.Data.CreateEnumerable<ModelOutput>(predictionsDataView, false);
                 ModelOutput[] arrayPredictions = predictions.ToArray();
 
+            List<float> arr = new List<float>();
 
-                for (int i = 0; i < arraysamplesForPrediction.Length; i++)
+            for (int i = 0; i < arraysamplesForPrediction.Length; i++)
                 {
                     try
                     {
-                        Debug.WriteLine($"Text {arraysamplesForPrediction[i].Text} predicted as {arrayPredictions[i].Prediction} should be {arraysamplesForPrediction[i].Sentiment}");
-                        Assert.Equal(arrayPredictions[i].Prediction, arraysamplesForPrediction[i].Sentiment);
+                    Debug.WriteLine($"Text {arraysamplesForPrediction[i].Text} predicted as {arrayPredictions[i].Prediction} should be {arraysamplesForPrediction[i].Sentiment}");
+                    arr.Add(arrayPredictions[i].Score);
+                    Assert.Equal(arrayPredictions[i].Prediction, arraysamplesForPrediction[i].Sentiment);
                     }
                     catch (Exception ex)
                     {
                         Debug.WriteLine(ex.Message);
                     }
                 }
+            Debug.WriteLine($"max == {arr.Max()}");
+            Debug.WriteLine($"min == {arr.Min()}");
         }
 
     }

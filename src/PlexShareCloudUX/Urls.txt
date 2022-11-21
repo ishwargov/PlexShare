@@ -1,0 +1,2 @@
+https://plexsharecloud20221118104530.azurewebsites.net/api/submission
+https://plexsharecloud20221118104530.azurewebsites.net/api/session

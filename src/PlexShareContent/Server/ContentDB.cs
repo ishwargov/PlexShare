@@ -7,7 +7,7 @@
  * 
  * Project     = PlexShareContent
  *
- * Description = This file implements the database for the content module and is used to store and fetch chats and files from database.
+ * Description = This file implements the database for the content module and is used to store and fetch chats and files from the database.
  *****************************************************************************/
 
 using PlexShareContent.DataModels;
@@ -22,12 +22,12 @@ namespace PlexShareContent.Server
 {
     public class ContentDB
     {
-        private readonly List<ChatThread> _chatThread;
-        private readonly Dictionary<int, int> _chatIdToDataMap;
-        private readonly Dictionary<int, ContentData> _filesMap;
+        private List<ChatThread> _chatThread;
+        private Dictionary<int, int> _chatIdToDataMap;
+        private Dictionary<int, ContentData> _filesMap;
 
         /// <summary>
-        ///     Database Constructor to initilize member variales.
+        ///     Database Constructor to initialize member variables.
         /// </summary>
         public ContentDB()
         {
@@ -56,29 +56,29 @@ namespace PlexShareContent.Server
             if (_chatIdToDataMap.ContainsKey(msg.ReplyThreadID))
             {
                 var threadIndex = _chatIdToDataMap[msg.ReplyThreadID];
-                var chatContext = _chatThread[threadIndex];
+                var chatThread = _chatThread[threadIndex];
                 ReceiveContentData message = msg.Copy();
-                chatContext.AddMessage(message);
+                chatThread.AddMessage(message);
             }
             // else create a new chatContext and add the message to it
             else
             {
-                var chatContext = new ChatThread();
+                var chatThread = new ChatThread();
                 var newThreadId = IdGenerator.GetChatId();
                 msg.ReplyThreadID = newThreadId;
                 ReceiveContentData message = msg.Copy();
-                chatContext.AddMessage(message);
+                chatThread.AddMessage(message);
 
-                _chatThread.Add(chatContext);
-                //Decrease the count by 1, becuase we had already incremented count.
-                _chatIdToDataMap[chatContext.ThreadID] = _chatThread.Count - 1;
+                _chatThread.Add(chatThread);
+                //Decrease the count by 1, because we had already incremented the count.
+                _chatIdToDataMap[chatThread.ThreadID] = _chatThread.Count - 1;
             }
 
             return msg;
         }
 
         /// <summary>
-        ///     Retreive message from the Database based on the thread ID and message ID 
+        ///     Retrieve message from the Database based on the thread ID and message ID 
         /// </summary>
         public ReceiveContentData GetMessage(int threadId, int _msgId)
         {
@@ -112,7 +112,7 @@ namespace PlexShareContent.Server
         }
 
         /// <summary>
-        ///     Function to Fetch the stored file with given id from the database.
+        ///     Function to Fetch the stored file with a given id from the database.
         /// </summary>
         public ContentData FilesFetch(int _msgId)
         {
@@ -121,6 +121,5 @@ namespace PlexShareContent.Server
                 return null;
             return _filesMap[_msgId];
         }
-        
     }
 }

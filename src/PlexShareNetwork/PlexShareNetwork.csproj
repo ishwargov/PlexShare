@@ -13,6 +13,7 @@
 
 	<PropertyGroup>
 		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+		<LangVersion>preview</LangVersion>
 	</PropertyGroup>
 
 </Project>

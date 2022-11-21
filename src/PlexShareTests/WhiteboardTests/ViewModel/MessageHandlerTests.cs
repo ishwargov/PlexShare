@@ -3,9 +3,9 @@
  *
  * Author      = Joel Sam Mathew
  *
- * Product     = Plex Share
+ * Product     = Plex Share Tests
  *
- * Project     = White Board
+ * Project     = White Board Tests
  *
  * Description = Tests for WBMessageHandler.cs.
  ***************************/
@@ -46,6 +46,7 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
         {
             viewModel.isServer = true;
             viewModel.ShapeItems.Clear();
+            viewModel.SetUserId(0);
 
             ShapeItem sh = utility.CreateRandomShape();
             List<ShapeItem> newShapes = new List<ShapeItem>() { sh };

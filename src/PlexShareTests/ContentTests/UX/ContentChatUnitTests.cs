@@ -1,9 +1,14 @@
-﻿/// <author>Sughandhan S</author>
-/// <created>11/11/2022</created>
-/// <summary>
-///     All Unit Tests for Content Chat 
-/// </summary>
-
+﻿/******************************************************************************
+ * Filename    = ContentChatUnitTests.cs
+ *
+ * Author      = Sughandhan S
+ *
+ * Product     = PlexShare
+ * 
+ * Project     = PlexShareTests
+ *
+ * Description = All Unit Tests for Content Chat ViewModel
+ *****************************************************************************/
 
 
 using System;
@@ -28,16 +33,14 @@ namespace PlexShareTests.ContentTests.UX
     {
         private ChatPageViewModel? _viewModel;
 
-        public void Setup()
-        {
-            _viewModel = new ChatPageViewModel(true);
-        }
-
+        /// <summary>
+        ///     Checking if Users are added t the session
+        /// </summary>
         [Fact]
         public void OnClientSessionChanged_ShouldAddUsers()
         {
             // Arrange
-            Setup();
+            _viewModel = new ChatPageViewModel(true);
             var testingSession = new SessionData();
             var testingUser1 = new UserData("Sughandhan", 111901049);
             testingSession.AddUser(testingUser1);
@@ -45,7 +48,8 @@ namespace PlexShareTests.ContentTests.UX
             testingSession.AddUser(testingUser2);
             var testingUser3 = new UserData("Jha", 111901010);
             testingSession.AddUser(testingUser3);
-            
+            // MUST CALL DispatcherUtil.DoEvents()
+            DispatcherUtil.DoEvents();
 
             // Act
             _viewModel.OnClientSessionChanged(testingSession);
@@ -58,12 +62,15 @@ namespace PlexShareTests.ContentTests.UX
             Assert.Equal("Narvik", _viewModel.Users[111901035]);
             Assert.Equal("Jha", _viewModel.Users[111901010]);
         }
-
+        
+        /// <summary>
+        ///     Checking if message has been received correctly
+        /// </summary>
         [Fact]
         public void OnMessage_ReceivedMsgObj_ShouldMatchReceivedMsg()
         {
             //Arrange
-            Setup();
+            _viewModel = new ChatPageViewModel(true);
             var testingChatData = new ReceiveContentData();
             testingChatData.Event = MessageEvent.New;
             testingChatData.Data = "Good Morning Narvik!";
@@ -95,11 +102,14 @@ namespace PlexShareTests.ContentTests.UX
             Assert.True(_viewModel.ReceivedMsg.Type);
         }
 
+        /// <summary>
+        ///     Checking if the all the received messages are correct.
+        /// </summary>
         [Fact]
         public void OnAllMessages_ReceivedMsgObj_ShouldMatchReceivedMsg()
         {
             //Arrange
-            Setup();
+            _viewModel = new ChatPageViewModel(true);
             var testingAllMessages = new List<ChatThread>();
             var testingChatThread = new ChatThread();
             var testingChatData1 = new ReceiveContentData();
@@ -153,13 +163,13 @@ namespace PlexShareTests.ContentTests.UX
         }
 
         /// <summary>
-        /// Checking if the Sent Chat Message matches with the MsgToSend object
+        ///     Checking if the Sent Chat Message matches with the MsgToSend object
         /// </summary>
         [Fact]
         public void SendChatMessage_SingleThread_ShouldMatchChatMsgSent()
         {
             // Arrange
-            Setup();
+            _viewModel = new ChatPageViewModel(true);
             var testMessage = "Welcome to the Chat Page";
             var testReplyMsgID = -1;
             var testMessageType = "Chat";
@@ -173,13 +183,13 @@ namespace PlexShareTests.ContentTests.UX
         }
 
         /// <summary>
-        /// Checking if the Sent File Message matches with the MsgToSend object
+        ///     Checking if the Sent File Message matches with the MsgToSend object
         /// </summary>
         [Fact]
         public void SendFileMessage_SingleThread_ShouldMatchFileMsgSent()
         {
             // Arrange
-            Setup();
+            _viewModel = new ChatPageViewModel(true);
             var currentDirectory = Directory.GetCurrentDirectory();
             var filepath = currentDirectory.Split(new[] { "\\PlexShareTests" }, StringSplitOptions.None);
             var testMesage = filepath[0] + "\\PlexShareTests\\ContentTests\\UX\\testing_file.pdf";
@@ -194,13 +204,13 @@ namespace PlexShareTests.ContentTests.UX
         }
 
         /// <summary>
-        /// Checking if a Property Changed Event is raised
+        ///     Checking if a Property Changed Event is raised
         /// </summary>
         [Fact]
         public void OnPropertyChanged_SingleThread_EventMustBeRaised()
         {
             // Arrange
-            Setup();
+            _viewModel = new ChatPageViewModel(true);
             var testingPropertyName = string.Empty;
 
             _viewModel.PropertyChanged += delegate (object sender, PropertyChangedEventArgs e)

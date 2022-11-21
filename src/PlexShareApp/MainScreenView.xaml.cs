@@ -30,6 +30,8 @@ namespace PlexShareApp
     {
         private bool chatOn;
         private bool cloudOn;
+        private bool submissionsOn;
+        private static CurrentSubmissionsPage currentSubmissionsPage;
         private static DashboardPage dashboardPage;
         private static WhiteBoardPage whiteBoardPage;
         private static ChatPageView chatPage;
@@ -38,15 +40,15 @@ namespace PlexShareApp
         private static UploadPage uploadPage;
 
         public event PropertyChangingEventHandler? PropertyChanged;
-
         private bool isClient;
 
-        public MainScreenView(string name, string email, string picPath, string url, string ip, string port, bool isServer)
+        public MainScreenView(string name, string email, string picPath, string url, string ip, string port, bool isServer, string sessionID)
         {
-
 
             isClient = !isServer;
             cloudOn = false;
+            submissionsOn = false;
+
             // The client/server was verified to be correct.
             // We can add the client to meeting, and instantiate all modules.
             InitializeComponent();
@@ -71,6 +73,9 @@ namespace PlexShareApp
                 Trace.WriteLine("[UX] The Whiteboard Client has started");
                 screenshareClientView = new ScreenshareClientView();
                 Trace.WriteLine("[UX] The Screenshare Client has started");
+                
+                // Clients should now be able to see the submissions Page
+                Submissions.Visibility = Visibility.Hidden;
             }
 
             Main.Content = dashboardPage;
@@ -79,15 +84,21 @@ namespace PlexShareApp
             Trace.WriteLine("[UX] Setting the IP:Port");
             ServerIPandPort.Text = "Server IP : " + ip + "    Port : " + port;
 
+            // This is to get the sessionID and userEmail from the dashBoard 
+            // Because the cloud team needs it in their constructor
             ClientSessionManager clientSessionManager;
             clientSessionManager = SessionManagerFactory.GetClientSessionManager();
-            SessionData sessionData = clientSessionManager._clientSessionData;
+          //  SessionData sessionData = clientSessionManager.clientSessionData;
             UserData user = clientSessionManager.GetUser();
-            uploadPage = new UploadPage(sessionData.sessionId.ToString(), user.userEmail);
 
-            //this is to disable backspace to avoid switch tabs
+            Trace.WriteLine("[UX] Instantiating Cloud Pages");
+            uploadPage = new UploadPage(sessionID, user.userEmail, isServer);
+            currentSubmissionsPage = new CurrentSubmissionsPage(sessionID);
+
+            // This is to disable backspace to avoid switch tabs
+            // Whiteboard team was not able to use backspace since
+            // the backspace used it has navigation
             NavigationCommands.BrowseBack.InputGestures.Clear();
-
         }
 
         /// <summary>
@@ -106,8 +117,6 @@ namespace PlexShareApp
         /// <summary>
         /// Transfer control to whiteboard on click
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void ScreenShareClick(object sender, RoutedEventArgs e)
         {
             Dashboard.Background = Brushes.DarkSlateGray;
@@ -160,8 +169,13 @@ namespace PlexShareApp
             }
         }
 
+        /// <summary>
+        /// To open the upload page
+        /// If the submissions page is open, close that page and open this page
+        /// </summary>
         private void UploadClick(object sender, RoutedEventArgs e)
         {
+            Trace.WriteLine("[UX] Upload button was clicked");
             if (cloudOn)
             {
                 Cloud.Background = Brushes.Transparent;
@@ -171,17 +185,54 @@ namespace PlexShareApp
             else
             {
                 Cloud.Background = Brushes.DarkCyan;
+                submissionsOn = false;
+                Submissions.Background = Brushes.Transparent;
                 cloudOn = true;
                 CloudPage.Content = uploadPage;
             }
         }
 
+        /// <summary>
+        /// To open the upload page
+        /// If the submissions page is open, close that page and open this page
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SubmissionsClick(object sender, RoutedEventArgs e)
+        {
+            Trace.WriteLine("[UX] Submissions button was clicked");
+            if (submissionsOn)
+            {
+                Submissions.Background = Brushes.Transparent;
+                submissionsOn = false;
+                CloudPage.Content = null;
+            }
+            else
+            {
+                Submissions.Background = Brushes.DarkCyan; 
+                Cloud.Background = Brushes.Transparent;
+                cloudOn = false;
+                submissionsOn = true; 
+                CloudPage.Content = currentSubmissionsPage;
+            }
+        }
+
+        /// <summary>
+        /// Show the IP and PORT if the mouse is hovered over
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ShowIpandPort(object sender, RoutedEventArgs e)
         {
-            Trace.WriteLine("[UX] Clicked the Info Button");
+            Trace.WriteLine("[UX] Hovered over the Info Button");
             ServerIPandPort.Visibility = Visibility.Visible;
         }
 
+        /// <summary>
+        /// To change the visibility of the serverIP and Port box back
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void HideIpandPort(object sender, RoutedEventArgs e)
         {
             ServerIPandPort.Visibility = Visibility.Hidden;
@@ -252,6 +303,30 @@ namespace PlexShareApp
             else
             {
                 this.BorderThickness = new System.Windows.Thickness(0);
+            }
+        }
+
+        /// <summary>
+        /// Changes the theme using the toggle button. It changes the resource file 
+        /// that is connected from App.xaml, using which we can dynamically change the colour 
+        /// and background colour of different objects
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ThemeToggleButtonClick(object sender, RoutedEventArgs e)
+        {
+            var dict = new ResourceDictionary();
+            if (themeButtonToggle.IsChecked != true)
+            {
+                dict.Source = new Uri("Theme1.xaml", UriKind.Relative);
+                Application.Current.Resources.MergedDictionaries.Clear();
+                Application.Current.Resources.MergedDictionaries.Add(dict);
+            }
+            else
+            {
+                dict.Source = new Uri("Theme2.xaml", UriKind.Relative);
+                Application.Current.Resources.MergedDictionaries.Clear();
+                Application.Current.Resources.MergedDictionaries.Add(dict);
             }
         }
     }

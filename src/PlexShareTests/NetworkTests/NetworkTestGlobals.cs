@@ -7,10 +7,16 @@
 using PlexShareNetwork.Communication;
 using PlexShareNetwork.Queues;
 using PlexShareNetwork.Sockets;
+using PlexShareNetwork;
 using System.Net.Sockets;
 using System.Text;
+using System.Collections.Generic;
+using System;
+using System.Threading;
+using Xunit;
+using System.Linq;
 
-namespace PlexShareNetwork
+namespace PlexShareTests.NetworkTests
 {
     public static class NetworkTestGlobals
     {
@@ -68,7 +74,7 @@ namespace PlexShareNetwork
             {
                 string packetString = 
                     PacketString.PacketToPacketString(packets[i]);
-                byte[] bytes = Encoding.ASCII.GetBytes(packetString);
+                byte[] bytes = Encoding.UTF32.GetBytes(packetString);
                 socket.Client.Send(bytes);
             }
         }
@@ -285,34 +291,22 @@ namespace PlexShareNetwork
         private readonly List<TcpClient> sockets = new();
         private readonly List<string> clientIds = new();
 
-        // to remember the count of the last even, so that we can
+        // to remember the count of the last event, so that we can
         // know when a new even occurs
         public int lastEventCount = 0;
 
-        /// <summary>
-        /// Called by the Communicator to notify subscribed module
-        /// when data is received
-        /// </summary>
         public void OnDataReceived(string data)
 		{
             events.Add("OnDataReceived");
             datas.Add(data);
         }
 
-        /// <summary>
-        /// Called by the Communicator to notify subscribed module
-        /// when a new client joins
-        /// </summary>
         public void OnClientJoined(TcpClient socket)
         {
             events.Add("OnClientJoined");
             sockets.Add(socket);
         }
 
-        /// <summary>
-        /// Called by the Communicator to notify subscribed module
-        /// a client leaves
-        /// </summary>
         public void OnClientLeft(string clientId)
 		{
             events.Add("OnClientLeft");
