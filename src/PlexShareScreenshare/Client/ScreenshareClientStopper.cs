@@ -18,9 +18,8 @@ namespace PlexShareScreenshare.Client
     {
 
         /// <summary>
-        /// Method to stop screensharing. Calling this will stop sending
-        /// both the image sending task and confirmation sending task.
-        /// It will also call stop on the processor and capturer.
+        /// Method to stop screensharing. Calling this will stop sending both the image sending
+        /// task and confirmation sending task. It will also call stop on the processor and capturer.
         /// </summary>
         public void StopScreensharing()
         {
@@ -37,6 +36,10 @@ namespace PlexShareScreenshare.Client
             Trace.WriteLine(Utils.GetDebugMessage("Successfully sent DEREGISTER packet to server", withTimeStamp: true));
         }
 
+        /// <summary>
+        /// Method to stop sending confirmation packets. Will be called only when the client
+        /// stops screensharing.
+        /// </summary>
         private void StopConfirmationSending()
         {
             Debug.Assert(_sendConfirmationTask != null,
@@ -56,8 +59,8 @@ namespace PlexShareScreenshare.Client
         }
 
         /// <summary>
-        /// Method to stop image sending. Implemented separately
-        /// in case this is needed to be used somewhere else.
+        /// Method to stop image sending. Will be called whenever the screenshare is stopped by
+        /// the client or the client is not on the displayed screen of the server.
         /// </summary>
         private void StopImageSending()
         {
@@ -82,8 +85,11 @@ namespace PlexShareScreenshare.Client
         }
 
         /// <summary>
-        /// Sends confirmation packet to server once every second. The confirmation packet
-        /// does not contain any data
+        /// Sends confirmation packet to server once every five seconds. The confirmation packet
+        /// does not contain any data. The confirmation packets are always sent once the client
+        /// has started screen share. In case the network gets disconnected, these packtes will
+        /// stop reaching the server, as a result of which the server will remove the client
+        /// as a 'screen sharer'.
         /// </summary>
         private void SendConfirmationPacket()
         {

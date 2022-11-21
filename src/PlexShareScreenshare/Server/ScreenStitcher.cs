@@ -18,31 +18,58 @@ namespace PlexShareScreenshare.Server
     /// <summary>
     /// Class contains implementation of the screen stitching using threads (tasks)
     /// </summary>
-    internal class ScreenStitcher
+    public class ScreenStitcher
     {
+        /// <summary>
+        /// SharedClientScreen object.
+        /// </summary>
         private readonly SharedClientScreen _sharedClientScreen;
 
+        /// <summary>
+        /// Thread to run stitcher.
+        /// </summary>
         private Task? _stitchTask;
 
+        /// <summary>
+        /// A private variable to store old image.
+        /// </summary>
         private Bitmap? _oldImage;
+
+        /// <summary>
+        /// Old resolution of the image.
+        /// </summary>
         private Resolution? _resolution;
+
+        /// <summary>
+        /// A count to maintain the number of image stitched. Used in
+        /// trace logs.
+        /// </summary>
+        private int _cnt = 0;
 
         // Token for killing the task
         private bool _cancellationToken = false;
 
-        private byte[] expansionBuffer;
-
-        // Called by the `SharedClientScreen`
+        /// <summary>
+        /// Constructor for ScreenSticher.
+        /// </summary>
+        /// <param name="scs"></param>
         public ScreenStitcher(SharedClientScreen scs)
         {
             _oldImage = null;
             _stitchTask = null;
             _resolution = null;
             _sharedClientScreen = scs;
-            expansionBuffer = new byte[720 * 1280 * 4];
         }
 
-        unsafe Bitmap Process(Bitmap curr, Bitmap prev)
+        /// <summary>
+        /// Uses the 'diff' image curr and the previous image to find the 
+        /// current image. This method is used when the client sends a diff
+        /// instead of entire image to server.
+        /// </summary>
+        /// <param name="curr">The 'diff' current image</param>
+        /// <param name="prev">Previous image</param>
+        /// <returns>Current image meant to be displayed</returns>
+        public static unsafe Bitmap Process(Bitmap curr, Bitmap prev)
         {
             BitmapData currData = curr.LockBits(new Rectangle(0, 0, curr.Width, curr.Height), ImageLockMode.ReadWrite, curr.PixelFormat);
             BitmapData prevData = prev.LockBits(new Rectangle(0, 0, prev.Width, prev.Height), ImageLockMode.ReadWrite, prev.PixelFormat);
@@ -92,7 +119,7 @@ namespace PlexShareScreenshare.Server
         /// <summary>
         /// Creates(if not exist) and start the task `_stitchTask`
         /// Will read the image using `_sharedClientScreen.GetFrame`
-        /// and puts the final image using `_sharedClientScreen.PutFinalImage`
+        /// and puts the final image using `_sharedClientScreen.PutFinalImage`.
         /// </summary>
         public void StartStitching()
         {
@@ -113,7 +140,7 @@ namespace PlexShareScreenshare.Server
                             continue;
                         }
                         Bitmap stichedImage = Stitch(_oldImage, newFrame);
-                        Trace.WriteLine(Utils.GetDebugMessage($"STITCHED image from client {cnt++}", withTimeStamp: true));
+                        Trace.WriteLine(Utils.GetDebugMessage($"STITCHED image from client {_cnt++}", withTimeStamp: true));
                         _oldImage = stichedImage;
                         _sharedClientScreen.PutFinalImage(stichedImage);
                     }
@@ -123,7 +150,9 @@ namespace PlexShareScreenshare.Server
             }
         }
 
-        // Kills the task `_stitchTask`
+        /// <summary>
+        /// Method to stop the sticher task.
+        /// </summary>
         public void StopStitching()
         {
             try
@@ -131,10 +160,6 @@ namespace PlexShareScreenshare.Server
                 _cancellationToken = true;
                 _stitchTask!.Wait();
                 _stitchTask = null;
-            }
-            catch (OperationCanceledException e)
-            {
-                Trace.WriteLine(Utils.GetDebugMessage($"Task canceled for the client: {e.Message}", withTimeStamp: true));
             }
             catch (Exception e)
             {
@@ -146,6 +171,11 @@ namespace PlexShareScreenshare.Server
             }
         }
 
+        /// <summary>
+        /// Method to decompress a byte array compressed by processor.
+        /// </summary>
+        /// <param name="data">Byte array compressed using DeflateStream</param>
+        /// <returns>Decompressed byte array</returns>
         public static byte[] DecompressByteArray(byte[] data)
         {
             MemoryStream input = new MemoryStream(data);
@@ -158,13 +188,15 @@ namespace PlexShareScreenshare.Server
         }
 
         /// <summary>
-        /// Function to stitch the new image over the old image
-        /// If resolution is changed update whole Image, else update the changed pixels
+        /// Function to stitch new frame over old image. If the data sent from client
+        /// has '1' in front then it is a complete image and hence the Process function
+        /// is not used. Otherwise, the data will have a '0' in front of it and we will
+        /// have to compute the xor (using process function) in order to find the current
+        /// image.
         /// </summary>
-        /// <param name="oldImage">The previous image of client's screen</param>
-        /// <param name="newFrame">The list of the updated pixels, list of : { x, y, (R, G, B)}</param>
-        /// <returns>The updated new image of client's screen</returns>
-        private int cnt = 0;
+        /// <param name="oldImage"></param>
+        /// <param name="newFrame"></param>
+        /// <returns>New image after stitching</returns>
         private Bitmap Stitch(Bitmap? oldImage, string newFrame)
         {
 
