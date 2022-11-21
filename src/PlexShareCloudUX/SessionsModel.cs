@@ -19,7 +19,7 @@ namespace PlexShareCloudUX
 {
     public class SessionsModel
     {
-        string[] paths;
+        string[] paths; //string array to store the read content of the url file. 
         private string SubmissionUrl;   //@"http://localhost:7213/api/submission";
         private string SessionUrl;  //@"http://localhost:7213/api/session";
         private FileDownloadApi fileDownloadApi;
@@ -28,7 +28,7 @@ namespace PlexShareCloudUX
             paths = GetOfflinePaths("Urls.txt");
             SubmissionUrl = @paths[0];
             SessionUrl = @paths[1];
-            Trace.WriteLine("New FileDownloadApi instance created");
+            Trace.WriteLine("[cloud] New FileDownloadApi instance created");
             fileDownloadApi = new FileDownloadApi(SessionUrl, SubmissionUrl);
         }
         /// <summary>
@@ -39,7 +39,7 @@ namespace PlexShareCloudUX
         public async Task<IReadOnlyList<SessionEntity>> GetSessionsDetails(string userName)
         {
             IReadOnlyList<SessionEntity>? getEntity = await fileDownloadApi.GetSessionsByUserAsync(userName);
-            Trace.WriteLine("Retrieved all session details for " + userName);
+            Trace.WriteLine("[cloud] Retrieved all session details for " + userName);
             return getEntity;
         }
 
@@ -51,7 +51,7 @@ namespace PlexShareCloudUX
         public static string[] GetOfflinePaths(string filename)
         {
             string[] lines = FileRead.GetPaths(filename);
-            Trace.WriteLine("Read the paths from the " + filename);
+            Trace.WriteLine("[cloud] Read the paths from the " + filename);
             return lines;
         }
     }
