@@ -1,7 +1,7 @@
 ﻿/***************************
  * Filename    = IncomingOperations.cs
  *
- * Author      = Asha Jose
+ * Author      = Aiswarya H
  *
  * Product     = Plex Share
  * 
@@ -25,12 +25,11 @@ namespace PlexShareWhiteboard
     public partial class WhiteBoardViewModel
     {
         /// <summary>
-        /// this function is called when a shape is broad casted for creation
-        /// it is checked if the shape is already existing (it is already existing for the client that send it to the server)
-        /// if it is not existing, it is added
-        /// if it is existing, it is removed and added, this is to ensure proper rendering
+        ///         This function is called when a shape is broad casted for creation
+        ///         it is checked if the shape is already existing (it is already existing for the client that send it to the server)
+        ///         if it is not existing, it is added
+        ///         if it is existing, it is removed and added, this is to ensure proper rendering
         /// </summary>
-        /// <param name="newShape"></param>
         public void CreateIncomingShape(ShapeItem newShape)
         {
             if (newShape == null)
@@ -57,10 +56,9 @@ namespace PlexShareWhiteboard
         }
 
         /// <summary>
-        /// this function is called when a shape is broad casted for modification
-        /// the object in the list with same id is taken and updated with the new shape
+        ///         This function is called when a shape is broad casted for modification
+        ///         the object in the list with same id is taken and updated with the new shape
         /// </summary>
-        /// <param name="newShape"></param>
         public void ModifyIncomingShape(ShapeItem newShape)
         {
             if (newShape == null)
@@ -82,10 +80,9 @@ namespace PlexShareWhiteboard
         }
 
         /// <summary>
-        /// this function is called when a shape is broad casted for deletion
-        /// the object in the list with same id as that of new shape is taken and deleted if existing
+        ///         This function is called when a shape is broad casted for deletion
+        ///         the object in the list with same id as that of new shape is taken and deleted if existing
         /// </summary>
-        /// <param name="oldShape"></param>
         public void DeleteIncomingShape(ShapeItem oldShape)
         {
             if (oldShape == null)
@@ -102,7 +99,8 @@ namespace PlexShareWhiteboard
         }
 
         /// <summary>
-        /// This function is called for broadcasting clear as well as for call from view to clear all shapes
+        ///         This function is called for broadcasting clear as well as for 
+        ///         call from view to clear all shapes.
         /// 
         /// </summary>
         public void ClearAllShapes()
