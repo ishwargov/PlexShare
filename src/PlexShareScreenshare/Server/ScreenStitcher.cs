@@ -18,7 +18,7 @@ namespace PlexShareScreenshare.Server
     /// <summary>
     /// Class contains implementation of the screen stitching using threads (tasks)
     /// </summary>
-    internal class ScreenStitcher
+    public class ScreenStitcher
     {
         private readonly SharedClientScreen _sharedClientScreen;
 

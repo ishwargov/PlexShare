@@ -39,8 +39,10 @@ namespace PlexShareScreenshare.Client
 
         private void StopConfirmationSending()
         {
-            Debug.Assert(_sendConfirmationTask != null,
-                Utils.GetDebugMessage("_sendConfirmationTask is not null, cannot stop confirmation sending"));
+            if (_sendConfirmationTask == null)
+            {
+                return;
+            }
 
             try
             {
@@ -61,6 +63,11 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         private void StopImageSending()
         {
+            if (_sendImageTask == null)
+            {
+                return;
+            }
+
             _capturer.StopCapture();
             _processor.StopProcessing();
             Trace.WriteLine(Utils.GetDebugMessage("Successfully stopped capturer and processor"));
