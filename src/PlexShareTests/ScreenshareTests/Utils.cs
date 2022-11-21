@@ -18,7 +18,7 @@ namespace PlexShareTests.ScreenshareTests
     /// Defines the static "Utils" class which defines
     /// general utilities required for unit tests.
     /// </summary>
-    public static class Utils
+    public static partial class Utils
     {
         /// <summary>
         /// Random number generator.

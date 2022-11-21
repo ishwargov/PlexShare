@@ -221,6 +221,61 @@ namespace PlexShareTests.ScreenshareTests
         }
 
         /// <summary>
+        /// Tests the false image packet retrieval from unknown client.
+        /// </summary>
+        /// <param name="numImages">
+        /// The number of images sent for the client to the server.
+        /// </param>
+        [Theory]
+        [InlineData(1)]
+        [InlineData(5)]
+        public void TestPutFaultImage(int numImages)
+        {
+            // Arrange.
+            // Create mock server and mock client.
+            var viewmodelMock = new Mock<IMessageListener>();
+            ScreenshareServer server = ScreenshareServer.GetInstance(viewmodelMock.Object, isDebugging: true);
+            SharedClientScreen client = Utils.GetMockClient(server, isDebugging: true);
+
+            // Act.
+            // Create mock images and mock image packets for the client.
+            List<(string MockImagePacket, string MockImage)> clientImagePackets = new();
+            for (int i = 0; i < numImages; ++i)
+            {
+                clientImagePackets.Add(Utils.GetMockImagePacket(client.Id + "1", client.Name));
+            }
+
+            // Register the client on the server first.
+            string mockRegisterPacket = Utils.GetMockRegisterPacket(client.Id, client.Name);
+            server.OnDataReceived(mockRegisterPacket);
+
+            // Send mock image packets for the client to the server.
+            for (int i = 0; i < numImages; ++i)
+            {
+                server.OnDataReceived(clientImagePackets[i].MockImagePacket);
+            }
+
+            // Assert.
+            // Get the private list of subscribers stored in the server.
+            List<SharedClientScreen> subscribers =
+                server.GetPrivate<Dictionary<string, SharedClientScreen>>("_subscribers").Values.ToList();
+
+            // Check that no image is being put the client image queue.
+            Assert.True(subscribers.Count == 1);
+            int clientIdx = subscribers.FindIndex(c => c.Id == client.Id);
+            Assert.True(clientIdx != -1);
+
+            SharedClientScreen serverClient = subscribers[clientIdx];
+            Assert.True(serverClient.GetPrivate<Queue<string>>("_imageQueue").Count == 0);
+
+            // Cleanup.
+            client.Dispose();
+            serverClient.Dispose();
+            server.Dispose();
+            subscribers.Clear();
+        }
+
+        /// <summary>
         /// Tests the successful arrival of the client's CONFIRMATION packet before their timeout.
         /// </summary>
         /// <param name="timeOfArrival">
