@@ -1,9 +1,9 @@
-﻿using PlexShareScreenshare.Client;
-using PlexShareTests.ScreenshareTests;
+﻿using PlexShareScreenshare;
+using PlexShareScreenshare.Client;
+using PlexShareScreenshare.Server;
 using System.Drawing;
+using System.Reflection;
 
-ScreenProcessorTests tmp = new();
-tmp.TestCleanup();
 
 namespace PlexShareTests.ScreenshareTests
 {
@@ -54,11 +54,74 @@ namespace PlexShareTests.ScreenshareTests
             bool token = false;
 
             screenCapturer.StartCapture();
-            Bitmap img = screenCapturer.GetImage(ref token);
+            Bitmap? img = screenCapturer.GetImage(ref token);
             screenCapturer.StopCapture();
+            Assert.True(img != null);
 
-            //List<Pixel> tmp = ScreenProcessor.ProcessUsingLockbits(img, img);
-            //Assert.True(tmp.Count == 0);
+
+            Bitmap emptyImage = new Bitmap(img.Width, img.Height);
+            Bitmap? tmp = ScreenStitcher.Process(img, emptyImage);
+            Assert.True(tmp != null);
+            Assert.True(Utils.CompareBitmap(tmp, img));
+        }
+
+        [Fact]
+        public void TestResolutionChange()
+        {
+            ScreenCapturer screenCapturer = new();
+            ScreenProcessor screenProcessor = new(screenCapturer);
+
+            screenCapturer.StartCapture();
+            screenProcessor.StartProcessing();
+
+            Thread.Sleep(1000);
+
+            Resolution? res1 = (Resolution?)typeof(ScreenProcessor)
+                .GetField("_currentRes", BindingFlags.NonPublic | BindingFlags.Instance)!
+                .GetValue(screenProcessor);
+
+            Assert.NotNull(res1);
+
+            screenProcessor.SetNewResolution(9);
+
+            Thread.Sleep(1000);
+
+            Resolution? res2 = (Resolution?)typeof(ScreenProcessor)
+                .GetField("_currentRes", BindingFlags.NonPublic | BindingFlags.Instance)!
+                .GetValue(screenProcessor);
+
+            Assert.NotNull(res2);
+
+            screenCapturer.StopCapture();
+            screenProcessor.StopProcessing();
+
+            Assert.True(res1?.Height / 9 == res2?.Height);
+            Assert.True(res1?.Width / 9 == res2?.Width);
+        }
+
+        [Fact]
+        public void TestCorrectImageStringFormat()
+        {
+            ScreenCapturer screenCapturer = new();
+            ScreenProcessor screenProcessor = new(screenCapturer);
+
+            screenCapturer.StartCapture();
+            screenProcessor.StartProcessing();
+
+            int cnt = 5;
+            while (cnt-- > 0)
+            {
+                bool token = false;
+                string tmpStr = screenProcessor.GetFrame(ref token);
+                Assert.True(tmpStr[^1] == '0' || tmpStr[^1] == '1');
+            }
+
+            screenCapturer.StopCapture();
+            screenProcessor.StopProcessing();
         }
     }
 }
+
+// calling processing again should give the image back
+// stop should make the queue length change stop
+// finally it must have last character as 0 or 1
