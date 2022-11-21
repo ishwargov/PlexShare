@@ -44,7 +44,6 @@ namespace PlexShareApp
         public WhiteBoardPage(int serverID)
         {
             InitializeComponent();
-            //viewModel = new WhiteBoardViewModel();
             viewModel = WhiteBoardViewModel.Instance;
             Trace.WriteLine("[WhiteBoard] White Board Page is initialised serverId: " + serverID + "viewModel.userId : " + viewModel.userId);
 
@@ -54,7 +53,6 @@ namespace PlexShareApp
                 viewModel.isServer = false;
 
             //if (viewModel.canDraw == true && serverID == 0)
-            // init means noone called, ! means someone called (server) and we found out that it is not server
             if (!viewModel.userId.Equals("init") && serverID != 0)
             {
                 Trace.WriteLine("[WhiteBoard] recalling setuserid");
@@ -77,7 +75,6 @@ namespace PlexShareApp
         /// <param name="e"></param>
         private void CanvasMouseDown(object sender, MouseButtonEventArgs e)
         {
-            Trace.WriteLine("[WhiteBoard Xaml] candraw " + viewModel.canDraw);
             if (viewModel.canDraw)
             {
                 var a = e.GetPosition(sender as Canvas);
@@ -146,7 +143,6 @@ namespace PlexShareApp
         /// <param name="e"></param>
         private void CanvasMouseEnter(object sender, MouseEventArgs e)
         {
-            //Debug.WriteLine(this.currentTool + " Got it \n");
             if (this.currentTool != "Select")
                 viewModel.UnHighLightIt();
             switch (this.currentTool)
@@ -185,7 +181,6 @@ namespace PlexShareApp
         /// <param name="e"></param>
         private void CanvasMouseLeave(object sender, MouseEventArgs e)
         {
-            //Debug.WriteLine(this.currentTool + " Leave Got it \n");
             if (this.currentTool != "Select")
                 viewModel.UnHighLightIt();
             Cursor = Cursors.Arrow;
