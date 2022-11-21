@@ -1,19 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+﻿/********************************************************************************
+ * Filename    = WhiteBoardViewModel.cs
+ *
+ * Author      = Jerry John Thomas
+ *
+ * Product     = Plex Share Tests
+ * 
+ * Project     = White Board Tests
+ *
+ * Description = This is testing the view model (curve operations)
+ *               in the white board tests.
+ *               This contains creation, selection, dimension change, deletion,
+ *               transformation and translation of curves.
+ ********************************************************************************/
+
 using PlexShareWhiteboard;
-//using System.Drawing;
 using System.Windows;
-using PlexShareScreenshare.Client;
-using System.Xml.Linq;
-using System.Diagnostics;
 using PlexShareWhiteboard.BoardComponents;
-using System.Windows.Shapes;
-using PlexShareDashboard.Dashboard.Server.SessionManagement;
-using System.Linq.Expressions;
+
 
 namespace PlexShareTests.WhiteboardTests.ViewModel
 {
