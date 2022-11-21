@@ -48,7 +48,8 @@ namespace PlexShareWhiteboard
         }
 
         /// <summary>
-        /// 
+        /// this function is to create the curve structure
+        /// the curve structure contiains line connecting two points and a circle indicating the point
         /// </summary>
         /// <param name="g1"></param>
         /// <param name="currentPoint"></param>
@@ -110,7 +111,7 @@ namespace PlexShareWhiteboard
             PathGeometry g1 = new();
 
             select.finalPointList.Clear();
-            // Y fixing
+            // y fixing ration calculation
             double extraY = a.Y - select.initialSelectionPoint.Y;
             double height = select.selectedObject.Geometry.Bounds.Height;
             double newHeight = height - extraY;
@@ -193,11 +194,10 @@ namespace PlexShareWhiteboard
                 }
             }
             lastShape = newShape;
-            //HighLightIt(shape.Geometry.Bounds);
         }
 
         /// <summary>
-        /// To increase and decrease the si*e of the Bounding Box
+        /// To increase and decrease the size of the Bounding Box
         /// </summary>
         /// <param name="a"></param>
         /// <param name="shape"></param>
@@ -206,12 +206,11 @@ namespace PlexShareWhiteboard
             Debug.WriteLine(select.selectBox + " bounce bounce bounce yippe yipee ");
             if (select.selectBox == 6 || select.selectBox == 7)
             {
-                // horitzontal
                 ShapeItem x = shape;
                 PathGeometry g1 = new();
                 select.finalPointList.Clear();
 
-                // X fixing
+                // x fixing ratio calculation
                 double extraX = a.X - select.initialSelectionPoint.X;
                 double width = select.selectedObject.Geometry.Bounds.Width;
                 double newWidth = width + extraX;
@@ -270,7 +269,7 @@ namespace PlexShareWhiteboard
                 PathGeometry g1 = new PathGeometry();
                 select.finalPointList.Clear();
 
-                // Y fixing
+                // y fixing
                 double extraY = a.Y - select.initialSelectionPoint.Y;
                 double height = select.selectedObject.Geometry.Bounds.Height;
                 double newHeight = height - extraY;
@@ -323,8 +322,6 @@ namespace PlexShareWhiteboard
                     }
                 }
                 lastShape = newShape;
-                //HighLightIt(shape.Geometry.Bounds);
-
             }
         }
 
@@ -375,7 +372,8 @@ namespace PlexShareWhiteboard
         }
 
         /// <summary>
-        /// 
+        /// finishing curve is to update the point list once the curve has finished transformation or dimension change
+        /// this is done in shape finished
         /// </summary>
         public void FinishingCurve()
         {

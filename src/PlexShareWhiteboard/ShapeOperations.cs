@@ -22,7 +22,15 @@ namespace PlexShareWhiteboard
 {
     public partial class WhiteBoardViewModel
     {
-        // this is not for creation but for updating a created shape as we are using lastid.
+        /// <summary>
+        /// this is not for creation but for updating a created shape as we are using lastid.
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="name"></param>
+        /// <param name="oldShape"></param>
+        /// <param name="textDataOpt"></param>
+        /// <returns></returns>
         public ShapeItem UpdateShape(Point start, Point end, string name, ShapeItem oldShape, string textDataOpt = "")
         {
             Rect boundingBox = new (start, end);
@@ -75,6 +83,15 @@ namespace PlexShareWhiteboard
 
             return newShape;
         }
+        /// <summary>
+        /// this is for creating a shape
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="name"></param>
+        /// <param name="id"></param>
+        /// <param name="textDataOpt"></param>
+        /// <returns></returns>
         public ShapeItem CreateShape(Point start, Point end, string name, String id, string textDataOpt = "")
         {
             Rect boundingBox = new (start, end);
@@ -129,6 +146,10 @@ namespace PlexShareWhiteboard
             return newShape;
         }
 
+        /// <summary>
+        /// this is for deleting a shape, curve, line or text box
+        /// </summary>
+        /// <param name="a"></param>
         public void DeleteShape(Point a)
         {
             int tempZIndex = -1;
@@ -160,7 +181,14 @@ namespace PlexShareWhiteboard
                 ShapeItems.Remove(toDelete);
             }
         }
-
+        /// <summary>
+        /// this is for transforming a shape
+        /// </summary>
+        /// <param name="shape"></param>
+        /// <param name="newXLen"></param>
+        /// <param name="newYLen"></param>
+        /// <param name="signX"></param>
+        /// <param name="signY"></param>
         public void TransformShape(ShapeItem shape, double newXLen, double newYLen, int signX, int signY)
         {
             Rect boundingBox = shape.Geometry.Bounds;
@@ -206,6 +234,11 @@ namespace PlexShareWhiteboard
             }
         }
 
+        /// <summary>
+        /// this is for changing a dimension change of a shape
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="shape"></param>
         public void DimensionChangingShape(Point a, ShapeItem shape)
         {
             Rect boundingBox = shape.Geometry.Bounds;
@@ -238,9 +271,15 @@ namespace PlexShareWhiteboard
             {
                 shape = UpdateShape(p1, p2, shape.Geometry.GetType().Name, shape,shape.TextString);
                 lastShape = shape;
-                //HighLightIt(shape.Geometry.Bounds);
             }
         }
+
+        /// <summary>
+        /// this is for translating a shape
+        /// </summary>
+        /// <param name="shape"></param>
+        /// <param name="p1"></param>
+        /// <param name="p2"></param>
         public void TranslatingShape(ShapeItem shape, Point p1, Point p2)
         {
             if (shape.Geometry.GetType().Name == "GeometryGroup")
@@ -248,7 +287,6 @@ namespace PlexShareWhiteboard
                 textBoxLastShape = UpdateShape(p1, p2, shape.Geometry.GetType().Name, shape, shape.TextString);
                 Rect rect = textBoxLastShape.Geometry.Bounds;
                 HighLightTextBox(rect);
-                //HighLightIt(textBoxLastShape.Geometry.Bounds);
             }
             else
             {

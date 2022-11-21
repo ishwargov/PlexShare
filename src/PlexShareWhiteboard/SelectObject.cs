@@ -14,7 +14,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
-using System.Windows.Shapes;
 using PlexShareWhiteboard.BoardComponents;
 
 namespace PlexShareWhiteboard
@@ -127,7 +126,7 @@ namespace PlexShareWhiteboard
         //deon
 
         /// <summary>
-        /// Function to check wheether the clicked point is  inside the highlighted box
+        /// Function to check whether the clicked point is  inside the highlighted box
         /// </summary>
         /// <param name="point"></param>
         /// <param name="click"></param>
@@ -177,7 +176,6 @@ namespace PlexShareWhiteboard
 
                 if (HelperSelect(boundingBox, a, blobSize / 2))
                 {
-                   
                     select.ifSelected = true;
                     select.selectedObject = ShapeItems[i];
                     select.initialSelectionPoint = a;
@@ -195,21 +193,17 @@ namespace PlexShareWhiteboard
             {
                 if (select.selectedObject.Geometry.GetType().Name == "LineGeometry")
                 {
-                    //Trace.WriteLine("[Whiteboard]  " + "line selected\n");
-
                     LineGeometry boundingLine = (LineGeometry)GenerateBoundingLine(select.selectedObject);
                     Debug.WriteLine("selected boundingline " + boundingLine.StartPoint + " " + boundingLine.EndPoint);
                     HighLightIt(boundingLine);
                     int boxNumber = PointInsideHighlightBox(boundingLine, a, blobSize / 2);
                     if (boxNumber >= 0)
                     {
-                        //Trace.WriteLine("[Whiteboard]  " + "In transform mode ");
                         mode = "transform_mode";
                         select.selectBox = boxNumber;
                     }
                     else
                     {
-                        //Debug.Write("In translate_mode ");
                         mode = "translate_mode";
                     }
                     select.initialSelectionObject = select.selectedObject;
@@ -253,13 +247,8 @@ namespace PlexShareWhiteboard
                         }
                         HighLightTextBox(select.selectedObject.Geometry.Bounds);
                     }
-
                 }
-
             }
         }
-
     }
-
-
 }
