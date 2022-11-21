@@ -10,6 +10,7 @@
  * Description = Interaction Logic for HomePageView.xaml
  * 
  ************************************************************/
+using Microsoft.AspNetCore.Hosting.Server;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -120,6 +121,7 @@ namespace PlexShareApp
             Trace.WriteLine("[UX] Clicked New Meeting button");
             HomePageViewModel viewModel = new();
             this.DataContext = viewModel;
+            //verified return = ip, port, isValidUserName, isValidIpAddress, isValidPort, isServer, isVerified, SessionID 
             List<string> verified = viewModel.VerifyCredentials(this.nameBox.Text, "-1", "0", this.emailTextBox.Text, this.imageUrl);
             if (verified[6] == "False")
             {
@@ -148,7 +150,7 @@ namespace PlexShareApp
             Trace.WriteLine("[UX] Clicked Join Meeting");
             HomePageViewModel viewModel = new();
             this.DataContext = viewModel;
-
+            //verified return = ip, port, isValidUserName, isValidIpAddress, isValidPort, isServer, isVerified, SessionID 
             List<string> verified = viewModel.VerifyCredentials(this.nameBox.Text, this.serverIP.Text, this.serverPort.Text, this.emailTextBox.Text, this.imageUrl);
             if (verified[6] == "False")
             {

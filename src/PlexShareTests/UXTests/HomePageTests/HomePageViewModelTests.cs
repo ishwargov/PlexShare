@@ -15,6 +15,10 @@ using PlexShareApp;
 using PlexShareDashboard.Dashboard.Client.SessionManagement;
 using PlexShare.Dashboard;
 using PlexShareTests.UX.HomePageTests;
+using PlexShareTests.UXTests.HomePageTests;
+
+HomePageViewModelUnitTest tmp = new();
+tmp.OnNewMeeting();
 
 namespace PlexShareTests.UXTests.HomePageTests
 {
