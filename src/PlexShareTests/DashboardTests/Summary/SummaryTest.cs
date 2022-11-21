@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/// <author>Jayanth Kumar</author>
+/// <created>10/11/2021</created>
+/// <summary>
+///		This is the unit testing file
+///		for the summary logic module
+/// </summary>
 using System.Diagnostics;
-using PlexShareContent.DataModels;
 
-using Xunit;
 using PlexShareDashboard.Dashboard.Server.Summary;
-
-using PlexShareTests.DashboardTests.Summary ;
 
 namespace PlexShareTests.DashboardTests.Summary
 {
