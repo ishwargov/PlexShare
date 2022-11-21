@@ -1,7 +1,7 @@
 ﻿/// <author> Anish Bhagavatula </author>
 /// <summary>
-/// This file contains the definition of the class 'ReceiveQueueListener' which contains functions to spawn a thread to call module handlers
-/// once packets appear in the receiving queue
+/// This file contains the definition of the class 'ReceiveQueueListener' which contains functions to spawn a thread to call module
+/// handlers once packets appear in the receiving queue
 /// </summary>
 
 using System.Collections.Generic;
@@ -32,6 +32,15 @@ namespace PlexShareNetwork.Queues
         /// <summary>
         /// Called by the Communicator submodule of each client in order to use queues
         /// </summary>
+        /// <param name="moduleName">
+        /// The name of the module to register
+        /// </param>
+        /// <param name="notificationHandler">
+        /// The handler to be called when a packet appears in the receiving queue
+        /// </param>
+        /// <returns>
+        /// 'bool : true' if the module is successfully registered, else 'bool : false'
+        /// </returns>
         public bool RegisterModule(string moduleName, INotificationHandler notificationHandler)
         {
             Trace.WriteLine("[Networking] ReceiveQueueListener.RegisterModule() function called.");
@@ -46,13 +55,14 @@ namespace PlexShareNetwork.Queues
                 else
                     _modulesToNotificationHandlerMap.Add(moduleName, notificationHandler);
             }
-
+            Trace.WriteLine("[Networking] ReceiveQueueListener.RegisterModule() function returned.");
             return isSuccessful;
         }
 
         /// <summary>
         /// Called by the Communicator to start a thread for calling module handlers
         /// </summary>
+        /// <returns> void </returns>
         public void Start()
         {
             Trace.WriteLine("[Networking] ReceiveQueueListener.Start() function called.");
@@ -74,6 +84,7 @@ namespace PlexShareNetwork.Queues
         /// <summary>
         /// Keep listening on the receiving queue and call the module's notification handlers if a packet appears in the queue
         /// </summary>
+        /// <returns> void </returns>
         private void ListenOnQueue()
         {
             Trace.WriteLine("[Networking] ReceiveQueueListener.ListenOnQueue() function called.");
@@ -111,7 +122,7 @@ namespace PlexShareNetwork.Queues
                 // There is nothing to do if the module is not registered
                 if (!isModuleRegistered)
                 {
-                    Trace.WriteLine($"Module {moduleName} does not have a handler.\n");
+                    Trace.WriteLine($"[Networking] Module {moduleName} does not have a handler.\n");
                     continue;
                 }
 
@@ -131,6 +142,7 @@ namespace PlexShareNetwork.Queues
         /// <summary>
         /// Called by the Communicator to stop the thread that was run by the 'Start' function
         /// </summary>
+        /// <returns> void </returns>
         public void Stop()
         {
             Trace.WriteLine("[Networking] ReceiveQueueListener.Stop() function called.");

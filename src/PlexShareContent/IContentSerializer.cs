@@ -34,7 +34,7 @@ namespace PlexShareContent
         /// <param name="serializedString">Serialized XML string.</param>
         /// <param name="nameSpace">Namespace of the module deserializing the string.</param>
         /// <returns>Object Type.</returns>
-        string GetObjectType(string serializedString, string nameSpace);
+        string GetObjType(string serializedString, string nameSpace);
 
         /// <summary>
         ///     Deserializes the XML string into the corresponding object.
