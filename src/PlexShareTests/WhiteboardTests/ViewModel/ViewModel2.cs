@@ -1,19 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+﻿/********************************************************************************
+ * Filename    = WhiteBoardViewModel.cs
+ *
+ * Author      = Asha Jose
+ *
+ * Product     = Plex Share Tests
+ * 
+ * Project     = White Board Tests
+ *
+ * Description = This is testing the view model in the white board tests.
+ *               This contains shape operations and some other necessary tests.
+ ********************************************************************************/
+
 using PlexShareWhiteboard;
-//using System.Drawing;
 using System.Windows;
 using System.Windows.Media;
-using PlexShareScreenshare.Client;
-using System.Xml.Linq;
-using System.Diagnostics;
-using PlexShareWhiteboard.BoardComponents;
-using System.Windows.Shapes;
-using NuGet.Frameworks;
 
 namespace PlexShareTests.WhiteboardTests.ViewModel
 {
@@ -193,8 +193,6 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.redoStack.Clear();
         }
 
-        
-
         [Fact]
         public void TextBoxEmpty()
         {
@@ -216,15 +214,5 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.undoStack.Clear();
             viewModel.redoStack.Clear();
         }
-
-        //[Fact]
-        //public void UnknownMode()
-        //{
-        //    viewModel.ChangeMode("unknown_mode");
-        //    viewModel.ShapeStart(new Point(0, 0));
-        //    viewModel.ShapeFinished(new Point());
-
-
-        //}
     }
 }

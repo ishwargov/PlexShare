@@ -1,17 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+﻿/********************************************************************************
+ * Filename    = WhiteBoardViewModel.cs
+ *
+ * Author      = Asha Jose
+ *
+ * Product     = Plex Share Tests
+ * 
+ * Project     = White Board Tests
+ *
+ * Description = This is testing the view model in the white board tests.
+ ********************************************************************************/
+
 using PlexShareWhiteboard;
-//using System.Drawing;
 using System.Windows;
-using PlexShareScreenshare.Client;
-using System.Xml.Linq;
-using System.Diagnostics;
 using PlexShareWhiteboard.BoardComponents;
-using System.Windows.Shapes;
 
 namespace PlexShareTests.WhiteboardTests.ViewModel
 {
@@ -26,6 +27,7 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
 
         }
 
+        // checking is shape items list contains all the necessary shapes
         [Fact]
         public void Test1()
         {
@@ -35,8 +37,6 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             int d = 2;
             Point start;
             Point end;
-
-            //Point translatePoint, transformPoint, dimensionChangePoint;
 
             viewModel.ChangeMode("create_rectangle");
 
