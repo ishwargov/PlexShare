@@ -18,7 +18,7 @@ using Formatting = Newtonsoft.Json.Formatting;
 namespace PlexShareContent
 {
     /// <summary>
-    ///     Wrapper object to store serilized object's type and serilized string representation.
+    ///     Wrapper object to store serialized object's type and serialized string representation.
     /// </summary>
     public class MetaObject
     {
@@ -95,7 +95,7 @@ namespace PlexShareContent
         }
 
         /// <summary>
-        ///     JSON supoorted deserialization.
+        ///     JSON supported deserialization.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="json"></param>
