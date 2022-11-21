@@ -7,9 +7,8 @@
  * 
  * Project     = PlexShareAppCloudUX
  *
- * Description = Defines the View Model of the Submissions Page.
+ * Description = Defines the View Model of the Current Submissions Page.
  *****************************************************************************/
-
 using PlexShareCloud;
 using System;
 using System.Collections.Generic;
@@ -23,31 +22,31 @@ using System.Diagnostics;
 
 namespace PlexShareCloudUX
 {
-    public class SubmissionsViewModel :
-        INotifyPropertyChanged // Notifies clients that a property value has changed.
+    public class CurrentSubmissionsViewModel :
+        INotifyPropertyChanged      // Notifies clients that a property value has changed.
     {
         /// <summary>
-        /// Creates an instance of the Submissions ViewModel.
-        /// Gets the details of the submissions of the session conducted by the user.
+        /// Creates an instance of the CurrentSubmissions ViewModel.
+        /// Gets the details of the submission made in this session.
         /// Then dispatch the changes to the view.
-        /// <param name="sessionId">Id of the session for which we want the submissions.</param>
+        /// <param name="sessionId">The unique session id of the session</param>
         /// </summary>
-        public SubmissionsViewModel(string sessionId)
+        public CurrentSubmissionsViewModel(string sessionId)
         {
-            _model = new SubmissionsModel();
+            _model = new CurrentSubmissionsModel();
             GetSubmissions(sessionId);
-            Trace.WriteLine("[Cloud] Submissions View Model Created");
+            Trace.WriteLine("[Cloud] Current Submission View Model Created");
         }
 
         /// <summary>
-        /// Gets the details of the submissions of the session conducted by the user.
+        /// Gets the details of the submission made in this session.
         /// Then dispatch the changes to the view.
-        /// <param name="sessionId">Id of the session for which we want the submissions.</param>
+        /// <param name="sessionId">The unique session id of the session</param>
         /// </summary>
         public async void GetSubmissions(string sessionId)
         {
             IReadOnlyList<SubmissionEntity> submissionsList = await _model.GetSubmissions(sessionId);
-            Trace.WriteLine("[Cloud] Submission details recieved");
+            Trace.WriteLine("[Cloud] Submission Received");
             _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
                         DispatcherPriority.Normal,
                         new Action<IReadOnlyList<SubmissionEntity>>((submissionsList) =>
@@ -63,16 +62,7 @@ namespace PlexShareCloudUX
         }
 
         /// <summary>
-        /// To store which pdf to download.
-        /// Call the corresponding function to download once the value is set.
-        /// </summary>
-        public int SubmissionToDownload
-        {
-            set => _model.DownloadPdf(value);
-        }
-
-        /// <summary>
-        /// The received submissions.
+        /// List to store the Submission recieved in this session.
         /// </summary>
         public IReadOnlyList<SubmissionEntity>? ReceivedSubmissions
         {
@@ -106,6 +96,7 @@ namespace PlexShareCloudUX
         /// <summary>
         /// Underlying data model.
         /// </summary>
-        private SubmissionsModel _model;
+        private CurrentSubmissionsModel _model;
+
     }
 }

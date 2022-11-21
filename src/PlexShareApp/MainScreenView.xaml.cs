@@ -31,7 +31,7 @@ namespace PlexShareApp
         private bool chatOn;
         private bool cloudOn;
         private bool submissionsOn;
-        private static SubmissionsPage submissionsPage;
+        private static CurrentSubmissionsPage currentSubmissionsPage;
         private static DashboardPage dashboardPage;
         private static WhiteBoardPage whiteBoardPage;
         private static ChatPageView chatPage;
@@ -93,7 +93,7 @@ namespace PlexShareApp
 
             Trace.WriteLine("[UX] Instantiating Cloud Pages");
             uploadPage = new UploadPage(sessionID, user.userEmail, isServer);
-            submissionsPage = new SubmissionsPage(sessionID, user.userEmail);
+            currentSubmissionsPage = new CurrentSubmissionsPage(sessionID);
 
             // This is to disable backspace to avoid switch tabs
             // Whiteboard team was not able to use backspace since
@@ -213,7 +213,7 @@ namespace PlexShareApp
                 Cloud.Background = Brushes.Transparent;
                 cloudOn = false;
                 submissionsOn = true; 
-                CloudPage.Content = submissionsPage;
+                CloudPage.Content = currentSubmissionsPage;
             }
         }
 

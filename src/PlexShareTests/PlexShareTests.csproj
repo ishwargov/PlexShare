@@ -26,6 +26,7 @@
     <ProjectReference Include="..\PlexShareApp\PlexShareApp.csproj">
       <ReferenceSourceTarget></ReferenceSourceTarget>
     </ProjectReference>
+    <ProjectReference Include="..\PlexShareCloudUX\PlexShareCloudUX.csproj" />
     <ProjectReference Include="..\PlexShareCloud\PlexShareCloud.csproj">
       <ReferenceSourceTarget></ReferenceSourceTarget>
     </ProjectReference>

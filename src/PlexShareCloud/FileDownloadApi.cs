@@ -10,6 +10,7 @@
  * Description = Provides Api functionality for the user to get the file from cloud. 
  *****************************************************************************/
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
@@ -37,6 +38,7 @@ namespace PlexShareCloud
             _entityClient = new();
             _sessionUrl = sessionUrl;
             _submissionUrl = submissionUrl;
+            Trace.WriteLine("[Cloud] New entity client created");
         }
 
         /// <summary>
@@ -46,18 +48,26 @@ namespace PlexShareCloud
         /// <returns>Returns all files in submission table with the given username. </returns>
         public async Task<IReadOnlyList<SubmissionEntity>> GetFilesByUserAsync(string username)
         {
-            var response = await _entityClient.GetAsync(_submissionUrl + $"/users/{username}");
-            //response.EnsureSuccessStatusCode();
-            var result = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
+            try
             {
-                PropertyNameCaseInsensitive = true,
+                var response = await _entityClient.GetAsync(_submissionUrl + $"/users/{username}");
+                response.EnsureSuccessStatusCode();
+                var result = await response.Content.ReadAsStringAsync();
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
 
-            };
+                };
 
-            IReadOnlyList<SubmissionEntity> entities = JsonSerializer.Deserialize<IReadOnlyList<SubmissionEntity>>(result, options);
-            //Trace need to be added. 
-            return entities;
+                IReadOnlyList<SubmissionEntity> entities = JsonSerializer.Deserialize<IReadOnlyList<SubmissionEntity>>(result, options);
+                Trace.WriteLine("[Cloud] Retreived all submissions for " + username);
+                return entities;
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine("[Cloud] Network Error Exception " + ex);
+                return new List<SubmissionEntity>();
+            }
         }
 
         /// <summary>
@@ -67,18 +77,26 @@ namespace PlexShareCloud
         /// <returns>Return all rows in Sessions with given session Id. </returns>
         public async Task<IReadOnlyList<SubmissionEntity>> GetFilesBySessionIdAsync(string sessionId)
         {
-            var response = await _entityClient.GetAsync(_submissionUrl + $"/sessions/{sessionId}");
-            //response.EnsureSuccessStatusCode();
-            var result = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
+            try
             {
-                PropertyNameCaseInsensitive = true,
+                var response = await _entityClient.GetAsync(_submissionUrl + $"/sessions/{sessionId}");
+                response.EnsureSuccessStatusCode();
+                var result = await response.Content.ReadAsStringAsync();
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
 
-            };
+                };
 
-            IReadOnlyList<SubmissionEntity> entities = JsonSerializer.Deserialize<IReadOnlyList<SubmissionEntity>>(result, options);
-            Trace.WriteLine("[Cloud] Session Details Get Successfully");
-            return entities;
+                IReadOnlyList<SubmissionEntity> entities = JsonSerializer.Deserialize<IReadOnlyList<SubmissionEntity>>(result, options);
+                Trace.WriteLine("[Cloud] Retreived all files for " + sessionId);
+                return entities;
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine("[Cloud] Network Error Exception " + ex);
+                return new List<SubmissionEntity>();
+            }
         }
 
         /// <summary>
@@ -88,18 +106,26 @@ namespace PlexShareCloud
         /// <returns>Return all rows in session table with username of host given</returns>
         public async Task<IReadOnlyList<SessionEntity>> GetSessionsByUserAsync(string hostUsername)
         {
-            var response = await _entityClient.GetAsync(_sessionUrl + $"/{hostUsername}");
-            //response.EnsureSuccessStatusCode();
-            var result = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
+            try
             {
-                PropertyNameCaseInsensitive = true,
+                var response = await _entityClient.GetAsync(_sessionUrl + $"/{hostUsername}");
+                response.EnsureSuccessStatusCode();
+                var result = await response.Content.ReadAsStringAsync();
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
 
-            };
+                };
 
-            IReadOnlyList<SessionEntity> entities = JsonSerializer.Deserialize<IReadOnlyList<SessionEntity>>(result, options);
-            //Trace to be added. 
-            return entities;
+                IReadOnlyList<SessionEntity> entities = JsonSerializer.Deserialize<IReadOnlyList<SessionEntity>>(result, options);
+                Trace.WriteLine("[Cloud] Retreived all sessions for " + hostUsername);
+                return entities;
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine("[Cloud] Network Error Exception " + ex);
+                return new List<SessionEntity>();
+            }
         }
 
         /// <summary>
@@ -108,8 +134,15 @@ namespace PlexShareCloud
         /// <returns>Returns a Http response with true when successfully exectues the delete operation.</returns>
         public async Task DeleteAllFilesAsync()
         {
-            using HttpResponseMessage response = await _entityClient.DeleteAsync(_submissionUrl);
-            //response.EnsureSuccessStatusCode();
+            try
+            {
+                using HttpResponseMessage response = await _entityClient.DeleteAsync(_submissionUrl);
+                response.EnsureSuccessStatusCode();
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine("[cloud] Network Error Exception " + ex);
+            }
         }
 
         /// <summary>
@@ -118,8 +151,15 @@ namespace PlexShareCloud
         /// <returns>Returns a Http response with true when successfully exectues the delete operation.</returns>
         public async Task DeleteAllSessionsAsync()
         {
-            using HttpResponseMessage response = await _entityClient.DeleteAsync(_sessionUrl);
-            //response.EnsureSuccessStatusCode();
+            try
+            {
+                using HttpResponseMessage response = await _entityClient.DeleteAsync(_sessionUrl);
+                response.EnsureSuccessStatusCode();
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine("[cloud] Network Error Exception " + ex);
+            }
         }
 
         /* 

@@ -22,6 +22,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -212,6 +213,8 @@ namespace PlexShareApp
             result.Add(isValidPort.ToString());
             result.Add(isServer.ToString());
             result.Add(isVerified.ToString());
+            Thread.Sleep(2000);
+            result.Add(clientSessionManager.GetSessionData().sessionId.ToString());
             Trace.WriteLine("[UX] The client verification returned : " + isVerified);
             return result;
         }
