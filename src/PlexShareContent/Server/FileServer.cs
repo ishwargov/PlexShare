@@ -7,7 +7,7 @@
  * 
  * Project     = PlexShareContent
  *
- * Description = This file handles the file messges and various functionlaities associted with file.
+ * Description = This file handles the file messages and various functionalities associated with the file.
  *****************************************************************************/
 
 using PlexShareContent.DataModels;
