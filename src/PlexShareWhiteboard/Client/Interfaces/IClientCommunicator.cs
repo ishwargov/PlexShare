@@ -1,22 +1,26 @@
-﻿/**
- * Owned By: Joel Sam Mathew
- * Created By: Joel Sam Mathew
- * Date Created: 22/10/2022
- * Date Modified: 08/11/2022
-**/
+﻿/***************************
+ * Filename    = IClientCommunicator.cs
+ *
+ * Author      = Joel Sam Mathew
+ *
+ * Product     = Plex Share
+ *
+ * Project     = White Board
+ *
+ * Description = Interface to be used by ClientSide and ClientSnapshotHandler
+ *               to send objects across the network.
+ ***************************/
 
 using PlexShareWhiteboard.BoardComponents;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PlexShareWhiteboard.Client.Interfaces
 {
     public interface IClientCommunicator
     {
+        /// <summary>
+        ///     Send the WBServerShape across the network
+        /// </summary>
+        /// <param name="wBServerShape">Update from client to server side</param>
         void SendToServer(WBServerShape wBServerShape);
     }
 }

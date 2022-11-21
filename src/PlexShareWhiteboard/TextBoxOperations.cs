@@ -1,4 +1,16 @@
-﻿using PlexShareWhiteboard.BoardComponents;
+﻿/***************************
+ * Filename    = TextBoxOperations.cs
+ *
+ * Author      = Deon Saji
+ *
+ * Product     = Plex Share
+ * 
+ * Project     = White Board
+ *
+ * Description = This implements textbox creation and pushing the same to undo stack after completion 
+ ***************************/
+
+using PlexShareWhiteboard.BoardComponents;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,6 +27,11 @@ namespace PlexShareWhiteboard
 {
     public partial class WhiteBoardViewModel
     {
+        /// <summary>
+        /// Converts each key stroke to its character value  
+        /// </summary>
+        /// <param name="key">System.Windows.Input.Key</param>
+        /// <returns>char representation of each key</returns>
         char KeyToChar(Key key)
         {
 
@@ -34,6 +51,7 @@ namespace PlexShareWhiteboard
             switch (key)
             {
                 case Key.Enter: return '\n';
+                case Key.Back: return '\b';
                 case Key.A: return (iscap ? 'A' : 'a');
                 case Key.B: return (iscap ? 'B' : 'b');
                 case Key.C: return (iscap ? 'C' : 'c');
@@ -104,54 +122,54 @@ namespace PlexShareWhiteboard
                 default: return '\x00';
             }
         }
+     
+        /// <summary>
+        /// Called by TextBoxKeyDown that is triggered by key presses.
+        /// </summary>
         public void TextBoxStart(System.Windows.Input.Key c)
         {
+            if (c == Key.Space)
+                TextBoxStartChar(' ');
+            else if (c == Key.Back)
+                TextBoxStartChar('\b');
+            else
+                TextBoxStartChar(KeyToChar(c));
+        }
+        public void TextBoxStartChar(char ch)
+        { 
             UnHighLightIt();
             string text = "";
-            Trace.WriteLine("[Whiteboard]  " + "inisde textbox start" + textBoxLastShape);
+            Trace.WriteLine("[Whiteboard]  " + "Inside TextBoxStartChar " + textBoxLastShape);
             if (textBoxLastShape != null)
             {
                 text = textBoxLastShape.TextString;
-                Trace.WriteLine("[Whiteboard]  " + "msater text " + text + "  id : " + textBoxLastShape.Id);
+                Trace.WriteLine("[Whiteboard]  " + "Inside TextBoxStartChar " +"master text " + text + "  id : " + textBoxLastShape.Id);
             }
-            //Trace.WriteLine("[Whiteboard]  " + "Inside TextBoxStart function");
-            if (c == Key.Space)
+            //Space key fired 
+            if (ch == ' ')
             {
                 Trace.WriteLine("[Whiteboard]  " + "space");
                 text = text + ' ';
             }
-            else if (c == Key.Back)
+            //Backspace key fired
+            else if (ch == '\b')
             {
                 if (text.Length != 0)
                 {
-                    //Trace.WriteLine("[Whiteboard]  " + "before : "+text+": text lengtrh: "+text.Length);
-                    Trace.WriteLine("[Whiteboard]  " + "back space before: " + text + ": text lengtrh: " + text.Length);
+                    Trace.WriteLine("[Whiteboard]  " + "Inside TextBoxStartChar " + "back space before: " + text + ": text length: " + text.Length);
                     text = text.Substring(0, text.Length - 1);
-                    Trace.WriteLine("[Whiteboard]  " + "back space after : " + text + ": text lengtrh: " + text.Length);
-                    //Debug.WriteLine(lastShape.Id);
-                    //CreateShape(DeonPoint, DeonPoint, "GeometryGroup", lastShape.Id);
+                    Trace.WriteLine("[Whiteboard]  " + "Inside TextBoxStartChar " + "back space after : " + text + ": text length: " + text.Length);
                     textBoxLastShape = UpdateShape(textBoxPoint, textBoxPoint, "GeometryGroup", textBoxLastShape, text);
                     return;
-                    // IncrementId();
-                    // lastShape = curShape;
-                    // ShapeItems.Add(curShape);
-                    // curZindex++;
                 }
             }
             else
-            {
+                text += ch;
 
-                char ch = KeyToChar(c);
-                text += KeyToChar(c);
-           //     Trace.WriteLine("[Whiteboard]  " + "key down " + ch + "   text is now " + text + "  id : " + lastShape.Id);
-
-            }
-            //Debug.WriteLine(text);
+            //Modify textbox on arrival of new character and add to shape items collection  
             if (mode == "create_textbox" && textBoxLastShape != null)
             {
                 // Create the formatted text based on the properties set.
-                //Trace.WriteLine("[Whiteboard]  " + "In create textbox mode");
-                //ShapeItem curShape = CreateShape(DeonPoint, DeonPoint, "GeometryGroup", lastShape.Id);
                 ShapeItem curShape = UpdateShape(textBoxPoint, textBoxPoint, "GeometryGroup", textBoxLastShape, text);
                 textBoxLastShape = curShape;
                 double x = curShape.Geometry.Bounds.X;
@@ -165,13 +183,35 @@ namespace PlexShareWhiteboard
                     foreach (ShapeItem si in highlightShapes)
                         ShapeItems.Add(si);
                 }
-
-                
-
             }
-            //Trace.WriteLine("[Whiteboard]  " + "post create shape" + lastShape.TextString);
-
-            //Trace.WriteLine("[Whiteboard]  " + "text is currently : " + text+ " over");
+        }
+        /// <summary>
+        /// Push text box to undo stack 
+        /// </summary>
+        /// <param name="modeVal"></param>
+        public void TextBoxAddding(string modeVal)
+        {
+            if (modeVal == "create_textbox")
+            {
+                //Push to undo stack
+                if (textBoxLastShape != null && textBoxLastShape.TextString != null &&
+                    textBoxLastShape.TextString.Length != 0)
+                {
+                    TextFinishPush();
+                }
+                //Remove zero length strings created by mouse down events in canvas 
+                else if (textBoxLastShape != null)
+                {
+                    for (int i = 0; i < ShapeItems.Count; ++i)
+                    {
+                        if (textBoxLastShape.Id == ShapeItems[i].Id)
+                        {
+                            ShapeItems.RemoveAt(i);
+                            break;
+                        }
+                    }
+                }
+            }
         }
     }
 }

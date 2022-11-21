@@ -1,17 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+﻿/********************************************************************************
+ * Filename    = WhiteBoardViewModel.cs
+ *
+ * Author      = Asha Jose
+ *
+ * Product     = Plex Share Tests
+ * 
+ * Project     = White Board Tests
+ *
+ * Description = This is testing the view model in the white board tests.
+ ********************************************************************************/
+
 using PlexShareWhiteboard;
-//using System.Drawing;
 using System.Windows;
-using PlexShareScreenshare.Client;
-using System.Xml.Linq;
-using System.Diagnostics;
 using PlexShareWhiteboard.BoardComponents;
-using System.Windows.Shapes;
 
 namespace PlexShareTests.WhiteboardTests.ViewModel
 {
@@ -26,6 +27,7 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
 
         }
 
+        // checking is shape items list contains all the necessary shapes
         [Fact]
         public void Test1()
         {
@@ -35,8 +37,6 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             int d = 2;
             Point start;
             Point end;
-
-            //Point translatePoint, transformPoint, dimensionChangePoint;
 
             viewModel.ChangeMode("create_rectangle");
 
@@ -86,28 +86,9 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
 
         }
 
+        // ensuring that the object is same as created
         [Fact]
         public void Test2()
-        {
-            Point start = new(40, 40);
-            Point end = new(50, 50);
-            viewModel.ChangeMode("create_freehand");
-            viewModel.lastShape = viewModel.CreateCurve(start);
-            viewModel.ShapeItems.Add(viewModel.lastShape);
-            viewModel.UpdateCurve(end, start);
-
-            viewModel.ObjectSelection(new Point(45, 45));
-
-            Assert.True(viewModel.select.ifSelected);
-            viewModel.ShapeItems.Clear();
-            viewModel.undoStack.Clear();
-            viewModel.redoStack.Clear();
-        }
-
-
-
-        [Fact]
-        public void Test3()
         {
 
             viewModel.ChangeMode("create_ellipse");
@@ -125,8 +106,9 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.redoStack.Clear();
         }
 
+        // clear all shapes makes the shape item list empty
         [Fact]
-        public void Test4()
+        public void Test3()
         {
             int s = 10;
             viewModel.ChangeMode("create_rectangle");
@@ -148,10 +130,10 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
 
         }
 
+        // translating shape
         [Fact]
-        public void Test5()
+        public void Test4()
         {
-
             viewModel.ChangeMode("create_ellipse");
             Point start = new(10, 10);
             Point end = new(20, 20);
@@ -159,10 +141,6 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.ShapeBuilding(end);
             viewModel.ShapeFinished(new Point());
 
-            //viewModel.ChangeMode("select_mode
-            //viewModel.select.ifSelected = true;
-            //viewModel.select.selectedObject = ;
-            //viewModel.TranslatingCurve(viewModel.ShapeItems[0], 40, 50, new Point(40, 50));
             viewModel.TranslatingShape(viewModel.ShapeItems[0], new Point(40, 50), new Point(50, 60));
 
             Assert.Equal(40, viewModel.ShapeItems[0].Geometry.Bounds.X);
@@ -171,8 +149,10 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.redoStack.Clear();
         }
 
+
+        // testing thicness of shape changes after stroke thickness is updated
         [Fact]
-        public void Test6()
+        public void Test5()
         {
             viewModel.ChangeMode("create_rectangle");
             viewModel.ShapeStart(new(10, 10));
@@ -196,8 +176,9 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.redoStack.Clear();
         }
 
+        // testing last shape is set correctly for a line
         [Fact]
-        public void Test7()
+        public void Test6()
         {
             viewModel.ChangeMode("create_line");
             Point start = new(25, 30);
@@ -209,8 +190,9 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.redoStack.Clear();
         }
 
+        // testing z index is incremented
         [Fact]
-        public void Test8()
+        public void Test7()
         {
             viewModel.ChangeMode("create_rectangle");
             Point start = new(10, 10);
@@ -222,35 +204,5 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.undoStack.Clear();
             viewModel.redoStack.Clear();
         }
-
-        [Fact]
-        public void Test9()
-        {
-
-            viewModel.ChangeMode("create_freehand");
-            Point start = new(0, 0);
-            Point end = new(15, 20);
-            viewModel.ShapeStart(start);
-            viewModel.ShapeBuilding(end);
-            viewModel.ShapeFinished(new Point());
-
-            viewModel.select.ifSelected = true;
-            viewModel.select.selectedObject = viewModel.ShapeItems[0];
-            Rect boundingBox = viewModel.ShapeItems[0].Geometry.Bounds;
-            double ratio = boundingBox.Width / boundingBox.Height;
-            viewModel.TransformCurve(new Point(90, 50), viewModel.ShapeItems[0]);
-            boundingBox = viewModel.ShapeItems[0].Geometry.Bounds;
-            double ratioFinal = boundingBox.Width / boundingBox.Height;
-            int ratioTemp = (int)(ratio * 100);
-            int ratioFinalTemp = (int)(ratioFinal * 100);
-
-            Assert.Equal(ratioTemp, ratioFinalTemp);
-            viewModel.ShapeItems.Clear();
-            viewModel.undoStack.Clear();
-            viewModel.redoStack.Clear();
-        }
-
-
-
     }
 }

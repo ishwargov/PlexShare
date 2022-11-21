@@ -1,13 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/****************************
+ * Filename    = WBVMHighlight.cs
+ *
+ * Author      = Jerry John Thomas
+ *
+ * Product     = Plex Share
+ * 
+ * Project     = White Board
+ *
+ * Description = This is part of View Model.
+ *               This is used for showing whether an object is selected with a 
+ *               highlight box that has corners for transmission and transformation.
+ ****************************/
+
+using System;
 using System.Windows.Media;
 using System.Windows;
 using PlexShareWhiteboard.BoardComponents;
 using System.Diagnostics;
-using System.Windows.Shapes;
 
 namespace PlexShareWhiteboard
 {
@@ -92,10 +101,10 @@ namespace PlexShareWhiteboard
             ShapeItem hsBody = GenerateLine(x1, y1, x2, y2, null, Brushes.DodgerBlue, "hsBody", currentZIndex);
             highlightShapes.Add(hsBody);
 
-            ShapeItem hsTop = GenerateRectangleXYWidthHeight(x1 - blobSize / 2, y1 - blobSize / 2, blobSize, blobSize, Brushes.DodgerBlue, Brushes.DodgerBlue, "hsTop", currentZIndex);
+            ShapeItem hsTop = GenerateRectangleXYWidthHeight(x1 - blobSize / 2, y1 - blobSize / 2, blobSize, blobSize, Brushes.DodgerBlue, Brushes.DodgerBlue, "hsTop", 100000);
             highlightShapes.Add(hsTop);
 
-            ShapeItem hsBottom = GenerateRectangleXYWidthHeight(x2 - blobSize / 2, y2 - blobSize / 2, blobSize, blobSize, Brushes.DodgerBlue, Brushes.DodgerBlue, "hsBottom", currentZIndex);
+            ShapeItem hsBottom = GenerateRectangleXYWidthHeight(x2 - blobSize / 2, y2 - blobSize / 2, blobSize, blobSize, Brushes.DodgerBlue, Brushes.DodgerBlue, "hsBottom", 100000);
             highlightShapes.Add(hsBottom);
 
             // just adds to shapeitems

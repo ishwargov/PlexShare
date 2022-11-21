@@ -1,8 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/***************************
+ * Filename    = ClientSnapshotHandlerTests.cs
+ *
+ * Author      = Joel Sam Mathew
+ *
+ * Product     = Plex Share Tests
+ *
+ * Project     = White Board Tests
+ *
+ * Description = Tests for ClientSnapshotHandler.cs.
+ ***************************/
+
 using Moq;
 using PlexShareWhiteboard.BoardComponents;
 using PlexShareWhiteboard.Client;
@@ -15,13 +22,21 @@ namespace PlexShareTests.WhiteboardTests.Client
     {
         private ClientSnapshotHandler _clientSnapshotHandler;
         private Mock<IClientCommunicator> _mockCommunicator;
+        Utility utility;
+        /// <summary>
+        ///     Setup of tests.
+        /// </summary>
         public ClientSnapshotHandlerTests()
         {
             _clientSnapshotHandler = new ClientSnapshotHandler();
             _mockCommunicator = new Mock<IClientCommunicator>();
             _clientSnapshotHandler.SetCommunicator(_mockCommunicator.Object);
+            utility = new Utility();
         }
 
+        /// <summary>
+        ///     Verifies save snapshot functionality.
+        /// </summary>
         [Fact]
         public void SaveSnapshot_RequestSentToCommunicator()
         {
@@ -29,10 +44,13 @@ namespace PlexShareTests.WhiteboardTests.Client
             WBServerShape expected = new(null, Operation.CreateSnapshot, "randomID", 1);
             _clientSnapshotHandler.SaveSnapshot("randomID");
             _mockCommunicator.Verify(m => m.SendToServer(
-                It.Is<WBServerShape>(obj => Utility.CompareBoardServerShapes(obj, expected))
+                It.Is<WBServerShape>(obj => utility.CompareBoardServerShapes(obj, expected))
             ), Times.Once());
         }
 
+        /// <summary>
+        ///     Verifies restore snapshot functionality.
+        /// </summary>
         [Fact]
         public void RestoreSnapshot_RequestSentToCommunicator()
         {
@@ -42,8 +60,17 @@ namespace PlexShareTests.WhiteboardTests.Client
             _clientSnapshotHandler.SaveSnapshot("randomID");
             _clientSnapshotHandler.RestoreSnapshot(1, "randomID");
             _mockCommunicator.Verify(m => m.SendToServer(
-                It.Is<WBServerShape>(obj => Utility.CompareBoardServerShapes(obj, expected))
+                It.Is<WBServerShape>(obj => utility.CompareBoardServerShapes(obj, expected))
             ), Times.Once());
+        }
+
+        /// <summary>
+        ///     Tests restore snapshot exception handling.
+        /// </summary>
+        [Fact]
+        public void RestoreSnapshot_GenerateException()
+        { 
+            Assert.Throws<Exception>(() => _clientSnapshotHandler.RestoreSnapshot(1000, "randomID"));
         }
     }
 }

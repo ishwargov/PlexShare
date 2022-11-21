@@ -9,7 +9,7 @@
  *
  * Description = This is the Server Side Implementation.
  *               This implements the server side handling when it receives 
- *               a message or shape from the network and broadcasts it to clients.
+ *               a message or shape from the ViewModel (of the server) and broadcasts it to clients.
  *               It also contains the Server Side WhiteBoardState Management.
  ***************************/
 
@@ -31,15 +31,15 @@ namespace PlexShareWhiteboard.Server
     public class ServerSide : IShapeListener
     {
 
-        // An instance of the ServerCommunicator
-        private static ServerCommunicator _communicator;
+        private static IServerCommunicator _communicator;
         private static ServerSide instance;
-        private WhiteBoardViewModel _vm;
         private Serializer _serializer;
         private ServerSnapshotHandler _serverSnapshotHandler;
         string userID;
 
-        // To create only a single instance of ServerSide
+        /// <summary>
+        ///         To make ServerSide a singleton class. 
+        /// </summary>
         public static ServerSide Instance
         {
             get
@@ -54,36 +54,56 @@ namespace PlexShareWhiteboard.Server
             }
         }
 
+        // ServerSide Constructor
         private ServerSide()
         {
             _serializer = new Serializer();
             _serverSnapshotHandler = new ServerSnapshotHandler();
-            //_vm = WhiteBoardViewModel.Instance;
         }
 
+
+        /// <summary>
+        ///         This is the Server list (Server Side State). An objectId to object map which contains all 
+        ///         the ShapeItems in the WhiteBoard presently. 
+        /// </summary>
+        private Dictionary<string, ShapeItem> objIdToObjectMap = new Dictionary<string, ShapeItem>();
+
+        // To keep track of the ZIndex of the objects
+        private static int _maxZIndex = 0;
+
+        /// <summary>
+        ///         Increments the maxZindex value (when a shape is created on Server).
+        ///         Returns the current maxZindex value.
+        /// </summary>
+        public int GetMaxZindex(ShapeItem lastShape)
+        {
+            _maxZIndex++;
+            return _maxZIndex - 1;
+        }
+
+        // Sets the user ID
         public void SetUserId(string userId)
         {
             userID = userId;
         }
 
-        //public void SetVMRef(WhiteBoardViewModel vm)
-        //{
-        //    _vm = vm;
-        //    _communicator.SetVMRef(_vm);
-        //}
+        // Returns the current size of server list (for testing purposes)
         public int GetServerListSize()
         {
             return objIdToObjectMap.Count();
         }
-        // An objectId to object map which contains all the ShapeItems in the WhiteBoard presently
-        private Dictionary<string, ShapeItem> objIdToObjectMap = new Dictionary<string, ShapeItem>();
 
-        // A copy to restore old state 
-        private Dictionary<string, ShapeItem> oldObjectMapCopy;
+        // Utility function to set the snapshot number
+        public void SetSnapshotNumber(int snapshotNumber)
+        {
+            _serverSnapshotHandler.SnapshotNumber = snapshotNumber;
+        }
 
-        // To keep track of the ZIndex of the objects
-        private static int _maxZIndex = 0;
-
+        // Utility function to get the snapshotHandler (for testing purposes)
+        public ServerSnapshotHandler GetSnapshotHandler()
+        {
+            return _serverSnapshotHandler;
+        }
 
 
         /// <summary>
@@ -112,15 +132,13 @@ namespace PlexShareWhiteboard.Server
             }
         }
 
-        /// <summary>
-        ///         Function to Broadcast to Clients
-        /// </summary>
-        /// <param name="newShape"></param>
-        /// <param name="op"></param>
+        
+        //Function Overloading to Broadcast to clients ( Single shape and List of Shapes)
         public void BroadcastToClients(ShapeItem newShape, Operation op)
         {
             _communicator.Broadcast(newShape, op);
         }
+
         public void BroadcastToClients(List<ShapeItem> newShapes, Operation op)
         {
             _communicator.Broadcast(newShapes, op);
@@ -136,13 +154,20 @@ namespace PlexShareWhiteboard.Server
         /// <param name="op">Operation performed (Creation)</param>
         private void AddObjectToServerList(string objectId, ShapeItem newShape, Operation op)
         {
-
-            newShape.ZIndex = Math.Max(_maxZIndex, newShape.ZIndex);
-            objIdToObjectMap.Add(objectId, newShape);
-            Trace.WriteLine("[Whiteboard]  " + "inside AddObjectToServerList" + newShape.Id);
-            Trace.WriteLine("[Whiteboard]  " + "inside AddObjectToServerList" + newShape.Geometry.GetType().Name);
-            BroadcastToClients(newShape, op);
-            _maxZIndex++;
+            try
+            {
+                newShape.ZIndex = Math.Max(_maxZIndex, newShape.ZIndex);
+                objIdToObjectMap.Add(objectId, newShape);
+                Trace.WriteLine("[Whiteboard]  " + "inside AddObjectToServerList" + newShape.Id);
+                Trace.WriteLine("[Whiteboard]  " + "inside AddObjectToServerList" + newShape.Geometry.GetType().Name);
+                BroadcastToClients(newShape, op);
+                _maxZIndex++;
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine("[Whiteboard] Error Occured: ServerSide: AddObjectToServerList");
+                Trace.WriteLine(e.Message);
+            }
         }
 
         /// <summary>
@@ -179,43 +204,50 @@ namespace PlexShareWhiteboard.Server
             }
         }
 
-        // To clear (empty) the Server Object List
-        // Save the current list in a copy (oldObjectMapCopy)
+        /// <summary>
+        ///         Clear all objects in the server list. 
+        ///         This will be performed when a user clicks Clear.
+        /// </summary>
+        /// <param name="newShape">ShapeItem (which will bw null)</param>
+        /// <param name="op">Operation - Clear</param>
         private void ClearObjectsInServerList(ShapeItem newShape, Operation op)
         {
             objIdToObjectMap = new Dictionary<string, ShapeItem>();
             BroadcastToClients(newShape, op);
         }
 
-
-
-        public void RestoreSnapshotHandler(WBServerShape deserializedObject)
-        {
-            Trace.WriteLine("[Whiteboard] ServerSide.RestoreSnapshotHandler: Restoring Snapshot " + deserializedObject.SnapshotNumber);
-            Trace.WriteLine("[Whiteboard] " + GetServerListSize());
-            List<ShapeItem> loadedShapes = _serverSnapshotHandler.LoadBoard(deserializedObject.SnapshotNumber);
-            List<SerializableShapeItem> serializableShapeItems = _serializer.ConvertToSerializableShapeItem(loadedShapes);
-            WBServerShape wBServerShape = new WBServerShape(
-                serializableShapeItems,
-                Operation.RestoreSnapshot,
-                deserializedObject.UserID
-            );
-            BroadcastToClients(loadedShapes, Operation.RestoreSnapshot);
-        }
-
+        /// <summary>
+        ///         To clear the server list. This will be used by some utility functions.
+        /// </summary>
         public void ClearServerList()
         {
             objIdToObjectMap.Clear();
         }
 
 
+        /// <summary>
+        ///         To handle creation of snapshot. It calls the serverSnapshotHandler to save the
+        ///         current server list shapeItems as a snapshot (along with the user id).
+        ///         It then broadcasts the WBServerShape received to all the clients 
+        ///         (This will contain the Snapshot number).
+        /// </summary>
+        /// <param name="deserializedObject">Deserialized object received from network</param>
+        /// <returns>Current Snapshot Number</returns>
         public int CreateSnapshotHandler(WBServerShape deserializedObject)
         {
             int n =_serverSnapshotHandler.SaveBoard(objIdToObjectMap.Values.ToList(), deserializedObject.UserID);
-            _communicator.Broadcast(deserializedObject);
+            _communicator.Broadcast(deserializedObject,null);
             return n;
         }
 
+
+        /// <summary>
+        ///         When a new user joins the session. All the shapeItems in the server list currently
+        ///         (in the session) have to be passed to the new user. These shapes are serialized 
+        ///         and then converted to a WBServerShape with operation as NewUser. 
+        ///         The WBServerShape is then broadcasted (only) to the user corresponding to the userID.
+        /// </summary>
+        /// <param name="deserializedObject">Deserialized object received from network</param>
         public void NewUserHandler(WBServerShape deserializedObject)
         {
             List<ShapeItem> shapeItems = objIdToObjectMap.Values.ToList();
@@ -229,6 +261,15 @@ namespace PlexShareWhiteboard.Server
             _communicator.Broadcast(wBServerShape, deserializedObject.UserID);
         }
 
+
+        /// <summary>
+        ///         When a request to save a Snapshot ( "SaveMessage" ) is received. A new wBserverShape is 
+        ///         created with operation as CreateSnapshot and the snapshotNumber set accordingly 
+        ///         after receiving from serverSnapshotHandler. 
+        ///         It then passes this wBserverShape to CreateSnapshotHandler.
+        /// </summary>
+        /// <param name="userId">UserId of user who wants to take a Snapshot</param>
+        /// <returns>SnapShot Number of that snapshot</returns>
         public int OnSaveMessage(string userId)
         {
             int snapshotNumber = _serverSnapshotHandler.SnapshotNumber+1;
@@ -236,11 +277,24 @@ namespace PlexShareWhiteboard.Server
             return CreateSnapshotHandler(wBServerShape);
         }
 
+
+        /// <summary>
+        ///         When a request to restore a Snapshot ( "LoadMessage" ) is received. A new wBserverShape is 
+        ///         created with operation as RestoreSnapshot and Snapshot Number of the snapshot which the user
+        ///         wants to restore. The serverSnapshotHandler uses the loadboard function to obtain the snapshot
+        ///         as a list of ShapeItems. These shapes are serialized and then converted to a WBServerShape 
+        ///         with all the shapeItems. It is then broadcasted to all the clients. 
+        /// </summary>
+        /// <param name="snapshotNumber">Snapshot Number of the desired snapshot</param>
+        /// <param name="userId">UserId of user who wants to restore the Snapshot</param>
+        /// <returns></returns>
         public List<ShapeItem> OnLoadMessage(int snapshotNumber, string userId)
         {
             WBServerShape deserializedObject = new WBServerShape(null, Operation.RestoreSnapshot, userId, snapshotNumber);
+
             Trace.WriteLine("[Whiteboard] ServerSide.RestoreSnapshotHandler: Restoring Snapshot " + deserializedObject.SnapshotNumber);
             Trace.WriteLine("[Whiteboard] " + GetServerListSize());
+
             List<ShapeItem> loadedShapes = _serverSnapshotHandler.LoadBoard(deserializedObject.SnapshotNumber);
             List<SerializableShapeItem> serializableShapeItems = _serializer.ConvertToSerializableShapeItem(loadedShapes);
             WBServerShape wBServerShape = new WBServerShape(
@@ -251,9 +305,7 @@ namespace PlexShareWhiteboard.Server
             BroadcastToClients(loadedShapes, Operation.RestoreSnapshot);
             return loadedShapes;
         }
-        public void SetSnapshotNumber(int snapshotNumber)
-        {
-            _serverSnapshotHandler.SnapshotNumber = snapshotNumber;
-        }
+
+        
     }
 }
