@@ -1,4 +1,16 @@
-﻿using System;
+﻿/***************************
+ * Filename    = WhiteBoardViewModel.cs
+ *
+ * Author      = Aiswarya H
+ *
+ * Product     = Plex Share
+ * 
+ * Project     = White Board
+ *
+ * Description = This constitutes unit tests for Server Side Implementation.
+ ***************************/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
