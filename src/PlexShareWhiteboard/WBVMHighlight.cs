@@ -92,10 +92,10 @@ namespace PlexShareWhiteboard
             ShapeItem hsBody = GenerateLine(x1, y1, x2, y2, null, Brushes.DodgerBlue, "hsBody", currentZIndex);
             highlightShapes.Add(hsBody);
 
-            ShapeItem hsTop = GenerateRectangleXYWidthHeight(x1 - blobSize / 2, y1 - blobSize / 2, blobSize, blobSize, Brushes.DodgerBlue, Brushes.DodgerBlue, "hsTop", currentZIndex);
+            ShapeItem hsTop = GenerateRectangleXYWidthHeight(x1 - blobSize / 2, y1 - blobSize / 2, blobSize, blobSize, Brushes.DodgerBlue, Brushes.DodgerBlue, "hsTop", 100000);
             highlightShapes.Add(hsTop);
 
-            ShapeItem hsBottom = GenerateRectangleXYWidthHeight(x2 - blobSize / 2, y2 - blobSize / 2, blobSize, blobSize, Brushes.DodgerBlue, Brushes.DodgerBlue, "hsBottom", currentZIndex);
+            ShapeItem hsBottom = GenerateRectangleXYWidthHeight(x2 - blobSize / 2, y2 - blobSize / 2, blobSize, blobSize, Brushes.DodgerBlue, Brushes.DodgerBlue, "hsBottom", 100000);
             highlightShapes.Add(hsBottom);
 
             // just adds to shapeitems
