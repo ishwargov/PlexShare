@@ -33,6 +33,9 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel = WhiteBoardViewModel.Instance;
             utility = new Utility();
 
+            viewModel.ShapeItems.Clear();
+            viewModel.undoStack.Clear();
+            viewModel.redoStack.Clear();
         }
         
         /// <summary>
@@ -92,7 +95,7 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.DataHandler(jsonString);
 
             Assert.True(utility.CompareShapeItems(viewModel.ShapeItems[0], sh));
-
+            
             viewModel.ShapeItems.Clear();
             viewModel.undoStack.Clear();
             viewModel.redoStack.Clear();

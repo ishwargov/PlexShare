@@ -1,4 +1,18 @@
-﻿using System;
+﻿/********************************************************************************
+ * Filename    = WBVMShapeBuilding.cs
+ *
+ * Author      = Asha Jose
+ *
+ * Product     = Plex Share
+ * 
+ * Project     = White Board
+ *
+ * Description = This is part of View Model.
+ *               This contains the Shape Build method which is called from 
+ *               view by mouse move to reflect on view model. This is typically 
+ *               called when a user drags teh mouse by pressing on it.
+ ********************************************************************************/
+
 using System.Diagnostics;
 using System.Windows;
 using PlexShareWhiteboard.BoardComponents;
@@ -7,10 +21,13 @@ namespace PlexShareWhiteboard
 {
     public partial class WhiteBoardViewModel
     {
+        /// <summary>
+        /// This is called by mouse move
+        /// Mouse mokve is called when mouse is pressed and dragged
+        /// </summary>
+        /// <param name="a"></param>
         public void ShapeBuilding(Point a)
         {
-            //Trace.WriteLine("[Whiteboard]  " + "Entering Shape Building......\n");
-
             if (mode == "transform_mode")
             {
                 modeForUndo = "modify";
@@ -28,7 +45,6 @@ namespace PlexShareWhiteboard
                 
                 if (shape.Geometry.GetType().Name == "PathGeometry")
                 {
-
                     TransformCurve(a, shape);
                 }
                 else if (shape.Geometry.GetType().Name == "LineGeometry")
@@ -37,7 +53,6 @@ namespace PlexShareWhiteboard
                 }
                 else
                 {
-
                     TransformShape(shape, newXLen, newYLen, signX, signY);
                 }
             }
@@ -137,14 +152,7 @@ namespace PlexShareWhiteboard
                     lastShape =UpdateShape(lastShape.Start, a, "LineGeometry", lastShape);
                     // when we do lastshape == 
                 }
-
             }
-            else
-            {
-                //Trace.WriteLine("[Whiteboard]  " + "In unknown mode\n");
-            }
-
-            //Trace.WriteLine("[Whiteboard]  " + "Exiting Shape Building......\n");
         }
     }
 }

@@ -31,7 +31,7 @@ namespace PlexShareTests.WhiteboardTests.Client
             _serializer = new Serializer();
             client.SetCommunicator(_mockCommunicator.Object);
         }
-
+        
         [Fact]
         public void Instance_Always_ReturnsSameInstance()
         {
@@ -81,7 +81,7 @@ namespace PlexShareTests.WhiteboardTests.Client
         }
 
         [Fact]
-        public void SetClientSnapshotNumber()
+        public void ClientSnapshotHandling()
         {
             _snapshotHandler = client.GetSnapshotHandler();
 

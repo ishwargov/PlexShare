@@ -34,6 +34,10 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             utility = new Utility();
             _mockMachine = new Mock<IShapeListener>();
             viewModel.SetMachine(_mockMachine.Object);
+
+            viewModel.ShapeItems.Clear();
+            viewModel.undoStack.Clear();
+            viewModel.redoStack.Clear();
         }
 
         /// <summary>

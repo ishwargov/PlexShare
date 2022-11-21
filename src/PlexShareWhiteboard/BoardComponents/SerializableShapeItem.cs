@@ -4,13 +4,14 @@
  * Author      = Joel Sam Mathew
  *
  * Product     = Plex Share
- *
+ * 
  * Project     = White Board
  *
- * Description = Captures the ShapeItem class in a serializable form
- *               to serialize it.
+ * Description = This declares an adapter class for adapting shape class to a
+ *               serialisable shape class inorder to facilitate serialising.
  ***************************/
 
+using System;
 using System.Collections.Generic;
 using System.Windows.Media;
 using System.Windows;

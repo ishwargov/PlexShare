@@ -8,10 +8,8 @@
  * Project     = White Board
  *
  * Description = This is the IShapeListener Interface. 
- *               It provides an OnShapeReceived function to 
- *               receive a shape, implemented by both Server and Client.
- *               It is either given by ViewModel (if recepient is a Client) 
- *               or through network (if recepient is a Server).
+ *               It provides all the functions that must be implemented by both Server and Client
+ *               machines. (Especially receiving a shape and receiving messages - NewUser, Load, Save )
  ***************************/
 
 using PlexShareWhiteboard.BoardComponents;
@@ -23,6 +21,9 @@ using System.Threading.Tasks;
 
 namespace PlexShareWhiteboard.Client.Interfaces
 {
+    /// <summary>
+    ///         Implements all the functions required for a machine (Client or Server).
+    /// </summary>
     public interface IShapeListener
     {
         void OnShapeReceived(ShapeItem newShape, Operation op);
@@ -30,5 +31,6 @@ namespace PlexShareWhiteboard.Client.Interfaces
         public int OnSaveMessage(string userId);
         public List<ShapeItem> OnLoadMessage(int snapshotNumber, string userId);
         public void SetSnapshotNumber(int snapshotNumber);
+        public int GetMaxZindex(ShapeItem lastShape);
     }
 }

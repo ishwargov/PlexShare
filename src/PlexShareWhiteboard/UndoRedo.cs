@@ -25,35 +25,14 @@ namespace PlexShareWhiteboard
     {
 
         /// <summary>
-        /// This function is called when a user clicks on Undo.
-        /// 1. A helper function to call the Undo function 
-        /// 2. Takes the object returned by Undo to get the object and operation
-        /// 3. Sends to the Server the operation that needs to be performed and on which object the operation has to be performed
+        ///         This function is called when a user clicks on Undo.
+        ///         1. A helper function to call the Undo function 
+        ///         2. Takes the object returned by Undo to get the object and operation
+        ///         3. Sends to the Server the operation that needs to be performed and on which object the operation has to be performed
         /// </summary>
         public void CallUndo()
         {
-            if (modeForUndo == "create_textbox")
-            {
-                if (textBoxLastShape != null && textBoxLastShape.TextString != null &&
-                         textBoxLastShape.TextString.Length != 0)
-                {
-
-                    TextFinishPush();
-                    Debug.WriteLine("entering undo modeeeee");
-
-                }
-                else if (textBoxLastShape != null)
-                {
-                    for (int i = 0; i < ShapeItems.Count; ++i)
-                    {
-                        if (textBoxLastShape.Id == ShapeItems[i].Id)
-                        {
-                            ShapeItems.RemoveAt(i);
-                            break;
-                        }
-                    }
-                }
-            }
+            TextBoxAddding(modeForUndo);
 
             UndoStackElement shapeToSend = Undo();
             if (shapeToSend != null)
@@ -61,20 +40,14 @@ namespace PlexShareWhiteboard
         }
 
         /// <summary>
-        /// This function is called when a user clicks on Redo.
-        /// 1. A helper function to call the Redo function 
-        /// 2. Takes the object returned by Redo to get the object and operation
-        /// 3. Sends to the Server the operation that needs to be performed and on which object the operation has to be performed
+        ///         This function is called when a user clicks on Redo.
+        ///         1. A helper function to call the Redo function 
+        ///         2. Takes the object returned by Redo to get the object and operation
+        ///         3. Sends to the Server the operation that needs to be performed and on which object the operation has to be performed
         /// </summary>
         public void CallRedo()
         {
-            /*if (mode == "create_textbox")
-            {
-                if (lastShape.TextString.Length != 0)
-                {
-                    TextFinishPush();
-                }
-            }*/
+
             UndoStackElement shapeToSend = Redo();
             if (shapeToSend != null)
                 machine.OnShapeReceived(shapeToSend.NewShape, shapeToSend.Op);
@@ -87,16 +60,16 @@ namespace PlexShareWhiteboard
 
 
         /// <summary>
-        /// To perform Undo operation
-        /// 1. Pop the UndoStack to get the top of the Stack
-        /// 2. Save a deep copy of the object as modifiedObject. 
-        /// Basically,
-        /// topOfStack -> pushed to Redo Stack
-        /// modifiedObject -> to be sent to Server
-        /// 3. Perform the inverse of the operation associated with the object. The modifiedObject's operation is set as the inverse operation
-        /// (as this has to be communicated to the other clients through the server)
-        /// 4. The topOfStack is pushed to the RedoStack.
-        /// 5. The modifiedObject is then returned to the helper function 
+        ///         To perform Undo operation
+        ///         1. Pop the UndoStack to get the top of the Stack
+        ///         2. Save a deep copy of the object as modifiedObject. 
+        ///         Basically,
+        ///         topOfStack -> pushed to Redo Stack
+        ///         modifiedObject -> to be sent to Server
+        ///         3. Perform the inverse of the operation associated with the object. The modifiedObject's operation is set as the inverse operation
+        ///         (as this has to be communicated to the other clients through the server)
+        ///         4. The topOfStack is pushed to the RedoStack.
+        ///         5. The modifiedObject is then returned to the helper function 
         /// </summary>
         /// <returns>UndoStackElement containing the shape and the operation to be broadcasted</returns>
         public UndoStackElement Undo()
@@ -112,9 +85,8 @@ namespace PlexShareWhiteboard
 
             Trace.WriteLine("[Whiteboard]  " + "\n" + topOfStack.Op + "\n");
 
-            /* Depending on the operation, perform the inverse opreation 
-            by calling appropriate functions to modify ShapeList */
-
+            // Depending on the operation, perform the inverse opreation 
+            // by calling appropriate functions to modify ShapeList 
             switch (topOfStack.Op)
             {
                 case Operation.Creation:
@@ -136,16 +108,16 @@ namespace PlexShareWhiteboard
         }
 
         /// <summary>
-        /// To perform Redo operation
-        /// 1. Pop the RedoStack to get the top of the Stack
-        /// 2. Perform the operation associated with the object.
-        /// 3. The topOfStack is pushed to the UndoStack.
-        /// 5. topOfStack is then returned to the helper function 
+        ///         To perform Redo operation
+        ///         1. Pop the RedoStack to get the top of the Stack
+        ///         2. Perform the operation associated with the object.
+        ///         3. The topOfStack is pushed to the UndoStack.
+        ///         4. topOfStack is then returned to the helper function 
         /// </summary>
         /// <returns>UndoStackElement containing the shape and the operation to be broadcasted</returns>
         public UndoStackElement Redo()
         {
-            if (redoStack.Count == 0)
+            if (redoStack.Count == 0)   // Redo Stack Empty Case
                 return null;
             
             UndoStackElement topOfStack = redoStack.Pop();
@@ -171,8 +143,8 @@ namespace PlexShareWhiteboard
         }
 
         /// <summary>
-        /// To insert a ShapeItem along with operation perfomed whenever
-        /// a client performs an action on WhiteBoard
+        ///         To insert a ShapeItem along with operation perfomed whenever
+        ///         a client performs an action on WhiteBoard
         /// </summary>
         /// <param name="obj">UndoStackElement to be pushed on UndoStack</param>
         public void InsertIntoStack(UndoStackElement obj)
