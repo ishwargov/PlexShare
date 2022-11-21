@@ -213,7 +213,7 @@ namespace PlexShareApp
                 Cloud.Background = Brushes.Transparent;
                 cloudOn = false;
                 submissionsOn = true; 
-                CloudPage.Content = submissionsPage;
+                CloudPage.Content = currentSubmissionsPage;
             }
         }
 

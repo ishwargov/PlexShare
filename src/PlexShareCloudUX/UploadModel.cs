@@ -25,14 +25,18 @@ namespace PlexShareCloudUX
     {
         public string SessionId;
         public string UserName;
-        private const string SubmissionUrl = @"https://plexsharecloud20221118104530.azurewebsites.net/api/submission";
-        private const string SessionUrl = @"https://plexsharecloud20221118104530.azurewebsites.net/api/session";
+        string[] paths;
+        private string SubmissionUrl;//@"http://localhost:7213/api/submission";
+        private string SessionUrl;//@"http://localhost:7213/api/session";
         private FileUploadApi _uploadClient;
         private bool isUploaded;
         public UploadModel(string sessionId, string userName, bool isServer)
         {
             SessionId = sessionId;
             UserName = userName;
+            paths = GetOfflinePaths("Urls.txt");
+            SubmissionUrl = @paths[0];
+            SessionUrl = @paths[1];
             _uploadClient = new(SessionUrl, SubmissionUrl);
             isUploaded = false;
             if(isServer)
@@ -79,6 +83,17 @@ namespace PlexShareCloudUX
         {
             byte[] fileContent = File.ReadAllBytes(fileName);
             SubmissionEntity? putEntity = await _uploadClient.PutSubmissionAsync(SessionId, UserName, fileContent);
+        }
+
+        /// <summary>
+        /// this function will take the filename of file containing the urls of sumbision and session. 
+        /// </summary>
+        /// <param name="filename">Filename of the file we need to read.</param>
+        /// <returns>Array of the urls</returns>
+        public static string[] GetOfflinePaths(string filename)
+        {
+            string[] lines = FileRead.GetPaths(filename);
+            return lines;
         }
     }
 }

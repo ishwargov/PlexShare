@@ -23,6 +23,7 @@ namespace PlexShareCloud
 
         public SubmissionEntity(string sessionId, string username, byte[] pdf)
         {
+            //structure of the submission entitiy. 
             PartitionKey = PartitionKeyName;
             RowKey = Guid.NewGuid().ToString();
             Id = RowKey;
@@ -35,19 +36,19 @@ namespace PlexShareCloud
         public SubmissionEntity() : this(null, null, null) { }
 
         [JsonInclude]
-        [JsonPropertyName("SessionId")]
+        [JsonPropertyName("SessionId")] //Unique id for the session conducted
         public string SessionId { get; set; }
 
         [JsonInclude]
-        [JsonPropertyName("Pdf")]
+        [JsonPropertyName("Pdf")] //Pdf file submitted by user. 
         public byte[] Pdf { get; set; }
 
         [JsonInclude]
-        [JsonPropertyName("Id")]
+        [JsonPropertyName("Id")] //unique id for storing the primary key. 
         public string Id { get; set; }
 
         [JsonInclude]
-        [JsonPropertyName("UserName")]
+        [JsonPropertyName("UserName")] //Username of the user who submitted file.
         public string UserName { get; set; }
 
         [JsonInclude]
@@ -59,7 +60,7 @@ namespace PlexShareCloud
         public string RowKey { get; set; }
 
         [JsonInclude]
-        [JsonPropertyName("Timestamp")]
+        [JsonPropertyName("Timestamp")]// time stamp when submission occured. 
         public DateTimeOffset? Timestamp { get; set; }
 
         [JsonIgnore]

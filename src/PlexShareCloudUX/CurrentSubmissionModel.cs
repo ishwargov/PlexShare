@@ -1,33 +1,30 @@
 ﻿/******************************************************************************
- * Filename    = SubmissionModel.cs
+ * Filename    = CurrentSubmissionModel.cs
  *
- * Author      = Polisetty Vamsi
+ * Author      = Yagnesh Katragadda
  *
  * Product     = PlexShare
  * 
- * Project     = PlexShareCloudUX
+ * Project     = PlexShareCloudUx
  *
- * Description = Created Model for the downloading functionality. 
+ * Description = Consists of function to retrieve submission in the current session.   
  *****************************************************************************/
 
 using PlexShareCloud;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace PlexShareCloudUX
 {
-    public class SubmissionsModel
+    public class CurrentSubmissionsModel
     {
-        //getting path from the files
-        string[] paths;
-        private string SubmissionUrl; //@"http://localhost:7213/api/submission";
-        private string SessionUrl; //@"http://localhost:7213/api/session";
+        private string SubmissionUrl; //@"https://plexsharecloud20221118104530.azurewebsites.net/api/submission";
+        private string SessionUrl; //@"https://plexsharecloud20221118104530.azurewebsites.net/api/session";
         private FileDownloadApi fileDownloadApi; //creating an instance of the FiledowloadApi.
+        string[] paths;
 
-        public SubmissionsModel() //constructor for the submissionmodel class. 
+        public CurrentSubmissionsModel() //constructor for the submissionmodel class. 
         {
             paths = GetOfflinePaths("Urls.txt");
             SubmissionUrl = @paths[0];
@@ -46,33 +43,8 @@ namespace PlexShareCloudUX
         {
             IReadOnlyList<SubmissionEntity>? getEntity = await fileDownloadApi.GetFilesBySessionIdAsync(sessionId);
             SubmissionsList = getEntity;
+            Trace.WriteLine("Retrieved Submissions by session with sessionid " + sessionId);
             return getEntity;
-        }
-
-        /// <summary>
-        /// For getting the path of user with respect to their local system.. 
-        /// </summary>
-        /// <returns>Return a path to download folder</returns>
-        public static string GetDownloadFolderPath() //Getting the path to folder where the downloads folder contains. 
-        {
-            return System.Convert.ToString(
-                Microsoft.Win32.Registry.GetValue(
-                     @"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders"
-                    , "{374DE290-123F-4565-9164-39C4925E467B}"
-                    , String.Empty
-                )
-            );
-        }
-
-        /// <summary>
-        /// Writes the file to the download folder. 
-        /// </summary>
-        /// <param name="num">Index in the submission list.</param>
-        public void DownloadPdf(int num) //function for converting into pdf and write file at given download path. 
-        {
-            byte[] pdf = SubmissionsList[num].Pdf;
-            string path = GetDownloadFolderPath() + "\\" + SubmissionsList[num].UserName + "_" + SubmissionsList[num].SessionId + ".pdf";
-            File.WriteAllBytes(path, pdf);
         }
 
         /// <summary>
