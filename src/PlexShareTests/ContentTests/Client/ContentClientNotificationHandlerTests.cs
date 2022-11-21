@@ -22,6 +22,7 @@ namespace PlexShareTests.ContentTests.Client
         [Fact]
         public void OnDataReceived_TypeAsContentData_ReturnsValidContentData()
         {
+            // send message and deserialize it from fake notification handler
             var utility = new Utility();
             var contentData = utility.GenerateContentData(MessageType.Chat, MessageEvent.New, "This is a message string", messageID: 6, receiverIDs: new[] { 100 }, replyThreadID: 2);
             IContentSerializer serializer = new ContentSerializer();
@@ -45,6 +46,7 @@ namespace PlexShareTests.ContentTests.Client
         [Fact]
         public void OnDataReceived_TypeAsChatThreadList_ReturnsValidChatThreadList()
         {
+            // send List<ChatThread> and deserialize message at fake notification handler
             var utility = new Utility();
             var contentData1 = utility.GenerateContentData(MessageType.Chat, MessageEvent.New, "This is a message string!", messageID: 4, receiverIDs: new[] { 100 }, replyThreadID: 2);
             var contentData2 = utility.GenerateContentData(MessageType.Chat, MessageEvent.New, "This is a message string!!", messageID: 5, receiverIDs: new[] { 100 }, replyThreadID: 2);
@@ -75,6 +77,7 @@ namespace PlexShareTests.ContentTests.Client
         [Fact]
         public void OnDataReceived_InvalidObjectType_ReturnsArgumentException()
         {
+            // send an int object (which is not supported)
             var utility = new Utility();
             int data = 0;
             IContentSerializer serializer = new ContentSerializer();

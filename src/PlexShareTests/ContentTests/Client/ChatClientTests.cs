@@ -23,7 +23,7 @@ namespace PlexShareTests.ContentTests.Client
         public void ConvertSendContentData_ValidInput_ReturnsValidContentData()
         {
             var utility = new Utility();
-            var sendContentData = utility.GenerateSendContentData(MessageType.Chat, "This is a message string", new[] {100});
+            var sendContentData = utility.GenerateSendContentData(MessageType.Chat, "This is a message string");
             var chatClient = new ChatClient(utility.GetFakeCommunicator());
 
             var contentData = chatClient.ConvertSendContentData(sendContentData, MessageEvent.New);
@@ -41,7 +41,7 @@ namespace PlexShareTests.ContentTests.Client
         public void NewChat_ValidInput_ReturnsValidContentData()
         {
             var utility = new Utility();
-            var sendContentData = utility.GenerateSendContentData(MessageType.Chat, "This is a message string", new[] {100});
+            var sendContentData = utility.GenerateSendContentData(MessageType.Chat, "This is a message string");
             var fakeCommunicator = utility.GetFakeCommunicator();
             var serializer = new ContentSerializer();
             var userID = 5;
@@ -69,7 +69,7 @@ namespace PlexShareTests.ContentTests.Client
         public void NewChat_EmptyMessageString_ReturnsArgumentException()
         {
             var utility = new Utility();
-            var sendContentData = utility.GenerateSendContentData(MessageType.Chat, "", new[] { 100 });
+            var sendContentData = utility.GenerateSendContentData(MessageType.Chat, "");
             var fakeCommunicator = utility.GetFakeCommunicator();
             var serializer = new ContentSerializer();
             var userID = 5;
@@ -84,7 +84,7 @@ namespace PlexShareTests.ContentTests.Client
         public void NewChat_NullMessageString_ReturnsArgumentException()
         {
             var utility = new Utility();
-            var sendContentData = utility.GenerateSendContentData(MessageType.Chat, null, new[] { 100 });
+            var sendContentData = utility.GenerateSendContentData(MessageType.Chat, null);
             var fakeCommunicator = utility.GetFakeCommunicator();
             var serializer = new ContentSerializer();
             var userID = 5;
