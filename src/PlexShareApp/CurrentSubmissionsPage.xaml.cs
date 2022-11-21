@@ -1,4 +1,16 @@
-﻿using Microsoft.Azure.WebJobs.Host.Listeners;
+﻿/******************************************************************************
+ * Filename    = SessionsPage.xaml.cs
+ *
+ * Author      = B Sai Subrahmanyam
+ *
+ * Product     = PlexShareSolution
+ * 
+ * Project     = PlexShareApp
+ *
+ * Description = Defines the View of the Current Submissions Page.
+ *****************************************************************************/
+
+using Microsoft.Azure.WebJobs.Host.Listeners;
 using PlexShareCloud;
 using PlexShareCloudUX;
 using System;
@@ -34,7 +46,7 @@ namespace PlexShareApp
             this.DataContext = viewModel;
             viewModel.PropertyChanged += Listener;
             submissions = new List<SubmissionEntity> { };
-            Trace.WriteLine("[Cloud] Submission View created Successfully");
+            Trace.WriteLine("[Cloud] Current Submissions View created Successfully");
         }
 
         /// <summary>
@@ -73,11 +85,13 @@ namespace PlexShareApp
                     FontSize = 16
                 };
                 Stack.Children.Add(label);
+                Trace.WriteLine("[Cloud] No Submissions detected");
                 return;
             }
 
             /*
              * Building the UI when there are list of submissions made.
+             * An entry for each submission in this session
              */
             for (int i = 0; i < submissions?.Count; i++)
             {
@@ -91,6 +105,7 @@ namespace PlexShareApp
                     BorderThickness = new Thickness(0,0,0,1)
                 };
                 Stack.Children.Add(label);
+                Trace.WriteLine("[Cloud] Adding Submission entry " + (i + 1));
             }
         }
 
@@ -99,6 +114,7 @@ namespace PlexShareApp
         /// </summary>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            Trace.WriteLine("[Cloud] Refresh Button pressed");
             viewModel.GetSubmissions(SessionId);
         }
     }

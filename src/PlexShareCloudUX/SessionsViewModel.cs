@@ -36,32 +36,30 @@ namespace PlexShareCloudUX
         {
             _model = new();
             GetSessions(userName);
+            Trace.WriteLine("[Cloud] Sessions View Model created");
         }
 
+        /// <summary>
+        /// Gets the details of the sessions conducted by the user.
+        /// Then dispatch the changes to the view.
+        /// <param name="userName">The username of the user.</param>
+        /// </summary>
         public async void GetSessions(string userName)
         {
-            try
-            {
-
-                IReadOnlyList<SessionEntity> sessionsList = await _model.GetSessionsDetails(userName);
-
-                _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
-                            DispatcherPriority.Normal,
-                            new Action<IReadOnlyList<SessionEntity>>((sessionsList) =>
+            IReadOnlyList<SessionEntity> sessionsList = await _model.GetSessionsDetails(userName);
+            Trace.WriteLine("[Cloud] Session details received");
+            _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
+                        DispatcherPriority.Normal,
+                        new Action<IReadOnlyList<SessionEntity>>((sessionsList) =>
+                        {
+                            lock (this)
                             {
-                                lock (this)
-                                {
-                                    this.ReceivedSessions = sessionsList;
+                                this.ReceivedSessions = sessionsList;
 
-                                    this.OnPropertyChanged("ReceivedSessions");
-                                }
-                            }),
-                            sessionsList);
-            }
-            catch
-            {
-                Trace.WriteLine("[Cloud] Connection with cloud error");
-            }
+                                this.OnPropertyChanged("ReceivedSessions");
+                            }
+                        }),
+                        sessionsList);
         }
 
         /// <summary>
@@ -78,7 +76,7 @@ namespace PlexShareCloudUX
         /// Handles the property changed event raised on a component.
         /// </summary>
         /// <param name="property">The name of the property.</param>
-        private void OnPropertyChanged(string property)
+        public void OnPropertyChanged(string property)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }

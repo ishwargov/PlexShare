@@ -27,11 +27,9 @@ namespace PlexShareTests.CloudTests
         {
             _downloadClient = new(SessionUrl, SubmissionUrl);
             _uploadClient = new(SessionUrl, SubmissionUrl);
-        }
-        ~RestApiTest()
-        {
             Dispose();
         }
+        
         /// <summary>
         /// Cleans up the test leftovers.
         /// </summary>
@@ -39,7 +37,6 @@ namespace PlexShareTests.CloudTests
         {
             _downloadClient.DeleteAllFilesAsync().Wait();
             _downloadClient.DeleteAllSessionsAsync().Wait();
-            GC.SuppressFinalize(this);
         }
         
         /// <summary>
@@ -152,28 +149,5 @@ namespace PlexShareTests.CloudTests
             Assert.Equal(0, getEntity?.Count); //0 indicates empty case. 
 
         }
-
-        /*
-        [Fact]
-        public async Task TestDeleteAndGetSubmission()
-        {
-            // Create an entity.
-            //Logger.LogMessage("Create an entity.");
-            byte[] newPdf = Encoding.ASCII.GetBytes("author");
-            SubmissionEntity? postEntity = await _uploadClient.PostSubmissionAsync("sessionId", "userName", newPdf);
-
-            // Get the entity.
-            //Logger.LogMessage("Get the entity.");
-            await _downloadClient.DeleteFilesbyUserAsync(postEntity.UserName);
-            IReadOnlyList<SubmissionEntity>? getEntity = await _downloadClient.GetFilesByUserAsync("userName");
-
-            // Validate.
-            //Logger.LogMessage("Validate.");
-            Assert.Equal(0, getEntity?.Count);
-            /*for (int i = 0; i < getEntity?.Count; i++)
-            {
-                Assert.Equal(postEntity?.SessionId, getEntity[i].SessionId);
-            }
-        }*/
     }
 }

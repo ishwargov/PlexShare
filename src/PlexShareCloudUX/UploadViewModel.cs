@@ -14,6 +14,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,7 +25,6 @@ namespace PlexShareCloudUX
 {
     public class UploadViewModel :
         INotifyPropertyChanged // Notifies clients that a property value has changed.
-        //IMessageListener        // Notifies clients that has a message has been received.
     {
         /// <summary>
         /// Creates an instance of the Upload ViewModel.
@@ -34,10 +34,12 @@ namespace PlexShareCloudUX
         public UploadViewModel(string sessionId, string userName, bool isServer)
         {
             _model = new UploadModel(sessionId, userName, isServer);
+            Trace.WriteLine("[Cloud] Upload View Model created");
         }
         
         /// <summary>
         /// Path of the file to be uploaded.
+        /// Call the function to upload the file once the value of the path is set.
         /// </summary>
         public string UploadFilePath
         {
@@ -45,12 +47,17 @@ namespace PlexShareCloudUX
         }
 
         /// <summary>
-        /// Function to call the UploadDocument function of the model when the path is given
+        /// Function to call the UploadDocument function of the model when the path is given.
+        /// Dispatch the succuessful submission information to the view.
         /// <param name="path"">Path of the file to be uploaded.</param>
         /// </summary>
-        public void UploadFile(string path)
+        public async void UploadFile(string path)
         {
-            bool isUploaded = _model.UploadDocument(path);
+            bool isUploaded = await _model.UploadDocument(path);
+            if (isUploaded)
+                Trace.WriteLine("[Cloud] File Uploaded successfully");
+            else
+                Trace.WriteLine("[Cloud] File not Uploaded");
             _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
                         DispatcherPriority.Normal,
                         new Action<bool>((isUploded) =>
@@ -75,7 +82,7 @@ namespace PlexShareCloudUX
         /// Handles the property changed event raised on a component.
         /// </summary>
         /// <param name="property">The name of the property.</param>
-        private void OnPropertyChanged(string property)
+        public void OnPropertyChanged(string property)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
@@ -93,7 +100,7 @@ namespace PlexShareCloudUX
         /// <summary>
         /// Underlying data model.
         /// </summary>
-        private UploadModel _model;
+        public UploadModel _model;
     }
 
 }

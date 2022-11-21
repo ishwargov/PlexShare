@@ -36,7 +36,6 @@ namespace PlexShareApp
     /// </summary>
     public partial class SessionsPage : Page
     {
-        private static SubmissionsPage? submissionsPage;
         public SessionsPage(string userName)
         {
             InitializeComponent();
@@ -48,6 +47,10 @@ namespace PlexShareApp
             sessions = new List<SessionEntity> { };
             Trace.WriteLine("[Cloud] Session View created Successfully");
         }
+        /// <summary>
+        /// Variable to Store the SubmissionsPage of the Selected session.
+        /// </summary>
+        private static SubmissionsPage? submissionsPage;
 
         /// <summary>
         /// ViewModel to use.
@@ -84,13 +87,16 @@ namespace PlexShareApp
                     FontSize = 16
                 };
                 Stack.Children.Add(label);
+                Trace.WriteLine("[Cloud] No Sessions Conducted by " + UserName);
 
                 return;
             }
 
             /*
-             * Building the UI when there are list of sessions conducted.
+             * Building the UI when there are list of sessions conducted. 
+             * Adding Buttons for each session the host has conducted.
              */
+            Trace.WriteLine("[Cloud] Sessions data received to view");
             for (int i = 0; i < sessions?.Count; i++)
             {
                 Button newButton = new Button();
@@ -101,6 +107,7 @@ namespace PlexShareApp
                 newButton.Click += OnButtonClick;
                 
                 Stack.Children.Add(newButton);
+                Trace.WriteLine("[Cloud] Adding Button for the " + (i + 1) + "th Session");
             }
 
         }
@@ -110,15 +117,23 @@ namespace PlexShareApp
         /// </summary>
         private void OnButtonClick(object sender, RoutedEventArgs e)
         {
+            Trace.WriteLine("[Cloud] Session Button pressed");
             Button caller = (Button)sender;
             int index = Convert.ToInt32(caller.Name.Split('n')[1]);
+
+            // Getting the Corresponding Submissions of the selected sessions and showing it in the place provided
             submissionsPage = new SubmissionsPage( sessions[index].SessionId, UserName);
-            //Shift to submissions view
+            Trace.WriteLine("[Cloud] SubmissionsPage created");
             SubmissionsPage.Content = submissionsPage;
         }
 
+        /// <summary>
+        /// Handler to the Refresh button press
+        /// To refresh the session details that is retrieved.
+        /// </summary>
         private void RefreshButtonClick(object sender, RoutedEventArgs e)
         {
+            Trace.WriteLine("[Cloud] Session Refresh Button pressed");
             viewModel.GetSessions(UserName);
         }
     }

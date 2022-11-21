@@ -43,7 +43,8 @@ namespace PlexShareCloudUX
             {
                 //logger for to create file with the urls required. 
                 Trace.WriteLine("[cloud] Given file path is found");
-                lines[0] = "File Not Found";
+                lines[0] = @"https://plexsharecloud20221118104530.azurewebsites.net/api/submission";
+                lines[1] = @"https://plexsharecloud20221118104530.azurewebsites.net/api/session";
             }
 
             return lines;

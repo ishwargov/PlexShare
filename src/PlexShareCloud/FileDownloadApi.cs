@@ -35,10 +35,10 @@ namespace PlexShareCloud
         /// <param name="submissionUrl">Head Url for the submission request</param>
         public FileDownloadApi(string sessionUrl, string submissionUrl)
         {
-            Trace.WriteLine("[cloud] New entity client created");
             _entityClient = new();
             _sessionUrl = sessionUrl;
             _submissionUrl = submissionUrl;
+            Trace.WriteLine("[Cloud] New entity client created");
         }
 
         /// <summary>
@@ -60,13 +60,12 @@ namespace PlexShareCloud
                 };
 
                 IReadOnlyList<SubmissionEntity> entities = JsonSerializer.Deserialize<IReadOnlyList<SubmissionEntity>>(result, options);
-                Trace.WriteLine("[cloud] Retreived all submissions for " + username);
-                //Trace need to be added. 
+                Trace.WriteLine("[Cloud] Retreived all submissions for " + username);
                 return entities;
             }
             catch (Exception ex)
             {
-                Trace.WriteLine("[cloud] Network Error Exception " + ex);
+                Trace.WriteLine("[Cloud] Network Error Exception " + ex);
                 return new List<SubmissionEntity>();
             }
         }
@@ -81,7 +80,7 @@ namespace PlexShareCloud
             try
             {
                 var response = await _entityClient.GetAsync(_submissionUrl + $"/sessions/{sessionId}");
-                //response.EnsureSuccessStatusCode();
+                response.EnsureSuccessStatusCode();
                 var result = await response.Content.ReadAsStringAsync();
                 var options = new JsonSerializerOptions
                 {
@@ -90,12 +89,12 @@ namespace PlexShareCloud
                 };
 
                 IReadOnlyList<SubmissionEntity> entities = JsonSerializer.Deserialize<IReadOnlyList<SubmissionEntity>>(result, options);
-                Trace.WriteLine("[cloud] Retreived all files for " + sessionId);
+                Trace.WriteLine("[Cloud] Retreived all files for " + sessionId);
                 return entities;
             }
             catch (Exception ex)
             {
-                Trace.WriteLine("[cloud] Network Error Exception " + ex);
+                Trace.WriteLine("[Cloud] Network Error Exception " + ex);
                 return new List<SubmissionEntity>();
             }
         }
@@ -119,13 +118,12 @@ namespace PlexShareCloud
                 };
 
                 IReadOnlyList<SessionEntity> entities = JsonSerializer.Deserialize<IReadOnlyList<SessionEntity>>(result, options);
-                //Trace to be added. 
-                Trace.WriteLine("[cloud] Retreived all sessions for " + hostUsername);
+                Trace.WriteLine("[Cloud] Retreived all sessions for " + hostUsername);
                 return entities;
             }
             catch (Exception ex)
             {
-                Trace.WriteLine("[cloud] Network Error Exception " + ex);
+                Trace.WriteLine("[Cloud] Network Error Exception " + ex);
                 return new List<SessionEntity>();
             }
         }

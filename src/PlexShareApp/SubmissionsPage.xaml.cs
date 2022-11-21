@@ -77,11 +77,14 @@ namespace PlexShareApp
                     FontSize = 16
                 };
                 Stack.Children.Add(label);
+                Trace.WriteLine("[Cloud] No Submissions detected");
                 return;
             }
 
             /*
              * Building the UI when there are list of submissions made.
+             * Adding an entry for each submission in the session with 
+             * 4 columns - index, student id, submission time and download button.
              */
             for (int i = 0; i < submissions?.Count; i++)
             {
@@ -107,6 +110,7 @@ namespace PlexShareApp
                 };
                 grid.ColumnDefinitions.Add(column4);
 
+                //Index of the submission
                 Label sNo = new()
                 {
                     Content = i+1,
@@ -120,6 +124,7 @@ namespace PlexShareApp
                 Grid.SetColumn(sNo, 0);
                 grid.Children.Add(sNo);
 
+                //Student Id of the submission
                 Label studentId = new()
                 {
                     Content = submissions[i].UserName,
@@ -133,6 +138,7 @@ namespace PlexShareApp
                 Grid.SetColumn(studentId, 1);
                 grid.Children.Add(studentId);
 
+                //Submissions time of the submission
                 Label submissionTime = new()
                 {
                     Content = submissions[i].Timestamp.Value.ToLocalTime(),
@@ -146,6 +152,7 @@ namespace PlexShareApp
                 Grid.SetColumn(submissionTime, 2);
                 grid.Children.Add(submissionTime);
 
+                //Download button of the submission
                 Button button = new();
                 button.Content = "Download PDF";
                 button.Name = "Button" + i.ToString();
@@ -156,7 +163,7 @@ namespace PlexShareApp
                 grid.Children.Add(button);
 
                 Stack.Children.Add(grid);
-
+                Trace.WriteLine("[Cloud] Adding Submission entry " + (i + 1));
             }
         }
 
@@ -165,6 +172,7 @@ namespace PlexShareApp
         /// </summary>
         private void OnButtonClick(object sender, RoutedEventArgs e)
         {
+            Trace.WriteLine("[Cloud] Download Button pressed");
             Button caller = (Button)sender;
             int index = Convert.ToInt32(caller.Name.Split('n')[1]);
             viewModel.SubmissionToDownload = index;

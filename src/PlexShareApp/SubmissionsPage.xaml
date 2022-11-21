@@ -1,4 +1,5 @@
-﻿<Page x:Class="PlexShareApp.SubmissionsPage"
+﻿<!--Author = B Sai Subrahmanyam-->
+<Page x:Class="PlexShareApp.SubmissionsPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -9,8 +10,10 @@
       Title="SubmissionsPage">
 
     <Grid Background="#226869">
+        <!--Scroll viewer to hold the list of the submissions made in a particular session-->
         <ScrollViewer Padding="10">
             <StackPanel x:Name="Stack" Orientation="Vertical">
+                <!--Each entry is made up of 4 columns - Sno., Student Id, Submission Time and the Button to download the Pdf-->
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width = "0.75*"/>

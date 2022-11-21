@@ -183,7 +183,6 @@ namespace PlexShareCloud
         [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = SubmissionRoute)] HttpRequest req,
         [Table(SubmissionTableName, ConnectionName)] TableClient entityClient)
         {
-            //Trace need to be added. 
             Trace.WriteLine($"[cloud] Deleting all submission items");
             try
             {
@@ -210,7 +209,6 @@ namespace PlexShareCloud
         [Table(SessionTableName, ConnectionName)] TableClient entityClient)
         {
             Trace.WriteLine($"[cloud] Deleting all session items");
-            //Trace Need to be added. 
             try
             {
                 await entityClient.DeleteAsync();

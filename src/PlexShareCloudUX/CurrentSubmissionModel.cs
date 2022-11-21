@@ -19,7 +19,14 @@ namespace PlexShareCloudUX
 {
     public class CurrentSubmissionsModel
     {
+        /// <summary>
+        /// Url to access submission table.
+        /// </summary>
         private string SubmissionUrl; //@"https://plexsharecloud20221118104530.azurewebsites.net/api/submission";
+
+        /// <summary>
+        /// Url to access session table.
+        /// </summary>
         private string SessionUrl; //@"https://plexsharecloud20221118104530.azurewebsites.net/api/session";
         private FileDownloadApi fileDownloadApi; //creating an instance of the FiledowloadApi.
         string[] paths;
@@ -30,8 +37,12 @@ namespace PlexShareCloudUX
             SubmissionUrl = @paths[0];
             SessionUrl = @paths[1];
             fileDownloadApi = new FileDownloadApi(SessionUrl, SubmissionUrl);
+            Trace.WriteLine("[Cloud] Current Submission Model created");
         }
 
+        /// <summary>
+        /// To store the submission list.
+        /// </summary>
         public IReadOnlyList<SubmissionEntity>? SubmissionsList; //creating the submission list to store the details of type submission model. 
 
         /// <summary>

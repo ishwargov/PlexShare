@@ -21,7 +21,7 @@ using System.Diagnostics;
 
 namespace PlexShareCloudUX
 {
-    internal class UploadModel
+    public class UploadModel
     {
         public string SessionId;
         public string UserName;
@@ -41,7 +41,7 @@ namespace PlexShareCloudUX
             isUploaded = false;
             if(isServer)
             {
-                _uploadClient.PostSessionAsync(sessionId, userName);
+                //_uploadClient.PostSessionAsync(sessionId, userName);
             }
             Trace.WriteLine("[Cloud] Uplod View object created");
         }
@@ -51,38 +51,48 @@ namespace PlexShareCloudUX
         /// </summary>
         /// <param name="fileName">Path of the file to be submitted.</param>
         /// <returns>Boolean Value of True for successful upload and false if it fails.</returns>
-        public bool UploadDocument(string fileName)
+        public async Task<bool> UploadDocument(string fileName)
         {
             //Upload File
+            if(!isUploaded)
+            {
+                bool result =  await UploadDocumentAsync(fileName);
+                isUploaded = true;
+                return result;
+            }
+            else
+            {
+                bool result = await ReUploadDocumentAsync(fileName);
+                return result;
+            }
+        }
+
+        public async Task<bool> UploadDocumentAsync(string fileName)
+        {
+            byte[] fileContent = File.ReadAllBytes(fileName);
             try
             {
-                if(!isUploaded)
-                {
-                    UploadDocumentAsync(fileName);
-                    isUploaded = true;
-                }
-                else
-                {
-                    ReUploadDocumentAsync(fileName);
-                }
+                SubmissionEntity? postEntity = await _uploadClient.PostSubmissionAsync(SessionId, UserName, fileContent);
                 return true;
             }
-            catch 
+            catch (Exception ex)
             {
                 return false;
             }
         }
 
-        public async void UploadDocumentAsync(string fileName)
+        public async Task<bool> ReUploadDocumentAsync(string fileName)
         {
             byte[] fileContent = File.ReadAllBytes(fileName);
-            SubmissionEntity? postEntity = await _uploadClient.PostSubmissionAsync(SessionId, UserName, fileContent);
-        }
-
-        public async void ReUploadDocumentAsync(string fileName)
-        {
-            byte[] fileContent = File.ReadAllBytes(fileName);
-            SubmissionEntity? putEntity = await _uploadClient.PutSubmissionAsync(SessionId, UserName, fileContent);
+            try
+            {
+                SubmissionEntity? putEntity = await _uploadClient.PutSubmissionAsync(SessionId, UserName, fileContent);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
         }
 
         /// <summary>

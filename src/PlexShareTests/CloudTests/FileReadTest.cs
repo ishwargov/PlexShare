@@ -24,7 +24,8 @@ namespace PlexShareTests.CloudTests
             //Give the wrong filename which does not exist in the directory. 
             string[] lines = FileRead.GetPaths("temp.txt");
             //It should handle filenotfound exception.
-            Assert.Equal("File Not Found", lines[0]);
+            Assert.Equal(@"https://plexsharecloud20221118104530.azurewebsites.net/api/submission", lines[0]);
+            Assert.Equal(@"https://plexsharecloud20221118104530.azurewebsites.net/api/session", lines[1]);
         }
     }
 }
