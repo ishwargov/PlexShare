@@ -1,4 +1,16 @@
-﻿using System;
+﻿/***************************
+ * Filename    = LineOperationsTests.cs
+ *
+ * Author      = Deon Saji
+ *
+ * Product     = Plex Share
+ * 
+ * Project     = White Board
+ *
+ * Description = This implements line operations tests 
+ ***************************/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -34,19 +46,20 @@ namespace PlexShareTests.WhiteboardTests
             WhiteBoardViewModel viewModel = WhiteBoardViewModel.Instance;
             viewModel.ShapeItems.Clear();
             viewModel.SetUserId(20);
-            
-            //Create a line (15,15) and (15,45) 
+            //Create line
             viewModel.ChangeMode("create_line");
             start = new(15, 15);
-            end = new(15,45);
+            end = new(15, 45);
             viewModel.ShapeStart(start);
             viewModel.ShapeBuilding(end);
             viewModel.ShapeFinished(new Point());
-
-            //Select the line
+            
+            //Select line
             viewModel.ChangeMode("select_mode");
             viewModel.ShapeStart(new Point(15, 22));
             viewModel.ShapeFinished(new Point());
+            viewModel.ObjectSelection(new Point(30, 30));
+            Assert.Equal(30, viewModel.select.selectedObject.Geometry.Bounds.Height);
 
             Assert.Equal("LineGeometry", viewModel.select.selectedObject.Geometry.GetType().Name);
             viewModel.ShapeItems.Clear();
@@ -73,7 +86,7 @@ namespace PlexShareTests.WhiteboardTests
             viewModel.ChangeMode("select_mode");
             viewModel.ShapeStart(new Point(30, 30));
             viewModel.ShapeFinished(new Point());
-            //Transform the line keeping start point as pivot 
+            //Transform the line keeping 
             viewModel.ShapeStart(new Point(45, 45));
             viewModel.ShapeBuilding(new Point(65, 65));
             viewModel.ShapeFinished(new Point());
@@ -136,7 +149,6 @@ namespace PlexShareTests.WhiteboardTests
             viewModel.ChangeMode("select_mode");
             viewModel.ShapeStart(new Point(30, 30));
             viewModel.ShapeFinished(new Point());
-            //Transofrm the line keeping end point as pivot
             viewModel.ShapeStart(new Point(15, 15));
             viewModel.ShapeBuilding(new Point(10, 10));
             viewModel.ShapeFinished(new Point());
