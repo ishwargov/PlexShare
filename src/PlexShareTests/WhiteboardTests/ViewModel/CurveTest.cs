@@ -1,5 +1,5 @@
 ﻿/********************************************************************************
- * Filename    = WhiteBoardViewModel.cs
+ * Filename    = CurveTest.cs
  *
  * Author      = Jerry John Thomas
  *
