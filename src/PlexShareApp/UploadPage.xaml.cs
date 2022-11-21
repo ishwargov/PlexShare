@@ -67,7 +67,7 @@ namespace PlexShareApp
             PDFName.Content = array[array.Length - 1];
             Submit.Visibility = Visibility.Hidden;
             Upload.Visibility = Visibility.Visible;
-            Loading.Visibility = Visibility.Hidden;
+            //Loading.Visibility = Visibility.Hidden;
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace PlexShareApp
         {
             Trace.WriteLine("[Cloud] Submit Button pressed");
             //The Selected file is submitted to the cloud
-            Loading.Visibility = Visibility.Visible;
+            //Loading.Visibility = Visibility.Visible;
             UploadViewModel viewModel = this.DataContext as UploadViewModel;
             viewModel.UploadFilePath = FilePath;
         }
