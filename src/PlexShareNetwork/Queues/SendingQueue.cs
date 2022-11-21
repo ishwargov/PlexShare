@@ -85,7 +85,7 @@ namespace PlexShareNetwork.Queues
             // If the module is not registered at all
             if (!containsKey)
             {
-                Trace.WriteLine($"Module {moduleName} is not registered.");
+                Trace.WriteLine($"[Networking] Module {moduleName} is not registered.");
 
                 // Returning that the enqueueing failed
                 return false;
