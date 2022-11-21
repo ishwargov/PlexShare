@@ -1,4 +1,17 @@
-﻿<UserControl x:Class="PlexShareApp.ChatPageView"
+﻿<!--/
+******************************************************************************
+* Filename    = ChatPageView.xaml
+*
+* Author      = Sughandhan S
+*
+* Product     = PlexShare
+* 
+* Project     = PlexShareApp
+*
+* Description = The following is the View for our ChatPage.
+*****************************************************************************/
+-->
+<UserControl x:Class="PlexShareApp.ChatPageView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -146,7 +159,7 @@
                             <emoji:TextBlock Foreground="{DynamicResource DynamicTextClr}" Text="{Binding IncomingMessage, UpdateSourceTrigger=PropertyChanged}"
                                        x:Name="MainText" TextWrapping="Wrap" Grid.Row="0" Width="250" FontSize="16"
                                        Padding="8,5,8,5" Grid.Column="0" />
-                            <!-- Currently adding reply, clear replybox, edit and delete button-->
+                            <!-- Adding reply, clear replybox, edit and delete button-->
                             <StackPanel Orientation="Horizontal" Grid.Column="1">
                                 <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
                                     Width="30" Height="20" Margin="0,0,0,0" Click="ReplyButtonClick" ToolTip="Reply">
@@ -234,6 +247,7 @@
                                                Text="{Binding IncomingMessage, UpdateSourceTrigger=PropertyChanged}" x:Name="MainText" TextWrapping="Wrap"
                                                Width="150" FontSize="16" Padding="8,5,8,5" />
                                     <StackPanel Grid.Column="2">
+                                        <!-- Adding reply, clear replybox and download button-->
                                         <Button Background="Transparent" BorderBrush="Transparent"
                                             HorizontalAlignment="Right" Width="40" Margin="0,0,0,0"
                                             Click="DownloadButtonClick">
@@ -315,6 +329,7 @@
                                    x:Name="MainText" TextWrapping="Wrap" Grid.Row="0" Width="250" FontSize="16"
                                    Padding="8,5,8,5" Grid.Column="0"/>
                         <StackPanel Orientation="Horizontal" Grid.Column="1">
+                            <!-- Adding reply and clear replybox button-->
                             <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
                                     Width="30" Height="20" Margin="0,0,0,0" Click="ReplyButtonClick" ToolTip="Reply">
                                 <Image Source="Icons/reply.png" Width="15" Height="15" />
@@ -392,6 +407,7 @@
                                            Text="{Binding IncomingMessage, UpdateSourceTrigger=PropertyChanged}" x:Name="MainText" TextWrapping="Wrap"
                                            Width="150" FontSize="16" Padding="8,5,8,5" />
                                 <StackPanel Grid.Column="2">
+                                    <!-- Adding reply, clear replybox and download button-->
                                     <Button Background="Transparent" BorderBrush="Transparent"
                                             HorizontalAlignment="Right" Width="40" Margin="0,0,0,0"
                                             Click="DownloadButtonClick">
@@ -417,6 +433,7 @@
                 </Grid>
             </Grid>
         </DataTemplate>
+        <!--Setting up the templates for constructing chat bubbles-->
         <local:ChatBubbleConstructor x:Key="ChatBubbleTemplateSelector" SentMsgBubble="{StaticResource MyToMsgTemplate}"
                                   SentFileBubble="{StaticResource MyToFileTemplate}"
                                   RecvMsgBubble="{StaticResource MyFromMsgTemplate}"
@@ -492,6 +509,7 @@
                             </Grid>
                         </Grid>
                     </Border>
+                    <!--Download Button-->
                     <Border Grid.Column="1" CornerRadius="8" Background="{DynamicResource DynamicSendBox}"
                             BorderBrush="{DynamicResource DynamicSendBox}" BorderThickness="0" Height="30" Width="30"
                             Margin="0,0,0,0" VerticalAlignment="Top">
@@ -500,6 +518,7 @@
                             <Image Source="Icons/upload-file.png" Width="20" Height="20" />
                         </Button>
                     </Border>
+                    <!--Send Button-->
                     <Border Grid.Column="1" CornerRadius="8" Background="{DynamicResource DynamicSendBox}"
                             BorderBrush="{DynamicResource DynamicSendBox}" BorderThickness="0" Height="30" Width="30"
                             Margin="0,0,0,0" VerticalAlignment="Bottom" HorizontalAlignment="Center">

@@ -1,8 +1,14 @@
-﻿/// <author>Sughandhan S</author>
-/// <created>03/11/2022</created>
-/// <summary>
-///     Interaction logic for ChatPageView.xaml.
-/// </summary>
+﻿/******************************************************************************
+ * Filename    = ChatPageView.xaml.cs
+ *
+ * Author      = Sughandhan S
+ *
+ * Product     = PlexShare
+ * 
+ * Project     = PlexShareApp
+ *
+ * Description = Interaction logic for ChatPageView.xaml.    
+ *****************************************************************************/
 
 using System;
 using System.Collections.ObjectModel;
@@ -31,13 +37,13 @@ namespace PlexShareApp
     {
 
         /// <summary>
-        /// All the messages upto now
+        ///     All the messages upto now
         /// </summary>
         private readonly ObservableCollection<Message> _allMessages;
         private readonly Message addNewMessage;
 
         /// <summary>
-        /// Creating an instance of our ChatPageView
+        ///     Creating an instance of our ChatPageView
         /// </summary>
         public ChatPageView()
         {
@@ -165,17 +171,7 @@ namespace PlexShareApp
                     }
                     Trace.WriteLine($"[ChatPageView] {openFileDialog.SafeFileName} File sent for uploading from view.");
 
-                    // Uncomment the below codes for testing when the network is down
-                    //addNewMessage = new Message();
-                    //addNewMessage.MessageID = -1;
-                    //addNewMessage.Sender = null;
-                    //addNewMessage.Time = DateTime.Now.ToShortTimeString();
-                    //addNewMessage.Type = true;
-                    //addNewMessage.ReplyMessage = null;
-                    //addNewMessage.IncomingMessage = openFileDialog.FileName;
-                    //addNewMessage.ToFrom = true;
-                    //_allMessages.Add(addNewMessage);
-
+                    // Clearing the TextBoxes
                     SendTextBox.Text = string.Empty;
                     ReplyTextBox.Text = string.Empty;
                 }
@@ -211,27 +207,16 @@ namespace PlexShareApp
                 {
                     viewModel.SendMessage(msg, ReplyMsgId, "Chat");
                 }
-                Trace.WriteLine("[ChatPageView] Sending a message from view.");
+                Trace.WriteLine("[ChatPageView] Sending a message from view.");                
 
-                // Uncomment the below codes for testing when the network is down
-                //addNewMessage = new Message();
-                //addNewMessage.MessageID = 2;
-                //addNewMessage.Sender = null;
-                //addNewMessage.Time = DateTime.Now.ToShortTimeString();
-                //addNewMessage.Type = true;
-                //addNewMessage.ReplyMessage = "Hey";
-                //addNewMessage.IncomingMessage = chumma;//SendTextBox.Text;
-                //addNewMessage.ToFrom = true;
-                //_allMessages.Add(addNewMessage);
-
+                // Clearing the TextBoxes
                 SendTextBox.Text = string.Empty;
                 ReplyTextBox.Text = string.Empty;
             }
         }
-
-        // TODO: Implement ReplyButtonClick event
+        
         /// <summary>
-        /// Event Handler on Clicking Reply Button
+        ///     Event Handler on Clicking Reply Button
         /// </summary>
         /// <param name="sender"> Notification Sender</param>
         /// <param name="e"> Routed Event Data </param>
@@ -260,6 +245,11 @@ namespace PlexShareApp
             }
         }
 
+        /// <summary>
+        ///     Event Handler on Clearing Reply TextBlock
+        /// </summary>
+        /// <param name="sender"> Notification Sender</param>
+        /// <param name="e"> Routed Event Data </param>
         private void ClearReplyBox(object sender, RoutedEventArgs e)
         {
             if (sender is Button)
@@ -271,7 +261,7 @@ namespace PlexShareApp
         }
 
         /// <summary>
-        /// Event Handler on Clicking Edit Button
+        ///     Event Handler on Clicking Edit Button
         /// </summary>
         /// <param name="sender"> Notification Sender</param>
         /// <param name="e"> Routed Event Data </param>
@@ -299,7 +289,7 @@ namespace PlexShareApp
         }
 
         /// <summary>
-        /// Event Handler on Clicking Delete Button
+        ///     Event Handler on Clicking Delete Button
         /// </summary>
         /// <param name="sender"> Notification Sender</param>
         /// <param name="e"> Routed Event Data </param>
@@ -319,7 +309,7 @@ namespace PlexShareApp
         }
 
         /// <summary>
-        /// Event Handler for Clicking on Star Radio Button
+        ///     Event Handler for Clicking on Star Radio Button
         /// </summary>
         /// <param name="sender"> Notification Sender </param>
         /// <param name="e"> Routed Event Data </param>
@@ -342,7 +332,7 @@ namespace PlexShareApp
         }
 
         /// <summary>
-        /// Event Handler on clicking Download Button
+        ///     Event Handler on clicking Download Button
         /// </summary>
         /// <param name="sender"> Notification Sender </param>
         /// <param name="e"> Routed Event Data </param>
@@ -379,7 +369,7 @@ namespace PlexShareApp
         }
 
         /// <summary>
-        /// Updates the Scrollbar to the bottom of the listbox
+        ///     Updates the Scrollbar to the bottom of the listbox
         /// </summary>
         /// <param name="listBox"> Listbox containing the scrollbar </param>
         private void UpdateScrollBar(ListBox listBox)

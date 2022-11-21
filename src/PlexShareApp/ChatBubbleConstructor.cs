@@ -1,9 +1,15 @@
-﻿/// <author> Sughandhan S </author>
-/// <created> 08/11/2022 </created>
-/// <summary>
-///     The following file helps in constructing the chat bubble using Data Templates based on whether the message
-///     is a chat or file
-/// </summary>
+﻿/******************************************************************************
+ * Filename    = ChatBubbleConstructor.cs
+ *
+ * Author      = Sughandhan S
+ *
+ * Product     = PlexShare
+ * 
+ * Project     = PlexShareApp
+ *
+ * Description = The following file helps in constructing the chat bubble using Data Templates based on whether the message
+ *               is a chat or file
+ *****************************************************************************/
 
 using System.Diagnostics;
 using System.Windows;
@@ -14,6 +20,12 @@ namespace PlexShareApp
     public class ChatBubbleConstructor: DataTemplateSelector
     {
         
+        /// <summary>
+        ///     Creates the chat bubble
+        /// </summary>
+        /// <param name="item">template item</param>
+        /// <param name="container">dependency object</param>
+        /// <returns></returns>
         public override DataTemplate? SelectTemplate(object item, DependencyObject container)
         {
             var message = item as Message;
