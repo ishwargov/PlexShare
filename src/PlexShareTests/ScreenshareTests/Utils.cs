@@ -5,6 +5,7 @@
 /// </summary>
 
 using PlexShareScreenshare;
+using PlexShareScreenshare.Client;
 using PlexShareScreenshare.Server;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -17,7 +18,7 @@ namespace PlexShareTests.ScreenshareTests
     /// Defines the static "Utils" class which defines
     /// general utilities required for unit tests.
     /// </summary>
-    public static class Utils
+    public static partial class Utils
     {
         /// <summary>
         /// Random number generator.
@@ -71,7 +72,7 @@ namespace PlexShareTests.ScreenshareTests
             List<SharedClientScreen> list = new();
             for (int i = 2; i < count + 2; ++i)
             {
-                list.Add(Utils.GetMockClient(server, isDebugging));
+                list.Add(Utils.GetMockClient(server, isDebugging, i));
             }
             return list;
         }
@@ -232,8 +233,9 @@ namespace PlexShareTests.ScreenshareTests
             // Create a mock bitmap image and convert it to base-64 string.
             Bitmap img = Utils.GetMockBitmap();
             MemoryStream ms = new();
-            img.Save(ms, ImageFormat.Jpeg);
-            return Convert.ToBase64String(ms.ToArray()) + "1";
+            img.Save(ms, ImageFormat.Bmp);
+            var data = ScreenProcessor.CompressByteArray(ms.ToArray());
+            return Convert.ToBase64String(data) + "1";
         }
 
         /// <summary>

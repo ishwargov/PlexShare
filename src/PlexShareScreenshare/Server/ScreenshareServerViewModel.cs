@@ -30,17 +30,10 @@ namespace PlexShareScreenshare.Server
         /// </summary>
         private static ScreenshareServerViewModel? _instance;
 
-        // Constants for initial page view.
-        private const int InitialPageNumber = 1;
-        private const int InitialTotalPages = 0;
-        private const int InitialNumberOfRows = 1;
-        private const int InitialNumberOfCols = 1;
-        private const bool InitialIsLastPage = true;
-
         /// <summary>
         /// Underlying data model.
         /// </summary>
-        private readonly ScreenshareServer _model;
+        private readonly ScreenshareServer? _model;
 
         /// <summary>
         /// List of all the clients sharing their screens. This list first contains
@@ -95,14 +88,25 @@ namespace PlexShareScreenshare.Server
         private string _popupText;
 
         /// <summary>
+        /// The dispatcher operation returned from the calls to BeginInvoke.
+        /// </summary>
+        /// <remarks>
+        /// They are only required for unit tests.
+        /// </remarks>
+        private DispatcherOperation? _updateViewOperation, _displayPopupOperation;
+
+        /// <summary>
         /// Creates an instance of the "ScreenshareServerViewModel" which represents the
         /// view model for screen sharing on the server side. It also instantiates the instance
         /// of the underlying data model.
         /// </summary>
-        protected ScreenshareServerViewModel()
+        /// <param name="isDebugging">
+        /// If we are in debugging mode.
+        /// </param>
+        protected ScreenshareServerViewModel(bool isDebugging)
         {
             // Get the instance of the underlying data model.
-            _model = ScreenshareServer.GetInstance(this);
+            _model = ScreenshareServer.GetInstance(this, isDebugging);
 
             // Always display the first page initially.
             _currentPage = InitialPageNumber;
@@ -212,6 +216,13 @@ namespace PlexShareScreenshare.Server
             // from executing a second time.
             GC.SuppressFinalize(this);
         }
+
+        // Constants for initial page view.
+        public static int InitialPageNumber { get; } = 1;
+        public static int InitialTotalPages { get; } = 0;
+        public static int InitialNumberOfRows { get; } = 1;
+        public static int InitialNumberOfCols { get; } = 1;
+        public static bool InitialIsLastPage { get; } = true;
 
         /// <summary>
         /// Gets the maximum number of tiles of the shared screens
@@ -383,7 +394,7 @@ namespace PlexShareScreenshare.Server
         /// (such as during unit testing) the dispatcher associated with the
         /// current thread is returned.
         /// </summary>
-        private static Dispatcher ApplicationMainThreadDispatcher =>
+        public static Dispatcher ApplicationMainThreadDispatcher =>
             (Application.Current?.Dispatcher != null) ?
                     Application.Current.Dispatcher :
                     Dispatcher.CurrentDispatcher;
@@ -391,39 +402,17 @@ namespace PlexShareScreenshare.Server
         /// <summary>
         /// Gets a singleton instance of "ScreenshareServerViewModel" class.
         /// </summary>
+        /// <param name="isDebugging">
+        /// If we are in debugging mode.
+        /// </param>
         /// <returns>
         /// A singleton instance of "ScreenshareServerViewModel".
         /// </returns>
-        public static ScreenshareServerViewModel GetInstance()
+        public static ScreenshareServerViewModel GetInstance(bool isDebugging = false)
         {
             // Create a new instance if it was null before.
-            _instance ??= new();
+            _instance ??= new(isDebugging);
             return _instance;
-        }
-
-        /// <summary>
-        /// Used to display the popup on the UI with the given message.
-        /// </summary>
-        /// <param name="message">
-        /// Message to be displayed on the popup.
-        /// </param>
-        public void DisplayPopup(string message)
-        {
-            _ = ApplicationMainThreadDispatcher.BeginInvoke(
-                        DispatcherPriority.Normal,
-                        new Action<string>((text) =>
-                        {
-                            lock (this)
-                            {
-                                // Close the popup if it was already opened before.
-                                if (this.IsPopupOpen) this.IsPopupOpen = false;
-
-                                this.PopupText = text;
-                                this.IsPopupOpen = true;
-                            }
-                        }),
-                        message
-                );
         }
 
         /// <summary>
@@ -629,6 +618,7 @@ namespace PlexShareScreenshare.Server
             // and unmanaged resources.
             if (disposing)
             {
+                _model?.Dispose();
                 _subscribers.Clear();
                 _instance = null;
             }
@@ -887,36 +877,61 @@ namespace PlexShareScreenshare.Server
         )
         {
             // Update all the fields and notify the UX.
-            _ = ApplicationMainThreadDispatcher.BeginInvoke(
-                        DispatcherPriority.Normal,
-                        new Action<
-                            ObservableCollection<SharedClientScreen>, int, int, int, int, bool, (int Height, int Width)
-                        >((clients, pageNum, numRows, numCols, totalPages, isLastPage, tileDimensions) =>
+            _updateViewOperation = ApplicationMainThreadDispatcher.BeginInvoke(
+                DispatcherPriority.Normal,
+                new Action<
+                    ObservableCollection<SharedClientScreen>, int, int, int, int, bool, (int Height, int Width)
+                >((clients, pageNum, numRows, numCols, totalPages, isLastPage, tileDimensions) =>
+                {
+                    lock (this)
+                    {
+                        foreach (SharedClientScreen screen in clients)
                         {
-                            lock (this)
-                            {
-                                foreach (SharedClientScreen screen in clients)
-                                {
-                                    screen.TileHeight = tileDimensions.Height;
-                                    screen.TileWidth = tileDimensions.Width;
-                                }
+                            screen.TileHeight = tileDimensions.Height;
+                            screen.TileWidth = tileDimensions.Width;
+                        }
 
-                                this.CurrentWindowClients = clients;
-                                this.CurrentPage = pageNum;
-                                this.CurrentPageRows = numRows;
-                                this.CurrentPageColumns = numCols;
-                                this.TotalPages = totalPages;
-                                this.IsLastPage = isLastPage;
-                            }
-                        }),
-                        new ObservableCollection<SharedClientScreen>(newWindowClients),
-                        newPageNum,
-                        newNumRows,
-                        newNumCols,
-                        newTotalPages,
-                        newIsLastPage,
-                        newTileDimensions
-                );
+                        this.CurrentWindowClients = clients;
+                        this.CurrentPage = pageNum;
+                        this.CurrentPageRows = numRows;
+                        this.CurrentPageColumns = numCols;
+                        this.TotalPages = totalPages;
+                        this.IsLastPage = isLastPage;
+                    }
+                }),
+                new ObservableCollection<SharedClientScreen>(newWindowClients),
+                newPageNum,
+                newNumRows,
+                newNumCols,
+                newTotalPages,
+                newIsLastPage,
+                newTileDimensions
+            );
+        }
+
+        /// <summary>
+        /// Used to display the popup on the UI with the given message.
+        /// </summary>
+        /// <param name="message">
+        /// Message to be displayed on the popup.
+        /// </param>
+        private void DisplayPopup(string message)
+        {
+            _displayPopupOperation = ApplicationMainThreadDispatcher.BeginInvoke(
+                DispatcherPriority.Normal,
+                new Action<string>((text) =>
+                {
+                    lock (this)
+                    {
+                        // Close the popup if it was already opened before.
+                        if (this.IsPopupOpen) this.IsPopupOpen = false;
+
+                        this.PopupText = text;
+                        this.IsPopupOpen = true;
+                    }
+                }),
+                message
+            );
         }
 
         /// <summary>

@@ -8,7 +8,7 @@ using Moq;
 using PlexShareNetwork.Communication;
 using PlexShareScreenshare;
 using PlexShareScreenshare.Server;
-
+using System.Text.Json;
 using SSUtils = PlexShareScreenshare.Utils;
 
 namespace PlexShareTests.ScreenshareTests
@@ -221,6 +221,61 @@ namespace PlexShareTests.ScreenshareTests
         }
 
         /// <summary>
+        /// Tests the false image packet retrieval from unknown client.
+        /// </summary>
+        /// <param name="numImages">
+        /// The number of images sent for the client to the server.
+        /// </param>
+        [Theory]
+        [InlineData(1)]
+        [InlineData(5)]
+        public void TestPutFaultImage(int numImages)
+        {
+            // Arrange.
+            // Create mock server and mock client.
+            var viewmodelMock = new Mock<IMessageListener>();
+            ScreenshareServer server = ScreenshareServer.GetInstance(viewmodelMock.Object, isDebugging: true);
+            SharedClientScreen client = Utils.GetMockClient(server, isDebugging: true);
+
+            // Act.
+            // Create mock images and mock image packets for the client.
+            List<(string MockImagePacket, string MockImage)> clientImagePackets = new();
+            for (int i = 0; i < numImages; ++i)
+            {
+                clientImagePackets.Add(Utils.GetMockImagePacket(client.Id + "1", client.Name));
+            }
+
+            // Register the client on the server first.
+            string mockRegisterPacket = Utils.GetMockRegisterPacket(client.Id, client.Name);
+            server.OnDataReceived(mockRegisterPacket);
+
+            // Send mock image packets for the client to the server.
+            for (int i = 0; i < numImages; ++i)
+            {
+                server.OnDataReceived(clientImagePackets[i].MockImagePacket);
+            }
+
+            // Assert.
+            // Get the private list of subscribers stored in the server.
+            List<SharedClientScreen> subscribers =
+                server.GetPrivate<Dictionary<string, SharedClientScreen>>("_subscribers").Values.ToList();
+
+            // Check that no image is being put the client image queue.
+            Assert.True(subscribers.Count == 1);
+            int clientIdx = subscribers.FindIndex(c => c.Id == client.Id);
+            Assert.True(clientIdx != -1);
+
+            SharedClientScreen serverClient = subscribers[clientIdx];
+            Assert.True(serverClient.GetPrivate<Queue<string>>("_imageQueue").Count == 0);
+
+            // Cleanup.
+            client.Dispose();
+            serverClient.Dispose();
+            server.Dispose();
+            subscribers.Clear();
+        }
+
+        /// <summary>
         /// Tests the successful arrival of the client's CONFIRMATION packet before their timeout.
         /// </summary>
         /// <param name="timeOfArrival">
@@ -417,6 +472,52 @@ namespace PlexShareTests.ScreenshareTests
                 client.Dispose();
             }
             server.Dispose();
+        }
+
+        /// <summary>
+        /// Tests sending an ill created packet to the server.
+        /// </summary>
+        [Fact]
+        public void TestIllPacket()
+        {
+            // Arrange.
+            // Create mock server and mock clients.
+            var viewmodelMock = new Mock<IMessageListener>();
+            ScreenshareServer server = ScreenshareServer.GetInstance(viewmodelMock.Object, isDebugging: true);
+            int numClients = 5;
+            List<SharedClientScreen> clients = Utils.GetMockClients(server, numClients, isDebugging: true);
+
+            // Act.
+            // Register the clients by sending mock ill packets for them to the server.
+            foreach (SharedClientScreen client in clients)
+            {
+                string illPacket = JsonSerializer.Serialize<DataPacket>(new());
+                server.OnDataReceived(illPacket);
+                server.OnDataReceived(Utils.RandomString(100));
+            }
+
+            // Assert.
+            // Get the private list of subscribers stored in the server.
+            List<SharedClientScreen> subscribers =
+                server.GetPrivate<Dictionary<string, SharedClientScreen>>("_subscribers").Values.ToList();
+
+            // Check that no client is registered.
+            Assert.True(subscribers.Count == 0);
+
+            // Check view model was notified never regarding new registration of clients.
+            viewmodelMock.Verify(vm => vm.OnSubscribersChanged(It.IsAny<List<SharedClientScreen>>()),
+                Times.Never(), $"Expected view model to be notified never");
+            // Check view model was notified never regarding new registration of clients.
+            viewmodelMock.Verify(vm => vm.OnScreenshareStart(It.IsAny<string>(), It.IsAny<string>()),
+                Times.Never(), $"Expected view model to be notified for popup never");
+
+            // Cleanup.
+            foreach (SharedClientScreen client in clients)
+            {
+                client.Dispose();
+            }
+            server.Dispose();
+            subscribers.Clear();
         }
 
         /// <summary>

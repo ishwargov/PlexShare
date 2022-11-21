@@ -34,6 +34,7 @@ namespace PlexShareScreenshare.Client
         {
             _capturedFrame = new Queue<Bitmap>();
             _screenshot = Screenshot.Instance();
+            Trace.WriteLine(Utils.GetDebugMessage("[Screenshare] Successfully created an instance of ScreenCapturer.", withTimeStamp: true));
         }
 
         /// <summary>
@@ -42,8 +43,7 @@ namespace PlexShareScreenshare.Client
         /// <returns>Bitmap image of 720p dimension</returns>
         public Bitmap? GetImage(ref bool cancellationToken)
         {
-
-            Trace.WriteLine(Utils.GetDebugMessage($"Queue size - {_capturedFrame.Count}", withTimeStamp: true));
+            //Trace.WriteLine(Utils.GetDebugMessage($"[Screenshare] capturedFrame Queue size : {_capturedFrame.Count}", withTimeStamp: true));
             while (_capturedFrame.Count == 0)
             {
                 if (cancellationToken)
@@ -65,6 +65,7 @@ namespace PlexShareScreenshare.Client
         {
             lock (_capturedFrame)
             {
+                Trace.WriteLine(Utils.GetDebugMessage($"[Screenshare] capturedFrame Queue size : {_capturedFrame.Count}.", withTimeStamp: true));
                 return _capturedFrame.Count;
             }
         }
@@ -74,7 +75,7 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         public void StartCapture()
         {
-
+            Trace.WriteLine(Utils.GetDebugMessage($"[Screenshare] Starting Screen Capture.", withTimeStamp: true));
             _cancellationToken = false;
             _captureTask = new Task(() =>
             {
@@ -95,7 +96,7 @@ namespace PlexShareScreenshare.Client
                             }
                             catch (Exception e)
                             {
-                                Trace.WriteLine($"[ScreenSharing] Could not capture screenshot: {e.Message}");
+                                Trace.WriteLine($"[Screenshare] Could not capture screenshot: {e.Message}");
                             }
                         }
                         else
@@ -110,6 +111,7 @@ namespace PlexShareScreenshare.Client
             });
 
             _captureTask.Start();
+            Trace.WriteLine(Utils.GetDebugMessage($"[Screenshare] Screen Capture started successfully.", withTimeStamp: true));
         }
 
         /// <summary>
@@ -117,6 +119,8 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         public void StopCapture()
         {
+            Trace.WriteLine(Utils.GetDebugMessage($"[Screenshare] Stopping Screen Capture.", withTimeStamp: true));
+
             Debug.Assert(_captureTask != null,
                 Utils.GetDebugMessage("_cancellationTask is null, cannot stop image capture"));
             try
@@ -130,6 +134,8 @@ namespace PlexShareScreenshare.Client
             }
 
             _capturedFrame.Clear();
+            Trace.WriteLine(Utils.GetDebugMessage($"[Screenshare] __capturedFrame Queue has been emptied.", withTimeStamp: true));
+            Trace.WriteLine(Utils.GetDebugMessage($"[Screenshare] Screen Capture stopped successfully.", withTimeStamp: true));
         }
     }
 }

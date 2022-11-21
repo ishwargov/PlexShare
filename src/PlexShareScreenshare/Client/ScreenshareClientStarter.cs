@@ -42,20 +42,20 @@ namespace PlexShareScreenshare.Client
         private bool _confirmationCancellationToken;
         private bool _imageCancellationToken;
 
-        // Varible to store if screen share is active
-        private bool _isScreenSharing = false;
-
         /// <summary>
         /// Setting up the ScreenCapturer and ScreenProcessor Class
         /// Taking instance of communicator from communicator factory
         /// and subscribing to it.
         /// </summary>
-        private ScreenshareClient()
+        private ScreenshareClient(bool isDebugging)
         {
             _capturer = new ScreenCapturer();
             _processor = new ScreenProcessor(_capturer);
-            _communicator = CommunicationFactory.GetCommunicator();
-            _communicator.Subscribe(Utils.ModuleIdentifier, this, true);
+            if (!isDebugging)
+            {
+                _communicator = CommunicationFactory.GetCommunicator();
+                _communicator.Subscribe(Utils.ModuleIdentifier, this, true);
+            }
             Trace.WriteLine(Utils.GetDebugMessage("Successfully stopped image processing", withTimeStamp: true));
         }
 
@@ -63,11 +63,11 @@ namespace PlexShareScreenshare.Client
         /// Gives an instance of ScreenshareClient class and that instance is always 
         /// the same i.e. singleton pattern.
         /// </summary>
-        public static ScreenshareClient GetInstance()
+        public static ScreenshareClient GetInstance(bool isDebugging = false)
         {
             if (_screenShareClient == null)
             {
-                _screenShareClient = new ScreenshareClient();
+                _screenShareClient = new ScreenshareClient(isDebugging);
             }
             Trace.WriteLine(Utils.GetDebugMessage("Successfully created an instance of ScreenshareClient", withTimeStamp: true));
             return _screenShareClient;
@@ -80,7 +80,6 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         public void StartScreensharing()
         {
-            _isScreenSharing = true;
             Debug.Assert(_id != null, Utils.GetDebugMessage("_id property found null"));
             Debug.Assert(_name != null, Utils.GetDebugMessage("_name property found null"));
 
@@ -101,7 +100,7 @@ namespace PlexShareScreenshare.Client
         /// Otherwise, if the message was STOP then just stop the image sending part
         /// </summary>
         /// <param name="serializedData"> Serialized data from the network module </param>
-        void INotificationHandler.OnDataReceived(string serializedData)
+        public void OnDataReceived(string serializedData)
         {
             // Deserializing data packet received from server
             Debug.Assert(serializedData != "", Utils.GetDebugMessage("Message from serve found null", withTimeStamp: true));
@@ -128,8 +127,7 @@ namespace PlexShareScreenshare.Client
                     Utils.GetDebugMessage("Header from server is neither SEND nor STOP"));
                 // else if it was a STOP packet then stop image sending
                 Trace.WriteLine(Utils.GetDebugMessage("Got STOP packet from server", withTimeStamp: true));
-                if (_sendImageTask != null)
-                    StopImageSending();
+                StopImageSending();
             }
         }
 
