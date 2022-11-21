@@ -7,7 +7,7 @@
  * 
  * Project     = PlexShareContent
  *
- * Description = This file implements the database for the content module and is used to store and fetch chats and files from database.
+ * Description = This file implements the database for the content module and is used to store and fetch chats and files from the database.
  *****************************************************************************/
 
 using PlexShareContent.DataModels;
@@ -27,7 +27,7 @@ namespace PlexShareContent.Server
         private Dictionary<int, ContentData> _filesMap;
 
         /// <summary>
-        ///     Database Constructor to initilize member variales.
+        ///     Database Constructor to initialize member variables.
         /// </summary>
         public ContentDB()
         {
@@ -70,7 +70,7 @@ namespace PlexShareContent.Server
                 chatThread.AddMessage(message);
 
                 _chatThread.Add(chatThread);
-                //Decrease the count by 1, becuase we had already incremented count.
+                //Decrease the count by 1, because we had already incremented the count.
                 _chatIdToDataMap[chatThread.ThreadID] = _chatThread.Count - 1;
             }
 
@@ -78,7 +78,7 @@ namespace PlexShareContent.Server
         }
 
         /// <summary>
-        ///     Retreive message from the Database based on the thread ID and message ID 
+        ///     Retrieve message from the Database based on the thread ID and message ID 
         /// </summary>
         public ReceiveContentData GetMessage(int threadId, int _msgId)
         {
@@ -112,7 +112,7 @@ namespace PlexShareContent.Server
         }
 
         /// <summary>
-        ///     Function to Fetch the stored file with given id from the database.
+        ///     Function to Fetch the stored file with a given id from the database.
         /// </summary>
         public ContentData FilesFetch(int _msgId)
         {
