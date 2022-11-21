@@ -169,6 +169,7 @@
                 <!-- This panel will be used to hold the items -->
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
+                        <!-- Give the number of rows and columns that should be there in the grid -->
                         <UniformGrid Rows="{Binding CurrentPageRows, Mode=OneWay}" Columns="{Binding CurrentPageColumns, Mode=OneWay}" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
