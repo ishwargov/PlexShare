@@ -1,4 +1,17 @@
-﻿using System;
+﻿/***************************
+ * Filename    = SerialisableShapeItem.cs
+ *
+ * Author      = Joel Sam Mathew
+ *
+ * Product     = Plex Share
+ * 
+ * Project     = White Board
+ *
+ * Description = This declares an adapter class for adapting shape class to a
+ *               serialisable shape class inorder to facilitate serialising.
+ ***************************/
+
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;

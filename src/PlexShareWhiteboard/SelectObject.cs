@@ -1,3 +1,15 @@
+/***************************
+ * Filename    = SelectObject.cs
+ *
+ * Author      = Asha Jose
+ *
+ * Product     = Plex Share
+ * 
+ * Project     = White Board
+ *
+ * Description = Defines select object class and methods that helps for selecting
+ ***************************/
+
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
