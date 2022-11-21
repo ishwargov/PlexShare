@@ -1,12 +1,12 @@
-﻿using Microsoft.ML;
+﻿/// <author>Jayanth Kumar</author>
+/// <created>10/11/2021</created>
+/// <summary>
+///		This is the unit testing file
+///		for the sentiment analyser logic module
+/// </summary>
+using Microsoft.ML;
 using PlexShareDashboard.Dashboard.Server.Summary;
-using System;
 using System.Diagnostics;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace PlexShareFacts.DashboardFacts.Summary
 {

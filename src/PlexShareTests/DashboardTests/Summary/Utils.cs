@@ -1,9 +1,11 @@
-﻿using PlexShareContent.DataModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/// <author>Jayanth Kumar</author>
+/// <created>10/11/2021</created>
+/// <summary>
+///		This is a untility file
+///		to generate different kinds
+///		of chats to test the summary logic module
+/// </summary>
+using PlexShareContent.DataModels;
 
 using PlexShareContent;
 
