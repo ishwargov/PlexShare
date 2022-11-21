@@ -1,4 +1,16 @@
-﻿using Client.Models;
+﻿/***************************
+ * Filename    = WhiteBoardViewModel.cs
+ *
+ * Author      = Aiswarya H
+ *
+ * Product     = Plex Share
+ * 
+ * Project     = White Board
+ *
+ * Description = This constitutes unit tests for Client Side Implementation.
+ ***************************/
+
+using Client.Models;
 using PlexShareWhiteboard.Client;
 using PlexShareWhiteboard.Server;
 using System;

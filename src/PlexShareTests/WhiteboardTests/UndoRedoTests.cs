@@ -1,4 +1,16 @@
-﻿using PlexShareWhiteboard;
+﻿/***************************
+ * Filename    = WhiteBoardViewModel.cs
+ *
+ * Author      = Aiswarya H
+ *
+ * Product     = Plex Share
+ * 
+ * Project     = White Board
+ *
+ * Description = This constitutes unit tests for Undo Redo.
+ ***************************/
+
+using PlexShareWhiteboard;
 using PlexShareWhiteboard.BoardComponents;
 using System;
 using System.Collections.Generic;
@@ -93,7 +105,7 @@ namespace PlexShareTests.WhiteboardTests
         [Fact]
         public void CallUndoCallRedo_Working()
         {
-
+            // To check if the calling helper functions CallUndo and CallRedo are working
             whiteBoardViewModel.ClearAllShapes();
             Point start = new Point(1, 1);
             Point end = new Point(2, 2);
@@ -130,6 +142,7 @@ namespace PlexShareTests.WhiteboardTests
         [Fact]
         public void ModifyShapeUndo()
         {
+            // Undo Redo when a shape is modified
 
             whiteBoardViewModel.ClearAllShapes();
             Point start = new Point(1, 1);
@@ -160,12 +173,15 @@ namespace PlexShareTests.WhiteboardTests
                 TextString = ""
             };
 
+            // Insert into UndoStack
             UndoStackElement undoStackElement = new UndoStackElement(prvShape, newShape, Operation.ModifyShape);
             whiteBoardViewModel.InsertIntoStack(undoStackElement);
 
+            // Undo
             UndoStackElement ShapeSentToServer1 = whiteBoardViewModel.Undo();
             Assert.True(utility.CompareShapeItems(ShapeSentToServer1.PrvShape, prvShape));
 
+            // Redo
             UndoStackElement ShapeSentToServer2 = whiteBoardViewModel.Redo();
             Assert.True(utility.CompareShapeItems(ShapeSentToServer2.NewShape, newShape));
 
@@ -196,6 +212,7 @@ namespace PlexShareTests.WhiteboardTests
 
         public void StackTopNullCase()
         {
+            // In cases where previous shape given to Undo is null
             whiteBoardViewModel.ClearAllShapes();
             UndoStackElement undoStackElement = new UndoStackElement(null, null, Operation.Deletion);
             whiteBoardViewModel.InsertIntoStack(undoStackElement);
