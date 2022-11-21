@@ -5,6 +5,7 @@
 /// </summary>
 
 using PlexShareScreenshare;
+using PlexShareScreenshare.Client;
 using PlexShareScreenshare.Server;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -232,8 +233,9 @@ namespace PlexShareTests.ScreenshareTests
             // Create a mock bitmap image and convert it to base-64 string.
             Bitmap img = Utils.GetMockBitmap();
             MemoryStream ms = new();
-            img.Save(ms, ImageFormat.Jpeg);
-            return Convert.ToBase64String(ms.ToArray()) + "1";
+            img.Save(ms, ImageFormat.Bmp);
+            var data = ScreenProcessor.CompressByteArray(ms.ToArray());
+            return Convert.ToBase64String(data) + "1";
         }
 
         /// <summary>
