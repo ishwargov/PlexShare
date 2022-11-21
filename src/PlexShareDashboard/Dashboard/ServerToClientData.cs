@@ -1,18 +1,19 @@
-﻿using Dashboard;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/******************************************
+ * Name : Saurabh Kumar
+ * Roll : 111901046
+ * Module : Dashboard
+ * File Name: ServerToClientData.cs
+ * This file is for creating class for datamodel of ServerToClient data
+ ******************************************/
+
+using Dashboard;
 using PlexShareDashboard.Dashboard.Server.Telemetry;
-using PlexShareDashboard.Dashboard;
 
 namespace PlexShareDashboard.Dashboard
 {
     public class ServerToClientData
     {
         public UserData _user;
-
         public string eventType;
         public SessionAnalytics sessionAnalytics;
         public SessionData sessionData;

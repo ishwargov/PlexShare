@@ -21,14 +21,25 @@ namespace PlexShareCloud
 
         public SessionEntity() : this(null, null) { }
 
+        /// <summary>
+        /// To store session Id.
+        /// </summary>
         [JsonInclude]
         [JsonPropertyName("SessionId")]
         public string SessionId { get; set; }
 
+
+        /// <summary>
+        /// To store Unique id for the entry.
+        /// </summary>
         [JsonInclude]
         [JsonPropertyName("Id")]
         public string Id { get; set; }
 
+
+        /// <summary>
+        /// To store the host user name.
+        /// </summary>
         [JsonInclude]
         [JsonPropertyName("HostUserName")]
         public string HostUserName { get; set; }
@@ -41,6 +52,9 @@ namespace PlexShareCloud
         [JsonPropertyName("RowKey")]
         public string RowKey { get; set; }
 
+        /// <summary>
+        /// To store start Timestamp of the session.
+        /// </summary>
         [JsonInclude]
         [JsonPropertyName("Timestamp")]
         public DateTimeOffset? Timestamp { get; set; }

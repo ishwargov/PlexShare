@@ -10,20 +10,17 @@
  * Description = Consists of function app for all functionalities expected by user. 
  *****************************************************************************/
 
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+using Azure;
+using Azure.Data.Tables;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Azure.Data.Tables;
-using Azure;
-using System;
-using Microsoft.AspNetCore.Routing;
-using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace PlexShareCloud
 {
@@ -31,7 +28,7 @@ namespace PlexShareCloud
     {
         private const string SubmissionTableName = "SubmissionTable"; //Table for storing the updated files. 
         private const string SessionTableName = "SessionTable"; //Table for storing the information about the session
-        private const string ConnectionName = "AzureWebJobsStorage"; 
+        private const string ConnectionName = "AzureWebJobsStorage";
         private const string SubmissionRoute = "submission";
         private const string SessionRoute = "session";
 
@@ -48,9 +45,8 @@ namespace PlexShareCloud
         [Table(SubmissionTableName, SubmissionEntity.PartitionKeyName, Connection = ConnectionName)] TableClient tableClient,
         string username)
         {
-            //log.LogInformation($"Getting entities by {username}");
             //Trace log need to be implemented. 
-
+            Trace.WriteLine($"[cloud] Getting entities by {username}");
             var page = await tableClient.QueryAsync<SubmissionEntity>(filter: $"UserName eq '{username}'").AsPages().FirstAsync();
             return new OkObjectResult(page.Values);
         }
@@ -68,9 +64,8 @@ namespace PlexShareCloud
         [Table(SubmissionTableName, SubmissionEntity.PartitionKeyName, Connection = ConnectionName)] TableClient tableClient,
         string sessionid)
         {
-            //log.LogInformation($"Getting entity {sessionid}");
             //Trace log need to be implemented. 
-            
+            Trace.WriteLine("[cloud] Getting files by" + sessionid);
             var page = await tableClient.QueryAsync<SubmissionEntity>(filter: $"SessionId eq '{sessionid}'").AsPages().FirstAsync();
             return new OkObjectResult(page.Values);
         }
@@ -88,15 +83,14 @@ namespace PlexShareCloud
         [Table(SessionTableName, SubmissionEntity.PartitionKeyName, Connection = ConnectionName)] TableClient tableClient,
         string username)
         {
-            //log.LogInformation($"Getting entity {username}");
-            //Trace log need to implemented. 
-
+            //Trace log need to implemented.
+            Trace.WriteLine("[cloud] Gettings sessions by username " + username);
             var page = await tableClient.QueryAsync<SessionEntity>(filter: $"HostUserName eq '{username}'").AsPages().FirstAsync();
             //added the filter for user name. 
 
             return new OkObjectResult(page.Values);
         }
-        
+
         /// <summary>
         /// Adds the session entry to the session entity under the name of the specified User.
         /// </summary>
@@ -114,7 +108,8 @@ namespace PlexShareCloud
             string sessionId = JsonConvert.DeserializeObject<string>(requestBody);
             SessionEntity value = new(hostUserName, sessionId);
             await entityTable.AddAsync(value);
-            //log.LogInformation($"New entity created Id = {value.SessionId}, Name = {value.HostUserName}.");
+
+            Trace.WriteLine($"[cloud] New entity created Id = {value.SessionId}, Name = {value.HostUserName}");
             return new OkObjectResult(value);
         }
 
@@ -137,7 +132,7 @@ namespace PlexShareCloud
 
             SubmissionEntity value = new(sessionId, username, pdf);
             await entityTable.AddAsync(value);
-            //log.LogInformation($"New entity created Id = {value.SessionId}, Name = {value.UserName}.");
+            Trace.WriteLine($"[cloud] New entity created Id = {value.SessionId}, Name = {value.UserName}");
             return new OkObjectResult(value);
         }
 
@@ -158,7 +153,7 @@ namespace PlexShareCloud
         {
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             byte[] updatedPdf = JsonConvert.DeserializeObject<byte[]>(requestBody);
-            //log.LogInformation($"Updating item with sessionId = {sessionId}");
+            Trace.WriteLine($"[cloud] Updating item with sessionId = {sessionId}");
             SubmissionEntity existingRow;
             try
             {
@@ -172,8 +167,8 @@ namespace PlexShareCloud
             }
             existingRow.Pdf = updatedPdf;
             await tableClient.UpdateEntityAsync(existingRow, existingRow.ETag, TableUpdateMode.Replace);
-            return new OkObjectResult(existingRow);
 
+            return new OkObjectResult(existingRow);
         }
 
         //Delete all files 
@@ -188,8 +183,7 @@ namespace PlexShareCloud
         [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = SubmissionRoute)] HttpRequest req,
         [Table(SubmissionTableName, ConnectionName)] TableClient entityClient)
         {
-            //log.LogInformation($"Deleting all entity items");
-            //Trace need to be added. 
+            Trace.WriteLine($"[cloud] Deleting all submission items");
             try
             {
                 await entityClient.DeleteAsync();
@@ -214,8 +208,7 @@ namespace PlexShareCloud
         [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = SessionRoute)] HttpRequest req,
         [Table(SessionTableName, ConnectionName)] TableClient entityClient)
         {
-            //log.LogInformation($"Deleting all entity items");
-            //Trace Need to be added. 
+            Trace.WriteLine($"[cloud] Deleting all session items");
             try
             {
                 await entityClient.DeleteAsync();
@@ -227,34 +220,5 @@ namespace PlexShareCloud
 
             return new OkResult();
         }
-
-        /*
-        //Delete all files 
-        [FunctionName("DeleteAllFilesOfUser")]
-        public static async Task<IActionResult> DeleteAllFilesOfUser(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = SubmissionRoute + "/users/{username}")] HttpRequest req,
-        [Table(SubmissionTableName, ConnectionName)] TableClient entityClient,
-        string username)
-        {
-            //Trace need to be added. 
-            //log.LogInformation($"Deleting entity by {username}");
-            try
-            {
-                await entityClient.DeleteEntityAsync(SubmissionEntity.PartitionKeyName, username, ETag.All);
-            }
-            catch (RequestFailedException e) when (e.Status == 404)
-            {
-                return new NotFoundResult();
-            }
-
-            return new OkResult();
-        }*/
-
-        /*
-        Delete files by username??
-        Delete file by sessionid and username
-        Delete session by sessionid
-        Delete session by hostusername
-        */
     }
 }

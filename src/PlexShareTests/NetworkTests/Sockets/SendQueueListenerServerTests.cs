@@ -4,12 +4,18 @@
 /// This file contains unit tests for SendQueueListenerServer
 /// </summary>
 
+using PlexShareNetwork;
 using PlexShareNetwork.Communication;
 using PlexShareNetwork.Queues;
+using PlexShareNetwork.Sockets;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
+using System.Threading.Tasks;
+using Xunit;
 
-namespace PlexShareNetwork.Sockets.Tests
+namespace PlexShareTests.NetworkTests.Sockets
 {
 	public class SendQueueListenerServerTests
 	{
@@ -158,6 +164,7 @@ namespace PlexShareNetwork.Sockets.Tests
                         sendPackets, clientReceivingQueues[i], count);
                 }
             }
+            sendQueueListenerServer.Stop();
         }
 
         /// <summary>
@@ -291,6 +298,35 @@ namespace PlexShareNetwork.Sockets.Tests
 		{
             PacketsSendTest(_smallPacketSize, _multiplePacketsCount,
                 _multipleClientsCount, false, false);
+        }
+
+        /// <summary>
+        /// Tests error catch in SendQueueListenerClient
+        /// </summary>
+        /// <returns> void </returns>
+        [Fact]
+        public void SendQueueListenerClientErrorCatchTest()
+        {
+            // start SendQueueListenerClient with null client
+            // socket so error must be thrown and catch
+            TcpClient clientSocket = null;
+            Dictionary<string, TcpClient> clientIdToSocket = new();
+            clientIdToSocket.Add(clientId, clientSocket);
+            SendingQueue sendingQueue = new();
+            sendingQueue.RegisterModule(_module, true);
+            TestNotificationHandler testNotificationHandler = new();
+            Dictionary<string, INotificationHandler> subscribedModules
+                = new() { [_module] = testNotificationHandler };
+            SendQueueListenerServer sendQueueListenerServer = new(
+                sendingQueue, clientIdToSocket, subscribedModules);
+            sendQueueListenerServer.Start();
+            Packet packet = new("Data", null, _module);
+            sendingQueue.Enqueue(packet);
+            while (sendingQueue.Size() != 0)
+            {
+                Thread.Sleep(100);
+            }
+            sendQueueListenerServer.Stop();
         }
     }
 }

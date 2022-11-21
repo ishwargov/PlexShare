@@ -11,23 +11,12 @@
  *               use their profile information
  *****************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using AuthViewModel;
-using PlexShareApp;
+using System;
+using System.Diagnostics;
+using System.Threading;
+using System.Windows;
+using System.Windows.Input;
 
 namespace PlexShareApp
 {
@@ -37,7 +26,7 @@ namespace PlexShareApp
     public partial class AuthenticationView : Window
     {
         private static bool stopAnimation = false;
-        private static bool buttonClicked = false; 
+        private static bool buttonClicked = false;
         public AuthenticationView()
         {
             InitializeComponent();
@@ -62,11 +51,11 @@ namespace PlexShareApp
             // Making animation run forever
             while (stopAnimation == false)
             {
-                if(v == 0)
+                if (v == 0)
                 {
                     direction = 1;
-                }   
-                else if(v == 100)
+                }
+                else if (v == 100)
                 {
                     direction = -1;
                 }
@@ -81,7 +70,7 @@ namespace PlexShareApp
                 obj.pb5.Dispatcher.Invoke(() => pb5.Value = v, System.Windows.Threading.DispatcherPriority.Background);
                 obj.pb6.Dispatcher.Invoke(() => pb6.Value = v, System.Windows.Threading.DispatcherPriority.Background);
 
-                Thread.Sleep(40);  
+                Thread.Sleep(15);
             }
 
             Trace.WriteLine("[UX] Stopping Animation");
@@ -179,8 +168,8 @@ namespace PlexShareApp
                 var homePage = new HomePageView(returnVal[1], returnVal[2], returnVal[3]);
 
                 homePage.Show();
-                this.Close(); 
-            } 
+                this.Close();
+            }
             else
             {
                 Trace.WriteLine("[UX] Authentication Unsuccessful");
@@ -189,7 +178,7 @@ namespace PlexShareApp
                 // Button Click re-enabled
                 buttonClicked = false;
                 AnimateAuthScreen(this);
-            }        
+            }
         }
     }
 }

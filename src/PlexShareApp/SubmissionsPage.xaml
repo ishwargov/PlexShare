@@ -1,4 +1,5 @@
-﻿<Page x:Class="PlexShareApp.SubmissionsPage"
+﻿<!--Author = B Sai Subrahmanyam-->
+<Page x:Class="PlexShareApp.SubmissionsPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -8,29 +9,24 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="SubmissionsPage">
 
-    <Grid Background="AntiqueWhite">
-        <StackPanel Margin="0,0,0,0">
-            <Label HorizontalAlignment="Center" FontFamily="Times New Roman" FontSize="20" HorizontalContentAlignment="Center" Margin="0,0,0,20" Width="800" Background="Azure">Submissions</Label>
-            <ScrollViewer  Height="365" Margin="0,0,0,50" Padding="10">
-                <StackPanel x:Name="Stack" Orientation="Vertical">
-                    <StackPanel Orientation="Horizontal" >
-                        <Grid Width="760">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width = "5*"/>
-                                <ColumnDefinition Width = "5*"/>
-                                <ColumnDefinition Width = "5*"/>
-                                <ColumnDefinition Width = "5*"/>
-                                <ColumnDefinition Width = "5*"/>
-                            </Grid.ColumnDefinitions>
-                            <Label Grid.Column="0" HorizontalContentAlignment="Center" BorderBrush="Black" BorderThickness="1" FontSize="16" FontWeight="Bold">SNo.</Label>
-                            <Label Name="Id" Content="Student ID" Grid.Column="1" HorizontalContentAlignment="Center" BorderBrush="Black" BorderThickness="1" FontSize="16" FontWeight="Bold"></Label>
-                            <Label Grid.Column="2" HorizontalContentAlignment="Center" BorderBrush="Black" BorderThickness="1" FontSize="16" FontWeight="Bold">Submission Time</Label>
-                            <Label Grid.Column="3" HorizontalContentAlignment="Center" BorderBrush="Black" BorderThickness="1" FontSize="16" FontWeight="Bold">PDF Name</Label>
-                            <Label Grid.Column="4" HorizontalContentAlignment="Center" BorderBrush="Black" BorderThickness="1" FontSize="16" FontWeight="Bold">Download</Label>
-                        </Grid>
-                    </StackPanel>
-                </StackPanel>
-            </ScrollViewer>
-        </StackPanel>
+    <Grid Background="#226869">
+        <!--Scroll viewer to hold the list of the submissions made in a particular session-->
+        <ScrollViewer Padding="10">
+            <StackPanel x:Name="Stack" Orientation="Vertical">
+                <!--Each entry is made up of 4 columns - Sno., Student Id, Submission Time and the Button to download the Pdf-->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width = "0.75*"/>
+                        <ColumnDefinition Width = "3*"/>
+                        <ColumnDefinition Width = "3*"/>
+                        <ColumnDefinition Width = "1.5*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderBrush="Black" BorderThickness="1" FontSize="16" FontWeight="Bold" Background="{DynamicResource Color6Bg}" Foreground="{DynamicResource Color5Bg}">SNo.</Label>
+                    <Label Name="Id" Content="Student ID" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderBrush="Black" BorderThickness="1" FontSize="16" FontWeight="Bold" Background="{DynamicResource Color6Bg}" Foreground="{DynamicResource Color5Bg}"></Label>
+                    <Label Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderBrush="Black" BorderThickness="1" FontSize="16" FontWeight="Bold" Background="{DynamicResource Color6Bg}" Foreground="{DynamicResource Color5Bg}">Submission Time</Label>
+                    <Label Grid.Column="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderBrush="Black" BorderThickness="1" FontSize="16" FontWeight="Bold" Background="{DynamicResource Color6Bg}" Foreground="{DynamicResource Color5Bg}">Download</Label>
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </Page>

@@ -1,4 +1,9 @@
-﻿using System;
+﻿/// <author>Morem Jayanth Kumar</author>
+/// <created>3/11/2022</created>
+/// <summary>
+///		This file contains all the code related to building the sentiment analyzer ML Model
+/// </summary>
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -33,7 +38,7 @@ namespace PlexShareDashboard.Dashboard.Server.Summary
         }
 
         // Here I create your my sample hard-coded data (Could be coming from an end-user app)
-        private static ModelInput CreateSingleDataSample(string inputTextStatement)
+        public static ModelInput CreateSingleDataSample(string inputTextStatement)
         {
             // Here (ModelInput object) you could provide new test data, hardcoded or from the end-user application, instead of the row from the file.
             ModelInput sampleForPrediction = new ModelInput { Text = inputTextStatement };
@@ -69,11 +74,7 @@ namespace PlexShareDashboard.Dashboard.Server.Summary
     }
     public static class ModelBuilder
     {
-        // SMALL DATASET in GitHub repo: 
         private static string TRAIN_DATA_FILEPATH = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Environment.CurrentDirectory).ToString()).ToString()).ToString()) + "/PlexShareDashboard/Dashboard/Server/Summary/Resources/yelp_labelled.tsv";
-
-        // SMALL DATASET in AZURE FILES: private static string TRAIN_DATA_FILEPATH = @"X:\\yelp\\yelp_labelled.tsv";      
-        // LARGE DATASET in AZURE FILES: private static string TRAIN_DATA_FILEPATH = @"X:\\twitter\\Twittersentiment-1Million.tsv";
 
         private static string MODEL_FILEPATH = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Environment.CurrentDirectory).ToString()).ToString()).ToString()) + "/PlexShareDashboard/Dashboard/Server/Summary/Resources/MLModel.zip";
 

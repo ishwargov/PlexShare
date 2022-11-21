@@ -29,12 +29,17 @@ namespace PlexShareTests.ContentTests.Client
 
         private readonly int userID = 42;
 
+        // max valid message and thread IDs accepted
         private int _maxValidMessageID;
         private int _maxValidThreadID;
+        // 
         private readonly int _sleepTime = 50;
 
         private ContentData chatMessage, fileMessage, userMessage;
 
+        /// <summary>
+        /// Sets up the content client instance and fake components requried for testing
+        /// </summary>
         public void Setup()
         {
             _utility = new Utility();
@@ -51,6 +56,7 @@ namespace PlexShareTests.ContentTests.Client
             var pathArray = currentDirectory.Split(new[] { "\\PlexShareTests" }, StringSplitOptions.None);
             _path = pathArray[0] + "\\PlexShareTests\\ContentTests\\Test_File.pdf";
 
+            // chat message sent by some user with ID = 1
             chatMessage = _utility.GenerateContentData(
                 type: MessageType.Chat,
                 @event: MessageEvent.New,
@@ -60,6 +66,7 @@ namespace PlexShareTests.ContentTests.Client
                 senderID: 1
             );
 
+            // file message sent by some user with ID = 2
             fileMessage = _utility.GenerateContentData(
                 type: MessageType.File,
                 @event: MessageEvent.New,
@@ -70,11 +77,14 @@ namespace PlexShareTests.ContentTests.Client
             );
             fileMessage.FileData = new SendFileData(_path);
 
+            // a chat message sent by the user (with ID = 42)
             userMessage = chatMessage.Copy();
             userMessage.SenderID = userID;
             userMessage.MessageID = ++_maxValidMessageID;
             userMessage.ReplyThreadID = ++_maxValidThreadID;
 
+            // sleep after each OnReceive call as notifying subscribers may
+            // take some time (as new threads are created for each subscriber)
             _contentClient.OnReceive(chatMessage);
             Thread.Sleep(_sleepTime);
 
@@ -85,6 +95,9 @@ namespace PlexShareTests.ContentTests.Client
             Thread.Sleep(_sleepTime);
         }
 
+        /// <summary>
+        /// Resets the content client instance and other variables
+        /// </summary>
         public void Dispose()
         {
             _contentClient.Reset();
@@ -376,24 +389,43 @@ namespace PlexShareTests.ContentTests.Client
             Dispose();
         }
 
-        //[Fact]
-        //public void ClientDownload_ValidDownload_ReturnsValidDataAtServer()
-        //{
-        //    Setup();
-        //    var currentDirectory = Directory.GetCurrentDirectory();
-        //    var pathArray = currentDirectory.Split(new[] { "\\PlexShareTests" }, StringSplitOptions.None);
-        //    string savePath = pathArray[0] + "\\PlexShareTests\\ContentTests\\Save_File.pdf";
-        //    _contentClient.ClientDownload(fileMessage.MessageID, savePath);
-        //    var sentData = _communicator.GetSentData();
-        //    var deserializedData = _serializer.Deserialize<ContentData>(sentData);
+        [Fact]
+        public void ClientDownload_ValidDownload_ReturnsValidDataAtServer()
+        {
+            Setup();
+            string savePath = Path.GetRandomFileName();
+            _contentClient.ClientDownload(fileMessage.MessageID, savePath);
+            var sentData = _communicator.GetSentData();
+            var deserializedData = _serializer.Deserialize<ContentData>(sentData);
 
-        //    Assert.Equal(MessageType.File, deserializedData.Type);
-        //    Assert.Equal(MessageEvent.Download, deserializedData.Event);
-        //    Assert.Equal(fileMessage.MessageID, deserializedData.MessageID);
-        //    Assert.Equal(savePath, deserializedData.Data);
+            Assert.Equal(MessageType.File, deserializedData.Type);
+            Assert.Equal(MessageEvent.Download, deserializedData.Event);
+            Assert.Equal(fileMessage.MessageID, deserializedData.MessageID);
+            Assert.Equal(savePath, deserializedData.Data);
 
-        //    Dispose();
-        //}
+            Dispose();
+        }
+
+        [Fact]
+        public void ClientDownload_InvalidPath_ReturnsArgumentException()
+        {
+            Setup();
+
+            Assert.Throws<ArgumentException>(() => _contentClient.ClientDownload(fileMessage.MessageID, ""));
+
+            Dispose();
+        }
+
+        [Fact]
+        public void ClientDownload_DownloadChatMessage_ReturnsArgumentException()
+        {
+            Setup();
+            string savePath = Path.GetRandomFileName();
+
+            Assert.Throws<ArgumentException>(() => _contentClient.ClientDownload(chatMessage.MessageID, savePath));
+
+            Dispose();
+        }
 
         [Fact]
         public void ClientStar_ValidStar_ReturnsValidDataAtServer()

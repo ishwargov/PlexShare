@@ -1,12 +1,27 @@
-﻿<Window x:Class="PlexShareApp.SplashScreen"
+﻿<!--    
+        Author      = Neel Kabra
+        Product     = PlexShare 
+        Project     = PlexShareApp
+        Description = View for the SplashScreen Window
+-->
+<Window x:Class="PlexShareApp.SplashScreen"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PlexShareApp"
         mc:Ignorable="d"
-        Title="SplashScreen" Height="450" Width="800">
-    <Grid>
-        
+        WindowStartupLocation="CenterScreen"
+        AllowsTransparency="True"
+        WindowStyle="None"
+        Title="SplashScreen" Height="225" Width="400"
+        >
+    <Grid Background="DarkSlateGray">
+        <Grid>
+            <TextBlock x:Name="MainBox" Foreground="Wheat" FontSize="50"
+                       VerticalAlignment="Center" FontFamily="Cascadia Mono" HorizontalAlignment="Center">
+
+            </TextBlock>
+        </Grid>
     </Grid>
 </Window>

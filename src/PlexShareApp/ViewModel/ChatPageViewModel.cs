@@ -1,8 +1,14 @@
-﻿/// <author> Sughandhan S </author>
-/// <created> 03/11/2022 </created>
-/// <summary>
-///     The following is the ViewModel for our ChatPageView.
-/// </summary>
+﻿/******************************************************************************
+ * Filename    = ChatPageViewModel.cs
+ *
+ * Author      = Sughandhan S
+ *
+ * Product     = PlexShare
+ * 
+ * Project     = PlexShareApp
+ *
+ * Description = The following is the ViewModel for our ChatPageView.
+ *****************************************************************************/
 
 using System;
 using System.Collections.Generic;
@@ -21,6 +27,7 @@ using PlexShare.Dashboard;
 using System.Diagnostics;
 using System.Collections.ObjectModel;
 using System.Windows.Documents;
+using System.IO;
 
 namespace PlexShareApp.ViewModel
 {
@@ -28,35 +35,40 @@ namespace PlexShareApp.ViewModel
     public class ChatPageViewModel : INotifyPropertyChanged, IContentListener, IClientSessionNotifications
     {
         /// <summary>
-        /// Content Client Data Model
+        ///     Content Client Data Model
         /// </summary>
         private readonly IContentClient _model;
 
         /// <summary>
-        /// Dashboard UX Data Model
+        ///     Dashboard UX Data Model
         /// </summary>
         private readonly IUXClientSessionManager _modelDb;
 
         /// <summary>
-        /// Dictionary mapping User IDs to their User names
+        ///     Dictionary mapping User IDs to their User names
         /// </summary>
         public IDictionary<int, string> Users;
 
         /// <summary>
-        /// Dictionary mapping Message IDs to their corresponding Message String
+        ///     Dictionary mapping Message IDs to their corresponding Message String
         /// </summary>
         public IDictionary<int, string> Messages;
 
         /// <summary>
-        /// Dictionary mapping Messages IDs to their ThreadIds
+        ///     Dictionary mapping Messages IDs to their ThreadIds
         /// </summary>
         public IDictionary<int, int> ThreadIds;
 
         private readonly ObservableCollection<Message> myMessages;
 
 
+        /// <summary>
+        ///     Constructor for ViewModel
+        /// </summary>
+        /// <param name="production">true for production mode</param>
         public ChatPageViewModel(bool production = true)
         {
+            Trace.WriteLine("[ChatPageViewModel] ViewModel setup");
             Users = new Dictionary<int, string>();
             Messages = new Dictionary<int, string>();
             ThreadIds = new Dictionary<int, int>();
@@ -76,32 +88,32 @@ namespace PlexShareApp.ViewModel
         }
 
         /// <summary>
-        /// The current user id
+        ///     The current user id
         /// </summary>
         public static int UserId { get; private set; }
 
         /// <summary>
-        /// Message to be sent
+        ///     Message to be sent
         /// </summary>
         public SendContentData MsgToSend { get; private set; }
 
         /// <summary>
-        /// The received message
+        ///     The received message
         /// </summary>
         public Message ReceivedMsg { get; private set; }
 
         /// <summary>
-        /// True means Production mode
+        ///     True means Production mode
         /// </summary>
         public bool ProductionMode { get; }
 
         /// <summary>
-        /// Whenever a property changes, a Property Changed event is raised
+        ///     Whenever a property changes, a Property Changed event is raised
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
-        /// Handling the Property Changed event raised 
+        ///     Handling the Property Changed event raised 
         /// </summary>
         /// <param name="property">The name of the property.</param>
         public void OnPropertyChanged(string property)
@@ -110,7 +122,7 @@ namespace PlexShareApp.ViewModel
         }
 
         /// <summary>
-        /// Sends the message to content module. Message type is determined by messageType parameter
+        ///     Sends the message to content module. Message type is determined by messageType parameter
         /// </summary>
         /// <param name="message"> The string containing the file path </param>
         /// <param name="replyMsgId"> Either the reply ID of the mesage being replied to or -1 denoting its not a reply message </param>
@@ -128,9 +140,7 @@ namespace PlexShareApp.ViewModel
             else if(messageType == "Chat")
             {
                 MsgToSend.Type = MessageType.Chat;
-            }
-            //Messages.Add(, message);
-            //ThreadIds.Add(message.MessageID, message.ReplyThreadID);
+            }            
 
             // Setting the remaining fields of the SendContentData object
             MsgToSend.ReplyMessageID = replyMsgId;
@@ -138,61 +148,61 @@ namespace PlexShareApp.ViewModel
             MsgToSend.ReplyThreadID = replyMsgId != -1 ? ThreadIds[replyMsgId] : -1;
 
             // Empty list denotes it's broadcast message
-            MsgToSend.ReceiverIDs = new int[] { };//Array.Empty<int>();
+            MsgToSend.ReceiverIDs = new int[] { };
 
             if (ProductionMode)
             {
                 if (messageType == "File")
                 {
-                    Trace.WriteLine("UX: I am Sending a File Message");
+                    Trace.WriteLine("[ChatPageViewModel] I am Sending a File Message");
                 }
                 else if (messageType == "Chat")
                 {
-                    Trace.WriteLine("UX: I am Sending a Chat Message");
+                    Trace.WriteLine("[ChatPageViewModel] I am Sending a Chat Message");
                 }
                 _model.ClientSendData(MsgToSend);
             }
         }
 
         /// <summary>
-        /// Download file to specific path on client machine
+        ///     Download file to specific path on client machine
         /// </summary>
         /// <param name="savePath"> Path to which the file will be downloaded </param>
         /// <param name="msgId"> ID of the message </param>
         public void DownloadFile(string savePath, int msgId)
         {
-            Trace.WriteLine("Download Request");
+            Trace.WriteLine("[ChatPageViewModel] Download Request.");
             _model.ClientDownload(msgId, savePath);
         }
 
         /// <summary>
-        /// Updating the message Data of Message ID with the New Message
+        ///     Updating the message Data of Message ID with the New Message
         /// </summary>
         /// <param name="msgID"> Message ID </param>
         /// <param name="newMsg"> The updated Chat Message  </param>
         public void EditChatMsg(int msgID, string newMsg)
         {
-            Trace.WriteLine("Editing Chat Message");
+            Trace.WriteLine("[ChatPageViewModel] Editing Chat Message.");
             _model.ClientEdit(msgID, newMsg);
         }
 
         /// <summary>
-        /// Updating the message Data of Message ID with the New Message
+        ///     Updating the message Data of Message ID with the New Message
         /// </summary>
         /// <param name="msgID"> Message ID </param>
         public void DeleteChatMsg(int msgID)
         {
-            Trace.WriteLine("Deleting Chat Message");
+            Trace.WriteLine("[ChatPageViewModel] Deleting Chat Message.");
             _model.ClientDelete(msgID);
         }
 
         /// <summary>
-        /// Star message for it to be included in the dashboard summary
+        ///     Star message for it to be included in the dashboard summary
         /// </summary>
         /// <param name="msgId"> Id of the message </param>
         public void StarChatMsg(int msgId)
         {
-            Trace.WriteLine("Message has been starred");
+            Trace.WriteLine("[ChatPageViewModel] Message has been starred.");
             _model.ClientStar(msgId);
         }
 
@@ -207,7 +217,7 @@ namespace PlexShareApp.ViewModel
                     Dispatcher.CurrentDispatcher;
         
         /// <summary>
-        /// Updating users
+        ///     Updating users
         /// </summary>
         /// <param name="session"></param>
         public void OnClientSessionChanged(SessionData currentSession)
@@ -227,10 +237,11 @@ namespace PlexShareApp.ViewModel
                           {
                               if(currentSession!= null)
                               {
-                                  Trace.WriteLine("Users List Receive");
+                                  Trace.WriteLine("[ChatPageViewModel] Users List Received.");
                                   Users.Clear();
                                   foreach (var user in currentSession.users)
                                   {
+                                      // adding users for the session
                                       Users.Add(user.userID, user.username);
                                   }
                               }
@@ -240,7 +251,7 @@ namespace PlexShareApp.ViewModel
         }
 
         /// <summary>
-        /// When a new user joins, they receive the list of messages upto then
+        ///     When a new user joins, they receive the list of messages upto then
         /// </summary>
         /// <param name="allMessages"> List of all messages upto now </param>
         public void OnAllMessagesReceived(List<ChatThread> allMessages)
@@ -258,33 +269,37 @@ namespace PlexShareApp.ViewModel
                       {
                           lock (this)
                           {
+                              // clearing existing data entries
                               Messages.Clear();
                               ThreadIds.Clear();
+                              // updating the Threads and Messages dictionary and displaying the chat upto now in the listbox in view
                               foreach (var messageList in allMessages)
                               {
                                   foreach (var message in messageList.MessageList)
                                   {
-                                      Trace.WriteLine("All messages have been received");
+                                      Trace.WriteLine("[ChatPageViewModel] All messages have been received.");
                                       Messages.Add(message.MessageID, message.Data);
                                       ThreadIds.Add(message.MessageID, message.ReplyThreadID);
 
                                       if (ProductionMode)
                                       {
+                                          // Getting user ID of current user
                                           UserId = _model.GetUserID();
                                       }
 
+                                      // Creating object for the received message
                                       // Message object, ReceivedMsg, to be added to the new user's _allmessages
                                       // list upon property changed event
                                       ReceivedMsg = new Message();
                                       ReceivedMsg.MessageID = message.MessageID;
                                       ReceivedMsg.Type = message.Type == MessageType.Chat;
                                       ReceivedMsg.IncomingMessage = message.Data;
-                                      //ReceivedMsg.Time = message.SentTime.ToString("hh:mm tt ddd"); // 11:09 AM Mon
                                       ReceivedMsg.Time = message.SentTime.ToString("hh:mm tt"); 
                                       ReceivedMsg.Sender = Users.ContainsKey(message.SenderID) ? Users[message.SenderID] : "Anonymous";
                                       ReceivedMsg.ToFrom = UserId == message.SenderID;
                                       ReceivedMsg.ReplyMessage = message.ReplyMessageID == -1 ? "" : Messages[message.ReplyMessageID];
 
+                                      // Propery Changed Event raised for updating View with current session's chat
                                       OnPropertyChanged("ReceivedAllMsgs");
                                   }
                               }
@@ -293,6 +308,10 @@ namespace PlexShareApp.ViewModel
                       allMessages);
         }
 
+        /// <summary>
+        ///     Handles the appropriate even on the received message
+        /// </summary>
+        /// <param name="contentData"> received messages meta data </param>
         public void OnMessageReceived(ReceiveContentData contentData)
         {
             // Execute the call on the application's main thread.
@@ -310,32 +329,35 @@ namespace PlexShareApp.ViewModel
                           {
                               if(contentData.Event == PlexShareContent.Enums.MessageEvent.New)
                               {
-                                  Trace.WriteLine("Messages has been received");
+                                  Trace.WriteLine("[ChatPageViewModel] New Message has been received.");
                                   Messages.Add(contentData.MessageID, contentData.Data);
                                   ThreadIds.Add(contentData.MessageID, contentData.ReplyThreadID);
 
                                   if (ProductionMode)
                                   {
+                                      // Getting user ID of current user
                                       UserId = _model.GetUserID();
                                   }
 
-                                  // Message object, ReceivedMsg, to be added to the new user's _allmessages
-                                  // list upon property changed event
+                                  // Creating object for the received message
+                                  // Message object, ReceivedMsg, to be added to the new user's _allmessages list upon property changed event
                                   ReceivedMsg = new Message();
                                   ReceivedMsg.MessageID = contentData.MessageID;
                                   ReceivedMsg.Type = contentData.Type == MessageType.Chat;
-                                  ReceivedMsg.IncomingMessage = contentData.Data;
-                                  //ReceivedMsg.Time = contentData.SentTime.ToString("hh:mm tt ddd"); // 11:09 AM Mon
+                                  ReceivedMsg.IncomingMessage = Path.GetFileName(contentData.Data);
                                   ReceivedMsg.Time = contentData.SentTime.ToString("hh:mm tt");
                                   ReceivedMsg.Sender = Users.ContainsKey(contentData.SenderID) ? Users[contentData.SenderID] : "Anonymous";
                                   ReceivedMsg.ToFrom = UserId == contentData.SenderID;
                                   ReceivedMsg.ReplyMessage = contentData.ReplyMessageID == -1 ? "" : Messages[contentData.ReplyMessageID];
 
+                                  // Propery Changed Event raised for new message
                                   OnPropertyChanged("ReceivedMsg");
                               }
                               else if(contentData.Event == PlexShareContent.Enums.MessageEvent.Edit || contentData.Event == PlexShareContent.Enums.MessageEvent.Delete)
                               {
-                                  if(contentData.Event == PlexShareContent.Enums.MessageEvent.Edit)
+                                  Trace.WriteLine("[ChatPageViewModel] Going to Edit/Delete existing message.");
+                                  // Events for editing and deleting are handled together due to their similarity
+                                  if (contentData.Event == PlexShareContent.Enums.MessageEvent.Edit)
                                   {
                                       Trace.WriteLine("Editing a message");
                                   }
@@ -346,30 +368,25 @@ namespace PlexShareApp.ViewModel
 
                                   if (ProductionMode)
                                   {
+                                      
                                       UserId = _model.GetUserID();
                                   }
 
+                                  // Creating object for the received message
+                                  // Message object, ReceivedMsg, will modify the current user's _allmessages list upon property changed event
                                   ReceivedMsg = new Message();
                                   ReceivedMsg.MessageID = contentData.MessageID;
                                   ReceivedMsg.Type = contentData.Type == MessageType.Chat;
                                   ReceivedMsg.IncomingMessage = contentData.Data;
-                                  //ReceivedMsg.Time = contentData.SentTime.ToString("hh:mm tt ddd"); // 11:09 AM Mon
                                   ReceivedMsg.Time = contentData.SentTime.ToString("hh:mm tt");
                                   ReceivedMsg.Sender = Users.ContainsKey(contentData.SenderID) ? Users[contentData.SenderID] : "Anonymous";
                                   ReceivedMsg.ToFrom = UserId == contentData.SenderID;
                                   ReceivedMsg.ReplyMessage = contentData.ReplyMessageID == -1 ? "" : Messages[contentData.ReplyMessageID];
                                   Messages[contentData.MessageID] = ReceivedMsg.IncomingMessage;
 
+                                  // Propery Changed Event raised for Edit/Delete
                                   OnPropertyChanged("EditOrDelete");
                               }
-                              //else if(contentData.Event == PlexShareContent.Enums.MessageEvent.Star)
-                              //{
-                              //    // since we are only interested in changing the star property of the message with MessageID,
-                              //    // we shall ignore the the remaining property
-                              //    ReceivedMsg = new Message();
-                              //    ReceivedMsg.MessageID = contentData.MessageID;
-                              //    OnPropertyChanged("StarMessage");
-                              //}
                           }
                       }),
                       contentData);

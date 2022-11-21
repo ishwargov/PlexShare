@@ -7,7 +7,7 @@
  * 
  * Project     = PlexShareContent
  *
- * Description = This file handles the chat messges and various functionlaities associted with chat.
+ * Description = This file handles the chat messages and various functionalities associated with chat.
  *****************************************************************************/
 
 using PlexShareContent.DataModels;
@@ -23,7 +23,7 @@ namespace PlexShareContent.Server
         private ContentDB _contentDB;
 
         /// <summary>
-        ///     Constructor to initializes the content Database.
+        ///     Constructor to initialize the content Database.
         /// </summary>
         public ChatServer(ContentDB db)
         {
@@ -39,7 +39,7 @@ namespace PlexShareContent.Server
         }
 
         /// <summary>
-        ///     This event is used to preocess the chat based on the type of event occured.
+        ///     This event is used to process the chat based on the type of event that occurred.
         /// </summary>
         /// <param name="messageData"></param>
         /// <returns>Returns the new message</returns>
@@ -47,17 +47,17 @@ namespace PlexShareContent.Server
         {
             ReceiveContentData receivedMsg;
             Trace.WriteLine("[ChatServer] Received message from ContentServer");
-            if(msg.Event == MessageEvent.New)
+            if (msg.Event == MessageEvent.New)
             {
                 Trace.WriteLine("[ChatServer] Event is NewMessage, Adding message to existing Thread");
                 return _contentDB.MessageStore(msg);
             }
-            else if(msg.Event == MessageEvent.Star)
+            else if (msg.Event == MessageEvent.Star)
             {
                 Trace.WriteLine("[ChatServer] Event is Star, Starring message in existing Thread");
                 receivedMsg = StarMessage(msg.ReplyThreadID, msg.MessageID);
             }
-            else if(msg.Event == MessageEvent.Edit)
+            else if (msg.Event == MessageEvent.Edit)
             {
                 Trace.WriteLine("[ChatServer] Event is Update, Updating message in existing Thread");
                 receivedMsg = UpdateMessage(msg.ReplyThreadID, msg.MessageID,
@@ -137,7 +137,7 @@ namespace PlexShareContent.Server
                 return null;
             }
 
-            // The data of message now becomes "Message Deleted.".
+            // The data of the message now becomes "Message Deleted.".
             message.Data = "Message Deleted.";
             return message;
         }

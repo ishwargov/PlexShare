@@ -1,8 +1,14 @@
-﻿/// <author>Sughandhan S</author>
-/// <created>03/11/2022</created>
-/// <summary>
-///     Interaction logic for ChatPageView.xaml.
-/// </summary>
+﻿/******************************************************************************
+ * Filename    = ChatPageView.xaml.cs
+ *
+ * Author      = Sughandhan S
+ *
+ * Product     = PlexShare
+ * 
+ * Project     = PlexShareApp
+ *
+ * Description = Interaction logic for ChatPageView.xaml.    
+ *****************************************************************************/
 
 using System;
 using System.Collections.ObjectModel;
@@ -31,13 +37,13 @@ namespace PlexShareApp
     {
 
         /// <summary>
-        /// All the messages upto now
+        ///     All the messages upto now
         /// </summary>
         private readonly ObservableCollection<Message> _allMessages;
         private readonly Message addNewMessage;
 
         /// <summary>
-        /// Creating an instance of our ChatPageView
+        ///     Creating an instance of our ChatPageView
         /// </summary>
         public ChatPageView()
         {
@@ -52,16 +58,16 @@ namespace PlexShareApp
             // Binding all the messages
             _allMessages = new ObservableCollection<Message>();
             MainChat.ItemsSource = _allMessages;
-            
+
         }
 
         /// <summary>
-        /// Replied message's Message ID 
+        ///     Replied message's Message ID 
         /// </summary>
         public int ReplyMsgId { get; set; }
 
         /// <summary>
-        /// Property Changed Event in which the view gets updated with new messages
+        ///     Property Changed Event in which the view gets updated with new messages
         /// </summary>
         /// <param name="sender"> Sender Notifying the event </param>
         /// <param name="e"> Property Changed Event </param>
@@ -72,21 +78,25 @@ namespace PlexShareApp
 
             if(propertyName == "ReceivedMsg")
             {
+                // Adding the new message to our collection(_allMessage) which in turn adds a chat bubble in the UX listbox
                 _allMessages.Add(viewModel.ReceivedMsg);
-                Debug.WriteLine(_allMessages);
+                Trace.WriteLine("[ChatPageView] New message has been added.");
                 UpdateScrollBar(MainChat);
             }
             else if(propertyName == "ReceivedAllMsgs")
             {
+                // Adding all the messages for the new user from the session to our collection(_allMessage) which in turn adds a chat bubble in the UX listbox
                 _allMessages.Add(viewModel.ReceivedMsg);
-                Debug.WriteLine(_allMessages);
-                //UpdateScrollBar(MainChat);
+                Trace.WriteLine("[ChatPageView] Restoring session chat messages.");
+                UpdateScrollBar(MainChat);
             }
             else if(propertyName == "EditOrDelete")
             {
                 Message updatedMsg = null;
                 string replyMsgOld = "";
                 string replyMsgNew = "";
+                // We find the Message in our Observable Collection containing all the messages and update this entry
+                // We store its text message in replyMsgOld for later updating the ReplyMessage of the messages containing this text message
                 for (int i = 0; i < _allMessages.Count; i++)
                 {
                     var message = _allMessages[i];
@@ -108,7 +118,7 @@ namespace PlexShareApp
                     }
                 }
 
-                // Updating all the Chat bubbles which all have replied to this message that has been Editted/Deleted
+                // Updating all the Chat bubbles which all have replied to the message that has been Edited/Deleted
                 for (int i=0;i < _allMessages.Count;i++)
                 {
                     var message = _allMessages[i];
@@ -127,21 +137,15 @@ namespace PlexShareApp
                         updatedMsg = _allMessages[i];
                     }
                 }
-                Debug.WriteLine($"Message ID {updatedMsg.MessageID} was updated with {updatedMsg.IncomingMessage}");
-                Debug.WriteLine(_allMessages);
+                Trace.WriteLine($"[ChatPageView] Message ID {updatedMsg.MessageID} was updated with {updatedMsg.IncomingMessage}.");
             }
-            //else if (propertyName == "StarMessage")
-            //{
-            //    for (int i = 0; i < _allMessages.Count; i++)
-            //    {
-            //        if (_allMessages[i].MessageID == viewModel.ReceivedMsg.MessageID)
-            //        {
-            //            _allMessages[i].
-            //        }
-            //    }
-            //}
         }
 
+        /// <summary>
+        ///     Event Handler upon clicking upload button to send file
+        /// </summary>
+        /// <param name="sender"> Notification Sender </param>
+        /// <param name="e"> Routed Event Data </param>
         private void UploadButtonClick(object sender, RoutedEventArgs e)
         {
             if(ReplyTextBox.Text == String.Empty)
@@ -165,68 +169,54 @@ namespace PlexShareApp
                     {
                         viewModel.SendMessage(openFileDialog.FileName, ReplyMsgId, "File");
                     }
-                    //addNewMessage = new Message();
-                    //addNewMessage.MessageID = -1;
-                    //addNewMessage.Sender = null;
-                    //addNewMessage.Time = DateTime.Now.ToShortTimeString();
-                    //addNewMessage.Type = true;
-                    //addNewMessage.ReplyMessage = null;
-                    //addNewMessage.IncomingMessage = openFileDialog.FileName;
-                    //addNewMessage.ToFrom = true;
-                    //_allMessages.Add(addNewMessage);
+                    Trace.WriteLine($"[ChatPageView] {openFileDialog.SafeFileName} File sent for uploading from view.");
 
-
+                    // Clearing the TextBoxes
                     SendTextBox.Text = string.Empty;
                     ReplyTextBox.Text = string.Empty;
-                    //ReplyTextBox.Text = "";
                 }
             }
         }
 
         /// <summary>
-        /// Event Handler on Clicking Send Button
+        ///     Event Handler on Clicking Send Button
         /// </summary>
         /// <param name="sender"> Notification Sender </param>
         /// <param name="e"> Routed Event Data </param>
         private void SendButtonClick(object sender, RoutedEventArgs e)
         {
-            if(!string.IsNullOrEmpty(SendTextBox.Text))
+            string msg = SendTextBox.Text;
+            msg = msg.Trim();
+            // We send a message only when the text box is not empty
+            if (!string.IsNullOrEmpty(msg))
             {
-                if(SendTextBox.Text.Length > 300)
+                // Character limit set to avoid long paragraphs
+                if(msg.Length > 300)
                 {
                     MessageBox.Show("Please enter less than 300 characters!");
                     return;
                 }
                 var viewModel = DataContext as ChatPageViewModel;
 
+                // If ReplyTextBox is not empty, that means we are replying to a message and we shall pass the corresponding reference ReplyMsgId
                 if(string.IsNullOrEmpty(ReplyTextBox.Text))
                 {
-                    viewModel.SendMessage(SendTextBox.Text, -1, "Chat");
+                    viewModel.SendMessage(msg, -1, "Chat");
                 }
                 else
                 {
-                    viewModel.SendMessage(SendTextBox.Text, ReplyMsgId, "Chat");
+                    viewModel.SendMessage(msg, ReplyMsgId, "Chat");
                 }
-                //var chumma = SendTextBox.Text;
-                //addNewMessage = new Message();
-                //addNewMessage.MessageID = 2;
-                //addNewMessage.Sender = null;
-                //addNewMessage.Time = DateTime.Now.ToShortTimeString();
-                //addNewMessage.Type = true;
-                //addNewMessage.ReplyMessage = "Hey";
-                //addNewMessage.IncomingMessage = chumma;//SendTextBox.Text;
-                //addNewMessage.ToFrom = true;
-                //_allMessages.Add(addNewMessage);
+                Trace.WriteLine("[ChatPageView] Sending a message from view.");                
 
-
+                // Clearing the TextBoxes
                 SendTextBox.Text = string.Empty;
                 ReplyTextBox.Text = string.Empty;
             }
         }
-
-        // TODO: Implement ReplyButtonClick event
+        
         /// <summary>
-        /// Event Handler on Clicking Reply Button
+        ///     Event Handler on Clicking Reply Button
         /// </summary>
         /// <param name="sender"> Notification Sender</param>
         /// <param name="e"> Routed Event Data </param>
@@ -238,26 +228,40 @@ namespace PlexShareApp
                 if(senderButton.DataContext is Message)
                 {
                     Message msg = (Message)senderButton.DataContext;
-                    if(msg.IncomingMessage!= "Message Deleted.")
+                    if(msg.IncomingMessage!= "Message deleted.")
                     {
-                        ReplyTextBox.Text = msg.IncomingMessage;
+                        string message = msg.IncomingMessage;
+                        if(message.Length > 10)
+                        {
+                            message = message.Substring(0, 10);
+                            message += "...";
+                        }
+                        string senderBox = msg.Sender + ": " + message;
+                        ReplyTextBox.Text = senderBox;
                         ReplyMsgId = msg.MessageID;
+                        Trace.WriteLine("[ChatPageView] Reply button clicked.");
                     }
                 }
             }
         }
 
+        /// <summary>
+        ///     Event Handler on Clearing Reply TextBlock
+        /// </summary>
+        /// <param name="sender"> Notification Sender</param>
+        /// <param name="e"> Routed Event Data </param>
         private void ClearReplyBox(object sender, RoutedEventArgs e)
         {
             if (sender is Button)
             {
                 Button senderButton = (Button)sender;
                 ReplyTextBox.Text = null;
+                Trace.WriteLine("[ChatPageView] Reply text box cleared.");
             }
         }
 
         /// <summary>
-        /// Event Handler on Clicking Edit Button
+        ///     Event Handler on Clicking Edit Button
         /// </summary>
         /// <param name="sender"> Notification Sender</param>
         /// <param name="e"> Routed Event Data </param>
@@ -277,6 +281,7 @@ namespace PlexShareApp
                             var ourEditMessage = SendTextBox.Text;
                             viewModel.EditChatMsg(msg.MessageID, ourEditMessage);
                             SendTextBox.Text = string.Empty;
+                            Trace.WriteLine("[ChatPageView] Message has been deleted.");
                         }
                     }
                 }
@@ -284,7 +289,7 @@ namespace PlexShareApp
         }
 
         /// <summary>
-        /// Event Handler on Clicking Delete Button
+        ///     Event Handler on Clicking Delete Button
         /// </summary>
         /// <param name="sender"> Notification Sender</param>
         /// <param name="e"> Routed Event Data </param>
@@ -298,12 +303,13 @@ namespace PlexShareApp
                     var viewModel = DataContext as ChatPageViewModel;
                     Message msg = (Message)senderButton.DataContext;
                     viewModel.DeleteChatMsg(msg.MessageID);
+                    Trace.WriteLine("[ChatPageView] Delete button clicked.");
                 }
             }
         }
 
         /// <summary>
-        /// Event Handler for Clicking on Star Radio Button
+        ///     Event Handler for Clicking on Star Radio Button
         /// </summary>
         /// <param name="sender"> Notification Sender </param>
         /// <param name="e"> Routed Event Data </param>
@@ -317,8 +323,8 @@ namespace PlexShareApp
                 if (senderRadioButton.DataContext is Message)
                 {
                     Message msg = (Message)senderRadioButton.DataContext;
-                    //var viewModel = DataContext as ChatPageViewModel;
                     viewModel.StarChatMsg(msg.MessageID);
+                    Trace.WriteLine("[ChatPageView] Message has been starred.");
                 }
 
             }
@@ -326,7 +332,7 @@ namespace PlexShareApp
         }
 
         /// <summary>
-        /// Event Handler on clicking Download Button
+        ///     Event Handler on clicking Download Button
         /// </summary>
         /// <param name="sender"> Notification Sender </param>
         /// <param name="e"> Routed Event Data </param>
@@ -356,13 +362,14 @@ namespace PlexShareApp
                     if (result == true)
                     {
                         viewModel.DownloadFile(dailogFile.FileName, message.MessageID);
+                        Trace.WriteLine("[ChatPageView] Download button clicked.");
                     }
                 }
             }
         }
 
         /// <summary>
-        /// Updates the Scrollbar to the bottom of the listbox
+        ///     Updates the Scrollbar to the bottom of the listbox
         /// </summary>
         /// <param name="listBox"> Listbox containing the scrollbar </param>
         private void UpdateScrollBar(ListBox listBox)
@@ -372,6 +379,7 @@ namespace PlexShareApp
                 var border = (Border)VisualTreeHelper.GetChild(listBox, 0);
                 var scrollViewer = (ScrollViewer)VisualTreeHelper.GetChild(border, 0);
                 scrollViewer.ScrollToBottom();
+                Trace.WriteLine("[ChatPageView] ScrollBar Updated.");
             }
         }
 

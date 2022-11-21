@@ -301,6 +301,63 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             //subscribing to the session manager to get the updated session data whenever the session data changes 
             clientSessionManager.SubscribeSession(this);
 
+            clientSessionManager.ToggleSessionMode();
+
+
+
+            ////defining the sessionanalytics to store the information about the sessionanalytics 
+            sessionAnalytics = new SessionAnalytics();
+            sessionAnalytics.chatCountForEachUser = new Dictionary<int, int>();
+            sessionAnalytics.listOfInSincereMembers = new List<int>();
+            sessionAnalytics.userCountVsTimeStamp = new Dictionary<DateTime, int>();
+            sessionAnalytics.sessionSummary = new SessionSummary();
+
+            //these functions will be called whenever these will be invoked by the client session manager 
+            clientSessionManager.AnalyticsCreated += (latestAnalytics) => OnAnalyticsChanged(latestAnalytics);
+            clientSessionManager.SummaryCreated += (latestSummary) => OnSummaryChanged(latestSummary);
+
+
+
+            Trace.WriteLine("[Dashboard ViewModel]Initializing the Dashboard ViewModel");
+        }
+
+        public DashboardViewModel(int testGateway)
+        {
+
+
+            sessionData = new SessionData();
+
+            //initialising the observable collection and chartvalues
+            ParticipantsList = new ObservableCollection<User>();
+            UserCountList = new ChartValues<int>();
+            TimeStampsList = new ObservableCollection<string>();
+            ChatCountListForUserId = new ChartValues<int>();
+            ChatCountListForUserName = new ChartValues<int>();
+            UserIdList = new ObservableCollection<string>();
+            UserNameList = new ObservableCollection<string>();
+
+
+            //initialising the private attributes 
+            AttentiveUsersSetter = 100;
+            NonAttentiveUsersSetter = 0;
+            TotalParticipantsCountSetter = 1;
+            MaxTotalParticipantsCountSetter = 1;
+            TotalMessageCountSetter = 0;
+            EngagementRateSetter = "0";
+            SessionModeSetter = "LabMode";
+            SessionScoreSetter = 0;
+            ButtonContentSetter = "Switch Mode";
+            SummaryContentSetter = "Refresh To get the updated summary";
+
+
+            //getting the instane of the client session manager 
+            clientSessionManager = SessionManagerFactory.GetClientSessionManager();
+
+            //subscribing to the session manager to get the updated session data whenever the session data changes 
+            //clientSessionManager.SubscribeSession(this);
+
+            //clientSessionManager.ToggleSessionMode();
+
 
 
             ////defining the sessionanalytics to store the information about the sessionanalytics 
@@ -333,13 +390,13 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             {
                 //this is host 
                 LeaveButtonContentSetter = "End Meet";
-                Trace.WriteLine("[Dashboard ViewModel] The Faculty has ended the meet");
+                
             }
             else
             {
                 //then this is normal user hence we have to show the leave meeting 
                 LeaveButtonContentSetter = "Leave Meet";
-                Trace.WriteLine("[Dashboard ViewModel] The User has left the meeting");
+                
 
             }
 
@@ -424,6 +481,8 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
                 ButtonContentSetter = "Switch To LabMode";
             }
 
+            
+
             //say everything went fine 
             return;
 
@@ -445,6 +504,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             {
                 //calling the toggle function to toggle the session for this particular meeting
                 clientSessionManager.ToggleSessionMode();
+                Trace.WriteLine("[Dashboard ViewModel] The faculty has changed the session Mode of the meeting");
 
             }
             else
@@ -471,12 +531,14 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
                 //this user is host hence it will end the meet  
                 //calling the end meet procedure 
                 clientSessionManager.EndMeet();
+                Trace.WriteLine("[Dashboard ViewModel] The Faculty has ended the meeting");
             }
             else
             {
                 //the user will be just removed by session manager 
                 //this is normal user hence we have to call the remove client 
                 clientSessionManager.RemoveClient();
+                Trace.WriteLine("[Dashboard ViewModel] The User has left the meeting");
 
             }
 
@@ -696,12 +758,14 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
             }
 
+            Trace.WriteLine("[Dashboard ViewModel] Got the Updated session data.");
+
 
             return;
         }
 
         /// <summary>
-        ///overloading function to test it 
+        ///overloading function to test the onclient session changed. 
         /// </summary>
         public void OnClientSessionChanged(SessionData newSessionData, int testingGateway)
         {
@@ -738,7 +802,7 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
 
             //updating the summary for this session 
             SummaryContentSetter = latestSummary;
-
+            Trace.WriteLine("[Dashboard ViewModel] Updated the summary of the session");
             //say everything went fine 
             return;
         }
@@ -829,6 +893,9 @@ namespace PlexShareDashboard.Dashboard.UI.ViewModel
             int currAttentiveUsers = TotalParticipantsCountSetter - currNonAttentiveUsers;
 
             CalculatePercentageOfAttentiveAndNonAttentiveUsers(currNonAttentiveUsers, currAttentiveUsers);
+
+            Trace.WriteLine("[Dashboard ViewModel] Updated the telemtric data on the view model.");
+
 
             //say everything went fine 
             return;

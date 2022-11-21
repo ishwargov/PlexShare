@@ -1,11 +1,25 @@
-﻿<UserControl x:Class="PlexShareApp.ChatPageView"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:PlexShareApp"
-      mc:Ignorable="d" 
-      d:DesignHeight="800" d:DesignWidth="330">
+﻿<!--/
+******************************************************************************
+* Filename    = ChatPageView.xaml
+*
+* Author      = Sughandhan S
+*
+* Product     = PlexShare
+* 
+* Project     = PlexShareApp
+*
+* Description = The following is the View for our ChatPage.
+*****************************************************************************/
+-->
+<UserControl x:Class="PlexShareApp.ChatPageView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:PlexShareApp" 
+    xmlns:emoji="clr-namespace:Emoji.Wpf;assembly=Emoji.Wpf"
+    mc:Ignorable="d" 
+    d:DesignHeight="800" d:DesignWidth="330">
 
     <UserControl.Resources>
         <!--Colours for various User Control objects-->
@@ -19,12 +33,8 @@
         <SolidColorBrush x:Key="DynamicRecvFile" Color="DarkSlateGray" />
         <SolidColorBrush x:Key="DynamicSendBox" Color="#0f3d3e" />
         <SolidColorBrush x:Key="DynamicHeader" Color="Teal" />
-        <SolidColorBrush x:Key="DynamicButtonBack" Color="Blue" />
         <SolidColorBrush x:Key="DynamicSentReplyMsg" Color="#596e5c" />
 
-
-
-        <!--Custom style trigger for determining action when mouse is and not over the textbox-->
 
         <!--Setting the visibility of the reply text box as collapsed when its empty or null-->
         <Style TargetType="TextBlock" x:Key="ReplyText">
@@ -58,13 +68,15 @@
                     <Setter Property="Cursor" Value="Arrow" />
                 </Trigger>
             </Style.Triggers>
+            <Style.Resources>
+                <Style TargetType="{x:Type Border}">
+                    <Setter Property="CornerRadius" Value="8" />
+                </Style>
+            </Style.Resources>
         </Style>
 
         <!--Customizing the Button type-->
         <Style TargetType="{x:Type Button}">
-            <!--<Setter Property="Background" Value="{DynamicResource DynamicButtonBack}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource DynamicButtonBack}" />
-            <Setter Property="Foreground" Value="{DynamicResource DynamicButtonFore}" />-->
             <Setter Property="FontSize" Value="14" />
             <Setter Property="Width" Value="90" />
             <Setter Property="Margin" Value="10" />
@@ -144,10 +156,10 @@
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock Foreground="{DynamicResource DynamicTextClr}" Text="{Binding IncomingMessage, UpdateSourceTrigger=PropertyChanged}"
+                            <emoji:TextBlock Foreground="{DynamicResource DynamicTextClr}" Text="{Binding IncomingMessage, UpdateSourceTrigger=PropertyChanged}"
                                        x:Name="MainText" TextWrapping="Wrap" Grid.Row="0" Width="250" FontSize="16"
                                        Padding="8,5,8,5" Grid.Column="0" />
-                            <!-- Currently adding reply, clear replybox, edit and delete button-->
+                            <!-- Adding reply, clear replybox, edit and delete button-->
                             <StackPanel Orientation="Horizontal" Grid.Column="1">
                                 <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
                                     Width="30" Height="20" Margin="0,0,0,0" Click="ReplyButtonClick" ToolTip="Reply">
@@ -189,6 +201,7 @@
                 </Grid>
             </Grid>
         </DataTemplate>
+
         <!--Data template for the file message sent by the user-->
         <DataTemplate x:Key="MyToFileTemplate">
             <Grid>
@@ -230,10 +243,11 @@
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
                                     <Image Grid.Column="0" Source="Icons/file.png" Width="25" Height="25" />
-                                    <TextBlock Grid.Column="1" Foreground="{DynamicResource DynamicTextClr}"
+                                    <emoji:TextBlock Grid.Column="1" Foreground="{DynamicResource DynamicTextClr}"
                                                Text="{Binding IncomingMessage, UpdateSourceTrigger=PropertyChanged}" x:Name="MainText" TextWrapping="Wrap"
                                                Width="150" FontSize="16" Padding="8,5,8,5" />
                                     <StackPanel Grid.Column="2">
+                                        <!-- Adding reply, clear replybox and download button-->
                                         <Button Background="Transparent" BorderBrush="Transparent"
                                             HorizontalAlignment="Right" Width="40" Margin="0,0,0,0"
                                             Click="DownloadButtonClick">
@@ -270,6 +284,7 @@
                 </Grid>
             </Grid>
         </DataTemplate>
+
         <!--Data template for the chat message received by the user-->
         <DataTemplate x:Key="MyFromMsgTemplate">
             <Grid x:Name="FromBubble" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Top">
@@ -296,7 +311,7 @@
                     <Grid Grid.Row="0">
                         <Border Grid.Column="0" CornerRadius="8" BorderBrush="{DynamicResource DynamicRecvMsg}"
                                 BorderThickness="5" Background="{DynamicResource DynamicRecvFile}" Opacity="0.5">
-                            <TextBlock Style="{StaticResource ReplyText}" Foreground="{DynamicResource DynamicSentReplyMsg}"
+                            <emoji:TextBlock Style="{StaticResource ReplyText}" Foreground="{DynamicResource DynamicSentReplyMsg}"
                                        Text="{Binding ReplyMessage, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" Width="250" FontSize="14"
                                        Padding="8,5,8,5" />
                         </Border>
@@ -310,10 +325,11 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Foreground="{DynamicResource DynamicTextClr}" Text="{Binding IncomingMessage, UpdateSourceTrigger=PropertyChanged}"
+                        <emoji:TextBlock Foreground="{DynamicResource DynamicTextClr}" Text="{Binding IncomingMessage, UpdateSourceTrigger=PropertyChanged}"
                                    x:Name="MainText" TextWrapping="Wrap" Grid.Row="0" Width="250" FontSize="16"
                                    Padding="8,5,8,5" Grid.Column="0"/>
                         <StackPanel Orientation="Horizontal" Grid.Column="1">
+                            <!-- Adding reply and clear replybox button-->
                             <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
                                     Width="30" Height="20" Margin="0,0,0,0" Click="ReplyButtonClick" ToolTip="Reply">
                                 <Image Source="Icons/reply.png" Width="15" Height="15" />
@@ -322,19 +338,7 @@
                                     Width="30" Height="20" Margin="0,0,0,0" Click="ClearReplyBox" ToolTip="Undo Reply">
                                 <Image Source="Icons/undo.png" Width="15" Height="15" />
                             </Button>
-                            <!--<Button  Background="Violet" BorderBrush="Transparent" HorizontalAlignment="Right"
-                                    Width="30" Height="20" Margin="0,0,0,0" Click="EditButtonClick">
-                                E
-                            </Button>
-                            <Button Background="Red" BorderBrush="Transparent" HorizontalAlignment="Right"
-                                    Width="30" Height="20" Margin="0,0,0,0" Click="DeleteButtonClick">
-                                D
-                            </Button>-->
                         </StackPanel>
-                        <!--<Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
-                                Width="30" Margin="0,0,0,0" Click="ReplyButtonClick">
-                            <Image Source="Icons/reply.png" Width="15" Height="15" />
-                        </Button>-->
                     </Grid>
                     <Grid Grid.Row="3">
                         <Grid.ColumnDefinitions>
@@ -382,7 +386,7 @@
                         </Border>
                     </Grid>
                     <Grid Grid.Row="1" >
-                        <TextBlock Foreground="White" Text="{Binding Sender, UpdateSourceTrigger=PropertyChanged}" x:Name="SenderName" TextWrapping="Wrap"
+                        <emoji:TextBlock Foreground="White" Text="{Binding Sender, UpdateSourceTrigger=PropertyChanged}" x:Name="SenderName" TextWrapping="Wrap"
                                    Width="250" FontSize="14" TextAlignment="Left" Padding="8,2,8,2" />
                     </Grid>
                     <Grid Grid.Row="2">
@@ -399,10 +403,11 @@
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
                                 <Image Grid.Column="0" Source="Icons/file.png" Width="25" Height="25" />
-                                <TextBlock Grid.Column="1" Foreground="{DynamicResource DynamicSentReplyMsg}"
+                                <emoji:TextBlock Grid.Column="1" Foreground="{DynamicResource DynamicSentReplyMsg}"
                                            Text="{Binding IncomingMessage, UpdateSourceTrigger=PropertyChanged}" x:Name="MainText" TextWrapping="Wrap"
                                            Width="150" FontSize="16" Padding="8,5,8,5" />
                                 <StackPanel Grid.Column="2">
+                                    <!-- Adding reply, clear replybox and download button-->
                                     <Button Background="Transparent" BorderBrush="Transparent"
                                             HorizontalAlignment="Right" Width="40" Margin="0,0,0,0"
                                             Click="DownloadButtonClick">
@@ -428,6 +433,7 @@
                 </Grid>
             </Grid>
         </DataTemplate>
+        <!--Setting up the templates for constructing chat bubbles-->
         <local:ChatBubbleConstructor x:Key="ChatBubbleTemplateSelector" SentMsgBubble="{StaticResource MyToMsgTemplate}"
                                   SentFileBubble="{StaticResource MyToFileTemplate}"
                                   RecvMsgBubble="{StaticResource MyFromMsgTemplate}"
@@ -442,11 +448,6 @@
             </Border.Effect>
         </Border>
         <StackPanel>
-            <StackPanel Orientation="Horizontal" Background="{DynamicResource DynamicHeader}" HorizontalAlignment="Stretch">
-                <!--<Image Width="20" Height="20" Margin="4" Source="Icons/online-chat.png" HorizontalAlignment="Center"/>
-                <TextBlock Foreground="White" Grid.Column="1" Margin="4 0 0 0" FontSize="20" HorizontalAlignment="Stretch"
-                           Text="" Background="{DynamicResource DynamicHeader}" />-->
-            </StackPanel>
             <!--Grid layout for listbox and textbox-->
             <Grid>
                 <Grid.RowDefinitions>
@@ -478,9 +479,9 @@
                         </ListBox.ItemContainerStyle>
                     </ListBox>
                 </Grid>
-                
+
                 <!--TextBox-->
-                <Grid Grid.Row="1" VerticalAlignment="Bottom" Margin="0,0,0,10" Grid.ColumnSpan="2" RenderOptions.EdgeMode="Aliased">
+                <Grid Grid.Row="1" Height="70"  VerticalAlignment="Bottom" Margin="0,0,0,10" Grid.ColumnSpan="2" RenderOptions.EdgeMode="Aliased">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="6*" />
                         <ColumnDefinition Width="1*" />
@@ -498,30 +499,35 @@
                                             BorderThickness="1" Background="{DynamicResource DynamicReplyBox}"
                                             Opacity="0.5">
                                         <TextBlock Name="ReplyTextBox" Style="{StaticResource ReplyText}"
-                                                   Foreground="{DynamicResource DynamicTextClr}" 
+                                                   Foreground="{DynamicResource DynamicTextClr}" Background="{DynamicResource DynamicSendBox}"
                                                    Width="425" MaxHeight="40" FontSize="16" Padding="8,5,8,5" />
                                     </Border>
                                 </Grid>
-                                <!--.HorizontalScrollBarVisibility="Auto"
-                                            ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True"-->
-                                <TextBox Grid.Row="1" Name="SendTextBox" Foreground="White" SpellCheck.IsEnabled="True" Background="Transparent"
-                                         BorderThickness="0" Height="50" FontSize="15" VerticalAlignment="Bottom"
-                                         Text="" AcceptsReturn="True" />
+                                <emoji:RichTextBox Grid.Row="1" Name="SendTextBox" Foreground="White" SpellCheck.IsEnabled="True" Background="Transparent"
+                                         BorderThickness="0" Height="30" FontSize="15" VerticalAlignment="Bottom"
+                                         Text="" AcceptsReturn="True"></emoji:RichTextBox>
                             </Grid>
-                            <Button Background="Transparent" HorizontalAlignment="Right" Width="30" Margin="3,5,2,6"
-                                    Click="UploadButtonClick" VerticalAlignment="Bottom" ToolTip="Upload">
-                                <Image Source="Icons/upload-file.png" Width="20" Height="20" />
-                            </Button>
                         </Grid>
                     </Border>
+                    <!--Download Button-->
                     <Border Grid.Column="1" CornerRadius="8" Background="{DynamicResource DynamicSendBox}"
-                            BorderBrush="{DynamicResource DynamicSendBox}" BorderThickness="0" Height="35" Width="35"
-                            Margin="0,0,0,0" VerticalAlignment="Bottom">
-                        <Button  Background="Transparent" HorizontalAlignment="Left" Width="30" Margin="3,5,0,5"
-                                Click="SendButtonClick" ToolTip="Send">
-                            <Image Source="Icons/send-mail.png" HorizontalAlignment="Center" Width="18" Height="18" />
+                            BorderBrush="{DynamicResource DynamicSendBox}" BorderThickness="0" Height="30" Width="30"
+                            Margin="0,0,0,0" VerticalAlignment="Top">
+                        <Button Background="Transparent" HorizontalAlignment="Center" Width="30" Margin="3,3,3,3"
+                                    Click="UploadButtonClick" VerticalAlignment="Center" ToolTip="Upload">
+                            <Image Source="Icons/upload-file.png" Width="20" Height="20" />
                         </Button>
                     </Border>
+                    <!--Send Button-->
+                    <Border Grid.Column="1" CornerRadius="8" Background="{DynamicResource DynamicSendBox}"
+                            BorderBrush="{DynamicResource DynamicSendBox}" BorderThickness="0" Height="30" Width="30"
+                            Margin="0,0,0,0" VerticalAlignment="Bottom" HorizontalAlignment="Center">
+                        <Button  Background="Transparent" HorizontalAlignment="Center" Width="30" Margin="3,3,3,3"
+                                Click="SendButtonClick" ToolTip="Send">
+                            <Image Source="Icons/send-mail.png" HorizontalAlignment="Center" VerticalAlignment="Center" Width="18" Height="18" />
+                        </Button>
+                    </Border>
+
                 </Grid>
             </Grid>
         </StackPanel>

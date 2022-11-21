@@ -1,4 +1,9 @@
-﻿using System;
+﻿/// <author>Morem Jayanth Kumar</author>
+/// <created>3/11/2022</created>
+/// <summary>
+///		This file is the contains the porter stemmer functionality
+/// </summary>
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
