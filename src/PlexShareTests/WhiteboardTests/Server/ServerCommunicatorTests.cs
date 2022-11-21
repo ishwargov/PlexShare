@@ -1,15 +1,25 @@
-﻿using PlexShareWhiteboard.Server;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/***************************
+ * Filename    = ServerCommunicatorTests.cs
+ *
+ * Author      = Joel Sam Mathew
+ *
+ * Product     = Plex Share
+ *
+ * Project     = White Board
+ *
+ * Description = Tests for ServerCommunicator.cs.
+ ***************************/
+
+using PlexShareWhiteboard.Server;
 
 namespace PlexShareTests.WhiteboardTests.Server
 {
     [Collection("Sequential")]
     public class ServerCommunicatorTests
     {
+        /// <summary>
+        ///     Verifies same instance generation.
+        /// </summary>
         [Fact]
         public void Instance_Always_ReturnsSameInstance()
         {

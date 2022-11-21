@@ -1,23 +1,19 @@
-﻿/**
- * Owned By: Joel Sam Mathew
- * Created By: Joel Sam Mathew
- * Date Created: 22/10/2022
- * Date Modified: 08/11/2022
-**/
+﻿/***************************
+ * Filename    = IServerSnapshotHandler.cs
+ *
+ * Author      = Joel Sam Mathew
+ *
+ * Product     = Plex Share
+ *
+ * Project     = White Board
+ *
+ * Description = Interface to specify the functions handled by ServerSnapshotHandler.
+ ***************************/
 
-using Newtonsoft.Json;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
-using System.Windows;
 using PlexShareWhiteboard.BoardComponents;
 using PlexShareWhiteboard.Server.Interfaces;
 
@@ -25,15 +21,27 @@ namespace PlexShareWhiteboard.Server
 {
     public class ServerSnapshotHandler : IServerSnapshotHandler
     {
-        private Serializer _serializer;
+        /// <summary>
+        ///     Gets and sets current snapshotNumber
+        /// </summary>
         public int SnapshotNumber { get; set; }
+        private Serializer _serializer;
         private List<Tuple<int, string, List<ShapeItem>>> _snapshotSummary = new();
+
+        /// <summary>
+        ///     Constructor for SnapshotHandler
+        /// </summary>
         public ServerSnapshotHandler()
         {
             _serializer = new Serializer();
             SnapshotNumber = 0;
         }
 
+        /// <summary>
+        ///     Fetches and loades the snapshot corresponding to provided snapshotNumber.
+        /// </summary>
+        /// <param name="snapshotNumber">The number of the snapshots which needs to fetched.</param>
+        /// <returns></returns>
         public List<ShapeItem> LoadBoard(int snapshotNumber)
         {
             try
@@ -44,7 +52,6 @@ namespace PlexShareWhiteboard.Server
                 var boardShapesPath = snapshotNumber + ".json";
                 var jsonString = File.ReadAllText(boardShapesPath);
                 Trace.WriteLine("[Whiteboard] ServerSnapshotHandler.LoadBoard: Deserialized file" + boardShapesPath);
-                //Trace.WriteLine("[Whiteboard] ServerSnapshotHandler.LoadBoard: Deserialized file"+jsonString);
                 var shapeItems = _serializer.DeserializeShapeItems(jsonString);
                 return shapeItems;
             }
@@ -57,6 +64,12 @@ namespace PlexShareWhiteboard.Server
             return null;
         }
 
+        /// <summary>
+        ///     Saves the snapshot at the server.
+        /// </summary>
+        /// <param name="boardShapes">List containing all the shapes to save the snapshot.</param>
+        /// <param name="userID">User who requested the saving of snapshot.</param>
+        /// <returns></returns>
         public int SaveBoard(List<ShapeItem> boardShapes, string userID)
         {
             try
@@ -65,7 +78,6 @@ namespace PlexShareWhiteboard.Server
                 string boardShapesPath = SnapshotNumber + ".json";
                 var jsonString = _serializer.SerializeShapeItems(boardShapes);
                 Trace.WriteLine("[Whiteboard] SnapshotHandler.Save: Saving in file in "+boardShapesPath);
-                //Trace.WriteLine("[Whiteboard] SnapshotHandler.Save: Saving as "+jsonString);
                 File.WriteAllText(boardShapesPath, jsonString);
 
                 _snapshotSummary.Add(

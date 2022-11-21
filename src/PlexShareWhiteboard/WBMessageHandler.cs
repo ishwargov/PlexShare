@@ -1,24 +1,22 @@
-﻿/**
- * Owned By: Joel Sam Mathew
- * Created By: Joel Sam Mathew
- * Date Created: 22/10/2022
- * Date Modified: 08/11/2022
-**/
+﻿/***************************
+ * Filename    = WBMessageHandler.cs
+ *
+ * Author      = Joel Sam Mathew
+ *
+ * Product     = Plex Share
+ *
+ * Project     = White Board
+ *
+ * Description = Methods to handle different kind of Operations and updates sent over 
+ *               the network.
+ ***************************/
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Net.Mail;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Markup;
 using System.Windows.Threading;
 using PlexShareNetwork;
-using PlexShareNetwork.Communication;
-using PlexShareNetwork.Serialization;
 using PlexShareWhiteboard.BoardComponents;
 using PlexShareWhiteboard.Server;
 using Serializer = PlexShareWhiteboard.BoardComponents.Serializer;
@@ -27,11 +25,18 @@ namespace PlexShareWhiteboard
 {
     public partial class WhiteBoardViewModel : INotificationHandler
     {
+        /// <summary>
+        ///     Main thread dispatcher to make changes to UI.
+        /// </summary>
         private Dispatcher ApplicationMainThreadDispatcher =>
     (Application.Current?.Dispatcher != null) ?
         Application.Current.Dispatcher :
         Dispatcher.CurrentDispatcher;
 
+        /// <summary>
+        ///     Implementing Network module's OnDataReceived to handle serialized data which come over the network.
+        /// </summary>
+        /// <param name="serializedData">Json string to be deserialized</param>
         public void OnDataReceived(string serializedData)
         {
             _ = ApplicationMainThreadDispatcher.BeginInvoke(
@@ -46,7 +51,11 @@ namespace PlexShareWhiteboard
                      ,
                      serializedData);
         }
-        
+
+        /// <summary>
+        ///     Handles different operations of updates over the network.
+        /// </summary>
+        /// <param name="serializedData">Json string to be deserialized</param>
         public void DataHandler(string serializedData)
         {
 
@@ -110,7 +119,6 @@ namespace PlexShareWhiteboard
             {
                 try
                 {
-                    Trace.WriteLine("[Whiteboard]  " + " Client msg received");
                     var deserializedShape = serializer.DeserializeWBServerShape(serializedData);
                     List<ShapeItem> shapeItems = serializer.ConvertToShapeItem(deserializedShape.ShapeItems);
                     Trace.WriteLine("[Whiteboard] WBMessageHandler.onDataReceived(Client): Receiving the json string " + deserializedShape.Op);
@@ -122,7 +130,7 @@ namespace PlexShareWhiteboard
                             break;
                         case Operation.CreateSnapshot:
                             UpdateCheckList(deserializedShape.SnapshotNumber);
-                            DisplayMessage(deserializedShape.UserID, deserializedShape.SnapshotNumber);
+                            //DisplayMessage(deserializedShape.UserID, deserializedShape.SnapshotNumber);
                             break;
                         case Operation.Creation:
                             CreateIncomingShape(shapeItems[0]);
@@ -156,6 +164,11 @@ namespace PlexShareWhiteboard
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        ///     Loads the list of shape items into the board
+        /// </summary>
+        /// <param name="shapeItems">List of shape items</param>
+        /// <param name="isNewUser">Indicator of new user joining</param>
         public void LoadBoard(List<ShapeItem> shapeItems, bool isNewUser = false)
         {
             if (!isNewUser)
