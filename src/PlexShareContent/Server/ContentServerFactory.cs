@@ -1,12 +1,8 @@
 ﻿/******************************************************************************
  * Filename    = ContentServerFactory.cs
- *
- * Author      = Anurag Jha
- *
+ * Author      = Anurag Jh
  * Product     = PlexShare
- * 
  * Project     = PlexShareContent
- *
  * Description = Class to implement Factory design Pattern for ContentServer.
  *****************************************************************************/
 
@@ -27,6 +23,5 @@ namespace PlexShareContent.Server
         {
             return _contentServer.Value;
         }
-        
     }
 }
