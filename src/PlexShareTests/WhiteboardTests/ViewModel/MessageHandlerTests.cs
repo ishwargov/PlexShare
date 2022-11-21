@@ -1,14 +1,18 @@
-﻿using Microsoft.Identity.Client;
+﻿/***************************
+ * Filename    = MessageHandlerTests.cs
+ *
+ * Author      = Joel Sam Mathew
+ *
+ * Product     = Plex Share
+ *
+ * Project     = White Board
+ *
+ * Description = Tests for WBMessageHandler.cs.
+ ***************************/
+
 using PlexShareWhiteboard;
 using PlexShareWhiteboard.Client.Interfaces;
-using PlexShareWhiteboard.Client;
 using PlexShareWhiteboard.Server.Interfaces;
-using PlexShareWhiteboard.Server;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Moq;
 using PlexShareWhiteboard.BoardComponents;
 using System.Windows;
@@ -19,20 +23,14 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
     public class MessageHandlerTests
     {
         WhiteBoardViewModel viewModel;
-        Mock<IClientCommunicator> _mockClientCommunicator;
-        Mock<IServerCommunicator> _mockServerCommunicator;
-        Serializer _serializer;
         Utility utility;
-
-
+        
+        /// <summary>
+        ///     Setup for test.
+        /// </summary>
         public MessageHandlerTests()
         {
-            _mockClientCommunicator = new Mock<IClientCommunicator>();
-            _mockServerCommunicator = new Mock<IServerCommunicator>();
             viewModel = WhiteBoardViewModel.Instance;
-            _mockClientCommunicator.Setup(m => m.SendToServer(It.IsAny<WBServerShape>()));
-            _mockServerCommunicator.Setup(m => m.Broadcast(It.IsAny<WBServerShape>(), It.IsAny<string>()));
-            _serializer = new Serializer();
             utility = new Utility();
 
             viewModel.ShapeItems.Clear();
@@ -40,6 +38,9 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.redoStack.Clear();
         }
         
+        /// <summary>
+        ///     Server Creation test.
+        /// </summary>
         [Fact]
         public void OnDataReceived_ServerCreationTest()
         {
@@ -56,7 +57,10 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.undoStack.Clear();
             viewModel.redoStack.Clear();
         }
-        
+
+        /// <summary>
+        ///     Server Deletion test.
+        /// </summary>
         [Fact]
         public void OnDataReceived_ServerDeletionTest()
         {
@@ -74,6 +78,10 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.undoStack.Clear();
             viewModel.redoStack.Clear();
         }
+
+        /// <summary>
+        ///     Server Modification test.
+        /// </summary>
         [Fact]
         public void OnDataReceived_ServerModifyTest()
         {
@@ -92,6 +100,10 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.undoStack.Clear();
             viewModel.redoStack.Clear();
         }
+
+        /// <summary>
+        ///     Server Clear test.
+        /// </summary>
         [Fact]
         public void OnDataReceived_ServerClearTest()
         {
@@ -110,6 +122,10 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.undoStack.Clear();
             viewModel.redoStack.Clear();
         }
+
+        /// <summary>
+        ///     Server New User test.
+        /// </summary>
         [Fact]
         public void OnDataReceived_ServerNewUserTest()
         {
@@ -118,7 +134,6 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             List<ShapeItem> newShapes = utility.GenerateRandomBoardShapes(5);
             string jsonString = utility.SendThroughServer(newShapes, Operation.NewUser);
             viewModel.DataHandler(jsonString);
-            //Assert.Equal(newShapes, viewModel.ShapeItems.ToList());
 
             Assert.True(utility.CompareShapeItems(newShapes, viewModel.ShapeItems.ToList()));
 
@@ -126,6 +141,10 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.undoStack.Clear();
             viewModel.redoStack.Clear();
         }
+
+        /// <summary>
+        ///     Client Creation test.
+        /// </summary>
         [Fact]
         public void OnDataReceived_ClientCreationTest()
         {
@@ -143,6 +162,9 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.redoStack.Clear();
         }
 
+        /// <summary>
+        ///     Client Deletion test.
+        /// </summary>
         [Fact]
         public void OnDataReceived_ClientDeletionTest()
         { 
@@ -160,6 +182,10 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.undoStack.Clear();
             viewModel.redoStack.Clear();
         }
+
+        /// <summary>
+        ///     Client Modification test.
+        /// </summary>
         [Fact]
         public void OnDataReceived_ClientModifyTest()
         {
@@ -178,6 +204,10 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.undoStack.Clear();
             viewModel.redoStack.Clear();
         }
+
+        /// <summary>
+        ///     Client Clear test.
+        /// </summary>
         [Fact]
         public void OnDataReceived_ClientClearTest()
         {
@@ -196,6 +226,10 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.undoStack.Clear();
             viewModel.redoStack.Clear();
         }
+
+        /// <summary>
+        ///     Client New User test.
+        /// </summary>
         [Fact]
         public void OnDataReceived_ClientNewUserTest()
         {

@@ -149,6 +149,7 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.redoStack.Clear();
         }
 
+
         // testing thicness of shape changes after stroke thickness is updated
         [Fact]
         public void Test5()

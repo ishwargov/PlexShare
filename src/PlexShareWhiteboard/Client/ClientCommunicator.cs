@@ -1,22 +1,22 @@
-﻿/**
- * Owned By: Joel Sam Mathew
- * Created By: Joel Sam Mathew
- * Date Created: 22/10/2022
- * Date Modified: 08/11/2022
-**/
+﻿/***************************
+ * Filename    = ClientCommunicator.cs
+ *
+ * Author      = Joel Sam Mathew
+ *
+ * Product     = Plex Share
+ *
+ * Project     = White Board
+ *
+ * Description = Used to communicate between Client side White Board Modules and 
+ *               the Networking module.
+ ***************************/
 
 using PlexShareWhiteboard.BoardComponents;
 using PlexShareWhiteboard.Client.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using PlexShareNetwork;
 using PlexShareNetwork.Communication;
-using PlexShareNetwork.Serialization;
 using System.Diagnostics;
-using System.Windows.Markup;
 using Serializer = PlexShareWhiteboard.BoardComponents.Serializer;
 
 namespace PlexShareWhiteboard.Client
@@ -27,6 +27,10 @@ namespace PlexShareWhiteboard.Client
         private static Serializer serializer;
         private static ICommunicator communicator;
         private static readonly string moduleIdentifier = "Whiteboard";
+
+        /// <summary>
+        ///     Getter for singleton class instance.
+        /// </summary>
         public static ClientCommunicator Instance
         {
             get
@@ -42,6 +46,11 @@ namespace PlexShareWhiteboard.Client
                 return instance;
             }
         }
+
+        /// <summary>
+        ///     Serializes the WBServeShape object and passes it to communicator.Send().
+        /// </summary>
+        /// <param name="clientUpdate">The object to be passed to server.</param>
         public void SendToServer(WBServerShape clientUpdate)
         {
             try
@@ -57,6 +66,5 @@ namespace PlexShareWhiteboard.Client
                 Trace.WriteLine(e.Message);
             }
         }
-
     }
 }

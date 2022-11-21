@@ -1,13 +1,20 @@
-﻿using Moq;
+﻿/***************************
+ * Filename    = SnapshotHandlerTests.cs
+ *
+ * Author      = Joel Sam Mathew
+ *
+ * Product     = Plex Share
+ *
+ * Project     = White Board
+ *
+ * Description = Tests for WBSnapshotHandler.cs.
+ ***************************/
+
+using Moq;
 using PlexShareWhiteboard;
 using PlexShareWhiteboard.BoardComponents;
 using PlexShareWhiteboard.Client.Interfaces;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PlexShareTests.WhiteboardTests.ViewModel
 {
@@ -18,6 +25,9 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
         Utility utility;
         Mock<IShapeListener> _mockMachine;
 
+        /// <summary>
+        ///     Setup for tests.
+        /// </summary>
         public SnapshotHandlerTests()
         {
             viewModel = WhiteBoardViewModel.Instance;
@@ -30,6 +40,9 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.redoStack.Clear();
         }
 
+        /// <summary>
+        ///     Test for SaveSnapshot()
+        /// </summary>
         [Fact]
         public void SaveSnapshot_Test()
         {
@@ -42,6 +55,10 @@ namespace PlexShareTests.WhiteboardTests.ViewModel
             viewModel.undoStack.Clear();
             viewModel.redoStack.Clear();
         }
+
+        /// <summary>
+        ///     Test for LoadSnapshot()
+        /// </summary>
         [Fact]
         public void LoadSnapshot_Test()
         {

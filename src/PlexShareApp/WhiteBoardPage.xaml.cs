@@ -290,13 +290,16 @@ namespace PlexShareApp
         {
             Debug.WriteLine("Enter text mode");
             Debug.WriteLine(e.Key);
-            if (this.ShapeToolBar.Visibility == Visibility.Collapsed)
-                this.ShapeToolBar.Visibility = Visibility.Visible;
-            if (this.ShapeSelectionToolBar.Visibility == Visibility.Collapsed)
-                this.ShapeSelectionToolBar.Visibility = Visibility.Visible;
+            if (this.ShapeToolBar.Visibility == Visibility.Visible)
+                this.ShapeToolBar.Visibility = Visibility.Collapsed;
+            if (this.ShapeSelectionToolBar.Visibility == Visibility.Visible)
+                this.ShapeSelectionToolBar.Visibility = Visibility.Collapsed;
             if (this.StrokeToolBar.Visibility == Visibility.Visible)
                 this.StrokeToolBar.Visibility = Visibility.Collapsed;
             viewModel.TextBoxStart(e.Key);
+            int thickness = (int)ThicknessSlider.Value;
+            viewModel.ChangeStrokeThickness(thickness);
+
         }
 
         private void TextboxPreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
@@ -306,8 +309,8 @@ namespace PlexShareApp
                 Debug.WriteLine("Space inserted");
                 if (this.ShapeToolBar.Visibility == Visibility.Visible)
                     this.ShapeToolBar.Visibility = Visibility.Collapsed;
-                if (this.ShapeSelectionToolBar.Visibility == Visibility.Collapsed)
-                    this.ShapeSelectionToolBar.Visibility = Visibility.Visible;
+                if (this.ShapeSelectionToolBar.Visibility == Visibility.Visible)
+                    this.ShapeSelectionToolBar.Visibility = Visibility.Collapsed;
                 if (this.StrokeToolBar.Visibility == Visibility.Visible)
                     this.StrokeToolBar.Visibility = Visibility.Collapsed;
                 viewModel.TextBoxStart(e.Key);
@@ -332,8 +335,8 @@ namespace PlexShareApp
             Cursor = Cursors.Pen;
             if (this.ShapeToolBar.Visibility == Visibility.Visible)
                 this.ShapeToolBar.Visibility = Visibility.Collapsed;
-            if (this.ShapeSelectionToolBar.Visibility == Visibility.Collapsed)
-                this.ShapeSelectionToolBar.Visibility = Visibility.Visible;
+            if (this.ShapeSelectionToolBar.Visibility == Visibility.Visible)
+                this.ShapeSelectionToolBar.Visibility = Visibility.Collapsed;
             if (this.StrokeToolBar.Visibility == Visibility.Visible)
                 this.StrokeToolBar.Visibility = Visibility.Collapsed;
             Trace.WriteLine("[WhiteBoard] White Board Page entered the Text Mode");
