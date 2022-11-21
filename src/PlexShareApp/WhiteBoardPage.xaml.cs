@@ -53,7 +53,6 @@ namespace PlexShareApp
             else
                 viewModel.isServer = false;
 
-            //if (viewModel.canDraw == true && serverID == 0)
             // init means noone called, ! means someone called (server) and we found out that it is not server
             if (!viewModel.userId.Equals("init") && serverID != 0)
             {
@@ -146,7 +145,6 @@ namespace PlexShareApp
         /// <param name="e"></param>
         private void CanvasMouseEnter(object sender, MouseEventArgs e)
         {
-            //Debug.WriteLine(this.currentTool + " Got it \n");
             if (this.currentTool != "Select")
                 viewModel.UnHighLightIt();
             switch (this.currentTool)
@@ -185,7 +183,6 @@ namespace PlexShareApp
         /// <param name="e"></param>
         private void CanvasMouseLeave(object sender, MouseEventArgs e)
         {
-            //Debug.WriteLine(this.currentTool + " Leave Got it \n");
             if (this.currentTool != "Select")
                 viewModel.UnHighLightIt();
             Cursor = Cursors.Arrow;
