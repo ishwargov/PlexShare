@@ -41,7 +41,8 @@ public class AuthenticationViewModel
     /// Constructor for AuthenticationViewModel
     /// </summary>
     public AuthenticationViewModel()
-    {
+    {   
+        var _ = TraceFile();
     }
 
     /// <summary>
