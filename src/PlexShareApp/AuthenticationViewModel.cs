@@ -22,6 +22,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using PlexShareApp;
 
 namespace AuthViewModel;
 
@@ -42,7 +43,7 @@ public class AuthenticationViewModel
     /// </summary>
     public AuthenticationViewModel()
     {   
-        var _ = TraceFile();
+        var _ = new TraceFile();
     }
 
     /// <summary>
