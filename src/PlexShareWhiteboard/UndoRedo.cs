@@ -47,7 +47,7 @@ namespace PlexShareWhiteboard
         /// </summary>
         public void CallRedo()
         {
-
+            // z index updating code 
             UndoStackElement shapeToSend = Redo();
             if (shapeToSend != null)
                 machine.OnShapeReceived(shapeToSend.NewShape, shapeToSend.Op);
@@ -94,6 +94,7 @@ namespace PlexShareWhiteboard
                     modifiedObject.Op = Operation.Deletion;
                     break;
                 case Operation.Deletion:
+                    topOfStack.NewShape.ZIndex = machine.GetMaxZindex(topOfStack.NewShape);
                     CreateIncomingShape(topOfStack.PrvShape);
                     modifiedObject.Op = Operation.Creation;
                     break;
@@ -126,6 +127,7 @@ namespace PlexShareWhiteboard
             {
                 case Operation.Creation:
                     Trace.WriteLine("[Whiteboard]  " + "\n Redo Creation " + topOfStack.NewShape.Id + "\n");
+                    topOfStack.NewShape.ZIndex = machine.GetMaxZindex(topOfStack.NewShape);
                     CreateIncomingShape(topOfStack.NewShape);
                     break;
                 case Operation.Deletion:
