@@ -430,14 +430,14 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
 
             Trace.WriteLine("[Dashboard] Shutdown Application");
 
-            if (testmode == false)
-            {
-                Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
-                {
-                    Application.Current.Shutdown();
-                    System.Environment.Exit(0);
-                });
-            }
+            //if (testmode == false)
+            //{
+            //    Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
+            //    {
+            //        Application.Current.Shutdown();
+            //        System.Environment.Exit(0);
+            //    });
+            //}
             return;
         }
 
