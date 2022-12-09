@@ -25,7 +25,7 @@
         <!--Colours for various User Control objects-->
         <SolidColorBrush x:Key="DynamicTextClr" Color="#FFFFFF"/>
         <SolidColorBrush x:Key="DynamicButtonFore" Color="ForestGreen" />
-        <SolidColorBrush x:Key="DynamicChatBackGrd" Color="#E2DCC8" />
+        <!--<SolidColorBrush x:Key="DynamicChatBackGrd" Color="#E2DCC8" />-->
         <SolidColorBrush x:Key="DynamicReplyBox" Color="#071e1e" />
         <SolidColorBrush x:Key="DynamicSentMsg" Color="Teal" />
         <SolidColorBrush x:Key="DynamicSentFile" Color="#075e54" />
@@ -505,9 +505,9 @@
                                                    Width="425" MaxHeight="40" FontSize="16" Padding="8,5,8,5" />
                                     </Border>
                                 </Grid>
-                                <emoji:RichTextBox Grid.Row="1" Name="SendTextBox" Foreground="White" SpellCheck.IsEnabled="True" Background="Transparent"
-                                         BorderThickness="0" Height="30" FontSize="15" VerticalAlignment="Bottom"
-                                         Text="" AcceptsReturn="True"></emoji:RichTextBox>
+                                <TextBox Grid.Row="1" Name="SendTextBox" Foreground="White" SpellCheck.IsEnabled="True" Background="Transparent"
+                                         BorderThickness="0" Height="30" FontSize="15" VerticalAlignment="Bottom" CaretBrush="White" 
+                                         Text="" TextWrapping="Wrap" AcceptsReturn="True"  ></TextBox>
                             </Grid>
                         </Grid>
                     </Border>
