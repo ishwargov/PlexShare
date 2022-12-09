@@ -489,7 +489,7 @@ namespace PlexShareScreenshare.Server
 
                     //// This is disabled for now as the client is not making use of this.
                     //// Send Confirmation packet back to the client.
-                    //BroadcastClients(new() { clientId }, nameof(ServerDataHeader.Confirmation), (0, 0));
+                    BroadcastClients(new() { clientId }, nameof(ServerDataHeader.Confirmation), (0, 0));
                 }
                 catch (Exception e)
                 {
