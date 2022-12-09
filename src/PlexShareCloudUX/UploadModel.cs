@@ -68,7 +68,7 @@ namespace PlexShareCloudUX
             {
                 bool result = await UploadDocumentAsync(fileName);
                 Trace.WriteLine("[Cloud] Uploaded document");
-                isUploaded = true;
+                isUploaded = result;
                 return result;
             }
             else
