@@ -4,7 +4,7 @@
 <!-- Project     = PlexShareApp-->
 <!-- Description = View for the Authentication Page-->
 
-<Window x:Class="PlexShareApp.AuthenticationView"
+<Page x:Class="PlexShareApp.AuthenticationView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -12,20 +12,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PlexShareApp"
         mc:Ignorable="d"
-        WindowStartupLocation = "CenterScreen"
-        WindowStyle="None"
         Title="PlexShare"
         MinHeight= "600"
         MinWidth="1100"
-        AllowsTransparency="True"
-        ShowInTaskbar="False"
         Background="Transparent"
-        ResizeMode="CanResize"
-        SizeChanged="Window_SizeChanged"
         >
     <Grid Background="White">
         <Grid.RowDefinitions>
-            <RowDefinition Height="20"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="0.8*"/>
             <RowDefinition Height="0.05*"/>
@@ -45,39 +38,14 @@
             <ColumnDefinition Width="0.02*" />
         </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Row="0" Grid.Column="0" FontFamily="Cascadia Mono" FontSize="15"  
-                               VerticalAlignment="Center" Foreground="Black"> PlexShare
-        </TextBlock>
-        <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="2" HorizontalAlignment="Right">
-            <!--Maximize Button-->
-            <Button Width="25"  Height="20" Click="MinimizeApp"
-                                Background="Transparent"
-                                BorderBrush="Transparent">
-                <materialDesign:PackIcon Kind="WindowMinimize" Width="16" Height="16" VerticalAlignment="Center"/>
-
-            </Button>
-
-            <!--Minimize Button-->
-            <Button Width="25" Height="20" Click="MaximizeApp" Background="Transparent" BorderBrush="Transparent">
-                <materialDesign:PackIcon Kind="WindowMaximize" Width="16" Height="16" VerticalAlignment="Center"/>
-            </Button>
-
-            <!--Close Button-->
-            <Button Width="25" Background="Transparent" BorderThickness="0"
-                                Height="20" Click="CloseApp">
-                <materialDesign:PackIcon Kind="WindowClose" Width="16" Height="16" VerticalAlignment="Center"/>
-            </Button>
-
-        </StackPanel>
-
-        <Image Grid.Column="0" Grid.RowSpan="7" Grid.Row="1" Source="/Resources/AuthScreenImg.jpg" Stretch="UniformToFill" MaxWidth="700"/>
+        <Image Grid.Column="0" Grid.RowSpan="100" Grid.Row="0" Source="/Resources/AuthScreenImg.jpg" Stretch="UniformToFill" MaxWidth="700"/>
 
         <!-- Welcome Block -->
-        <TextBlock Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="5" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="40" FontFamily="MV Boli" MaxHeight="50" >Welcome To</TextBlock>
-        <TextBlock Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="5" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="80" FontFamily="MV Boli" MaxHeight="100">PlexShare</TextBlock>
+        <TextBlock x:Name="InfoBlock" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="5" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="40" FontFamily="MV Boli" MaxHeight="50" >Welcome To</TextBlock>
+        <TextBlock Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="5" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="80" FontFamily="MV Boli" MaxHeight="100">PlexShare</TextBlock>
 
         <!-- Sign In Button -->
-        <Button Grid.Column="1" Grid.ColumnSpan="5" Click="Home_Click" Grid.Row="6" MaxWidth="500" MaxHeight="300" BorderBrush="Gray" BorderThickness="2" Background="Transparent">
+        <Button Grid.Column="1" Grid.ColumnSpan="5" Click="Home_Click" Grid.Row="5" MaxWidth="500" MaxHeight="300" BorderBrush="Gray" BorderThickness="2" Background="Transparent">
             <Button.Resources>
                 <Style TargetType="Border">
                     <Setter Property="CornerRadius" Value="50"/>
@@ -106,29 +74,29 @@
         </Button>
 
         <!-- Animation for the Authentication Screen-->
-        <StackPanel Grid.Row="1" Grid.RowSpan="7" Grid.Column="1">
+        <StackPanel Grid.Row="0" Grid.RowSpan="7" Grid.Column="1">
             <ProgressBar x:Name="pb1" Height="1000" Width="10" Orientation="Vertical" Background="Transparent" BorderThickness="0"  Foreground="BurlyWood"></ProgressBar>
         </StackPanel>
 
-        <StackPanel Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="4">
+        <StackPanel Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="4">
             <ProgressBar x:Name="pb2" Height="10" Width="1000" Background="Transparent" BorderThickness="0" Foreground="Wheat"></ProgressBar>
         </StackPanel>
 
-        <StackPanel  Grid.Row="1" Grid.RowSpan="8" Grid.Column="4" HorizontalAlignment="Right">
+        <StackPanel  Grid.Row="0" Grid.RowSpan="8" Grid.Column="4" HorizontalAlignment="Right">
             <ProgressBar x:Name="pb3" Height="1000" Width="10" Orientation="Vertical" Background="Transparent" BorderThickness="0" Foreground="BurlyWood"></ProgressBar>
         </StackPanel>
 
-        <StackPanel Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="5" VerticalAlignment="Bottom">
+        <StackPanel Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="5" VerticalAlignment="Bottom">
             <ProgressBar x:Name="pb4" Height="10" Width="1000" Background="Transparent" BorderThickness="0" Foreground="Wheat"></ProgressBar>
         </StackPanel>
 
-        <StackPanel Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="4" VerticalAlignment="Bottom" HorizontalAlignment="Left">
+        <StackPanel Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="4" VerticalAlignment="Bottom" HorizontalAlignment="Left">
             <ProgressBar x:Name="pb5" Height="10" Width="500" Background="Transparent" BorderThickness="0" Foreground="BurlyWood"></ProgressBar>
         </StackPanel>
 
-        <StackPanel  Grid.Row="5" Grid.RowSpan="4" Grid.Column="5" HorizontalAlignment="Right">
+        <StackPanel  Grid.Row="4" Grid.RowSpan="4" Grid.Column="5" HorizontalAlignment="Right">
             <ProgressBar x:Name="pb6" Height="500" Width="10" Orientation="Vertical" Background="Transparent" BorderThickness="0" Foreground="Wheat"></ProgressBar>
         </StackPanel>
 
     </Grid>
-</Window>
+</Page>

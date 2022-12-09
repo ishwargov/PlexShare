@@ -22,6 +22,7 @@
 
     <SolidColorBrush x:Key="Color1Bg" Color="#393E46" />
     <SolidColorBrush x:Key="Color2Bg" Color="#6D9886" />
+    <SolidColorBrush x:Key="DynamicChatBackGrd" Color="#6D9886" />
     <SolidColorBrush x:Key="Color3Bg" Color="#F2E7D5" />
     <SolidColorBrush x:Key="Color4Bg" Color="#393E46" />
     <SolidColorBrush x:Key="Color5Bg" Color="White" />

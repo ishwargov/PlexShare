@@ -21,6 +21,7 @@ using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
@@ -31,7 +32,7 @@ namespace PlexShareApp
     /// <summary>
     /// Interaction logic for HomePageView.xaml
     /// </summary>
-    public partial class HomePageView : Window
+    public partial class HomePageView : Page
     {
         string imageUrl = "";
         string absolutePath = "";
@@ -70,7 +71,6 @@ namespace PlexShareApp
             // It stores the absolute path of the profile image
             absolutePath = _viewModel.DownloadImage(imageUrl, email);
             this.profilePicture.ImageSource = new BitmapImage(new Uri(absolutePath, UriKind.Absolute));
-            this.Show();
 
             // To initialize the session page
             sessionPage = new SessionsPage(this.emailTextBox.Text);
@@ -134,8 +134,9 @@ namespace PlexShareApp
             }
             homePageAnimation = false;
             MainScreenView mainScreenView = new MainScreenView(this.nameBox.Text, this.emailTextBox.Text, this.absolutePath, this.imageUrl, verified[0], verified[1], true, verified[7]);
-            mainScreenView.Show();
-            this.Close();
+            //mainScreenView.Show();
+            this.NavigationService.Navigate(mainScreenView);
+            //this.Close();
         }
 
 
@@ -175,8 +176,10 @@ namespace PlexShareApp
             }
             homePageAnimation = false;
             MainScreenView mainScreenView = new MainScreenView(this.nameBox.Text, this.emailTextBox.Text, this.absolutePath, this.imageUrl, verified[0], verified[1], false, verified[7]);
-            mainScreenView.Show();
-            this.Close();
+            //mainScreenView.Show();
+            this.NavigationService.Navigate(mainScreenView);
+
+            //this.Close();
         }
 
 
@@ -226,66 +229,6 @@ namespace PlexShareApp
             }
         }
 
-        /// <summary>
-        /// Enables dragging using the title bar
-        /// </summary>
-        private void TitleBarDrag(object sender, MouseButtonEventArgs e)
-        {
-            Trace.WriteLine("[UX] Trying to move the window");
-            DragMove();
-        }
-
-        /// <summary>
-        /// Close the app from the title bar
-        /// </summary>
-        private void CloseApp(object sender, RoutedEventArgs e)
-        {
-            Application.Current.Shutdown();
-            Environment.Exit(0);
-        }
-
-        /// <summary>
-        /// Minimize the window
-        /// </summary>
-        private void MinimizeApp(object sender, RoutedEventArgs e)
-        {
-            if (WindowState == WindowState.Normal || WindowState == WindowState.Maximized)
-                WindowState = WindowState.Minimized;
-            else
-                WindowState = WindowState.Normal;
-        }
-
-        /// <summary>
-        /// Maxmize the window
-        /// </summary>
-        private void MaximizeApp(object sender, RoutedEventArgs e)
-        {
-            if (WindowState == WindowState.Maximized)
-            {
-                WindowState = WindowState.Normal;
-            }
-            else
-            {
-                MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
-                WindowState = WindowState.Maximized;
-            }
-        }
-
-
-        ///<summary>
-        ///  This is used to add a border thickness in the maximised window
-        ///  since window is going out of bounds
-        ///</summary>
-        public void Window_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            if (this.WindowState == WindowState.Maximized)
-            {
-                this.BorderThickness = new System.Windows.Thickness(8);
-            }
-            else
-            {
-                this.BorderThickness = new System.Windows.Thickness(0);
-            }
-        }
+        
     }
 }

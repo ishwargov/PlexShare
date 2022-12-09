@@ -18,6 +18,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+
 namespace PlexShareApp
 {
     /// <summary>
@@ -60,7 +61,6 @@ namespace PlexShareApp
 
         public void OnLeaveButtonClick(object sender, RoutedEventArgs e)
         {
-
             this.DashboardViewModelInstance.LeaveMeetingProcedure();
         }
 

@@ -30,6 +30,7 @@ using ScottPlot.Renderable;
 using System.Linq;
 using Microsoft.VisualBasic;
 using System.Windows.Interop;
+using System.Security.Cryptography;
 
 namespace PlexShareApp
 {
@@ -157,10 +158,15 @@ namespace PlexShareApp
 
                 // Launch OpenFileDialog by calling ShowDialog method
                 var result = openFileDialog.ShowDialog();
-
+                var size = new FileInfo(openFileDialog.FileName).Length;
                 // Process open file dialog box results
                 if (result == true)
                 {
+                    if(size > 10240000)
+                    {
+                        MessageBox.Show("File size is greater than 10MB!");
+                        return;
+                    }
                     if (string.IsNullOrEmpty(ReplyTextBox.Text))
                     {
                         viewModel.SendMessage(openFileDialog.FileName, -1, "File");
