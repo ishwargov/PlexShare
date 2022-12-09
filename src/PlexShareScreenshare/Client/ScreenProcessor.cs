@@ -29,6 +29,9 @@ namespace PlexShareScreenshare.Client
         // Processing task
         private Task? _processorTask;
 
+        // Limits the number of frames in the queue
+        public const short MaxQueueLength = 20;
+
         // The screen capturer object
         private readonly ScreenCapturer _capturer;
 
@@ -46,6 +49,9 @@ namespace PlexShareScreenshare.Client
 
         // Storing the previous frame
         Bitmap? prevImage;
+
+        // Stores whether diff image is being sent for the first time or not
+        private int _first_xor = 0;
 
         /// <summary>
         /// Called by ScreenshareClient.
@@ -144,7 +150,7 @@ namespace PlexShareScreenshare.Client
                     if ((oldBlue != newBlue) || (oldGreen != newGreen) || (oldRed != newRed) || (oldAlpha != newAlpha))
                     {
                         diff++;
-                        if (diff > 5000)
+                        if (diff > 500)
                         {
                             curr.UnlockBits(currData);
                             prev.UnlockBits(prevData);
@@ -180,7 +186,16 @@ namespace PlexShareScreenshare.Client
 
                 lock (_processedFrame)
                 {
-                    _processedFrame.Enqueue(serialized_buffer);
+                    if (_processedFrame.Count < MaxQueueLength)
+                    {
+                        _processedFrame.Enqueue(serialized_buffer);
+                    }
+                    else
+                    {
+                        // Sleep for some time, if queue is filled 
+                        while (_processedFrame.Count > MaxQueueLength / 2)
+                            _processedFrame.Dequeue();
+                    }
                 }
                 prevImage = img;
             }
@@ -194,6 +209,7 @@ namespace PlexShareScreenshare.Client
         {
             // dropping one frame to set the previous image value
             _cancellationToken = false;
+            _first_xor = 0;
             Bitmap? img = null;
             try
             {
@@ -287,7 +303,7 @@ namespace PlexShareScreenshare.Client
         public static byte[] CompressByteArray(byte[] data)
         {
             MemoryStream output = new();
-            using (DeflateStream dstream = new(output, CompressionLevel.Optimal))
+            using (DeflateStream dstream = new(output, CompressionLevel.Fastest))
             {
                 dstream.Write(data, 0, data.Length);
             }
@@ -319,22 +335,36 @@ namespace PlexShareScreenshare.Client
             }
             // compressing image to the current  resolution values
             img = new Bitmap(img, _currentRes.Width, _currentRes.Height);
+            new_img = null;
 
             // if no processing happened then send the whole image
             if (new_img == null)
             {
                 MemoryStream ms = new();
-                img.Save(ms, ImageFormat.Bmp);
+                img.Save(ms, ImageFormat.Jpeg);
                 var data = CompressByteArray(ms.ToArray());
+                _first_xor = 0;
                 return Convert.ToBase64String(data) + "1";
             }
             // else if processing was done then compress the processed image
             else
             {
-                MemoryStream ms = new();
-                new_img.Save(ms, ImageFormat.Bmp);
-                var data = CompressByteArray(ms.ToArray());
-                return Convert.ToBase64String(data) + "0";
+                if (_first_xor == 0)
+                {
+                    MemoryStream ms = new();
+                    img.Save(ms, ImageFormat.Bmp);
+                    var data = CompressByteArray(ms.ToArray());
+                    _first_xor = 1;
+                    return Convert.ToBase64String(data) + "1";
+                }
+
+                else
+                {
+                    MemoryStream ms = new();
+                    new_img.Save(ms, ImageFormat.Bmp);
+                    var data = CompressByteArray(ms.ToArray());
+                    return Convert.ToBase64String(data) + "0";
+                }
             }
         }
     }
