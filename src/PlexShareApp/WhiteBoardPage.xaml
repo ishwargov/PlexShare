@@ -982,6 +982,7 @@
 						         MouseUp="CanvasMouseUp"
                                  MouseDown="CanvasMouseDown"
                                  Background="White"
+								 ClipToBounds="true"
 								 
                              />
 
