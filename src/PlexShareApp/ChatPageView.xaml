@@ -142,6 +142,7 @@
                         <Grid Grid.Row="0" HorizontalAlignment="Left">
                             <Border Grid.Column="0" CornerRadius="8" BorderBrush="{DynamicResource DynamicSentMsg}"
                                     BorderThickness="5" Background="{DynamicResource DynamicSentFile}" Opacity="0.5">
+                                <!--Sadly emoji:TextBlock does not support collapse like TextBlock-->
                                 <TextBlock Style="{StaticResource ReplyText}"
                                            Foreground="{DynamicResource DynamicTextClr}" Text="{Binding ReplyMessage, UpdateSourceTrigger=PropertyChanged}"
                                            TextWrapping="Wrap" Width="250" FontSize="14" Padding="8,5,8,5" FontStyle="Italic"/>
@@ -311,7 +312,7 @@
                     <Grid Grid.Row="0">
                         <Border Grid.Column="0" CornerRadius="8" BorderBrush="{DynamicResource DynamicRecvMsg}"
                                 BorderThickness="5" Background="{DynamicResource DynamicRecvFile}" Opacity="0.5">
-                            <emoji:TextBlock Style="{StaticResource ReplyText}" Foreground="{DynamicResource DynamicSentReplyMsg}"
+                            <TextBlock Style="{StaticResource ReplyText}" Foreground="{DynamicResource DynamicSentReplyMsg}"
                                        Text="{Binding ReplyMessage, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" Width="250" FontSize="14"
                                        Padding="8,5,8,5" />
                         </Border>
@@ -460,6 +461,7 @@
                     <ListBox Background="{DynamicResource DynamicChatBackGrd}" HorizontalAlignment="Stretch"
                              BorderBrush="{DynamicResource DynamicChatBackGrd}" VerticalAlignment="Stretch"
                              ScrollViewer.VerticalScrollBarVisibility="Auto" x:Name="MainChat"
+                             ScrollViewer.CanContentScroll="False"
                              ItemTemplateSelector="{StaticResource ChatBubbleTemplateSelector}" MinHeight="450" MaxHeight="650">
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="ListBoxItem">
