@@ -44,18 +44,17 @@ namespace PlexShareApp
         {
             InitializeComponent();
 
+            SplashScreen splashScreen = new();
+            splashScreen.Show();
 
-        //SplashScreen splashScreen = new();
-        //splashScreen.Show();
+            //// Instantiate the authentication view in background
+            //AuthenticationView authenticationView = new AuthenticationView();
 
-        //// Instantiate the authentication view in background
-        //AuthenticationView authenticationView = new AuthenticationView();
+            // Close the splash screen, and open the Authentication Page
 
-        //// Close the splash screen, and open the Authentication Page
-        //splashScreen.Close();
-        //Thread.Sleep(500);
+            splashScreen.Close();
 
-        //authenticationView.Show();
+            //authenticationView.Show();
             MainFrame.Content = new AuthenticationView();
             this.Show();
 

@@ -35,8 +35,12 @@ namespace PlexShareApp
             this.MainBox.Dispatcher.Invoke(() => MainBox.Text = "Ple Sha e", System.Windows.Threading.DispatcherPriority.Render);
             Thread.Sleep(500);
 
-            this.MainBox.Dispatcher.Invoke(() => MainBox.Text = "PlexShare", System.Windows.Threading.DispatcherPriority.Background);
+            this.MainBox.Dispatcher.Invoke(() => MainBox.Text = "PlexShare", System.Windows.Threading.DispatcherPriority.Render);
             Thread.Sleep(500);
+
+            this.MainBox.Dispatcher.Invoke(() => MainBox.Text = "PlexShare", System.Windows.Threading.DispatcherPriority.Render);
+            Thread.Sleep(1000);
+
         }
     }
 }
