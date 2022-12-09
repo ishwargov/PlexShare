@@ -229,66 +229,6 @@ namespace PlexShareApp
             }
         }
 
-        /// <summary>
-        /// Enables dragging using the title bar
-        /// </summary>
-        //private void TitleBarDrag(object sender, MouseButtonEventArgs e)
-        //{
-        //    Trace.WriteLine("[UX] Trying to move the window");
-        //    DragMove();
-        //}
-
-        ///// <summary>
-        ///// Close the app from the title bar
-        ///// </summary>
-        //private void CloseApp(object sender, RoutedEventArgs e)
-        //{
-        //    Application.Current.Shutdown();
-        //    Environment.Exit(0);
-        //}
-
-        ///// <summary>
-        ///// Minimize the window
-        ///// </summary>
-        //private void MinimizeApp(object sender, RoutedEventArgs e)
-        //{
-        //    if (WindowState == WindowState.Normal || WindowState == WindowState.Maximized)
-        //        WindowState = WindowState.Minimized;
-        //    else
-        //        WindowState = WindowState.Normal;
-        //}
-
-        ///// <summary>
-        ///// Maxmize the window
-        ///// </summary>
-        //private void MaximizeApp(object sender, RoutedEventArgs e)
-        //{
-        //    if (WindowState == WindowState.Maximized)
-        //    {
-        //        WindowState = WindowState.Normal;
-        //    }
-        //    else
-        //    {
-        //        MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
-        //        WindowState = WindowState.Maximized;
-        //    }
-        //}
-
-
-        /////<summary>
-        /////  This is used to add a border thickness in the maximised window
-        /////  since window is going out of bounds
-        /////</summary>
-        //public void Window_SizeChanged(object sender, SizeChangedEventArgs e)
-        //{
-        //    if (this.WindowState == WindowState.Maximized)
-        //    {
-        //        this.BorderThickness = new System.Windows.Thickness(8);
-        //    }
-        //    else
-        //    {
-        //        this.BorderThickness = new System.Windows.Thickness(0);
-        //    }
-        //}
+        
     }
 }
