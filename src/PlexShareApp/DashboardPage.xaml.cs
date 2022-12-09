@@ -18,6 +18,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+
 namespace PlexShareApp
 {
     /// <summary>
@@ -60,9 +61,10 @@ namespace PlexShareApp
 
         public void OnLeaveButtonClick(object sender, RoutedEventArgs e)
         {
-
+            ClientSessionManager clientSessionManager = new();
+            UserData currUser = clientSessionManager.GetUser();
             this.DashboardViewModelInstance.LeaveMeetingProcedure();
-            this.NavigationService.Navigate(new AuthenticationView());
+            this.NavigationService.Navigate(new HomePageView(currUser.username, currUser.userEmail, currUser.userPhotoUrl));
         }
 
        
