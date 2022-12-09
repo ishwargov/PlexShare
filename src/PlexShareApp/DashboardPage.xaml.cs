@@ -61,10 +61,7 @@ namespace PlexShareApp
 
         public void OnLeaveButtonClick(object sender, RoutedEventArgs e)
         {
-            ClientSessionManager clientSessionManager = new();
-            UserData currUser = clientSessionManager.GetUser();
             this.DashboardViewModelInstance.LeaveMeetingProcedure();
-            this.NavigationService.Navigate(new HomePageView(currUser.username, currUser.userEmail, currUser.userPhotoUrl));
         }
 
        
