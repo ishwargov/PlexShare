@@ -72,8 +72,16 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         public string GetFrame(ref bool cancellationToken)
         {
-            while (_processedFrame.Count == 0)
+            while (true)
             {
+                lock (_processedFrame)
+                {
+                    if (_processedFrame.Count != 0)
+                    {
+                        break;
+                    }
+                }
+
                 if (cancellationToken)
                     return "";
                 Thread.Sleep(100);
