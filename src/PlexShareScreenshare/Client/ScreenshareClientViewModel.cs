@@ -1,26 +1,35 @@
-﻿using System;
+﻿/// <author> Rudr Tiwari </author>
+/// <summary>
+/// Contains view model for screenshare client.
+/// </summary>
+
+using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Threading;
 
 namespace PlexShareScreenshare.Client
 {
+    /// <summary>
+    /// ViewModel class for client
+    /// </summary>
     public class ScreenshareClientViewModel :
     INotifyPropertyChanged
     {
-        // Whether the client is sharing screen or not
+        // Boolean to store whether the client is sharing screen or not.
         private bool _sharingScreen;
 
-        // Underlying data model
-        private ScreenshareClient _model;
+        // Underlying data model for ScreenshareClient.
+        private readonly ScreenshareClient _model;
 
-        // Property changed event raised when a property is changed on a component
-        public event PropertyChangedEventHandler PropertyChanged;
+        // Property changed event raised when a property is changed on a component.
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        private DispatcherOperation? _sharingScreenOp;
 
         /// <summary>
-        /// Gets the dispatcher to the main thread. In case it is not available
-        /// (such as during unit testing) the dispatcher associated with the
-        /// current thread is returned.
+        /// Gets the dispatcher to the main thread. In case it is not available (such as during
+        /// unit testing) the dispatcher associated with the current thread is returned.
         /// </summary>
         private Dispatcher ApplicationMainThreadDispatcher =>
             (Application.Current?.Dispatcher != null) ?
@@ -30,7 +39,7 @@ namespace PlexShareScreenshare.Client
         /// <summary>
         /// Boolean to store whether the screen is currently being stored or not.
         /// When the boolen is changed, we call OnPropertyChanged to refresh the view.
-        /// We also start/stop the screenshare accordingly when the property is changed
+        /// We also start/stop the screenshare accordingly when the property is changed.
         /// </summary>
         public bool SharingScreen
         {
@@ -39,17 +48,16 @@ namespace PlexShareScreenshare.Client
             set
             {
                 // Execute the call on the application's main thread.
-
-                _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
-                            DispatcherPriority.Normal,
-                            new Action(() =>
-                            {
-                                lock (this)
-                                {
-                                    this._sharingScreen = value;
-                                    this.OnPropertyChanged("SharingScreen");
-                                }
-                            }));
+                _sharingScreenOp = this.ApplicationMainThreadDispatcher.BeginInvoke(
+                                    DispatcherPriority.Normal,
+                                    new Action(() =>
+                                    {
+                                        lock (this)
+                                        {
+                                            this._sharingScreen = value;
+                                            this.OnPropertyChanged("SharingScreen");
+                                        }
+                                    }));
 
                 if (value)
                 {
@@ -62,9 +70,14 @@ namespace PlexShareScreenshare.Client
             }
         }
 
+
+        /// <summary>
+        /// Constructor for the ScreenshareClientViewModel.
+        /// </summary>
         public ScreenshareClientViewModel()
         {
             _model = ScreenshareClient.GetInstance();
+            _sharingScreen = false;
         }
 
         /// <summary>

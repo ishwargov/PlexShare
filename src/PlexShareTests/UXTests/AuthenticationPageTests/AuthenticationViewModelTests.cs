@@ -37,18 +37,21 @@ namespace PlexShareTests.UXTests.AuthenticationPageTests
             Assert.Equal("false", returnval[0]);
         }
 
+        // Commenting this out since this is 
+        // semi automatic
+
         /// <summary>
         /// In case all information have been provided succesfully
         /// </summary>
-        [Fact]
-        public async void ValidData()
-        {
-            var returnVal = await viewModel.AuthenticateUser();
-            // Assert
-            Assert.Equal("true", returnVal[0]);
-            Assert.NotEmpty(returnVal[1]);
-            Assert.NotEmpty(returnVal[2]);
-            Assert.NotEmpty(returnVal[3]);
-        }
+        //[Fact]
+        //public async void ValidData()
+        //{
+        //    var returnVal = await viewModel.AuthenticateUser();
+        //    // Assert
+        //    Assert.Equal("true", returnVal[0]);
+        //    Assert.NotEmpty(returnVal[1]);
+        //    Assert.NotEmpty(returnVal[2]);
+        //    Assert.NotEmpty(returnVal[3]);
+        //}
     }
 }
