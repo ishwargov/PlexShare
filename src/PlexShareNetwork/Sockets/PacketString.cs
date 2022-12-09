@@ -34,11 +34,12 @@ namespace PlexShareNetwork.Sockets
 
                 // replace the "END" from the string by "NOTEND" because
                 // we are going to mark the end of the string by "END"
-                packetString = packetString.Replace("END", "NOTEND");
+                packetString = packetString.Replace("[FLAG]", "[ESC][FLAG]");
+                packetString = packetString.Replace("[ESC]", "[ESC][ESC]");
 
                 // frame the packet string by "BEGIN" and "END"
                 // and return this final string
-                packetString = "BEGIN" + packetString + "END";
+                packetString = "[FLAG]" + packetString + "[FLAG]";
 
                 return packetString;
             }
@@ -68,12 +69,13 @@ namespace PlexShareNetwork.Sockets
             {
                 // remove the "BEGIN" and "END" frame from the string
                 packetString = 
-                    packetString[5..(packetString.Length - 3)];
+                    packetString[6..(packetString.Length - 6)];
 
                 // replace "NOTEND" by "END" because we had replaced
                 // "END" by "NOTEND" when converting the packet to
                 // packet string
-                packetString = packetString.Replace("NOTEND", "END");
+                packetString = packetString.Replace("[ESC][FLAG]", "[FLAG]");
+                packetString = packetString.Replace("[ESC][ESC]", "[ESC]");
 
                 // deserialize the packet string to get back the packet
                 // and return this packet
