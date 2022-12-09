@@ -15,9 +15,13 @@ namespace PlexShareApp
         string traceFile;
         public TraceFile()
         {
-            string filePath = "";
+            string filePath = "Trace/";
+            if (!Directory.Exists(filePath))
+            {
+                Directory.CreateDirectory(filePath);
+            }
             traceFile = Path.Combine(filePath,
-            string.Format("PlexShare-{0:yyyy-MM-dd_HH-mm-ss}.trace",DateTime.Now));
+                string.Format("PlexShare-{0:yyyy-MM-dd_HH-mm-ss}.trace",DateTime.Now));
             Trace.Listeners.Add(new TextTracer(File.CreateText(traceFile)));
             Trace.AutoFlush = true;
             Trace.WriteLine("--PlexShare-Trace--");
