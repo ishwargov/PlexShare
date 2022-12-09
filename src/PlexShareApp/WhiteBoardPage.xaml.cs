@@ -252,6 +252,7 @@ namespace PlexShareApp
             if (this.ShapeToolBar.Visibility == Visibility.Collapsed)
                 this.ShapeToolBar.Visibility = Visibility.Visible;
             viewModel.ChangeMode("create_ellipse");
+            Trace.WriteLine("[WhiteBoard] Ellipse Button clicked ");
         }
 
         /// <summary>
@@ -271,8 +272,9 @@ namespace PlexShareApp
             if (this.ShapeSelectionToolBar.Visibility == Visibility.Visible)
                 this.ShapeSelectionToolBar.Visibility = Visibility.Collapsed;
             this.currentTool = "Freehand";
-
+            Trace.WriteLine("[WhiteBoard] Freehand Button clicked ");
             viewModel.ChangeMode("create_freehand");
+
 
         }
 
@@ -430,6 +432,7 @@ namespace PlexShareApp
                 this.StrokeToolBar.Visibility = Visibility.Collapsed;
             if (this.ShapeSelectionToolBar.Visibility == Visibility.Visible)
                 this.ShapeSelectionToolBar.Visibility = Visibility.Collapsed;
+            Trace.WriteLine("[WhiteBoard] Delete Button clicked ");
             viewModel.ChangeMode("delete_mode");
         }
 
@@ -461,6 +464,7 @@ namespace PlexShareApp
                 this.StrokeToolBar.Visibility = Visibility.Collapsed;
             if (this.ShapeSelectionToolBar.Visibility == Visibility.Visible)
                 this.ShapeSelectionToolBar.Visibility = Visibility.Collapsed;
+            Trace.WriteLine("[WhiteBoard] Clear Button clicked ");
             MessageBoxResult result = MessageBox.Show("Are you sure you want to clear the canvas ? Cick on Save to save your progress.",
                           "Confirmation", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
             if (result == MessageBoxResult.OK)
@@ -482,6 +486,7 @@ namespace PlexShareApp
         /// <param name="e"></param>
         private void LineMode(object sender, RoutedEventArgs e)
         {
+
             this.currentTool = "Line";
             viewModel.UnHighLightIt();
             viewModel.select.ifSelected = false;
@@ -491,6 +496,7 @@ namespace PlexShareApp
                 this.StrokeToolBar.Visibility = Visibility.Collapsed;
             if (this.ShapeSelectionToolBar.Visibility == Visibility.Visible)
                 this.ShapeSelectionToolBar.Visibility = Visibility.Collapsed;
+            Trace.WriteLine("[WhiteBoard] Line Button clicked ");
             viewModel.ChangeMode("create_line");
         }
 
@@ -509,6 +515,7 @@ namespace PlexShareApp
                 this.StrokeToolBar.Visibility = Visibility.Collapsed;
             if (this.ShapeSelectionToolBar.Visibility == Visibility.Visible)
                 this.ShapeSelectionToolBar.Visibility = Visibility.Collapsed;
+            Trace.WriteLine("[WhiteBoard] Undo Button clicked ");
             viewModel.CallUndo();
             Debug.WriteLine("Undo called xaml");
             viewModel.modeForUndo = "";
@@ -531,7 +538,7 @@ namespace PlexShareApp
                 this.StrokeToolBar.Visibility = Visibility.Collapsed;
             if (this.ShapeSelectionToolBar.Visibility == Visibility.Visible)
                 this.ShapeSelectionToolBar.Visibility = Visibility.Collapsed;
-
+            Trace.WriteLine("[WhiteBoard] Redo Button clicked ");
             viewModel.CallRedo();
         }
 
@@ -544,6 +551,7 @@ namespace PlexShareApp
                 this.StrokeToolBar.Visibility = Visibility.Collapsed;
             if (this.ShapeSelectionToolBar.Visibility == Visibility.Visible)
                 this.ShapeSelectionToolBar.Visibility = Visibility.Collapsed;
+            Trace.WriteLine("[WhiteBoard] Save Button clicked ");
             viewModel.SaveSnapshot();
             SuccessSaveMessage();
         }
