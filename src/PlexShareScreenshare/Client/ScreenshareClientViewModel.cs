@@ -76,7 +76,7 @@ namespace PlexShareScreenshare.Client
         /// </summary>
         public ScreenshareClientViewModel()
         {
-            _model = ScreenshareClient.GetInstance();
+            _model = ScreenshareClient.GetInstance(this);
             _sharingScreen = false;
         }
 
