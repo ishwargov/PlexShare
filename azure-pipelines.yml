@@ -70,13 +70,6 @@ steps:
     inputs:
       command: "test"
       projects: "**/PlexShareTests.csproj"
-      arguments: '--filter:"NetworkTests"'
-
-  - task: DotNetCoreCLI@2
-    continueOnError: true
-    inputs:
-      command: "test"
-      projects: "**/PlexShareTests.csproj"
       arguments: '--filter:"WhiteboardTests"'
 
   - task: DotNetCoreCLI@2
@@ -113,3 +106,10 @@ steps:
       command: "test"
       projects: "**/PlexShareTests.csproj"
       arguments: '--filter:"CloudTests"'
+
+  - task: DotNetCoreCLI@2
+    continueOnError: true
+    inputs:
+      command: "test"
+      projects: "**/PlexShareTests.csproj"
+      arguments: '--filter:"NetworkTests"'

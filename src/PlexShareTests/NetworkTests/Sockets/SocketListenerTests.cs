@@ -20,7 +20,7 @@ namespace PlexShareTests.NetworkTests.Sockets
         private readonly int _multiplePacketsCount = 10;
         private readonly int _smallPacketSize = 10;
         private readonly int _largePacketSize = 1000;
-        private readonly int _veryLargePacketSize = 1000000;
+        private readonly int _veryLargePacketSize = 100000;
         private readonly string _destination = "Test Destination";
         private readonly string _module = "Test Module";
 

@@ -157,21 +157,21 @@ namespace PlexShareNetwork.Sockets
                 // find index of "BEGIN" string in the received string
                 // "BEGIN" marks the beginning of the packet
                 int packetBegin = receivedString.IndexOf(
-                    "BEGIN", StringComparison.Ordinal);
+                    "[FLAG]", StringComparison.Ordinal);
 
                 // find index of "END" string in the received string
                 // "END" marks the end of the packet
                 int packetEnd = receivedString.IndexOf(
-                    "END", StringComparison.Ordinal);
+                    "[FLAG]", packetBegin + 1, StringComparison.Ordinal);
 
                 // while index of "END" is not -1 and the "END" was
                 // actually "NOTEND" then find the next "END"
                 while (packetEnd != -1 && receivedString[
-                    (packetEnd - 3)..(packetEnd + 3)] == "NOTEND")
+                    (packetEnd - 5)..(packetEnd + 6)] == "[ESC][FLAG]")
                 {
                     // find the index of next "END"
-                    packetEnd = receivedString.IndexOf("END", 
-                        packetEnd + 3, StringComparison.Ordinal);
+                    packetEnd = receivedString.IndexOf("[FLAG]",
+                        packetEnd + 1, StringComparison.Ordinal);
                 }
 
                 // if packet end was not found that means we have not
@@ -188,13 +188,13 @@ namespace PlexShareNetwork.Sockets
                 // convert it back to packet and enqueue the packet
                 // to receiving queue
                 string packetString = receivedString[
-                    packetBegin..(packetEnd + 3)];
+                    packetBegin..(packetEnd + 6)];
                 Packet packet = PacketString.PacketStringToPacket(
                     packetString);
                 _receivingQueue.Enqueue(packet);
 
                 // remove the first packet from the received string
-                receivedString = receivedString[(packetEnd + 3)..];
+                receivedString = receivedString[(packetEnd + 6)..];
 
                 Trace.WriteLine("[Networking] SocketListener:" +
                     " Received data from module: "

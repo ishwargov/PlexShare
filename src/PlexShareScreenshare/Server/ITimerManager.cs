@@ -19,13 +19,13 @@ namespace PlexShareScreenshare.Server
         /// CONFIRMATION packet not received by the client.
         /// </summary>
         /// <param name="source">
-        /// Default argument passed by the "Timer" class
+        /// Default argument passed by the "Timer" class.
         /// </param>
         /// <param name="e">
-        /// Default argument passed by the "Timer" class
+        /// Default argument passed by the "Timer" class.
         /// </param>
         /// <param name="id">
-        /// The ID of the client for which the timeout occurred
+        /// The ID of the client for which the timeout occurred.
         /// </param>
         public void OnTimeOut(object? source, ElapsedEventArgs e, string id);
     }

@@ -1,5 +1,5 @@
 ﻿/******************************************************************************
- * Filename    = ChatContext.cs
+ * Filename    = ChatThread.cs
  *
  * Author      = Narvik Nandan
  *

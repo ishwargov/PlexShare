@@ -65,7 +65,7 @@ namespace PlexShareTests.UX.HomePageTests
 
         public SessionData GetSessionData()
         {
-            throw new NotImplementedException();
+            return new SessionData();
         }
 
         // Event for notifying summary creation 

@@ -1,288 +1,351 @@
-﻿///// <author>Mayank Singla</author>
-///// <summary>
-///// Defines the "SharedClientScreenTests" class which contains tests for
-///// methods defined in "SharedClientScreen" class.
-///// </summary>
+/// <author>Mayank Singla</author>
+/// <summary>
+/// Defines the "SharedClientScreenTests" class which contains tests for
+/// methods defined in "SharedClientScreen" class.
+/// </summary>
 
-//using Moq;
-//using PlexShareScreenshare;
-//using PlexShareScreenshare.Server;
-//using System.Drawing;
-//using System.Text.Json;
-//using System.Timers;
+using Moq;
+using PlexShareScreenshare;
+using PlexShareScreenshare.Server;
+using System.ComponentModel;
+using System.Drawing;
+using System.Text.Json;
+using System.Timers;
 
-//using SSUtils = PlexShareScreenshare.Utils;
+using SSUtils = PlexShareScreenshare.Utils;
 
-//namespace PlexShareTests.ScreenshareTests
-//{
-//    /// <summary>
-//    /// Defines the "SharedClientScreenTests" class which contains tests for
-//    /// methods defined in "SharedClientScreen" class.
-//    /// </summary>
-//    /// <remarks>
-//    /// It is marked sequential to run the tests sequentially so that each test
-//    /// can do their cleanup work in case they are using the singleton server class.
-//    /// </remarks>
-//    [Collection("Sequential")]
-//    public class SharedClientScreenTests
-//    {
-//        /// <summary>
-//        /// Tests the successful execution of timer callback once the timeout occurs.
-//        /// </summary>
-//        /// <param name="timeOfUpdation">
-//        /// The time after which the timer got reset. Should be greater than the timer
-//        /// TIMEOUT for this test.
-//        /// </param>
-//        [Theory]
-//        [InlineData(5100)]
-//        [InlineData(6000)]
-//        [InlineData(7000)]
-//        public void TestSuccessfulTimeout(int timeOfUpdation)
-//        {
-//            // Arrange
-//            // Create a client which will start the underlying timer
-//            var serverMock = new Mock<ITimerManager>();
-//            SharedClientScreen client = Utils.GetMockClient(serverMock.Object);
+namespace PlexShareTests.ScreenshareTests
+{
+    /// <summary>
+    /// Contains tests for methods defined in "SharedClientScreen" class.
+    /// </summary>
+    /// <remarks>
+    /// It is marked sequential to run the tests sequentially so that each test
+    /// can do their cleanup work in case they are using the singleton server class.
+    /// </remarks>
+    [Collection("Sequential")]
+    public class SharedClientScreenTests
+    {
+        /// <summary>
+        /// Update time values after the timeout time.
+        /// </summary>
+        public static IEnumerable<object[]> PostTimeoutTime =>
+            new List<object[]>
+            {
+                new object[] { SharedClientScreen.Timeout + 3000 },
+                new object[] { SharedClientScreen.Timeout + 4000 },
+                new object[] { SharedClientScreen.Timeout + 6000 },
+            };
 
-//            // Act
-//            // Sleep for time more than the timer TIMEOUT time
-//            Thread.Sleep(timeOfUpdation);
+        /// <summary>
+        /// Update time values before the timeout time.
+        /// </summary>
+        public static IEnumerable<object[]> PreTimeoutTime =>
+            new List<object[]>
+            {
+                new object[] { SharedClientScreen.Timeout - 2000 },
+                new object[] { SharedClientScreen.Timeout - 1000 },
+                new object[] { SharedClientScreen.Timeout - 100 },
+            };
 
-//            // Assert
-//            // Check if the timeout callback was executed exactly once
-//            serverMock.Verify(server => server.OnTimeOut(It.IsAny<object>(), It.IsAny<ElapsedEventArgs>(), client.Id),
-//                                    Times.Once(), "OnTimeOut was never invoked");
+        /// <summary>
+        /// Tests the successful execution of timer callback once the timeout occurs.
+        /// </summary>
+        /// <param name="timeOfUpdation">
+        /// The time after which the timer got reset. Should be greater than the timer
+        /// TIMEOUT for this test.
+        /// </param>
+        [Theory]
+        [MemberData(nameof(PostTimeoutTime))]
+        public void TestSuccessfulTimeout(int timeOfUpdation)
+        {
+            // Arrange.
+            // Create a client which will start the underlying timer.
+            var serverMock = new Mock<ITimerManager>();
+            SharedClientScreen client = Utils.GetMockClient(serverMock.Object);
 
-//            // Cleanup
-//            client.Dispose();
-//        }
+            // Act.
+            // Sleep for time more than the timer TIMEOUT time.
+            Thread.Sleep(timeOfUpdation);
 
-//        /// <summary>
-//        /// Tests the successful reset of the timer.
-//        /// </summary>
-//        /// <param name="timeLeft">
-//        /// Time left for the timeout when the timer was reset. For this test,
-//        /// it should be less than the TIMEOUT time value
-//        /// </param>
-//        [Theory]
-//        [InlineData(2000)]
-//        [InlineData(1000)]
-//        [InlineData(100)]
-//        public void TestSuccessfulTimerReset(int timeLeft)
-//        {
-//            // Arrange
-//            // Create a client which will start the underlying timer
-//            var serverMock = new Mock<ITimerManager>();
-//            SharedClientScreen client = Utils.GetMockClient(serverMock.Object);
-//            int timeOfUpdation = (int)SharedClientScreen.Timeout - timeLeft;
+            // Assert.
+            // Check if the timeout callback was executed exactly once.
+            serverMock.Verify(server => server.OnTimeOut(It.IsAny<object>(), It.IsAny<ElapsedEventArgs>(), client.Id),
+                                    Times.Once(), "OnTimeOut was never invoked");
 
-//            // Act
-//            // Sleep for time less than the timer TIMEOUT time
-//            Thread.Sleep(timeOfUpdation);
-//            client.UpdateTimer();
-//            Thread.Sleep(timeLeft);
+            // Cleanup.
+            client.Dispose();
+        }
 
-//            // Assert
-//            // Check if the timeout callback was never executed
-//            serverMock.Verify(server => server.OnTimeOut(It.IsAny<object>(), It.IsAny<ElapsedEventArgs>(), client.Id),
-//                                    Times.Never(), "OnTimeOut was invoked unexpectedly");
+        /// <summary>
+        /// Tests the successful reset of the timer.
+        /// </summary>
+        /// <param name="timeLeft">
+        /// Time left for the timeout when the timer was reset. For this test,
+        /// it should be less than the TIMEOUT time value.
+        /// </param>
+        [Theory]
+        [MemberData(nameof(PreTimeoutTime))]
+        public void TestSuccessfulTimerReset(int timeOfUpdation)
+        {
+            // Arrange.
+            // Create a client which will start the underlying timer.
+            var serverMock = new Mock<ITimerManager>();
+            SharedClientScreen client = Utils.GetMockClient(serverMock.Object);
+            int timeLeft = (int)SharedClientScreen.Timeout - timeOfUpdation;
 
-//            // Cleanup
-//            client.Dispose();
-//        }
+            // Act.
+            // Sleep for time less than the timer TIMEOUT time.
+            Thread.Sleep(timeOfUpdation);
+            client.UpdateTimer();
+            Thread.Sleep(timeLeft);
 
-//        /// <summary>
-//        /// Tests that client is successfully Disposed and also its underlying timer.
-//        /// </summary>
-//        /// <param name="sleepTime">
-//        /// Sleep time of the thread after calling Dispose
-//        /// </param>
-//        [Theory]
-//        [InlineData(5000)]
-//        [InlineData(4000)]
-//        public void TestDispose(int sleepTime)
-//        {
-//            // Arrange
-//            // Create a client which will start the underlying timer
-//            var serverMock = new Mock<ITimerManager>();
-//            SharedClientScreen client = Utils.GetMockClient(serverMock.Object);
+            // Assert.
+            // Check if the timeout callback was never executed.
+            serverMock.Verify(server => server.OnTimeOut(It.IsAny<object>(), It.IsAny<ElapsedEventArgs>(), client.Id),
+                                    Times.Never(), "OnTimeOut was invoked unexpectedly");
 
-//            // Act
-//            // Dispose of the client and its underlying timer
-//            client.Dispose();
-//            Thread.Sleep(sleepTime);
+            // Cleanup.
+            client.Dispose();
+        }
 
-//            // Assert
-//            // Check if the timeout callback was never executed
-//            serverMock.Verify(server => server.OnTimeOut(It.IsAny<object>(), It.IsAny<ElapsedEventArgs>(), client.Id),
-//                                    Times.Never(), "OnTimeOut was invoked unexpectedly");
-//        }
+        /// <summary>
+        /// Tests that client is successfully Disposed and also its underlying timer.
+        /// </summary>
+        /// <param name="sleepTime">
+        /// Sleep time of the thread after calling Dispose.
+        /// </param>
+        [Theory]
+        [InlineData(5000)]
+        [InlineData(4000)]
+        public void TestDispose(int sleepTime)
+        {
+            // Arrange.
+            // Create a client which will start the underlying timer.
+            var serverMock = new Mock<ITimerManager>();
+            SharedClientScreen client = Utils.GetMockClient(serverMock.Object);
 
-//        /// <summary>
-//        /// Tests proper serialization and deserialization of the Image packet.
-//        /// </summary>
-//        [Fact]
-//        public void TestSerialization()
-//        {
-//            // Arrange
-//            // Create a mock client and the server
-//            var viewmodelMock = new Mock<IMessageListener>();
-//            ScreenshareServer server = ScreenshareServer.GetInstance(viewmodelMock.Object, isDebugging: true);
-//            SharedClientScreen client = Utils.GetMockClient(server, isDebugging: true);
+            // Act.
+            // Dispose of the client and its underlying timer.
+            client.Dispose();
+            Thread.Sleep(sleepTime);
+            // Try disposing again.
+            client.Dispose();
+            // Try accessing client again.
+            client.StopProcessing();
 
-//            // Create a mock serialized Image packet received by the server
-//            var (mockImagePacket, mockFrame) = Utils.GetMockImagePacket(client.Id, client.Name);
+            // Assert.
+            // Check if the timeout callback was never executed.
+            serverMock.Verify(server => server.OnTimeOut(It.IsAny<object>(), It.IsAny<ElapsedEventArgs>(), client.Id),
+                                    Times.Never(), "OnTimeOut was invoked unexpectedly");
+        }
 
-//            // Act
-//            // Deserialize the received packet and image inside it
-//            DataPacket? imagePacket = JsonSerializer.Deserialize<DataPacket>(mockImagePacket);
-//            Frame? frame = JsonSerializer.Deserialize<Frame>(imagePacket!.Data);
+        /// <summary>
+        /// Tests proper serialization and deserialization of the Image packet.
+        /// </summary>
+        [Fact]
+        public void TestSerialization()
+        {
+            // Arrange.
+            // Create a mock client and the server.
+            var viewmodelMock = new Mock<IMessageListener>();
+            ScreenshareServer server = ScreenshareServer.GetInstance(viewmodelMock.Object, isDebugging: true);
+            SharedClientScreen client = Utils.GetMockClient(server, isDebugging: true);
 
-//            // Assert
-//            // Check if we are able to retrieve the data packet and image back correctly
-//            Assert.True(imagePacket != null);
-//            Assert.True(imagePacket!.Id == client.Id);
-//            Assert.True(imagePacket!.Name == client.Name);
-//            Assert.True(Enum.Parse<ClientDataHeader>(imagePacket!.Header) == ClientDataHeader.Image);
-//            Assert.True(frame != null);
-//            Assert.True(mockFrame == frame);
+            // Create a mock serialized Image packet received by the server.
+            var (mockImagePacket, mockImage) = Utils.GetMockImagePacket(client.Id, client.Name);
 
-//            // Cleanup
-//            client.Dispose();
-//            server.Dispose();
-//        }
+            // Act.
+            // Deserialize the received packet and image inside it.
+            DataPacket? imagePacket = JsonSerializer.Deserialize<DataPacket>(mockImagePacket);
 
-//        /// <summary>
-//        /// Tests the proper enqueue and dequeue of the image in the client's image queue.
-//        /// </summary>
-//        //[Fact]
-//        //public void TestPutAndGetImage()
-//        //{
-//        //    // Arrange
-//        //    // Create a mock client and the server
-//        //    var viewmodelMock = new Mock<IMessageListener>();
-//        //    ScreenshareServer server = ScreenshareServer.GetInstance(viewmodelMock.Object, isDebugging: true);
-//        //    SharedClientScreen client = Utils.GetMockClient(server, isDebugging: true);
+            // Assert.
+            // Check if we are able to retrieve the data packet and image back correctly.
+            Assert.True(imagePacket != null);
+            Assert.True(imagePacket!.Id == client.Id);
+            Assert.True(imagePacket!.Name == client.Name);
+            Assert.True(Enum.Parse<ClientDataHeader>(imagePacket!.Header) == ClientDataHeader.Image);
+            Assert.True(imagePacket!.Data != null);
+            Assert.True(mockImage == imagePacket!.Data);
 
-//        //    // Act
-//        //    // Put mock images into the client's image queue
-//        //    int numFrames = 10;
-//        //    List<Frame> clientFrames = Utils.GetMockFrames(numFrames);
-//        //    for (int i = 0; i < numFrames; ++i)
-//        //    {
-//        //        client.PutImage(clientFrames[i]);
-//        //    }
+            // Cleanup.
+            client.Dispose();
+            server.Dispose();
+        }
 
-//        //    // Assert
-//        //    // Check if the retrieved images are same and in order
-//        //    for (int i = 0; i < numFrames; ++i)
-//        //    {
-//        //        Frame? receivedFrame = client.GetImage(CancellationToken.None);
-//        //        Assert.NotNull(receivedFrame);
-//        //        Assert.True(clientFrames[i] == receivedFrame);
-//        //    }
+        /// <summary>
+        /// Tests the proper enqueue and dequeue of the image in the client's image queue.
+        /// </summary>
+        [Fact]
+        public void TestPutAndGetImage()
+        {
+            // Arrange.
+            // Create a mock client and the server.
+            var viewmodelMock = new Mock<IMessageListener>();
+            ScreenshareServer server = ScreenshareServer.GetInstance(viewmodelMock.Object, isDebugging: true);
+            SharedClientScreen client = Utils.GetMockClient(server, isDebugging: true);
 
-//        //    // Cleanup
-//        //    client.Dispose();
-//        //    server.Dispose();
-//        //}
+            // Act.
+            // Put mock images into the client's image queue.
+            int numImages = 10;
+            List<string> clientImages = new();
+            for (int i = 0; i < numImages; ++i)
+            {
+                clientImages.Add(Utils.RandomString(i + 100));
+                client.PutImage(clientImages[i]);
+            }
 
-//        /// <summary>
-//        /// Tests the proper enqueue and dequeue of the image in the client's final image queue.
-//        /// </summary>
-//        [Fact]
-//        public void TestPutAndGetFinalImage()
-//        {
-//            // Arrange
-//            // Create a mock client and the server
-//            var viewmodelMock = new Mock<IMessageListener>();
-//            ScreenshareServer server = ScreenshareServer.GetInstance(viewmodelMock.Object, isDebugging: true);
-//            SharedClientScreen client = Utils.GetMockClient(server, isDebugging: true);
+            // Assert.
+            // Check if the retrieved images are same and in order.
+            bool cancellationToken = false;
+            for (int i = 0; i < numImages; ++i)
+            {
+                string? receivedImage = client.GetImage(ref cancellationToken);
+                Assert.NotNull(receivedImage);
+                Assert.True(clientImages[i] == receivedImage);
+            }
 
-//            // Act
-//            // Put mock final images into the client's final image queue
-//            int numImages = 10;
-//            List<Bitmap> clientImages = new();
-//            for (int i = 0; i < numImages; ++i)
-//            {
-//                Bitmap mockImage = Utils.GetMockBitmap();
-//                client.PutFinalImage(mockImage);
-//                clientImages.Add(mockImage);
-//            }
+            // Cleanup.
+            client.Dispose();
+            server.Dispose();
+        }
 
-//            // Assert
-//            // Check if the retrieved final images are same and in order
-//            for (int i = 0; i < numImages; ++i)
-//            {
-//                Bitmap? receivedImage = client.GetFinalImage(CancellationToken.None);
-//                Assert.NotNull(receivedImage);
-//                Assert.True(clientImages[i] == receivedImage);
-//            }
+        /// <summary>
+        /// Tests the proper enqueue and dequeue of the image in the client's final image queue.
+        /// </summary>
+        [Fact]
+        public void TestPutAndGetFinalImage()
+        {
+            // Arrange.
+            // Create a mock client and the server.
+            var viewmodelMock = new Mock<IMessageListener>();
+            ScreenshareServer server = ScreenshareServer.GetInstance(viewmodelMock.Object, isDebugging: true);
+            SharedClientScreen client = Utils.GetMockClient(server, isDebugging: true);
 
-//            // Cleanup
-//            client.Dispose();
-//            server.Dispose();
-//        }
+            // Act.
+            // Put mock final images into the client's final image queue.
+            int numImages = 10;
+            List<Bitmap> clientImages = new();
+            for (int i = 0; i < numImages; ++i)
+            {
+                Bitmap mockImage = Utils.GetMockBitmap();
+                client.PutFinalImage(mockImage);
+                clientImages.Add(mockImage);
+            }
 
-//        /// <summary>
-//        /// Tests that the processor task for the client starts and stops successfully.
-//        /// </summary>
-//        [Fact]
-//        public void TestStartAndStopProcessing()
-//        {
-//            // Arrange
-//            // Create a mock client and the server
-//            var viewmodelMock = new Mock<IMessageListener>();
-//            ScreenshareServer server = ScreenshareServer.GetInstance(viewmodelMock.Object, isDebugging: true);
-//            SharedClientScreen client = Utils.GetMockClient(server, isDebugging: true);
+            // Assert.
+            // Check if the retrieved final images are same and in order.
+            bool cancellationToken = false;
+            for (int i = 0; i < numImages; ++i)
+            {
+                Bitmap? receivedImage = client.GetFinalImage(ref cancellationToken);
+                Assert.NotNull(receivedImage);
+                Assert.True(clientImages[i] == receivedImage);
+            }
 
-//            // Act
-//            // Put mock images into the client's image queue
-//            int numFrames = 10;
-//            List<Frame> clientFrames = Utils.GetMockFrames(numFrames);
-//            for (int i = 0; i < numFrames; ++i)
-//            {
-//                client.PutImage(clientFrames[i]);
-//            }
+            // Cleanup.
+            client.Dispose();
+            server.Dispose();
+        }
 
-//            // Start the processing of the images for the client.
-//            // The task will take the image from the final image queue
-//            // of the client and will update its "CurrentImage" variable
-//            client.StartProcessing(new Action<CancellationToken>((token) =>
-//            {
-//                // If the task was already canceled
-//                token.ThrowIfCancellationRequested();
+        /// <summary>
+        /// Tests that the processor task for the client starts and stops successfully.
+        /// </summary>
+        [Fact]
+        public void TestStartAndStopProcessing()
+        {
+            // Arrange.
+            // Create a mock client and the server.
+            var viewmodelMock = new Mock<IMessageListener>();
+            ScreenshareServer server = ScreenshareServer.GetInstance(viewmodelMock.Object, isDebugging: true);
+            SharedClientScreen client = Utils.GetMockClient(server, isDebugging: true);
 
-//                // Loop till the task is not canceled
-//                while (!token.IsCancellationRequested)
-//                {
-//                    // End the task when cancellation is requested
-//                    token.ThrowIfCancellationRequested();
+            // Act.
+            // Put mock images into the client's image queue.
+            int numImages = 10;
+            List<string> clientImages = new();
+            for (int i = 0; i < numImages; ++i)
+            {
+                clientImages.Add(Utils.GetMockImage());
+                client.PutImage(clientImages[i]);
+            }
 
-//                    Bitmap? finalImage = client.GetFinalImage(token);
+            // Trying to stop a task which was never started.
+            client.StopProcessing();
 
-//                    if (finalImage != null)
-//                    {
-//                        client.CurrentImage = SSUtils.BitmapToBitmapImage(finalImage);
-//                    }
+            // Start the processing of the images for the client.
+            // The task will take the image from the final image queue
+            // of the client and will update its "CurrentImage" variable.
+            client.StartProcessing(new((ref bool cancellationToken) =>
+            {
+                // Loop till the task is not canceled.
+                while (!cancellationToken)
+                {
+                    Bitmap? finalImage = client.GetFinalImage(ref cancellationToken);
 
-//                }
-//            }));
+                    if (finalImage != null)
+                    {
+                        client.CurrentImage = SSUtils.BitmapToBitmapImage(finalImage);
+                    }
 
-//            // Keep the tasks running for some time
-//            // The stitcher will process all the images in the queue
-//            Thread.Sleep(10000);
+                }
+            }));
 
-//            // Stop the processing of the images for the client
-//            client.StopProcessing().Wait();
+            // Keep the tasks running for some time.
+            // The stitcher will process all the images in the queue.
+            Thread.Sleep(10000);
 
-//            // Assert
-//            // The "CurrentImage" variable of the client should not be null at the end
-//            Assert.True(client.CurrentImage != null);
+            // Trying to start an already started task.
+            client.StartProcessing(new((ref bool _) => { return; }));
 
-//            // Cleanup
-//            client.Dispose();
-//            server.Dispose();
-//        }
-//    }
-//}
+            // Stop the processing of the images for the client.
+            client.StopProcessing();
+
+            // Assert.
+            // The "CurrentImage" variable of the client should not be null at the end.
+            Assert.True(client.CurrentImage != null);
+
+            // Cleanup.
+            client.Dispose();
+            server.Dispose();
+        }
+
+
+        /// <summary>
+        /// Tests that the OnPropertyChanged() is invoked successfully when changing the
+        /// properties for the SharedClientScreen object.
+        /// </summary>
+        [Fact]
+        public void TestOnPropertyChanged()
+        {
+            // Arrange.
+            // Create a mock client and the server.
+            var viewmodelMock = new Mock<IMessageListener>();
+            ScreenshareServer server = ScreenshareServer.GetInstance(viewmodelMock.Object, isDebugging: true);
+            SharedClientScreen client = Utils.GetMockClient(server, isDebugging: true);
+
+            // Add the handler to the property changed event.
+            int invokedCount = 0;
+            PropertyChangedEventHandler handler = new((_, _) => ++invokedCount);
+            client.PropertyChanged += handler;
+
+            // Act.
+            // Update the properties which are supposed to raise on property changed event.
+            int numPropertiesChanged = 4;
+            client.CurrentImage = SSUtils.BitmapToBitmapImage(Utils.GetMockBitmap());
+            client.Pinned = true;
+            client.TileHeight = 100;
+            client.TileWidth = 100;
+
+            // Assert.
+            // Check if the property changed event was raised as many times the properties
+            // of the client was changed.
+            Assert.True(invokedCount == numPropertiesChanged);
+
+            // Cleanup.
+            client.PropertyChanged -= handler;
+            client.Dispose();
+            server.Dispose();
+        }
+    }
+}
