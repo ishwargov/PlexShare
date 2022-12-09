@@ -13,29 +13,36 @@
 
 using AuthViewModel;
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
+
 
 namespace PlexShareApp
 {
     /// <summary>
     /// Interaction logic for AuthenticationView.xaml
     /// </summary>
-    public partial class AuthenticationView : Window
+    public partial class AuthenticationView : Page
     {
         private static bool stopAnimation = false;
         private static bool buttonClicked = false;
         public AuthenticationView()
         {
             InitializeComponent();
+            
             AuthenticationViewModel viewModel = new();
             this.DataContext = viewModel;
-            this.Show();
-            Trace.WriteLine("[UX] Entering Authentication View");
 
-            AnimateAuthScreen(this);
+            Trace.WriteLine("[UX] Entering Authentication View");
+            // this.FO
+            // AnimateAuthScreen(this);
+            Task task = new Task(() => AnimateAuthScreen(this));
+            task.Start();
         }
 
         /// <summary>
@@ -48,7 +55,6 @@ namespace PlexShareApp
             int v = 0;
             int direction = 1;
 
-            // Making animation run forever
             while (stopAnimation == false)
             {
                 if (v == 0)
@@ -76,66 +82,6 @@ namespace PlexShareApp
             Trace.WriteLine("[UX] Stopping Animation");
         }
 
-        ///<summary>
-        ///To move the window
-        ///</summary>
-        private void TitleBarDrag(object sender, MouseButtonEventArgs e)
-        {
-            DragMove();
-        }
-
-        ///<summary>
-        /// To close the window
-        ///</summary>
-        private void CloseApp(object sender, RoutedEventArgs e)
-        {
-            Application.Current.Shutdown();
-            Environment.Exit(0);
-        }
-
-        ///<summary>
-        ///  To minimize the application
-        ///</summary>
-        private void MinimizeApp(object sender, RoutedEventArgs e)
-        {
-            if (WindowState == WindowState.Normal || WindowState == WindowState.Maximized)
-                WindowState = WindowState.Minimized;
-            else
-                WindowState = WindowState.Normal;
-        }
-
-        ///<summary>
-        ///  To maximise the window
-        ///</summary>
-        private void MaximizeApp(object sender, RoutedEventArgs e)
-        {
-            if (WindowState == WindowState.Maximized)
-            {
-                WindowState = WindowState.Normal;
-            }
-            else
-            {
-                MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
-                WindowState = WindowState.Maximized;
-            }
-        }
-
-        ///<summary>
-        ///  This is used to add a border thickness in the maximised window
-        ///  since window is going out of bounds
-        ///</summary>
-        public void Window_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            if (this.WindowState == WindowState.Maximized)
-            {
-                this.BorderThickness = new System.Windows.Thickness(6);
-            }
-            else
-            {
-                this.BorderThickness = new System.Windows.Thickness(0);
-            }
-        }
-
         /// <summary>
         /// Interaction with the Sign In button which redirects to Home Screen
         /// </summary>
@@ -156,19 +102,14 @@ namespace PlexShareApp
             var returnVal = await viewModel.AuthenticateUser();
 
             // Brings back the app to the forefront 
-            this.Activate();
-
+            Application.Current.MainWindow.Activate();
+          
             Trace.WriteLine("[UX] Authentiation Completed");
 
             // There were no errors in authentication
             if (returnVal[0] == "true")
             {
                 Trace.WriteLine("[UX] Authentication Successful");
-                // Creating Home Page and moving forward
-                var homePage = new HomePageView(returnVal[1], returnVal[2], returnVal[3]);
-
-                homePage.Show();
-                this.Close();
             }
             else
             {
@@ -178,7 +119,12 @@ namespace PlexShareApp
                 // Button Click re-enabled
                 buttonClicked = false;
                 AnimateAuthScreen(this);
+                return;
             }
+
+            // Creating Home Page and moving forward
+            var homePage = new HomePageView(returnVal[1], returnVal[2], returnVal[3]);
+            this.NavigationService.Navigate(homePage);
         }
     }
 }

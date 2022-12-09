@@ -2,9 +2,8 @@
         Author      = Neel Kabra
         Product     = PlexShare 
         Project     = PlexShareApp
-        Description = View for the MainScreen Window
--->
-<Window x:Class="PlexShareApp.MainScreenView"
+        Description = View for the MainScreen Window -->
+<Page x:Class="PlexShareApp.MainScreenView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -12,17 +11,11 @@
     xmlns:local="clr-namespace:PlexShareApp"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     mc:Ignorable="d"
-    WindowStartupLocation="CenterScreen"
     Title="PlexShare"
-    MinHeight= "800"
-    MinWidth="1500"
-    WindowStyle="None"
-    ResizeMode="CanResizeWithGrip"
-    AllowsTransparency="True"
-    SizeChanged="Window_SizeChanged" >
+      MinWidth="1411" MinHeight="800" >
 
     <!--Setting up the window resources-->
-    <Window.Resources>
+    <Page.Resources>
         <Style x:Key="FocusVisual">
             <Setter Property="Control.Template">
                 <Setter.Value>
@@ -124,7 +117,7 @@
             </Setter>
         </Style>
 
-    </Window.Resources>
+    </Page.Resources>
 
     <!--Borders of the grid-->
     <Border BorderThickness="0">
@@ -151,42 +144,15 @@
                 </Grid.ColumnDefinitions>
 
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="20" />
                     <RowDefinition Height="35" />
                     <RowDefinition />
                 </Grid.RowDefinitions>
 
-                <!--Title Bar-->
-                <Grid Grid.Column="0" Grid.ColumnSpan="100" Grid.Row="0" MouseLeftButtonDown="TitleBarDrag" Background="White">
-                    <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="10" FontFamily="Cascadia Mono" FontSize="15"  
-                                VerticalAlignment="Center" Foreground="Black"> PlexShare
-                    </TextBlock>
-                    <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1000" HorizontalAlignment="Right">
-
-                        <!--Maximize Button-->
-                        <Button Width="25"  Height="20" Click="MinimizeApp"
-                            Background="Transparent" 
-                            BorderBrush="Transparent">
-                            <materialDesign:PackIcon Kind="WindowMinimize" Width="16" Height="16" VerticalAlignment="Center"/>
-                        </Button>
-
-                        <!--Minimize Button-->
-                        <Button Width="25" Height="20" Click="MaximizeApp" Background="Transparent" BorderBrush="Transparent">
-                            <materialDesign:PackIcon Kind="WindowMaximize" Width="16" Height="16" VerticalAlignment="Center"/>
-                        </Button>
-
-                        <!--Close Button-->
-                        <Button Width="25" Background="Transparent" BorderThickness="0"
-                                Height="20" Click="CloseApp">
-                            <materialDesign:PackIcon Kind="WindowClose" Width="16" Height="16" VerticalAlignment="Center"/>
-                        </Button>
-
-                    </StackPanel>
-                </Grid>
-                <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="100" Background="{DynamicResource Color9Bg}" />
+               
+                <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="100" Background="{DynamicResource Color9Bg}" />
 
                 <!--Dashboard Tab-->
-                <Button  Style="{DynamicResource RoundedButtonStyle}" Name="Dashboard" Grid.Column="1" Grid.Row="1" Click="DashboardClick"
+                <Button  Style="{DynamicResource RoundedButtonStyle}" Name="Dashboard" Grid.Column="1" Grid.Row="0" Click="DashboardClick"
                 Background="DarkCyan" Height="27" VerticalAlignment="Center" BorderThickness="0"
                 FontFamily="Cascadia Mono" FontSize="12"
                 Content="Dashboard" Foreground="WhiteSmoke">
@@ -198,7 +164,7 @@
                 </Button>
 
                 <!--Whiteboard Tab-->
-                <Button Style="{DynamicResource RoundedButtonStyle}" Name="Whiteboard" Grid.Column="3" Grid.Row="1" Click="WhiteboardClick"
+                <Button Style="{DynamicResource RoundedButtonStyle}" Name="Whiteboard" Grid.Column="3" Grid.Row="0" Click="WhiteboardClick"
                 Background="Transparent" Height="27" VerticalAlignment="Center" BorderThickness="0"
                 FontFamily="Cascadia Mono" FontSize="12"
                 Content="Whiteboard" Foreground="WhiteSmoke">
@@ -210,7 +176,7 @@
                 </Button>
 
                 <!--Screenshare Tab-->
-                <Button Style="{DynamicResource RoundedButtonStyle}" Name="Screenshare" Grid.Column="5" Grid.Row="1" Click="ScreenShareClick"
+                <Button Style="{DynamicResource RoundedButtonStyle}" Name="Screenshare" Grid.Column="5" Grid.Row="0" Click="ScreenShareClick"
                 FontFamily="Cascadia Mono" FontSize="12"
                 Background="Transparent" Height="27" VerticalAlignment="Center" BorderThickness="0" 
                 Content="Screenshare" Foreground="WhiteSmoke">
@@ -222,7 +188,7 @@
                 </Button>
 
                 <!--Chat Tab-->
-                <Button  Style="{DynamicResource RoundedButtonStyle}" Name="Chat" Grid.Column="12" Grid.Row="1" Click="ChatButtonClick"
+                <Button  Style="{DynamicResource RoundedButtonStyle}" Name="Chat" Grid.Column="12" Grid.Row="0" Click="ChatButtonClick"
                 Background="Transparent" Height="27" VerticalAlignment="Center" BorderThickness="0"
                 FontFamily="Cascadia Mono" FontSize="12"
                 Content="Chat" Foreground="WhiteSmoke">
@@ -234,7 +200,7 @@
                 </Button>
 
                 <!--Cloud Upload Button-->
-                <Button  Style="{DynamicResource RoundedButtonStyle}" Name="Cloud" Grid.Column="10" Grid.Row="1" Click="UploadClick"
+                <Button  Style="{DynamicResource RoundedButtonStyle}" Name="Cloud" Grid.Column="10" Grid.Row="0" Click="UploadClick"
                 Background="Transparent" Height="27" VerticalAlignment="Center" BorderThickness="0"
                 FontFamily="Cascadia Mono" FontSize="12"
                 Content="Upload" Foreground="WhiteSmoke">
@@ -251,7 +217,7 @@
                 <!--Cloud Submissions Button-->
                 <Button  Style="{DynamicResource RoundedButtonStyle}" Name="Submissions" Click="SubmissionsClick"
             Background="Transparent" Height="27" VerticalAlignment="Center" BorderThickness="0" 
-            FontFamily="Cascadia Mono" FontSize="12" Grid.Row="1" Grid.Column="8"
+            FontFamily="Cascadia Mono" FontSize="12" Grid.Row="0" Grid.Column="8"
             Content="Submissions" Foreground="WhiteSmoke">
                     <Button.Resources>
                         <Style TargetType="Border">
@@ -265,13 +231,13 @@
 
                 <!--Server IP and Port Box-->
                 <TextBlock Margin ="0,0,0,0" x:Name="ServerIPandPort"  FontFamily="Cascadia Mono ExtraLight" FontSize="12"
-                    Grid.Column="6" Grid.ColumnSpan="1" Grid.Row ="1" HorizontalAlignment="Right" Text="IP : PORT : "
+                    Grid.Column="6" Grid.ColumnSpan="1" Grid.Row ="0" HorizontalAlignment="Right" Text="IP : PORT : "
                     Foreground="WhiteSmoke" VerticalAlignment="Center" Background="Transparent" Visibility="Hidden">
                 </TextBlock>
 
 
                 <!--Info Button-->
-                <Button  Style="{DynamicResource RoundedButtonStyle}" Name="Info" Grid.Column="14" Grid.Row="1" MouseEnter="ShowIpandPort" 
+                <Button  Style="{DynamicResource RoundedButtonStyle}" Name="Info" Grid.Column="14" Grid.Row="0" MouseEnter="ShowIpandPort" 
                         MouseLeave="HideIpandPort" Background="Transparent" Height="27" VerticalAlignment="Center" BorderThickness="0"
                         FontFamily="Harlow Solid Italic" FontSize="20"
                         Content="i" Foreground="WhiteSmoke">
@@ -283,7 +249,7 @@
                 </Button>
 
                 <!--Theme Toggle Button-->
-                <DockPanel Grid.Column="7" Grid.Row="1" Grid.ColumnSpan="1" HorizontalAlignment="Center">
+                <DockPanel Grid.Column="7" Grid.Row="0" Grid.ColumnSpan="1" HorizontalAlignment="Center">
                     <ToggleButton Name="themeButtonToggle" Click="ThemeToggleButtonClick"  HorizontalAlignment="Left" Height="16" VerticalAlignment="Center" Width="44"  Cursor="Hand" />
                     <TextBlock Foreground="White" Text="Theme" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14" FontFamily="Cascadia Mono"/>
                 </DockPanel>
@@ -292,7 +258,7 @@
             </Grid>
 
             <!--Grid for all frames-->
-            <Grid Margin="0,55,0,0">
+            <Grid Margin="0,35,0,0" Background="{DynamicResource Color2Bg}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="100*"/>
                     <ColumnDefinition Width="60*"/>
@@ -318,4 +284,4 @@
     </Border>
 
 
-</Window>
+</Page>
