@@ -62,6 +62,7 @@ namespace PlexShareApp
         {
 
             this.DashboardViewModelInstance.LeaveMeetingProcedure();
+            this.NavigationService.Navigate(new AuthenticationView());
         }
 
        

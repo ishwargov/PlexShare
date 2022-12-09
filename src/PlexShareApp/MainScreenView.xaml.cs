@@ -18,6 +18,7 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -26,7 +27,7 @@ namespace PlexShareApp
     /// <summary>
     /// Interaction logic for MainScreenView.xaml
     /// </summary>
-    public partial class MainScreenView : Window
+    public partial class MainScreenView : Page
     {
         private bool chatOn;
         private bool cloudOn;
@@ -88,7 +89,7 @@ namespace PlexShareApp
             // Because the cloud team needs it in their constructor
             ClientSessionManager clientSessionManager;
             clientSessionManager = SessionManagerFactory.GetClientSessionManager();
-          //  SessionData sessionData = clientSessionManager.clientSessionData;
+            // SessionData sessionData = clientSessionManager.clientSessionData;
             UserData user = clientSessionManager.GetUser();
 
             Trace.WriteLine("[UX] Instantiating Cloud Pages");
@@ -108,8 +109,8 @@ namespace PlexShareApp
         {
             Trace.WriteLine("[UX] Redering Dashboard");
             Dashboard.Background = Brushes.DarkCyan;
-            Whiteboard.Background = Brushes.DarkSlateGray;
-            Screenshare.Background = Brushes.DarkSlateGray;
+            Whiteboard.Background = Brushes.Transparent;
+            Screenshare.Background = Brushes.Transparent;
 
             Main.Content = dashboardPage;
         }
@@ -119,8 +120,8 @@ namespace PlexShareApp
         /// </summary>
         private void ScreenShareClick(object sender, RoutedEventArgs e)
         {
-            Dashboard.Background = Brushes.DarkSlateGray;
-            Whiteboard.Background = Brushes.DarkSlateGray;
+            Dashboard.Background = Brushes.Transparent;
+            Whiteboard.Background = Brushes.Transparent;
             Screenshare.Background = Brushes.DarkCyan;
 
             if (isClient)
@@ -141,9 +142,9 @@ namespace PlexShareApp
         private void WhiteboardClick(object sender, RoutedEventArgs e)
         {
             Trace.WriteLine("[UX] Rendering Whiteboard");
-            Dashboard.Background = Brushes.DarkSlateGray;
+            Dashboard.Background = Brushes.Transparent;
             Whiteboard.Background = Brushes.DarkCyan;
-            Screenshare.Background = Brushes.DarkSlateGray;
+            Screenshare.Background = Brushes.Transparent;
 
             Main.Content = whiteBoardPage;
         }
@@ -238,73 +239,73 @@ namespace PlexShareApp
             ServerIPandPort.Visibility = Visibility.Hidden;
         }
 
-        ///<summary>
-        ///To move the window
-        ///</summary>
-        private void TitleBarDrag(object sender, MouseButtonEventArgs e)
-        {
-            Trace.WriteLine("[UX] Trying to move the window");
-            DragMove();
-        }
+        /////<summary>
+        /////To move the window
+        /////</summary>
+        //private void TitleBarDrag(object sender, MouseButtonEventArgs e)
+        //{
+        //    Trace.WriteLine("[UX] Trying to move the window");
+        //    DragMove();
+        //}
 
-        ///<summary>
-        /// To close the window
-        ///</summary>
-        private void CloseApp(object sender, RoutedEventArgs e)
-        {
-            Application.Current.Dispatcher.Invoke((Action)delegate
-            {
-                Application.Current.Shutdown();
-            });
-            System.Environment.Exit(0);
-        }
+        /////<summary>
+        ///// To close the window
+        /////</summary>
+        //private void CloseApp(object sender, RoutedEventArgs e)
+        //{
+        //    Application.Current.Dispatcher.Invoke((Action)delegate
+        //    {
+        //        Application.Current.Shutdown();
+        //    });
+        //    System.Environment.Exit(0);
+        //}
 
-        ///<summary>
-        ///  To minimize the application
-        ///</summary>
-        private void MinimizeApp(object sender, RoutedEventArgs e)
-        {
-            if (WindowState == WindowState.Normal || WindowState == WindowState.Maximized)
-            {
-                WindowState = WindowState.Minimized;
-            }
-            else
-            {
-                WindowState = WindowState.Normal;
-            }
-        }
+        /////<summary>
+        /////  To minimize the application
+        /////</summary>
+        //private void MinimizeApp(object sender, RoutedEventArgs e)
+        //{
+        //    if (WindowState == WindowState.Normal || WindowState == WindowState.Maximized)
+        //    {
+        //        WindowState = WindowState.Minimized;
+        //    }
+        //    else
+        //    {
+        //        WindowState = WindowState.Normal;
+        //    }
+        //}
 
-        ///<summary>
-        ///  To maximise the window
-        ///</summary>
-        private void MaximizeApp(object sender, RoutedEventArgs e)
-        {
-            if (WindowState == WindowState.Maximized)
-            {
-                WindowState = WindowState.Normal;
-            }
-            else
-            {
-                MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
-                WindowState = WindowState.Maximized;
-            }
-        }
+        /////<summary>
+        /////  To maximise the window
+        /////</summary>
+        //private void MaximizeApp(object sender, RoutedEventArgs e)
+        //{
+        //    if (WindowState == WindowState.Maximized)
+        //    {
+        //        WindowState = WindowState.Normal;
+        //    }
+        //    else
+        //    {
+        //        MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
+        //        WindowState = WindowState.Maximized;
+        //    }
+        //}
 
-        ///<summary>
-        ///  This is used to add a border thickness in the maximised window
-        ///  since window is going out of bounds
-        ///</summary>
-        public void Window_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            if (this.WindowState == WindowState.Maximized)
-            {
-                this.BorderThickness = new System.Windows.Thickness(6);
-            }
-            else
-            {
-                this.BorderThickness = new System.Windows.Thickness(0);
-            }
-        }
+        /////<summary>
+        /////  This is used to add a border thickness in the maximised window
+        /////  since window is going out of bounds
+        /////</summary>
+        //public void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        //{
+        //    if (this.WindowState == WindowState.Maximized)
+        //    {
+        //        this.BorderThickness = new System.Windows.Thickness(6);
+        //    }
+        //    else
+        //    {
+        //        this.BorderThickness = new System.Windows.Thickness(0);
+        //    }
+        //}
 
         /// <summary>
         /// Changes the theme using the toggle button. It changes the resource file 

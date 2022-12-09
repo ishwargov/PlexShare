@@ -10,44 +10,124 @@
  * Description = This is start view of the application. It is responsible for starting the SplashScreen and the AuthenticationView.
  * 
  *****************************************************************************/
+using System;
+using System.ComponentModel;
 using System.Threading;
 using System.Windows;
+using PlexShareDashboard.Dashboard.Client.SessionManagement;
+using System.Windows.Input;
+using Dashboard;
+using PlexShare.Dashboard;
+using PlexShareDashboard.Dashboard.Client.SessionManagement;
+using System;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
+using PlexShareDashboard.Dashboard.UI.ViewModel;
+using PlexShareDashboard;
+using PlexShareDashboard.Dashboard.Client.SessionManagement;
+
 
 namespace PlexShareApp
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+
     public partial class MainWindow : Window
     {
+        public event PropertyChangingEventHandler? PropertyChanged;
         public MainWindow()
         {
             InitializeComponent();
 
-            /*
-             *  Main Code :
-             */
-            SplashScreen splashScreen = new();
-            splashScreen.Show();
-            
-            // Instantiate the authentication view in background
-            AuthenticationView authenticationView = new AuthenticationView();
 
-            // Close the splash screen, and open the Authentication Page
-            splashScreen.Close();
-            Thread.Sleep(500);
+        //SplashScreen splashScreen = new();
+        //splashScreen.Show();
 
-            authenticationView.Show();
-            this.Close();
+        //// Instantiate the authentication view in background
+        //AuthenticationView authenticationView = new AuthenticationView();
 
-            /*
-             *  If everyone does not like to go through authentication while testing
-             *  Comment the above lines and uncomment the below lines
-             */
+        //// Close the splash screen, and open the Authentication Page
+        //splashScreen.Close();
+        //Thread.Sleep(500);
 
-            //HomePageView Homeview = new HomePageView("Neel","111901057@smail.iitpkd.ac.in", "https://images.unsplash.com/photo-1661956602868-6ae368943878?ixlib=rb-4.0.3&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80");
-            //Homeview.Show();
+        //authenticationView.Show();
+            MainFrame.Content = new AuthenticationView();
+            this.Show();
+
             //this.Close();
+
+        }
+
+        ///<summary>
+        ///To move the window
+        ///</summary>
+        private void TitleBarDrag(object sender, MouseButtonEventArgs e)
+        {
+            DragMove();
+        }
+
+        ///<summary>
+        /// To close the window
+        ///</summary>
+        private void CloseApp(object sender, RoutedEventArgs e)
+        {
+            
+            ClientSessionManager clientSessionManager = SessionManagerFactory.GetClientSessionManager();
+            if(clientSessionManager.GetUser() != null)
+            {
+                clientSessionManager.RemoveClient();
+            }
+
+            Application.Current.Shutdown();
+            Environment.Exit(0);
+        }
+
+        ///<summary>
+        ///  To minimize the application
+        ///</summary>
+        private void MinimizeApp(object sender, RoutedEventArgs e)
+        {
+            if (WindowState == WindowState.Normal || WindowState == WindowState.Maximized)
+                WindowState = WindowState.Minimized;
+            else
+                WindowState = WindowState.Normal;
+        }
+
+        ///<summary>
+        ///  To maximise the window
+        ///</summary>
+        private void MaximizeApp(object sender, RoutedEventArgs e)
+        {
+            if (WindowState == WindowState.Maximized)
+            {
+                WindowState = WindowState.Normal;
+            }
+            else
+            {
+                MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
+                WindowState = WindowState.Maximized;
+            }
+        }
+
+        ///<summary>
+        ///  This is used to add a border thickness in the maximised window
+        ///  since window is going out of bounds
+        ///</summary>
+        public void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (this.WindowState == WindowState.Maximized)
+            {
+                this.BorderThickness = new System.Windows.Thickness(6);
+            }
+            else
+            {
+                this.BorderThickness = new System.Windows.Thickness(0);
+            }
         }
 
     }

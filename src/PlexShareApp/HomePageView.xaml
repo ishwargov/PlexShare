@@ -10,7 +10,7 @@
  * Description = Interaction Logic for HomePageView.xaml
  * 
  ************************************************************-->
-<Window x:Class="PlexShareApp.HomePageView"
+<Page x:Class="PlexShareApp.HomePageView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -18,13 +18,10 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:PlexShareApp"
         mc:Ignorable="d"
-        WindowStartupLocation = "CenterScreen"
         Title="HomePageView"
-        MinWidth="1411" MinHeight="800" WindowStyle="None" Height="722" Width="1291"
-        ResizeMode="CanResizeWithGrip"
-        AllowsTransparency="True"
-        SizeChanged="Window_SizeChanged" >
-    <Window.Resources>
+        MinWidth="1411" MinHeight="800"
+        >
+    <Page.Resources>
         <Style TargetType="TextBox" x:Key="Round_textbox">
             <Setter Property="Height" Value="50"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
@@ -104,11 +101,11 @@
                 </Setter.Value>
             </Setter>
         </Style>
-    </Window.Resources>
+    </Page.Resources>
 
     <Grid Background="{DynamicResource Color2Bg}" Margin="0,0,0,-6">
         <Grid.RowDefinitions>
-            <RowDefinition Height="20"/>
+            <RowDefinition Height="0"/>
             <RowDefinition Height="93*"/>
             <RowDefinition Height="25*"/>
             <RowDefinition Height="240*"/>
@@ -127,32 +124,32 @@
             <ColumnDefinition Width="136*"/>
             <ColumnDefinition Width="30*"/>
         </Grid.ColumnDefinitions>
-        <!--Title Bar-->
+        <!--Title Bar--><!--
         <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="10" MouseDown="TitleBarDrag" Background="White">
             <TextBlock Grid.Row="0" Grid.Column="0" FontFamily="Cascadia Mono" FontSize="15"  
                                VerticalAlignment="Center" Foreground="Black"> PlexShare
             </TextBlock>
             <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="5" Grid.ColumnSpan="2" HorizontalAlignment="Right">
-                <!--Maximize Button-->
+                --><!--Maximize Button--><!--
                 <Button Width="25"  Height="20" Click="MinimizeApp"
                                 Background="Transparent" 
                                 BorderBrush="Transparent">
                     <materialDesign:PackIcon Kind="WindowMinimize" Width="16" Height="16" VerticalAlignment="Center"/>
                 </Button>
 
-                <!--Minimize Button-->
+                --><!--Minimize Button--><!--
                 <Button Width="25" Height="20" Click="MaximizeApp" Background="Transparent" BorderBrush="Transparent">
                     <materialDesign:PackIcon Kind="WindowMaximize" Width="16" Height="16" VerticalAlignment="Center"/>
                 </Button>
 
-                <!--Close Button-->
+                --><!--Close Button--><!--
                 <Button Width="25" Background="Transparent" BorderThickness="0"
                                 Height="20" Click="CloseApp">
                     <materialDesign:PackIcon Kind="WindowClose" Width="16" Height="16" VerticalAlignment="Center"/>
                 </Button>
 
             </StackPanel>
-        </Grid>
+        </Grid>-->
         <Grid Grid.Column="5" Grid.Row="3" Grid.RowSpan="4" Grid.ColumnSpan="2" Margin="0,0,135,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="37*"/>
@@ -369,4 +366,4 @@
         <!--Cloud session page-->
         <Frame x:Name="SessionPage" NavigationUIVisibility="Hidden" Grid.Column="1" Grid.ColumnSpan="5" Grid.Row="3" Grid.RowSpan="4"/>
     </Grid>
-</Window>
+</Page>
