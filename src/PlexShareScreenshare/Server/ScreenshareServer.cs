@@ -450,7 +450,7 @@ namespace PlexShareScreenshare.Server
                 try
                 {
                     SharedClientScreen client = _subscribers[clientId];
-                    client.PutImage(image);
+                    client.PutImage(image, client.TaskId);
                 }
                 catch (Exception e)
                 {
@@ -487,9 +487,8 @@ namespace PlexShareScreenshare.Server
                     SharedClientScreen client = _subscribers[clientId];
                     client.UpdateTimer();
 
-                    //// This is disabled for now as the client is not making use of this.
-                    //// Send Confirmation packet back to the client.
-                    //BroadcastClients(new() { clientId }, nameof(ServerDataHeader.Confirmation), (0, 0));
+                    // Send Confirmation packet back to the client.
+                    BroadcastClients(new() { clientId }, nameof(ServerDataHeader.Confirmation), (0, 0));
                 }
                 catch (Exception e)
                 {

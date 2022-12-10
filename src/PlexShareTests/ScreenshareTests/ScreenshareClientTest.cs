@@ -15,14 +15,14 @@ namespace PlexShareTests.ScreenshareTests
         [Fact]
         public void TestSingleton()
         {
-            ScreenshareClient screenshareClient = ScreenshareClient.GetInstance(true);
+            ScreenshareClient screenshareClient = ScreenshareClient.GetInstance(isDebugging: true);
             Debug.Assert(screenshareClient != null);
         }
 
         [Fact]
         public void TestRegisterPacketSend()
         {
-            ScreenshareClient screenshareClient = ScreenshareClient.GetInstance(true);
+            ScreenshareClient screenshareClient = ScreenshareClient.GetInstance(isDebugging: true);
 
             var communicatorMock = new Mock<ICommunicator>();
             screenshareClient.SetPrivate("_communicator", communicatorMock.Object);
@@ -45,7 +45,7 @@ namespace PlexShareTests.ScreenshareTests
         [Fact]
         public void TestSendPacketReceive()
         {
-            ScreenshareClient screenshareClient = ScreenshareClient.GetInstance(true);
+            ScreenshareClient screenshareClient = ScreenshareClient.GetInstance(isDebugging: true);
 
             var communicatorMock = new Mock<ICommunicator>();
             screenshareClient.SetPrivate("_communicator", communicatorMock.Object);
@@ -78,7 +78,7 @@ namespace PlexShareTests.ScreenshareTests
         [Fact]
         public void TestStopPacketReceive()
         {
-            ScreenshareClient screenshareClient = ScreenshareClient.GetInstance(true);
+            ScreenshareClient screenshareClient = ScreenshareClient.GetInstance(isDebugging: true);
 
             var communicatorMock = new Mock<ICommunicator>();
             screenshareClient.SetPrivate("_communicator", communicatorMock.Object);
