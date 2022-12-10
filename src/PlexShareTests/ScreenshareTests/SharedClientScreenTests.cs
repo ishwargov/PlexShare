@@ -192,15 +192,14 @@ namespace PlexShareTests.ScreenshareTests
             for (int i = 0; i < numImages; ++i)
             {
                 clientImages.Add(Utils.RandomString(i + 100));
-                client.PutImage(clientImages[i]);
+                client.PutImage(clientImages[i], client.TaskId);
             }
 
             // Assert.
             // Check if the retrieved images are same and in order.
-            bool cancellationToken = false;
             for (int i = 0; i < numImages; ++i)
             {
-                string? receivedImage = client.GetImage(ref cancellationToken);
+                string? receivedImage = client.GetImage(client.TaskId);
                 Assert.NotNull(receivedImage);
                 Assert.True(clientImages[i] == receivedImage);
             }
@@ -229,16 +228,15 @@ namespace PlexShareTests.ScreenshareTests
             for (int i = 0; i < numImages; ++i)
             {
                 Bitmap mockImage = Utils.GetMockBitmap();
-                client.PutFinalImage(mockImage);
+                client.PutFinalImage(mockImage, client.TaskId);
                 clientImages.Add(mockImage);
             }
 
             // Assert.
             // Check if the retrieved final images are same and in order.
-            bool cancellationToken = false;
             for (int i = 0; i < numImages; ++i)
             {
-                Bitmap? receivedImage = client.GetFinalImage(ref cancellationToken);
+                Bitmap? receivedImage = client.GetFinalImage(client.TaskId);
                 Assert.NotNull(receivedImage);
                 Assert.True(clientImages[i] == receivedImage);
             }
@@ -267,7 +265,7 @@ namespace PlexShareTests.ScreenshareTests
             for (int i = 0; i < numImages; ++i)
             {
                 clientImages.Add(Utils.GetMockImage());
-                client.PutImage(clientImages[i]);
+                client.PutImage(clientImages[i], client.TaskId);
             }
 
             // Trying to stop a task which was never started.
@@ -276,18 +274,17 @@ namespace PlexShareTests.ScreenshareTests
             // Start the processing of the images for the client.
             // The task will take the image from the final image queue
             // of the client and will update its "CurrentImage" variable.
-            client.StartProcessing(new((ref bool cancellationToken) =>
+            client.StartProcessing(new((taskId) =>
             {
                 // Loop till the task is not canceled.
-                while (!cancellationToken)
+                while (taskId == client.TaskId)
                 {
-                    Bitmap? finalImage = client.GetFinalImage(ref cancellationToken);
+                    Bitmap? finalImage = client.GetFinalImage(taskId);
 
                     if (finalImage != null)
                     {
                         client.CurrentImage = SSUtils.BitmapToBitmapImage(finalImage);
                     }
-
                 }
             }));
 
@@ -296,9 +293,12 @@ namespace PlexShareTests.ScreenshareTests
             Thread.Sleep(10000);
 
             // Trying to start an already started task.
-            client.StartProcessing(new((ref bool _) => { return; }));
+            client.StartProcessing(new(_ => { return; }));
 
             // Stop the processing of the images for the client.
+            client.StopProcessing();
+
+            // Trying to stop the processing again.
             client.StopProcessing();
 
             // Assert.

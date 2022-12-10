@@ -63,10 +63,9 @@ namespace PlexShareScreenshare.Server
         private Task? _imageSendTask;
 
         /// <summary>
-        /// Token for killing the image send task.
-        /// It is set as true when cancellation of the task is requested, fast otherwise.
+        /// Lock acquired while modifying "_taskId"
         /// </summary>
-        private bool _cancellationToken;
+        private readonly Object _taskIdLock = new();
 
         /// <summary>
         /// Track whether Dispose has been called.
@@ -133,7 +132,7 @@ namespace PlexShareScreenshare.Server
 
             // Initialize rest of the properties.
             _disposed = false;
-            _cancellationToken = false;
+            this.TaskId = 0;
             _tileHeight = 0;
             _tileWidth = 0;
 
@@ -203,6 +202,11 @@ namespace PlexShareScreenshare.Server
         /// of the packet from the client with the CONFIRMATION header.
         /// </summary>
         public static double Timeout { get; } = 20 * 1000;
+
+        /// <summary>
+        /// Gets the id of the current image sending task.
+        /// </summary>
+        public int TaskId { get; private set; }
 
         /// <summary>
         /// Gets the ID of the client sharing this screen.
@@ -285,28 +289,35 @@ namespace PlexShareScreenshare.Server
         /// <summary>
         /// Pops and returns the received image at the beginning of the received image queue.
         /// </summary>
-        /// <param name="cancellationToken">
-        /// Cancellation token of the task in which this function is being called.
+        /// <param name="taskId">
+        /// Id of the task in which this function is called.
         /// </param>
         /// <returns>
         /// The received image that is removed from the beginning.
         /// </returns>
-        public string? GetImage(ref bool cancellationToken)
+        public string? GetImage(int taskId)
         {
             Debug.Assert(_imageQueue != null, Utils.GetDebugMessage("_imageQueue is found null"));
 
             // Wait until the queue is empty.
-            while (_imageQueue.Count == 0)
+            while (_imageQueue != null && _imageQueue.Count == 0)
             {
-                // Return if the cancellation of the task is requested.
-                if (cancellationToken) return "";
+                // Return if the task is stopped or a new task is started.
+                if (taskId != this.TaskId) return "";
+
                 Thread.Sleep(100);
             }
+
+            // Return if the task is stopped or a new task is started.
+            if (_imageQueue == null || taskId != this.TaskId) return "";
 
             lock (_imageQueue)
             {
                 try
                 {
+                    // Return if the task is stopped or a new task is started.
+                    if (taskId != this.TaskId) return "";
+
                     return _imageQueue.Dequeue();
                 }
                 catch (InvalidOperationException e)
@@ -323,12 +334,18 @@ namespace PlexShareScreenshare.Server
         /// <param name="image">
         /// Image to be inserted.
         /// </param>
-        public void PutImage(string image)
+        /// <param name="taskId">
+        /// Id of the task in which this function is called.
+        /// </param>
+        public void PutImage(string image, int taskId)
         {
             Debug.Assert(_imageQueue != null, Utils.GetDebugMessage("_imageQueue is found null"));
 
             lock (_imageQueue)
             {
+                // Return if the task is stopped or a new task is started.
+                if (taskId != this.TaskId) return;
+
                 _imageQueue.Enqueue(image);
             }
         }
@@ -336,28 +353,34 @@ namespace PlexShareScreenshare.Server
         /// <summary>
         /// Pops and returns the final Image at the beginning of the final image queue.
         /// </summary>
-        /// <param name="cancellationToken">
-        /// Cancellation token of the task in which this function is being called.
+        /// <param name="taskId">
+        /// Id of the task in which this function is called.
         /// </param>
         /// <returns>
         /// The final image to be displayed that is removed from the beginning.
         /// </returns>
-        public Bitmap? GetFinalImage(ref bool cancellationToken)
+        public Bitmap? GetFinalImage(int taskId)
         {
             Debug.Assert(_finalImageQueue != null, Utils.GetDebugMessage("_finalImageQueue is found null"));
 
             // Wait until the queue is not empty.
-            while (_finalImageQueue.Count == 0)
+            while (_finalImageQueue != null && _finalImageQueue.Count == 0)
             {
-                // Return if the cancellation of the task is requested.
-                if (cancellationToken) return null;
+                // Return if the task is stopped or a new task is started.
+                if (taskId != this.TaskId) return null;
                 Thread.Sleep(100);
             }
+
+            // Return if the task is stopped or a new task is started.
+            if (_finalImageQueue == null || taskId != this.TaskId) return null;
 
             lock (_finalImageQueue)
             {
                 try
                 {
+                    // Return if the task is stopped or a new task is started.
+                    if (taskId != this.TaskId) return null;
+
                     return _finalImageQueue.Dequeue();
                 }
                 catch (InvalidOperationException e)
@@ -374,12 +397,18 @@ namespace PlexShareScreenshare.Server
         /// <param name="image">
         /// Image to be inserted.
         /// </param>
-        public void PutFinalImage(Bitmap image)
+        /// /// <param name="taskId">
+        /// Id of the task in which this function is called.
+        /// </param>
+        public void PutFinalImage(Bitmap image, int taskId)
         {
             Debug.Assert(_finalImageQueue != null, Utils.GetDebugMessage("_finalImageQueue is found null"));
 
             lock (_finalImageQueue)
             {
+                // Return if the task is stopped or a new task is started.
+                if (taskId != this.TaskId) return;
+
                 _finalImageQueue.Enqueue(image);
             }
         }
@@ -393,7 +422,7 @@ namespace PlexShareScreenshare.Server
         /// Task to be executed for updating current image of the client and notifying the view.
         /// </param>
         /// <exception cref="Exception"></exception>
-        public void StartProcessing(Utils.ActionRef<bool> task)
+        public void StartProcessing(Action<int> task)
         {
             Debug.Assert(_stitcher != null, Utils.GetDebugMessage("_stitcher is found null"));
 
@@ -403,17 +432,20 @@ namespace PlexShareScreenshare.Server
                 return;
             }
 
-            // Reset the cancellation token.
-            _cancellationToken = false;
-
             try
             {
-                // Start the stitcher.
-                _stitcher.StartStitching();
+                lock (_taskIdLock)
+                {
+                    // Create a new task Id
+                    ++this.TaskId;
 
-                // Create and start a new task.
-                _imageSendTask = new(() => task(ref _cancellationToken));
-                _imageSendTask.Start();
+                    // Start the stitcher.
+                    _stitcher?.StartStitching(this.TaskId);
+
+                    // Create and start a new task.
+                    _imageSendTask = new(() => task(this.TaskId));
+                    _imageSendTask?.Start();
+                }
             }
             catch (Exception e)
             {
@@ -421,7 +453,7 @@ namespace PlexShareScreenshare.Server
                 throw new Exception("Failed to start the task", e);
             }
 
-            Trace.WriteLine(Utils.GetDebugMessage($"Successfully created the processing task for the client with id {this.Id}", withTimeStamp: true));
+            Trace.WriteLine(Utils.GetDebugMessage($"Successfully created the processing task with id {this.TaskId} for the client with id {this.Id}", withTimeStamp: true));
         }
 
         /// <summary>
@@ -429,8 +461,11 @@ namespace PlexShareScreenshare.Server
         /// Cancels the task for updating the displayed images and clear the queues
         /// containing images.
         /// </summary>
+        /// <param name="stopAsync">
+        /// Whether to stop the process asynchronously or not.
+        /// </param>
         /// <exception cref="Exception"></exception>
-        public void StopProcessing()
+        public void StopProcessing(bool stopAsync = false)
         {
             Debug.Assert(_stitcher != null, Utils.GetDebugMessage("_stitcher is found null"));
 
@@ -441,46 +476,52 @@ namespace PlexShareScreenshare.Server
                 return;
             }
 
-            // Cancel the task and wait for it to finish.
-            _cancellationToken = true;
+            // Store the previous image sending task.
+            Task previousImageSendTask;
 
             try
             {
-                // Stop the stitcher.
-                _stitcher.StopStitching();
+                lock (_taskIdLock)
+                {
+                    // Change the task ID to denote task cancellation.
+                    ++this.TaskId;
 
-                _imageSendTask.Wait();
-            }
-            catch (OperationCanceledException e)
-            {
-                Trace.WriteLine(Utils.GetDebugMessage($"Task canceled for the client with id {Id}: {e.Message}", withTimeStamp: true));
+                    // Immediately make the task variable null.
+                    previousImageSendTask = _imageSendTask;
+                    _imageSendTask = null;
+
+                    // Clear both the queues.
+                    lock (_imageQueue)
+                    {
+                        _imageQueue.Clear();
+                    }
+
+                    lock (_finalImageQueue)
+                    {
+                        _finalImageQueue.Clear();
+                    }
+                }
+
+                if (!stopAsync)
+                {
+                    // Stop the stitcher and image sending task.
+                    _stitcher?.StopStitching();
+                    previousImageSendTask?.Wait();
+                }
+                else
+                {
+                    // Stop the stitcher and image sending task asynchronously.
+                    Task.Run(() => _stitcher?.StopStitching());
+                    Task.Run(() => previousImageSendTask?.Wait());
+                }
             }
             catch (Exception e)
             {
                 Trace.WriteLine(Utils.GetDebugMessage($"Failed to cancel the task: {e.Message}", withTimeStamp: true));
                 throw new Exception("Failed to start the task", e);
             }
-            finally
-            {
-                // Dispose of the task.
-                _imageSendTask.Dispose();
 
-                _cancellationToken = false;
-                _imageSendTask = null;
-
-                // Clear both the queues.
-                lock (_imageQueue)
-                {
-                    _imageQueue.Clear();
-                }
-
-                lock (_finalImageQueue)
-                {
-                    _finalImageQueue.Clear();
-                }
-            }
-
-            Trace.WriteLine(Utils.GetDebugMessage($"Successfully stopped the processing task for the client with id {this.Id}", withTimeStamp: true));
+            Trace.WriteLine(Utils.GetDebugMessage($"Successfully stopped the processing task with id {this.TaskId} for the client with id {this.Id}", withTimeStamp: true));
         }
 
         /// <summary>
@@ -530,7 +571,7 @@ namespace PlexShareScreenshare.Server
                 {
                     // Stop and dispose the timer object.
                     _timer.Enabled = false;
-                    _timer.Dispose();
+                    _timer?.Dispose();
                 }
             }
 

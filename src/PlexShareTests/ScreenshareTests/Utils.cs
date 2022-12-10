@@ -26,11 +26,6 @@ namespace PlexShareTests.ScreenshareTests
         private static Random RandomGenerator { get; } = new(DateTime.Now.Second);
 
         /// <summary>
-        /// The maximum dimension of a frame.
-        /// </summary>
-        private static int MaxFrameDimension { get; } = 400;
-
-        /// <summary>
         /// Gets a mock instance for "SharedClientScreen" with given client Id (if provided).
         /// </summary>
         /// <param name="server">
@@ -132,58 +127,6 @@ namespace PlexShareTests.ScreenshareTests
             // Create a CONFIRMATION packet with no data and serialize it.
             DataPacket packet = new(clientId, clientName, nameof(ClientDataHeader.Confirmation), "");
             return JsonSerializer.Serialize<DataPacket>(packet);
-        }
-
-        /// <summary>
-        /// Gets a mock "Frame" object.
-        /// </summary>
-        /// <param name="height">
-        /// Height of the frame.
-        /// </param>
-        /// <param name="width">
-        /// Width of the frame.
-        /// </param>
-        /// <returns>
-        /// A mock "Frame" object.
-        /// </returns>
-        public static Frame GetMockFrame(int height = -1, int width = -1)
-        {
-            int maxColor = 256;
-            // Create mock Coordinates object.
-            int x = Utils.RandomGenerator.Next(1, Utils.MaxFrameDimension), y = Utils.RandomGenerator.Next(1, Utils.MaxFrameDimension);
-            Coordinates coordinates = new() { X = Math.Min(x, y), Y = Math.Max(x, y) };
-
-            // Create mock Pixels object.
-            List<Pixel> pixels = new();
-            for (int i = 0; i < 10; ++i)
-            {
-                // Create mock RGB object.
-                RGB rgb = new() { R = Utils.RandomGenerator.Next(0, maxColor), G = Utils.RandomGenerator.Next(0, maxColor), B = Utils.RandomGenerator.Next(0, maxColor) };
-                pixels.Add(new() { Coordinates = coordinates, RGB = rgb });
-            }
-
-            height = (height != -1) ? height : Utils.RandomGenerator.Next(1, Utils.MaxFrameDimension);
-            width = (width != -1) ? width : Utils.RandomGenerator.Next(1, Utils.MaxFrameDimension);
-            return new() { Resolution = new() { Height = height, Width = width }, Pixels = pixels };
-        }
-
-        /// <summary>
-        /// Gets a list of mock frame objects all having the same resolution.
-        /// </summary>
-        /// <param name="count">
-        /// Number of mock frames to generate.
-        /// </param>
-        /// <returns>
-        /// List of mock frames.
-        /// </returns>
-        public static List<Frame> GetMockFrames(int count = 10)
-        {
-            List<Frame> frames = new();
-            for (int i = 0; i < count; ++i)
-            {
-                frames.Add(Utils.GetMockFrame(Utils.MaxFrameDimension, Utils.MaxFrameDimension));
-            }
-            return frames;
         }
 
         /// <summary>

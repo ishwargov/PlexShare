@@ -736,14 +736,15 @@ namespace PlexShareScreenshare.Server
                     // The lambda function takes the final image from the final image queue
                     // of the client and set it as the "CurrentImage" variable for the client
                     // and notify the UX about the same.
-                    client.StartProcessing(new Utils.ActionRef<bool>((ref bool cancellationToken) =>
+                    client.StartProcessing(new Action<int>((taskId) =>
                     {
                         // Loop till the task is not canceled.
-                        while (!cancellationToken)
+                        while (client.TaskId == taskId)
                         {
                             try
                             {
-                                Bitmap? finalImage = client.GetFinalImage(ref cancellationToken);
+                                // Get the final image to be displayed on the UI.
+                                Bitmap? finalImage = client.GetFinalImage(taskId);
 
                                 if (finalImage == null) continue;
 
@@ -753,12 +754,12 @@ namespace PlexShareScreenshare.Server
                                         DispatcherPriority.Normal,
                                         new Action<Bitmap>((image) =>
                                         {
-                                            lock (client)
+                                            if (image != null)
                                             {
-                                                if (image != null)
+                                                BitmapImage img = Utils.BitmapToBitmapImage(image);
+                                                img.Freeze();
+                                                lock (client)
                                                 {
-                                                    BitmapImage img = Utils.BitmapToBitmapImage(image);
-                                                    img.Freeze();
                                                     client.CurrentImage = img;
                                                 }
                                             }
@@ -793,7 +794,9 @@ namespace PlexShareScreenshare.Server
             {
                 try
                 {
-                    client.StopProcessing();
+                    // Stop the processing for the client asynchronously
+                    // so as not to block the main UI thread.
+                    client.StopProcessing(stopAsync: true);
                 }
                 catch (Exception e)
                 {
