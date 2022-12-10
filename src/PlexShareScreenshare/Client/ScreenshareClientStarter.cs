@@ -78,21 +78,15 @@ namespace PlexShareScreenshare.Client
 
             try
             {
-                if (!isDebugging)
-                {
-                    // Create the timer for this client.
-                    _timer = new Timer();
-                    _timer.Elapsed += new((sender, e) => OnTimeOut());
+                // Create the timer for this client.
+                _timer = new Timer();
+                _timer.Elapsed += new((sender, e) => OnTimeOut());
 
-                    // The timer should be invoked only once.
-                    _timer.AutoReset = false;
+                // The timer should be invoked only once.
+                _timer.AutoReset = false;
 
-                    // Set the time interval for the timer.
-                    this.UpdateTimer();
-
-                    // Start the timer.
-                    //_timer.Enabled = true;
-                }
+                // Set the time interval for the timer.
+                this.UpdateTimer();
             }
             catch (Exception e)
             {
